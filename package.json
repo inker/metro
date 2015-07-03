@@ -1,0 +1,32 @@
+{
+  "name": "MetroGraph",
+  "version": "0.0.2",
+  "description": "St Petersburg's future metro",
+  "main": "bin/www",
+  "dependencies": {
+    "body-parser": "latest",
+    "cookie-parser": "latest",
+    "debug": "latest",
+    "ejs": "latest",
+    "express": "latest",
+    "leaflet": "latest",
+    "libxmljs": "latest",
+    "morgan": "latest",
+    "serve-favicon": "latest"
+  },
+  "devDependencies": {
+    "babelify": "latest",
+    "browserify": "latest",
+    "gulp": "latest",
+    "gulp-uglify": "latest",
+    "gulp-util": "latest",
+    "uglify-js": "latest",
+    "vinyl-source-stream": "latest",
+    "watchify": "latest"
+  },
+  "scripts": {
+    "test": "wut"
+  },
+  "author": "Anton Veselyev",
+  "license": "MIT"
+}

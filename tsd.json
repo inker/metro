@@ -1,0 +1,42 @@
+{
+  "version": "v4",
+  "repo": "borisyankov/DefinitelyTyped",
+  "ref": "master",
+  "path": "typings",
+  "bundle": "typings/tsd.d.ts",
+  "installed": {
+    "node/node.d.ts": {
+      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
+    },
+    "express/express.d.ts": {
+      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
+    },
+    "xml2js/xml2js.d.ts": {
+      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
+    },
+    "x2js/xml2json.d.ts": {
+      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
+    },
+    "libxmljs/libxmljs.d.ts": {
+      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
+    },
+    "body-parser/body-parser.d.ts": {
+      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
+    },
+    "cookie-parser/cookie-parser.d.ts": {
+      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
+    },
+    "leaflet/leaflet.d.ts": {
+      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
+    },
+    "d3/d3.d.ts": {
+      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
+    },
+    "mime/mime.d.ts": {
+      "commit": "1632606f82cfbaf89d4b96b8dccacfaf2a6ae2f3"
+    },
+    "serve-static/serve-static.d.ts": {
+      "commit": "1632606f82cfbaf89d4b96b8dccacfaf2a6ae2f3"
+    }
+  }
+}
