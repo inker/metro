@@ -5,6 +5,7 @@ public/js/.*js.map
 *.js
 *.js.map
 !gulpfile.js
+!bin/www
 node_modules
 
 #################
