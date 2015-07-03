@@ -4,8 +4,6 @@ public/js/.*js
 public/js/.*js.map
 *.js
 *.js.map
-!gulpfile.js
-!bin/www
 node_modules
 
 #################
@@ -223,3 +221,6 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+!gulpfile.js
+!bin/www
