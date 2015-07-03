@@ -1,6 +1,9 @@
 routes/*.js
+routes/*.js.map
 public/js/.*js
+public/js/.*js.map
 *.js
+*.js.map
 !gulpfile.js
 node_modules
 
