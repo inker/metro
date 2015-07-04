@@ -92,7 +92,7 @@ ${xhr.status}: ${xhr.statusText}`);
                 //this.redrawNetwork();
             }
         };
-        xhr.open('GET', '/json/graph.json', true);
+        xhr.open('GET', 'json/graph.json', true);
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.send();
     }
