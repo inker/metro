@@ -26,7 +26,7 @@ router.get('/updategraph', (req, res, next) => {
 router.get('/metro', (req, res, next) => res.sendFile(path.resolve('./html/metro.html')));
 
 // get graph in json
-router.get('/metrograph', (req, res, next) => res.sendFile(path.resolve('./json/graph.json')));
+//router.get('/metrograph', (req, res, next) => res.sendFile(path.resolve('./json/graph.json')));
 /* GET home page. */
 router.get('/', (req, res, next) => res.render('index', {title: 'Express'}));
 

@@ -71,7 +71,7 @@ class Yadapter implements IAdapter {
             kmlResp.on('data', chunk => this.kml += chunk)
                 .on('end', () => { // doesn't work as a lambda, lol
                     this.kmlToGraph();
-                    fs.writeFile('./json/graph.json', this.graph.toJSON(), 'utf8', err => {
+                    fs.writeFile('./public/json/graph.json', this.graph.toJSON(), 'utf8', err => {
                         console.log('graph written');
                         if (typeof cb === 'function') return cb();
                     });

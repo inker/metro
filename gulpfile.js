@@ -60,7 +60,7 @@ gulp.task('client-transpile-merge-compress', function() {
         // build it
         .bundle()
         // writes to bundle.js
-        .pipe(source('bundle.js'))
+        .pipe(source('script.js'))
         .pipe(buffer())
         // compress it
         .pipe(uglify())

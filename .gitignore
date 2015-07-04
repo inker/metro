@@ -6,6 +6,9 @@ public/js/.*js.map
 *.js.map
 node_modules
 .idea/
+!gulpfile.js
+!bin/www
+!public/js/script.js
 
 #################
 ## Eclipse
@@ -223,5 +226,3 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 
-!gulpfile.js
-!bin/www
