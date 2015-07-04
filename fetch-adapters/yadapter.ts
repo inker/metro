@@ -66,12 +66,12 @@ class Yadapter implements IAdapter {
         this.url = url;
     }
 
-    parseFile(cb?: Function): void {
+    parseFile(destPath: string, cb?: Function): void {
         https.get(this.url, kmlResp => {
             kmlResp.on('data', chunk => this.kml += chunk)
                 .on('end', () => { // doesn't work as a lambda, lol
                     this.kmlToGraph();
-                    fs.writeFile('./public/json/graph.json', this.graph.toJSON(), 'utf8', err => {
+                    fs.writeFile(destPath, this.graph.toJSON(), 'utf8', err => {
                         console.log('graph written');
                         if (typeof cb === 'function') return cb();
                     });

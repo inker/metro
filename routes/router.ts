@@ -20,7 +20,7 @@ var router = express.Router();
 router.get('/updategraph', (req, res, next) => {
     const url = 'https://maps.yandex.ru/export/usermaps/geSTNBuviAaKSWp8lkQE4G7Oha2K8cUr.kml';
     let adapter = new Adapter(url);
-    adapter.parseFile(() => res.send('probably parsed'));
+    adapter.parseFile('./json/graph.json', () => res.send('probably parsed'));
 });
 
 router.get('/metro', (req, res, next) => res.sendFile(path.resolve('./html/metro.html')));

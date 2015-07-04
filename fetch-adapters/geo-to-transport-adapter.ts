@@ -2,7 +2,7 @@
 interface GeoToTransportAdapter {
     //url: URL;
 
-    parseFile();
+    parseFile(destPath: string, cb?: Function);
 }
 
 export = GeoToTransportAdapter;
