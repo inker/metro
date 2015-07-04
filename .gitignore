@@ -5,6 +5,7 @@ public/js/.*js.map
 *.js
 *.js.map
 node_modules
+.idea/
 
 #################
 ## Eclipse
@@ -13,7 +14,7 @@ node_modules
 *.pydevproject
 .project
 .metadata
-bin/
+# bin/
 tmp/
 *.tmp
 *.bak
