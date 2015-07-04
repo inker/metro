@@ -50,6 +50,7 @@ class MetroMap {
         this.map.on('move', () => this.overlay.style.transform = mapPane.style.transform);
         this.map.on('moveend', () => this.exTranslate = util.parseTransform(this.overlay.style.transform));
         this.map.on('zoomstart', () => {
+            this.map.dragging.disable();
             prevZoom = this.map.getZoom();
             this.overlay.style.opacity = '0.5';
         });
@@ -58,7 +59,6 @@ class MetroMap {
             if (this.tileLayersForZoom(prevZoom) != possibleTileLayer) {
                 this.tileLayer = possibleTileLayer;
             }
-            this.map.dragging.disable();
             this.redrawNetwork();
             this.map.dragging.enable();
             this.overlay.style.opacity = null;
