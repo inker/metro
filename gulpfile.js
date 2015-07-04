@@ -13,7 +13,7 @@ gulp.task('default', ['server-transpile-merge-compress', 'client-transpile-merge
 
 gulp.task('watch', function () {
     //gulp.start('merge-transpile-compress');
-    var patterns = ['./public/js/*.js', './util.js', '!./public/js/bundle.js'];
+    var patterns = ['./public/js/*.js', './util.js', '!./public/js/script.js'];
     gulp.watch(patterns, ['client-transpile-merge-compress']);
     //gulp.watch(['./*.js', './*/*.js', '!./public/js/*.js', '!./server.js'], ['server-transpile-merge-compress']);
 });
