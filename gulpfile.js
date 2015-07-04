@@ -85,3 +85,11 @@ gulp.task('client-transpile-merge-compress', function() {
 //        .pipe(source('leaflet.js'))   // the output file is react.js
 //        .pipe(gulp.dest('./public/js')); // and is put into dist folder
 //});
+
+var symlink = require('gulp-symlink');
+
+gulp.task('symlink', function () {
+    return gulp.src('public/index.html')
+        .pipe(symlink('foo')) // Write to the destination folder
+        .pipe(symlink('foo/index.html')) // Write a renamed symlink to the destination folder
+});
