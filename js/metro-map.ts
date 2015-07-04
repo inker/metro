@@ -63,6 +63,8 @@ class MetroMap {
             this.map.dragging.enable();
             this.overlay.style.opacity = null;
         });
+        this.map.on('movestart', this.map.touchZoom.disable);
+        this.map.on('moveend', this.map.touchZoom.enable);
     }
 
     private refillSVG(): void {
