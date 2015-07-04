@@ -46,7 +46,7 @@ gulp.task('client-transpile-merge-compress', function() {
     var b = browserify()
         //.external(['leaflet'])
         // add the main file (could be in browserify as a parameter)
-        .add('./public/js/main.js')
+        .add('./js/main.js')
         // transform by babel
         .transform(babelify)
         // make the bundler believe the <script>'d leaflet is a module without bundling it
@@ -65,7 +65,7 @@ gulp.task('client-transpile-merge-compress', function() {
         // compress it
         .pipe(uglify())
         // copy to destination
-        .pipe(gulp.dest('./public/js/'));
+        .pipe(gulp.dest('./js/'));
     //es.merge(null, [gulp.src('./public/js/leaflet.js'), b]).pipe(gulp.dest('./public/js/'));
 });
 

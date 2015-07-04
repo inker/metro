@@ -9,6 +9,7 @@ node_modules
 !gulpfile.js
 !bin/www
 !public/js/script.js
+!js/script.js
 
 #################
 ## Eclipse

@@ -58,7 +58,9 @@ class MetroMap {
             if (this.tileLayersForZoom(prevZoom) != possibleTileLayer) {
                 this.tileLayer = possibleTileLayer;
             }
+            this.map.dragging.disable();
             this.redrawNetwork();
+            this.map.dragging.enable();
             this.overlay.style.opacity = null;
         });
     }

@@ -1,4 +1,4 @@
-/// <reference path="../../typings/tsd.d.ts" />
+/// <reference path="./../typings/tsd.d.ts" />
 import L = require('leaflet');
 
 export function getUserLanguage(): string {
