@@ -4,9 +4,10 @@ import geo = require('./geo');
 //import L = require('leaflet');
 //import * as geo from './geo';
 
-enum Elevation {
-    underground, surface, overground
+const enum Elevation {
+    Underground, Surface, Overground
 }
+
 export class Platform {
     private _name: string; // overrides the parent station's name
     private _altName: string;
@@ -16,11 +17,7 @@ export class Platform {
     elevation: Elevation;
     private _oldName: string;
 
-    constructor(location: L.LatLng,
-                elevation: Elevation = Elevation.underground,
-                name: string = '',
-                altName: string = '',
-                oldName: string = '') {
+    constructor(location: L.LatLng, elevation = Elevation.Underground, name = "", altName = "", oldName = "") {
         this._name = name;
         this._altName = altName;
         this._oldName = oldName;
@@ -54,13 +51,13 @@ export class Platform {
     }
 
     passingRoutes(): Route[] {
-        var s = [];
+        let s = [];
         this._spans.forEach(span => span.routes.forEach(line => s.push(line)));
         return s;
     }
 
     passingLines(): Line[] {
-        var s = [];
+        let s = [];
         this._spans.forEach(span => {
             span.routes.forEach(route => s.push(route.line));
         });
@@ -71,10 +68,13 @@ export class Platform {
         return this._spans;
     }
 
-    nextStop(span: Span) {
-        if (span.source == this) return span.target;
-        else if (span.target == this) return span.source;
-        else throw new Error("span doesn't belong to the platform");
+    nextStop(connector: Span) {
+        if (connector.source == this) {
+            return connector.target;
+        } else if (connector.target == this) {
+            return connector.source;
+        }
+        throw new Error("span doesn't belong to the platform");
     }
 
     get station(): Station {
@@ -82,7 +82,9 @@ export class Platform {
     }
 
     set station(station: Station) {
-        if (station.platforms.indexOf(this) == -1) station.platforms.push(this);
+        if (station.platforms.indexOf(this) === -1) {
+            station.platforms.push(this);
+        }
         this._station = station;
     }
 
@@ -232,10 +234,9 @@ export class Route {
 
     isParentOf(route: Route): boolean {
         if (this.line != route.line) return false;
-        var thisBranchSorted = this.branch.split('').sort().join(''),
+        let thisBranchSorted = this.branch.split('').sort().join(''),
             thatBranchSorted = route.branch.split('').sort().join('');
-        if (thisBranchSorted == thatBranchSorted) return false;
-        return thisBranchSorted.indexOf(thatBranchSorted) > -1;
+        return thisBranchSorted != thatBranchSorted && thisBranchSorted.indexOf(thatBranchSorted) > -1;
     }
 
 }
@@ -248,30 +249,28 @@ export class MetroGraph {
     transfers: Transfer[] = [];
     routes: Route[] = [];
 
-
     toJSON(): string {
-        let self = this;
         let obj = {
-            platforms: self.platforms.map(platform => ({
+            platforms: this.platforms.map(platform => ({
                 name: platform.name,
                 altName: platform.altName,
                 oldName: platform.oldName,
-                station: self.stations.indexOf(platform.station),
+                station: this.stations.indexOf(platform.station),
                 location: {
                     lat: platform.location.lat,
                     lng: platform.location.lng
                 },
                 elevation: platform.elevation,
-                spans: platform.spans.map(span => self.spans.indexOf(span)),
-                transfers: self.transfers.map(transfer => transfer.other(platform))
+                spans: platform.spans.map(span => this.spans.indexOf(span)),
+                transfers: this.transfers.map(transfer => transfer.other(platform))
                     .filter(o => o !== null)
-                    .map(other => self.platforms.indexOf(other))
+                    .map(other => this.platforms.indexOf(other))
             })),
-            transfers: self.transfers.map(transfer => ({
-                source: self.platforms.indexOf(transfer.source),
-                target: self.platforms.indexOf(transfer.target)
+            transfers: this.transfers.map(transfer => ({
+                source: this.platforms.indexOf(transfer.source),
+                target: this.platforms.indexOf(transfer.target)
             })),
-            stations: self.stations.map(station => ({
+            stations: this.stations.map(station => ({
                 name: station.name,
                 altName: station.altName,
                 oldName: station.oldName,
@@ -279,15 +278,15 @@ export class MetroGraph {
                     lat: station.location.lat,
                     lng: station.location.lng
                 },
-                platforms: station.platforms.map(platform => self.platforms.indexOf(platform))
+                platforms: station.platforms.map(platform => this.platforms.indexOf(platform))
             })),
             lines: {},
-            spans: self.spans.map(span => ({
-                source: self.platforms.indexOf(span.source),
-                target: self.platforms.indexOf(span.target),
-                routes: span.routes.map(route => self.routes.indexOf(route))
+            spans: this.spans.map(span => ({
+                source: this.platforms.indexOf(span.source),
+                target: this.platforms.indexOf(span.target),
+                routes: span.routes.map(route => this.routes.indexOf(route))
             })),
-            routes: self.routes.map(route => ({
+            routes: this.routes.map(route => ({
                 line: route.line.id,
                 branch: route.branch
             }))

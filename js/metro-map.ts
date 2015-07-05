@@ -104,9 +104,9 @@ ${xhr.status}: ${xhr.statusText}`);
     }
 
     private extendBounds(): void {
-        let a = <L.LatLng>this.graph.platforms[0].location;
+        let a = this.graph.platforms[0].location;
         this.bounds = new L.LatLngBounds(a, a);
-        this.graph.platforms.forEach(platform => this.bounds.extend(<L.LatLng>platform.location));
+        this.graph.platforms.forEach(platform => this.bounds.extend(platform.location));
     }
 
     get tileLayer(): L.TileLayer {
@@ -128,7 +128,7 @@ ${xhr.status}: ${xhr.statusText}`);
         let g = svg.makePlate(circle);
 
         let dummyCircles = dummyCircle.parentNode;
-        let overlay = dummyCircles.parentNode;//
+        let overlay = dummyCircles.parentNode;
         dummyCircle.onmouseout = e => overlay.removeChild(g);
         overlay.insertBefore(g, dummyCircles);
     }
@@ -139,7 +139,7 @@ ${xhr.status}: ${xhr.statusText}`);
      * @param location
      * @returns {Point}
      */
-    private posOnSVG(SVGBounds: L.Bounds, location: L.LatLng): L.Point {
+    private posOnSVG(SVGBounds: L.Bounds, location: L.LatLngExpression): L.Point {
         const pos = this.map.latLngToContainerPoint(location);
         return pos.subtract(SVGBounds.min);
     }
@@ -189,6 +189,7 @@ ${xhr.status}: ${xhr.statusText}`);
         let circleFrag = document.createDocumentFragment();
         let stationCircles = document.getElementById('station-circles');
         let dummyCircles = document.getElementById('dummy-circles');
+        let transfers = document.getElementById('transfers');
 
         if (zoom < 10) {
 
@@ -201,7 +202,7 @@ ${xhr.status}: ${xhr.statusText}`);
             let transfers = document.getElementById('transfers');
 
             this.graph.stations.forEach((station, stationIndex) => {
-                let pos = this.map.latLngToContainerPoint(<L.LatLng>station.location);
+                let pos = this.map.latLngToContainerPoint(station.location);
                 let posOnSVG = pos.subtract(svgBounds.min);
                 let ci = svg.makeCircle(posOnSVG, circleRadius);
                 svg.convertToStation(ci, 's-' + stationIndex, station, circleBorder);
@@ -222,7 +223,7 @@ ${xhr.status}: ${xhr.statusText}`);
             const circleRadius = (zoom - 7) * 0.5;
             const circleBorder = circleRadius * 0.4;
             let platformsHavingCircles = new Set<number>();
-            let beziers = [];
+            let beziers: HTMLElement[] = [];
 
             let transferSegments = document.getElementById('transfers');
 
@@ -231,7 +232,7 @@ ${xhr.status}: ${xhr.statusText}`);
                 let coords = [];
                 station.platforms.forEach(platformNum => {
                     const platform = this.graph.platforms[platformNum];
-                    const posOnSVG = this.posOnSVG(svgBounds, <L.LatLng>platform.location);
+                    const posOnSVG = this.posOnSVG(svgBounds, platform.location);
 
                     let ci = svg.makeCircle(posOnSVG, circleRadius);
                     svg.convertToStation(ci, 'p-' + platformNum.toString(), platform, circleBorder);
@@ -254,14 +255,14 @@ ${xhr.status}: ${xhr.statusText}`);
                             let incidentSpan = this.graph.spans[platform.spans[i]];
                             let neighborNum = (incidentSpan.source === platformNum) ? incidentSpan.target : incidentSpan.source;
                             let neighbor = this.graph.platforms[neighborNum];
-                            let neighborOnSVG = this.posOnSVG(svgBounds, <L.LatLng>neighbor.location);
+                            let neighborOnSVG = this.posOnSVG(svgBounds, neighbor.location);
                             lns[i] = posOnSVG.distanceTo(neighborOnSVG);
                             midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
                         }
                         let mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lns[0] / (lns[0] + lns[1]));
                         let mm = midPts[0].add(mdiff);
                         let diff = posOnSVG.subtract(mm);
-                        whiskers[platformNum] = [midPts[0].add(diff), midPts[1].add(diff)];
+                        whiskers[platformNum] = midPts.map(midPt => midPt.add(diff));
                     } else {
                         //
                     }
@@ -285,7 +286,7 @@ ${xhr.status}: ${xhr.statusText}`);
 
                 }
 
-                document.getElementById('station-circles').appendChild(circleFrag);
+                stationCircles.appendChild(circleFrag);
             });
 
             for (let i = 0; i < this.graph.spans.length; ++i) {
@@ -306,7 +307,7 @@ ${xhr.status}: ${xhr.statusText}`);
                     transTrg = this.graph.platforms[transTrgNum];
                 }
                 let posOnSVG = [transSrc, src, trg, transTrg]
-                    .map(item => this.map.latLngToContainerPoint(<L.LatLng>item.location))
+                    .map(item => this.map.latLngToContainerPoint(item.location))
                     .map(p => new L.Point(p.x - svgBounds.min.x, p.y - svgBounds.min.y));
 
                 //let m1 = posOnSVG.add(posOnSVG[1]).divideBy(2);
@@ -319,8 +320,8 @@ ${xhr.status}: ${xhr.statusText}`);
                 if (platformsHavingCircles.has(tr.source) && platformsHavingCircles.has(tr.target)) return;
                 let pl1 = this.graph.platforms[tr.source];
                 let pl2 = this.graph.platforms[tr.target];
-                const posOnSVG1 = this.posOnSVG(svgBounds, <L.LatLng>pl1.location);
-                const posOnSVG2 = this.posOnSVG(svgBounds, <L.LatLng>pl2.location);
+                const posOnSVG1 = this.posOnSVG(svgBounds, pl1.location);
+                const posOnSVG2 = this.posOnSVG(svgBounds, pl2.location);
                 let transfer = svg.createSVGElement('line');
                 transfer.setAttribute('x1', posOnSVG1.x.toString());
                 transfer.setAttribute('y1', posOnSVG1.y.toString());
@@ -329,7 +330,7 @@ ${xhr.status}: ${xhr.statusText}`);
                 transfer.classList.add('transfer');
                 transfer.style.strokeWidth = circleBorder.toString();
                 transfer.style.opacity = '0.5';
-                document.getElementById('transfers').appendChild(transfer);
+                transfers.appendChild(transfer);
             });
 
         }
