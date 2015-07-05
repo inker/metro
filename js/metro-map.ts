@@ -95,7 +95,6 @@ ${xhr.status}: ${xhr.statusText}`);
                 this.extendBounds();
                 this.map.setView(this.bounds.getCenter());
                 this.map.once('moveend', e => this.redrawNetwork());
-                //this.redrawNetwork();
             }
         };
         xhr.open('GET', 'json/graph.json', true);
