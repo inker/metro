@@ -47,24 +47,26 @@ class MetroMap {
     private addListeners(): void {
         let mapPane = this.map.getPanes().mapPane;
         let prevZoom: number;
-        this.map.on('move', () => this.overlay.style.transform = mapPane.style.transform);
-        this.map.on('moveend', () => this.exTranslate = util.parseTransform(this.overlay.style.transform));
-        this.map.on('zoomstart', () => {
+        this.map.on('movestart', e => this.map.touchZoom.disable());
+        this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
+        this.map.on('moveend', e => {
+            this.exTranslate = util.parseTransform(this.overlay.style.transform);
+            this.map.touchZoom.enable();
+        });
+        this.map.on('zoomstart', e => {
             this.map.dragging.disable();
             prevZoom = this.map.getZoom();
             this.overlay.style.opacity = '0.5';
         });
-        this.map.on('zoomend', () => {
+        this.map.on('zoomend', e => {
             const possibleTileLayer = this.tileLayersForZoom(this.map.getZoom());
             if (this.tileLayersForZoom(prevZoom) != possibleTileLayer) {
                 this.tileLayer = possibleTileLayer;
             }
             this.redrawNetwork();
-            this.map.dragging.enable();
             this.overlay.style.opacity = null;
+            this.map.dragging.enable();
         });
-        this.map.on('movestart', this.map.touchZoom.disable);
-        this.map.on('moveend', this.map.touchZoom.enable);
     }
 
     private refillSVG(): void {
@@ -118,15 +120,16 @@ ${xhr.status}: ${xhr.statusText}`);
         this._tileLayer = tileLayer;
     }
 
-    private showPlate(e: MouseEvent) {
-        let dummyCircle: HTMLElement = <any>e.target;
+    private showPlate(event: MouseEvent) {
+        let dummyCircle: HTMLElement = <any>event.target;
         const dataset = dummyCircle.dataset;
 
         let circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
         let g = svg.makePlate(circle);
+
         let dummyCircles = dummyCircle.parentNode;
-        let overlay = dummyCircles.parentNode;
-        //dummyCircle.onmouseout = ev => overlay.removeChild(g);
+        let overlay = dummyCircles.parentNode;//
+        dummyCircle.onmouseout = e => overlay.removeChild(g);
         overlay.insertBefore(g, dummyCircles);
     }
 
@@ -211,7 +214,7 @@ ${xhr.status}: ${xhr.statusText}`);
                 dummyCircles.appendChild(dummyCircle);
 
                 dummyCircle.onmouseover = this.showPlate;
-                dummyCircle.onmouseout = e => this.overlay.removeChild(document.getElementById('plate'));
+                //dummyCircle.onmouseout = e => this.overlay.removeChild(document.getElementById('plate'));
 
             });
         } else {
@@ -239,11 +242,9 @@ ${xhr.status}: ${xhr.statusText}`);
                     dummyCircle.dataset['platformId'] = ci.id;
                     circleFrag.appendChild(ci);
                     dummyCircles.appendChild(dummyCircle);
-                    //this.overlay.appendChild(ci);
-                    //this.overlay.appendChild(inv);
 
                     dummyCircle.onmouseover = this.showPlate;
-                    dummyCircle.onmouseout = e => this.overlay.removeChild(document.getElementById('plate'));
+                    //dummyCircle.onmouseout = e => this.overlay.removeChild(document.getElementById('plate'));
 
                     // control points
                     if (platform.spans.length === 2) {
@@ -254,7 +255,7 @@ ${xhr.status}: ${xhr.statusText}`);
                             let neighborNum = (incidentSpan.source === platformNum) ? incidentSpan.target : incidentSpan.source;
                             let neighbor = this.graph.platforms[neighborNum];
                             let neighborOnSVG = this.posOnSVG(svgBounds, <L.LatLng>neighbor.location);
-                            lns[i] = util.getSegmentLength(posOnSVG, neighborOnSVG);
+                            lns[i] = posOnSVG.distanceTo(neighborOnSVG);
                             midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
                         }
                         let mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lns[0] / (lns[0] + lns[1]));
@@ -274,7 +275,7 @@ ${xhr.status}: ${xhr.statusText}`);
 
                 if (circular) {
                     let circumcenter = util.getCircumcenter(coords);
-                    let circumradius = util.getSegmentLength(circumcenter, coords[0]);
+                    let circumradius = circumcenter.distanceTo(coords[0]);
                     let circumcircle = svg.makeCircle(circumcenter, circumradius);
                     circumcircle.classList.add('transfer');
                     circumcircle.style.strokeWidth = circleBorder.toString();

@@ -23,7 +23,7 @@ router.get('/updategraph', (req, res, next) => {
     adapter.parseFile('./json/graph.json', () => res.send('probably parsed'));
 });
 
-router.get('/metro', (req, res, next) => res.sendFile(path.resolve('./html/metro.html')));
+//router.get('/metro', (req, res, next) => res.sendFile(path.resolve('./html/metro.html')));
 
 // get graph in json
 //router.get('/metrograph', (req, res, next) => res.sendFile(path.resolve('./json/graph.json')));

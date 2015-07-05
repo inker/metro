@@ -21,17 +21,20 @@ export function findCircle(graph: {platforms: {transfers: number[]}[]}, station:
 }
 
 export function getCircumcenter(positions: L.Point[]): L.Point {
-    if (positions.length != 3) throw new Error('must have 3 vertices');
+    if (positions.length !== 3) {
+        throw new Error('must have 3 vertices');
+    }
     console.log(positions[1]);
     const b = positions[1].subtract(positions[0]);
     const c = positions[2].subtract(positions[0]);
-    return new L.Point(
-        (c.y * (b.x * b.x + b.y * b.y) - b.y * (c.x * c.x + c.y * c.y)),
-        (b.x * (c.x * c.x + c.y * c.y) - c.x * (b.x * b.x + b.y * b.y))
-    ).divideBy(2.0 * (b.x * c.y - b.y * c.x)).add(positions[0]);
+    const bSq = b.x * b.x + b.y * b.y;
+    const cSq = c.x * c.x + c.y * c.y;
+    return new L.Point((c.y * bSq - b.y * cSq), (b.x * cSq - c.x * bSq))
+        .divideBy(2.0 * (b.x * c.y - b.y * c.x))
+        .add(positions[0]);
 }
 
-export function getSegmentLength(source: L.Point, target: L.Point): number {
-    const a = target.subtract(source);
-    return Math.sqrt(a.x * a.x + a.y * a.y);
-}
+//export function getSegmentLength(source: L.Point, target: L.Point): number {
+//    const a = target.subtract(source);
+//    return Math.sqrt(a.x * a.x + a.y * a.y);
+//}
