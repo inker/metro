@@ -274,7 +274,7 @@ ${xhr.status}: ${xhr.statusText}`);
                 });
 
                 if (circular) {
-                    let circumcenter = util.getCircumcenter(coords);
+                    let circumcenter = util.getCircumcenter(coords).round();
                     let circumradius = circumcenter.distanceTo(coords[0]);
                     let circumcircle = svg.makeCircle(circumcenter, circumradius);
                     circumcircle.classList.add('transfer');
