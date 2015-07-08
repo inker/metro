@@ -23,7 +23,7 @@ class MetroMap {
     private exTranslate: L.Point;
     private tileLayersForZoom: (zoom: number) => L.TileLayer;
 
-    constructor(containerId: string, tileLayersForZoom: (zoom: number) => L.TileLayer) {
+    constructor(containerId: string, kml: string, tileLayersForZoom: (zoom: number) => L.TileLayer) {
         const zoom = 11;
         this.tileLayersForZoom = tileLayersForZoom;
         this._tileLayer = tileLayersForZoom(11);
@@ -42,13 +42,18 @@ class MetroMap {
         this.overlay.style.zIndex = '10';
         //this.refillSVG(); not required here
         this.addListeners();
+        this.getGraphAndFillMap(kml);
     }
 
     private addListeners(): void {
         let mapPane = this.map.getPanes().mapPane;
         let prevZoom: number;
         this.map.on('movestart', e => this.map.touchZoom.disable());
-        this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
+        //this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
+        this.map.on('move', e => {
+            //this.overlay.style.transform = mapPane.style.transform;
+            this.updatePos();
+        });
         this.map.on('moveend', e => {
             this.exTranslate = util.parseTransform(this.overlay.style.transform);
             this.map.touchZoom.enable();
@@ -69,21 +74,7 @@ class MetroMap {
         });
     }
 
-    private refillSVG(): void {
-        let child;
-        while (child = this.overlay.firstChild) {
-            this.overlay.removeChild(child);
-        }
-        ['paths', 'transfers', 'station-circles', 'dummy-circles'].forEach(groupId => {
-            let group = svg.createSVGElement('g');
-            group.id = groupId;
-            this.overlay.appendChild(group);
-        });
-        let transfers = document.getElementById('transfers');
-        transfers.classList.add('transfer');
-    }
-
-    getGraphAndFillMap(): void {
+    private getGraphAndFillMap(kml: string): void {
         let xhr = new XMLHttpRequest();
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4) {
@@ -97,10 +88,29 @@ ${xhr.status}: ${xhr.statusText}`);
                 this.map.once('moveend', e => this.redrawNetwork());
             }
         };
-        xhr.open('GET', 'json/graph.json', true);
+        xhr.open('GET', kml, true);
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.send();
     }
+
+    private refillSVG(): void {
+        let child;
+        while (child = this.overlay.firstChild) {
+            this.overlay.removeChild(child);
+        }
+        let origin = svg.createSVGElement('g');
+        origin.id = 'origin';
+        ['paths', 'transfers', 'station-circles', 'dummy-circles'].forEach(groupId => {
+            let group = svg.createSVGElement('g');
+            group.id = groupId;
+            origin.appendChild(group);
+        });
+        this.overlay.appendChild(origin);
+        let transfers = document.getElementById('transfers');
+        transfers.classList.add('transfer');
+    }
+
+
 
     private extendBounds(): void {
         let a = this.graph.platforms[0].location;
@@ -143,6 +153,52 @@ ${xhr.status}: ${xhr.statusText}`);
         return pos.subtract(SVGBounds.min);
     }
 
+    private updatePos() {
+
+
+        //let nw = this.bounds.getNorthWest();
+        //let se = this.bounds.getSouthEast();
+        //// svg bounds in pixels relative to container
+        //let svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
+        //console.log('bounds: ' + svgBounds.min);
+        console.log(this.overlay.style.transform);
+        let transform = util.parseTransform(this.overlay.style.transform);
+
+        // TODO: explore map.getBounds, etc like in the example on github
+        var pixelSize = this.map.getSize(); // size of the viewport (browser viewport)
+        var pixelBounds = this.map.getPixelBounds(); // on the giant map itself
+        var pixelOrigin = this.map.getPixelOrigin(); // some origin on the giant map
+        console.log('origin: ', `${pixelOrigin.x},${pixelOrigin.y}`);
+        console.log('bounds: ', `${pixelBounds.min.x},${pixelBounds.min.y} to ${pixelBounds.max.x},${pixelBounds.max.y}`);
+        console.log('size: ', `${pixelSize.x},${pixelSize.y}`);
+
+        let topLeft = pixelBounds.min.subtract(pixelOrigin).subtract(pixelSize);
+        let size = pixelSize.multiplyBy(3);
+
+        this.overlay.setAttribute('width', size.x + 'px');
+        this.overlay.setAttribute('height', size.y + 'px');
+        this.overlay.setAttribute('viewBox', `0 0 ${size.x} ${size.y}`);
+        this.overlay.style.left = topLeft.x + 'px';
+        this.overlay.style.top = topLeft.y + 'px';
+        let originOffset = pixelOrigin.subtract(pixelBounds.min).add(pixelSize);
+        console.log(`translate(${-topLeft.x},${-topLeft.y})`);
+        document.getElementById('origin')
+            .setAttribute('transform', `translate(${-topLeft.x},${-topLeft.y})`);
+
+
+        //let svgBoundsSize = svgBounds.getSize();
+        //let topLeft = svgBounds.min.subtract(transform).subtract(svgBoundsSize);
+        //this.overlay.style.left = topLeft.toString() + 'px';
+        //this.overlay.style.top = topLeft.toString() + 'px';
+        //let originShift = svgBoundsSize.subtract(svgBounds.min).add(transform);
+        //console.log(`translate(${originShift.x},${originShift.y})`);
+        //this.overlay.querySelector('#origin').setAttribute('transform', `translate(${-svgBoundsSize.x},${-svgBoundsSize.y})`);
+
+        //let tripleSvgBoundsSize = svgBoundsSize.multiplyBy(3);
+        //this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
+        //this.overlay.style.height = tripleSvgBoundsSize.y + 'px';
+    }
+
     /**
      *  lineWidth = (zoom - 7) * 0.5
      *  9 - only lines (1px)
@@ -158,31 +214,15 @@ ${xhr.status}: ${xhr.statusText}`);
         //console.log('language: ' + navigator.language);
         //console.log('browser: ' + navigator.browserLanguage);
         //console.log('system: ' + navigator.systemLanguage);
+        this.updatePos();
 
         console.log(util.getUserLanguage());
         console.log(this.graph.platforms.length);
         //d3.select('#overlay').attr('x', '0').attr('y', '0').attr('width', '150px').attr('height', '150px')
         //  .append('circle').attr('cx', '50').attr('cy', '50').attr('r', '50')
         // .attr('stroke-width', '1').attr('fill', 'blue');
-        const zoom = this.map.getZoom();
 
-        let nw = this.bounds.getNorthWest();
-        let se = this.bounds.getSouthEast();
-        // svg bounds in pixels relative to container
-        let svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
-        console.log('bounds: ' + svgBounds.min);
-        //this.overlay.setAttribute('width', svgBounds.getSize().x.toString());
-        //this.overlay.setAttribute('height', svgBounds.getSize().y.toString());
-        //this.overlay.setAttribute('x', svgBounds.min.x.toString());
-        //this.overlay.setAttribute('y', svgBounds.min.y.toString());
-        console.log(this.overlay.style.transform);
-        let transform = util.parseTransform(this.overlay.style.transform);
-        //console.log('transform: ' + transform);
-        this.overlay.style.left = (svgBounds.min.x - transform.x).toString() + 'px';
-        this.overlay.style.top = (svgBounds.min.y - transform.y).toString() + 'px';
-        let svgBoundsSize = svgBounds.getSize();
-        this.overlay.style.width = svgBoundsSize.x + 'px';
-        this.overlay.style.height = svgBoundsSize.y + 'px';
+
         let whiskers = new Array<L.Point[]>(this.graph.platforms.length);
 
         let circleFrag = document.createDocumentFragment();
@@ -190,6 +230,10 @@ ${xhr.status}: ${xhr.statusText}`);
         let dummyCircles = document.getElementById('dummy-circles');
         let transfers = document.getElementById('transfers');
 
+        const zoom = this.map.getZoom();
+        let nw = this.bounds.getNorthWest();
+        let se = this.bounds.getSouthEast();
+        let svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
         if (zoom < 10) {
 
         } else if (zoom < 12) {
@@ -274,7 +318,7 @@ ${xhr.status}: ${xhr.statusText}`);
                 });
 
                 if (circular) {
-                    let circumcenter = util.getCircumcenter(coords).round();
+                    let circumcenter = util.getCircumcenter(coords);
                     let circumradius = circumcenter.distanceTo(coords[0]);
                     let circumcircle = svg.makeCircle(circumcenter, circumradius);
                     circumcircle.classList.add('transfer');
