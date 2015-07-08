@@ -181,12 +181,12 @@ ${xhr.status}: ${xhr.statusText}`);
         let transform = util.parseTransform(this.overlay.style.transform);
 
         let svgBoundsSize = svgBounds.getSize();
-        let topLeft = svgBounds.min.subtract(transform);
+        let topLeft = svgBounds.min.subtract(transform).subtract(svgBoundsSize);
         this.overlay.style.left = topLeft.x.toString() + 'px';
         this.overlay.style.top = topLeft.y.toString() + 'px';
-        //let originShift = svgBoundsSize.subtract(svgBounds.min).add(transform);
-        //console.log(`translate(${originShift.x},${originShift.y})`);
-        //this.overlay.querySelector('#origin').setAttribute('transform', `translate(${-svgBoundsSize.x},${-svgBoundsSize.y})`);
+        let originShift = svgBoundsSize;
+        console.log(`translate(${originShift.x},${originShift.y})`);
+        this.overlay.querySelector('#origin').setAttribute('transform', `translate(${originShift.x},${originShift.y})`);
 
         let tripleSvgBoundsSize = svgBoundsSize.multiplyBy(3);
         this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
