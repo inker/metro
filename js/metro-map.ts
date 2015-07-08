@@ -49,11 +49,7 @@ class MetroMap {
         let mapPane = this.map.getPanes().mapPane;
         let prevZoom: number;
         this.map.on('movestart', e => this.map.touchZoom.disable());
-        //this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
-        this.map.on('move', e => {
-            //this.overlay.style.transform = mapPane.style.transform;
-            this.updatePos();
-        });
+        this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
         this.map.on('moveend', e => {
             this.exTranslate = util.parseTransform(this.overlay.style.transform);
             this.map.touchZoom.enable();
@@ -137,7 +133,7 @@ ${xhr.status}: ${xhr.statusText}`);
         let g = svg.makePlate(circle);
 
         let dummyCircles = dummyCircle.parentNode;
-        let overlay = dummyCircles.parentNode;
+        let overlay = document.getElementById('overlay'); // for invariance
         dummyCircle.onmouseout = e => overlay.removeChild(g);
         overlay.insertBefore(g, dummyCircles);
     }
@@ -156,47 +152,48 @@ ${xhr.status}: ${xhr.statusText}`);
     private updatePos() {
 
 
-        //let nw = this.bounds.getNorthWest();
-        //let se = this.bounds.getSouthEast();
-        //// svg bounds in pixels relative to container
-        //let svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
-        //console.log('bounds: ' + svgBounds.min);
-        console.log(this.overlay.style.transform);
+        let nw = this.bounds.getNorthWest();
+        let se = this.bounds.getSouthEast();
+        // svg bounds in pixels relative to container
+        let svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
+        console.log('bounds: ' + svgBounds.min);
+        //console.log(this.overlay.style.transform);
         let transform = util.parseTransform(this.overlay.style.transform);
 
-        // TODO: explore map.getBounds, etc like in the example on github
-        var pixelSize = this.map.getSize(); // size of the viewport (browser viewport)
-        var pixelBounds = this.map.getPixelBounds(); // on the giant map itself
-        var pixelOrigin = this.map.getPixelOrigin(); // some origin on the giant map
-        console.log('origin: ', `${pixelOrigin.x},${pixelOrigin.y}`);
-        console.log('bounds: ', `${pixelBounds.min.x},${pixelBounds.min.y} to ${pixelBounds.max.x},${pixelBounds.max.y}`);
-        console.log('size: ', `${pixelSize.x},${pixelSize.y}`);
 
-        let topLeft = pixelBounds.min.subtract(pixelOrigin).subtract(pixelSize);
-        let size = pixelSize.multiplyBy(3);
+        //// TODO: explore map.getBounds, etc like in the example on github
+        //var pixelSize = this.map.getSize(); // size of the viewport (browser viewport)
+        //var pixelBounds = this.map.getPixelBounds(); // on the giant map itself
+        //var pixelOrigin = this.map.getPixelOrigin(); // some origin on the giant map
+        //console.log('origin: ', `${pixelOrigin.x},${pixelOrigin.y}`);
+        //console.log('bounds: ', `${pixelBounds.min.x},${pixelBounds.min.y} to ${pixelBounds.max.x},${pixelBounds.max.y}`);
+        //console.log('size: ', `${pixelSize.x},${pixelSize.y}`);
+        //
+        //let topLeft = pixelBounds.min.subtract(pixelOrigin).subtract(pixelSize);
+        //let size = pixelSize.multiplyBy(3);
+        //
+        //this.overlay.setAttribute('width', size.x + 'px');
+        //this.overlay.setAttribute('height', size.y + 'px');
+        //this.overlay.setAttribute('viewBox', `0 0 ${size.x} ${size.y}`);
+        //this.overlay.style.left = topLeft.x + 'px';
+        //this.overlay.style.top = topLeft.y + 'px';
+        //let originOffset = pixelOrigin.subtract(pixelBounds.min).add(pixelSize);
+        //console.log(`translate(${-topLeft.x},${-topLeft.y})`);
+        //document.getElementById('origin')
+        //    .setAttribute('transform', `translate(${-topLeft.x},${-topLeft.y})`);
 
-        this.overlay.setAttribute('width', size.x + 'px');
-        this.overlay.setAttribute('height', size.y + 'px');
-        this.overlay.setAttribute('viewBox', `0 0 ${size.x} ${size.y}`);
-        this.overlay.style.left = topLeft.x + 'px';
-        this.overlay.style.top = topLeft.y + 'px';
-        let originOffset = pixelOrigin.subtract(pixelBounds.min).add(pixelSize);
-        console.log(`translate(${-topLeft.x},${-topLeft.y})`);
-        document.getElementById('origin')
-            .setAttribute('transform', `translate(${-topLeft.x},${-topLeft.y})`);
 
-
-        //let svgBoundsSize = svgBounds.getSize();
-        //let topLeft = svgBounds.min.subtract(transform).subtract(svgBoundsSize);
-        //this.overlay.style.left = topLeft.toString() + 'px';
-        //this.overlay.style.top = topLeft.toString() + 'px';
+        let svgBoundsSize = svgBounds.getSize();
+        let topLeft = svgBounds.min.subtract(transform).subtract(svgBoundsSize);
+        this.overlay.style.left = topLeft.toString() + 'px';
+        this.overlay.style.top = topLeft.toString() + 'px';
         //let originShift = svgBoundsSize.subtract(svgBounds.min).add(transform);
         //console.log(`translate(${originShift.x},${originShift.y})`);
         //this.overlay.querySelector('#origin').setAttribute('transform', `translate(${-svgBoundsSize.x},${-svgBoundsSize.y})`);
 
-        //let tripleSvgBoundsSize = svgBoundsSize.multiplyBy(3);
-        //this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
-        //this.overlay.style.height = tripleSvgBoundsSize.y + 'px';
+        let tripleSvgBoundsSize = svgBoundsSize.multiplyBy(3);
+        this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
+        this.overlay.style.height = tripleSvgBoundsSize.y + 'px';
     }
 
     /**
