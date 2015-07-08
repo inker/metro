@@ -133,7 +133,7 @@ ${xhr.status}: ${xhr.statusText}`);
         let g = svg.makePlate(circle);
 
         let dummyCircles = dummyCircle.parentNode;
-        let container = document.parentNode;
+        let container = dummyCircles.parentNode;
         dummyCircle.onmouseout = e => container.removeChild(g);
         container.insertBefore(g, dummyCircles);
     }
