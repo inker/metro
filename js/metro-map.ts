@@ -184,7 +184,7 @@ ${xhr.status}: ${xhr.statusText}`);
         this.overlay.style.top = topLeft.y + 'px';
         let originShift = pixelBoundsSize;
         let origin = document.getElementById('origin');
-        origin.setAttribute('transform', `translate(${originShift.x},${originShift.y})`);
+        origin.setAttribute('transform', `translate3d(${originShift.x},${originShift.y},0)`);
         //origin.style.left = originShift.x + 'px';
         //origin.style.right = originShift.y + 'px';
 
