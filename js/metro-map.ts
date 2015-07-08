@@ -184,9 +184,9 @@ ${xhr.status}: ${xhr.statusText}`);
         this.overlay.style.top = topLeft.y + 'px';
         let originShift = pixelBoundsSize;
         let origin = document.getElementById('origin');
-        //origin.setAttribute('transform', `translate(${originShift.x},${originShift.y})`);
-        origin.style.left = originShift.x + 'px';
-        origin.style.right = originShift.y + 'px';
+        origin.setAttribute('transform', `translate(${originShift.x},${originShift.y})`);
+        //origin.style.left = originShift.x + 'px';
+        //origin.style.right = originShift.y + 'px';
 
         let tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
         this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
