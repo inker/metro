@@ -181,7 +181,7 @@ ${xhr.status}: ${xhr.statusText}`);
         let transform = util.parseTransform(this.overlay.style.transform);
 
         let svgBoundsSize = svgBounds.getSize();
-        let topLeft = svgBounds.min.subtract(transform).subtract(svgBoundsSize);
+        let topLeft = svgBounds.min.subtract(transform);
         this.overlay.style.left = topLeft.x.toString() + 'px';
         this.overlay.style.top = topLeft.y.toString() + 'px';
         //let originShift = svgBoundsSize.subtract(svgBounds.min).add(transform);
@@ -211,11 +211,6 @@ ${xhr.status}: ${xhr.statusText}`);
         this.updatePos();
 
         console.log(util.getUserLanguage());
-        console.log(this.graph.platforms.length);
-        //d3.select('#overlay').attr('x', '0').attr('y', '0').attr('width', '150px').attr('height', '150px')
-        //  .append('circle').attr('cx', '50').attr('cy', '50').attr('r', '50')
-        // .attr('stroke-width', '1').attr('fill', 'blue');
-
 
         let whiskers = new Array<L.Point[]>(this.graph.platforms.length);
 

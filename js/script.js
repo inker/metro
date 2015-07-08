@@ -194,7 +194,7 @@ var MetroMap = (function () {
         //console.log(this.overlay.style.transform);
         var transform = util.parseTransform(this.overlay.style.transform);
         var svgBoundsSize = svgBounds.getSize();
-        var topLeft = svgBounds.min.subtract(transform).subtract(svgBoundsSize);
+        var topLeft = svgBounds.min.subtract(transform);
         this.overlay.style.left = topLeft.x.toString() + 'px';
         this.overlay.style.top = topLeft.y.toString() + 'px';
         //let originShift = svgBoundsSize.subtract(svgBounds.min).add(transform);
@@ -223,10 +223,6 @@ var MetroMap = (function () {
         //console.log('system: ' + navigator.systemLanguage);
         this.updatePos();
         console.log(util.getUserLanguage());
-        console.log(this.graph.platforms.length);
-        //d3.select('#overlay').attr('x', '0').attr('y', '0').attr('width', '150px').attr('height', '150px')
-        //  .append('circle').attr('cx', '50').attr('cy', '50').attr('r', '50')
-        // .attr('stroke-width', '1').attr('fill', 'blue');
         var whiskers = new Array(this.graph.platforms.length);
         var circleFrag = document.createDocumentFragment();
         var stationCircles = document.getElementById('station-circles');
