@@ -175,20 +175,20 @@ ${xhr.status}: ${xhr.statusText}`);
         let nw = this.bounds.getNorthWest();
         let se = this.bounds.getSouthEast();
         // svg bounds in pixels relative to container
-        let svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
-        console.log('bounds: ' + svgBounds.min);
-        //console.log(this.overlay.style.transform);
+        let pixelBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
         let transform = util.parseTransform(this.overlay.style.transform);
 
-        let svgBoundsSize = svgBounds.getSize();
-        let topLeft = svgBounds.min.subtract(transform).subtract(svgBoundsSize);
-        this.overlay.style.left = topLeft.x.toString() + 'px';
-        this.overlay.style.top = topLeft.y.toString() + 'px';
-        let originShift = svgBoundsSize;
-        console.log(`translate(${originShift.x},${originShift.y})`);
-        this.overlay.querySelector('#origin').setAttribute('transform', `translate(${originShift.x},${originShift.y})`);
+        let pixelBoundsSize = pixelBounds.getSize();
+        let topLeft = pixelBounds.min.subtract(transform).subtract(pixelBoundsSize);
+        this.overlay.style.left = topLeft.x + 'px';
+        this.overlay.style.top = topLeft.y + 'px';
+        let originShift = pixelBoundsSize;
+        let origin = document.getElementById('origin');
+        //origin.setAttribute('transform', `translate(${originShift.x},${originShift.y})`);
+        origin.style.left = originShift.x + 'px';
+        origin.style.right = originShift.y + 'px';
 
-        let tripleSvgBoundsSize = svgBoundsSize.multiplyBy(3);
+        let tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
         this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
         this.overlay.style.height = tripleSvgBoundsSize.y + 'px';
     }
