@@ -34,7 +34,7 @@ class MetroMap {
         // update the control widget to the specific theme.
         layerControl.renderUniformControl();
 
-        L.Control['measureControl']().addTo(this.map);
+        //L.Control['measureControl']().addTo(this.map);
 
         console.log('map should be created by now');
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
@@ -80,7 +80,7 @@ class MetroMap {
                 if (!e.shiftKey) return;
                 if (this.start) {
                     let end = map.containerPointToLatLng(new L.Point(e.x, e.y));
-                    alert(this.start.distanceTo(end));
+                    alert(this.start.distanceTo(end).toPrecision(0));
                     this.start = null;
                 } else {
                     this.start = map.containerPointToLatLng(new L.Point(e.x, e.y));

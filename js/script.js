@@ -54,7 +54,7 @@ var MetroMap = (function () {
         layerControl.addTo(this.map);
         // update the control widget to the specific theme.
         layerControl.renderUniformControl();
-        L.Control['measureControl']().addTo(this.map);
+        //L.Control['measureControl']().addTo(this.map);
         console.log('map should be created by now');
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
@@ -104,7 +104,7 @@ var MetroMap = (function () {
                 if (!e.shiftKey) return;
                 if (_this.start) {
                     var end = map.containerPointToLatLng(new L.Point(e.x, e.y));
-                    alert(_this.start.distanceTo(end));
+                    alert(_this.start.distanceTo(end).toPrecision(0));
                     _this.start = null;
                 } else {
                     _this.start = map.containerPointToLatLng(new L.Point(e.x, e.y));
