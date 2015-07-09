@@ -96,23 +96,21 @@ var MetroMap = (function () {
             _this.map.dragging.enable();
         });
         var map = this.map;
-        function SVGClick() {
+        (function SVGClick() {
             var _this = this;
             var overlay = document.getElementById('overlay');
-            this.start = null;
+            var start = null;
             overlay.addEventListener('click', function (e) {
                 if (!e.shiftKey) return;
-                if (_this.start) {
+                if (start) {
                     var end = map.containerPointToLatLng(new L.Point(e.x, e.y));
-                    alert(_this.start.distanceTo(end).toPrecision(0));
-                    _this.start = null;
+                    alert(_this.start.distanceTo(end).toPrecision(1));
+                    start = null;
                 } else {
-                    _this.start = map.containerPointToLatLng(new L.Point(e.x, e.y));
+                    start = map.containerPointToLatLng(new L.Point(e.x, e.y));
                 }
             });
-        }
-        ;
-        new SVGClick();
+        })();
     };
     MetroMap.prototype.getGraphAndFillMap = function (kml) {
         var _this = this;

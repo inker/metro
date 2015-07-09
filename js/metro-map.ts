@@ -73,21 +73,20 @@ class MetroMap {
             this.map.dragging.enable();
         });
         let map = this.map;
-        function SVGClick() {
+        (function SVGClick() {
             let overlay = document.getElementById('overlay');
-            this.start = null;
+            let start = null;
             overlay.addEventListener('click', e => {
                 if (!e.shiftKey) return;
-                if (this.start) {
+                if (start) {
                     let end = map.containerPointToLatLng(new L.Point(e.x, e.y));
-                    alert(this.start.distanceTo(end).toPrecision(0));
-                    this.start = null;
+                    alert(this.start.distanceTo(end).toPrecision(1));
+                    start = null;
                 } else {
-                    this.start = map.containerPointToLatLng(new L.Point(e.x, e.y));
+                    start = map.containerPointToLatLng(new L.Point(e.x, e.y));
                 }
             })
-        };
-        new SVGClick();
+        })();
     }
 
     private getGraphAndFillMap(kml: string): void {
