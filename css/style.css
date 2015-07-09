@@ -48,7 +48,7 @@ a {
     color: black;
     font-size: 10px;
     font-family: "Open Sans", Roboto, Corbel, Candara, Colibri, Arial;
-    text-shadow: 0 0 0 transparent;
+    text-shadow: 0 0 0 black;
     font-weight: normal;
     text-anchor: end;
     text-align: right;
