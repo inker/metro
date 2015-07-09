@@ -73,7 +73,7 @@ class MetroMap {
             this.map.dragging.enable();
         });
         let map = this.map;
-        (function SVGClick() {
+        function SVGClick() {
             let overlay = document.getElementById('overlay');
             this.start = null;
             overlay.addEventListener('click', e => {
@@ -85,7 +85,8 @@ class MetroMap {
                     this.start = map.containerPointToLatLng(new L.Point(e.x, e.y));
                 }
             })
-        })();
+        };
+        new SVGClick();
     }
 
     private getGraphAndFillMap(kml: string): void {

@@ -96,7 +96,7 @@ var MetroMap = (function () {
             _this.map.dragging.enable();
         });
         var map = this.map;
-        (function SVGClick() {
+        function SVGClick() {
             var _this = this;
             var overlay = document.getElementById('overlay');
             this.start = null;
@@ -109,7 +109,9 @@ var MetroMap = (function () {
                     _this.start = map.containerPointToLatLng(new L.Point(e.x, e.y));
                 }
             });
-        })();
+        }
+        ;
+        new SVGClick();
     };
     MetroMap.prototype.getGraphAndFillMap = function (kml) {
         var _this = this;
