@@ -73,7 +73,9 @@ class MetroMap {
             this.map.dragging.enable();
         });
         this.overlay.addEventListener('click', e => {
-            this.map.fireEvent('click', {containerPoint: new L.Point(e.x, e.y)});
+            let coordinates = this.map.containerPointToLatLng(new L.Point(e.x, e.y));
+            console.log(coordinates);
+            this.map.fireEvent('click', {latlng: coordinates});
         });
     }
 
