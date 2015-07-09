@@ -96,7 +96,7 @@ var MetroMap = (function () {
             _this.map.dragging.enable();
         });
         this.overlay.addEventListener('click', function (e) {
-            _this.map.fireEvent('click', { containerPoint: [e.x, e.y] });
+            _this.map.fireEvent('click', { containerPoint: new L.Point(e.x, e.y) });
         });
     };
     MetroMap.prototype.getGraphAndFillMap = function (kml) {
