@@ -128,10 +128,8 @@ ${xhr.status}: ${xhr.statusText}`);
 
     private showPlate(event: MouseEvent) {
         let dummyCircle: SVGElement = <any>event.target;
-        console.log(dummyCircle);
         const dataset = util.getSVGDataset(dummyCircle);
         //const dataset = dummyCircle.dataset;
-        console.log(dataset);
         let circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
         let g = svg.makePlate(circle);
 
@@ -167,9 +165,9 @@ ${xhr.status}: ${xhr.statusText}`);
         let originShift = pixelBoundsSize;
         let origin = document.getElementById('origin');
         //TODO: test which one is faster
-        origin.style.transform = `translate3d(${originShift.x}px, ${originShift.y}px, 0px)`;
-        //origin.style.left = originShift.x + 'px';
-        //origin.style.right = originShift.y + 'px';
+        //origin.style.transform = `translate3d(${originShift.x}px, ${originShift.y}px, 0px)`;
+        origin.style.left = originShift.x + 'px';
+        origin.style.right = originShift.y + 'px';
 
         let tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
         this.overlay.style.width = tripleSvgBoundsSize.x + 'px';

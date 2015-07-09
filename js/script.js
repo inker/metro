@@ -157,10 +157,8 @@ var MetroMap = (function () {
     });
     MetroMap.prototype.showPlate = function (event) {
         var dummyCircle = event.target;
-        console.log(dummyCircle);
         var dataset = util.getSVGDataset(dummyCircle);
         //const dataset = dummyCircle.dataset;
-        console.log(dataset);
         var circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
         var g = svg.makePlate(circle);
         var dummyCircles = dummyCircle.parentNode;
@@ -193,9 +191,9 @@ var MetroMap = (function () {
         var originShift = pixelBoundsSize;
         var origin = document.getElementById('origin');
         //TODO: test which one is faster
-        origin.style.transform = 'translate3d(' + originShift.x + 'px, ' + originShift.y + 'px, 0px)';
-        //origin.style.left = originShift.x + 'px';
-        //origin.style.right = originShift.y + 'px';
+        //origin.style.transform = `translate3d(${originShift.x}px, ${originShift.y}px, 0px)`;
+        origin.style.left = originShift.x + 'px';
+        origin.style.right = originShift.y + 'px';
         var tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
         this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
         this.overlay.style.height = tripleSvgBoundsSize.y + 'px';
@@ -502,9 +500,11 @@ function getCircumcenter(positions) {
 }
 exports.getCircumcenter = getCircumcenter;
 function getSVGDataset(el) {
+    // for webkit-based browsers
     if (el['dataset']) {
         return el['dataset'];
     }
+    // for the rest
     var attrs = el.attributes;
     var dataset = {};
     for (var i = 0; i < attrs.length; ++i) {
