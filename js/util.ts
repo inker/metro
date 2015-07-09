@@ -35,6 +35,9 @@ export function getCircumcenter(positions: L.Point[]): L.Point {
 }
 
 export function getSVGDataset(el: Element): any {
+    if (el['dataset']) {
+        return el['dataset'];
+    }
     const attrs = el.attributes;
     let dataset = {};
     for (let i = 0; i < attrs.length; ++i) {
