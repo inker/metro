@@ -48,7 +48,7 @@ a {
     color: black;
     font-size: 10px;
     font-family: Roboto, "Open Sans", Corbel, Candara, Colibri, Arial;
-    -webkit-text-stroke: 0.3px;
+    -webkit-text-stroke: 0px;
     font-weight: bold;
     text-anchor: end;
     text-align: right;
