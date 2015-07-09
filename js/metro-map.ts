@@ -19,24 +19,20 @@ class MetroMap {
         const zoom = 11;
         this.tileLayersForZoom = tileLayersForZoom;
         this._tileLayer = tileLayersForZoom(11);
-        this.map = new L.Map(containerId, {inertia: false})
-            .addLayer(this._tileLayer)
-            .setView(new L.LatLng(60, 30), zoom)
-            .addControl(new L.Control.Scale({imperial: false}));
 
         let tileLayers = {
             'I': tileLayersForZoom(10),
             'II': tileLayersForZoom(16)
         };
-        var control = L.control['UniForm'](tileLayers, null, {
-                collapsed: false,
-                position: 'topright'
-            }
-        );
-        // add control widget to map and html dom.
-        control.addTo(this.map);
-        // update the control widget to the specific theme.
-        control.renderUniformControl();
+        let layerControl = L.control['UniForm'](tileLayers, null, { collapsed: false, position: 'topright' });
+        layerControl.renderUniformControl(); // update the control widget to the specific theme.
+
+        this.map = new L.Map(containerId, { inertia: false })
+            .addLayer(this._tileLayer)
+            .setView(new L.LatLng(60, 30), zoom)
+            .addControl(new L.Control.Scale({ imperial: false }))
+            .addControl(layerControl);
+
         console.log('map should be created by now');
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
@@ -110,7 +106,6 @@ ${xhr.status}: ${xhr.statusText}`);
         let transfers = document.getElementById('transfers');
         transfers.classList.add('transfer');
     }
-
 
 
     private extendBounds(): void {

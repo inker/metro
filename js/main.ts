@@ -1,9 +1,9 @@
 import MetroMap = require('./metro-map');
 //import MetroMap from './metro-map';
 
-const mapbox = (() => new L.TileLayer('https://{s}.tiles.mapbox.com/v3/inker.km1inchd/{z}/{x}/{y}.png', {
+const mapbox = (() => new L.TileLayer('https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png', {
     minZoom: 9,
-    id: 'inker.km1inchd',
+    id: 'inker.mlo91c41',
     //detectRetina: true,
     reuseTiles: true,
     bounds: null,
