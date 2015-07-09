@@ -100,7 +100,7 @@ var MetroMap = (function () {
             var polyline = new L.Polyline([], { color: 'red' });
             polyline.addTo(_this.map);
             var marker = new L.CircleMarker([60, 30]);
-            var popup = new L.Popup();
+            var popup = new L.Popup().openOn(_this.map);
             overlay.addEventListener('click', function (e) {
                 if (!e.shiftKey) return;
                 var pt = _this.map.containerPointToLatLng(new L.Point(e.x, e.y));
