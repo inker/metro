@@ -42,7 +42,7 @@ export function getSVGDataset(el: Element): any {
     for (let i = 0; i < attrs.length; ++i) {
         let attr = attrs[i].name;
         if (attr.startsWith('data-')) {
-            dataset[attr.slice(5)] = el.getAttribute(attrs[i].value);
+            dataset[attr.slice(5)] = el.getAttribute(attr);
         }
     }
     return dataset;
