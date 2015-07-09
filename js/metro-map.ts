@@ -165,7 +165,7 @@ ${xhr.status}: ${xhr.statusText}`);
         let originShift = pixelBoundsSize;
         let origin = document.getElementById('origin');
         //TODO: test which one is faster
-        origin.style.transform = `translate(${originShift.x}px, ${originShift.y}px)`;
+        origin.style.transform = `translate3d(${originShift.x}px, ${originShift.y}px, 0px)`;
         //origin.style.left = originShift.x + 'px';
         //origin.style.top = originShift.y + 'px';
 
