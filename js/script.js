@@ -110,15 +110,13 @@ var MetroMap = (function () {
                     for (var i = 1; i < pts.length; ++i) {
                         distance += pts[i - 1].distanceTo(pts[i]);
                     }
-                    marker.setLatLng(pt).bindPopup(distance.toPrecision(1) + 'm').update();
+                    marker.setLatLng(pt).setPopupContent(distance.toPrecision(1) + 'm').update();
                 } else {
                     marker = new L.Marker(pt).addTo(_this.map);
-                }
-            });
-            overlay.addEventListener('keydown', function (e) {
-                if (e.keyCode == 27) {
-                    polyline.setLatLngs([]).redraw();
-                    _this.map.removeLayer(marker);
+                    marker.on('dblclick', function (e) {
+                        polyline.setLatLngs([]).redraw();
+                        _this.map.removeLayer(marker);
+                    });
                 }
             });
         })();

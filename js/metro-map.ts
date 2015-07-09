@@ -88,16 +88,14 @@ class MetroMap {
                         distance += pts[i - 1].distanceTo(pts[i]);
                     }
                     marker.setLatLng(pt)
-                        .bindPopup(distance.toPrecision(1) + 'm')
+                        .setPopupContent(distance.toPrecision(1) + 'm')
                         .update();
                 } else {
                     marker = new L.Marker(pt).addTo(this.map);
-                }
-            });
-            overlay.addEventListener('keydown', e => {
-                if (e.keyCode == 27) {
-                    polyline.setLatLngs([]).redraw();
-                    this.map.removeLayer(marker);
+                    marker.on('dblclick', e => {
+                        polyline.setLatLngs([]).redraw();
+                        this.map.removeLayer(marker);
+                    });
                 }
             });
         })();
