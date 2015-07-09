@@ -101,22 +101,30 @@ var MetroMap = (function () {
             polyline.addTo(_this.map);
             var marker = new L.CircleMarker([60, 30]);
             var text = '0m';
-            var popup = new L.Popup();
             //marker.on('mouseover', e => popup.)
             overlay.addEventListener('click', function (e) {
                 if (!e.shiftKey) return;
                 var pt = _this.map.containerPointToLatLng(new L.Point(e.x, e.y));
                 polyline.addLatLng(pt).redraw();
-                popup.setLatLng(pt).update();
-                marker.bindPopup(popup).openPopup().addTo(_this.map);
+                marker.bindPopup('foo');
+                marker.on('mouseover', function (e) {
+                    return marker.openPopup();
+                });
+                marker.on('mouseout', function (e) {
+                    return marker.closePopup();
+                });
+                //.on('dblclick', e => {
+                //    polyline.setLatLngs([]).redraw();
+                //    this.map.removeLayer(marker);
+                //})
+                marker.addTo(_this.map);
                 var pts = polyline.getLatLngs();
                 if (pts.length > 1) {
                     var distance = 0;
                     for (var i = 1; i < pts.length; ++i) {
                         distance += pts[i - 1].distanceTo(pts[i]);
                     }
-                    popup.setContent(distance.toPrecision(1) + 'm');
-                    marker.setLatLng(pt).redraw();
+                    marker.setLatLng(pt).unbindPopup().bindPopup(distance.toPrecision(1) + 'm').redraw();
                 }
             });
         })();

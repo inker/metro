@@ -78,28 +78,29 @@ class MetroMap {
             polyline.addTo(this.map);
             let marker = new L.CircleMarker([60, 30]);
             let text = '0m';
-            let popup = new L.Popup();
             //marker.on('mouseover', e => popup.)
             overlay.addEventListener('click', e => {
                 if (!e.shiftKey) return;
                 let pt = this.map.containerPointToLatLng(new L.Point(e.x, e.y));
                 polyline.addLatLng(pt).redraw();
-                popup.setLatLng(pt).update();
-                marker.bindPopup(popup)
+                marker.bindPopup("foo");
+                marker.on('mouseover', e => marker.openPopup());
+                marker.on('mouseout', e => marker.closePopup());
                     //.on('dblclick', e => {
                     //    polyline.setLatLngs([]).redraw();
                     //    this.map.removeLayer(marker);
                     //})
-                    .openPopup()
-                    .addTo(this.map);
+                marker.addTo(this.map);
                 let pts = polyline.getLatLngs();
                 if (pts.length > 1) {
                     let distance = 0;
                     for (let i = 1; i < pts.length; ++i) {
                         distance += pts[i - 1].distanceTo(pts[i]);
                     }
-                    popup.setContent(distance.toPrecision(1) + 'm');
-                    marker.setLatLng(pt).redraw();
+                    marker.setLatLng(pt)
+                        .unbindPopup()
+                        .bindPopup(distance.toPrecision(1) + 'm')
+                        .redraw();
                 }
             });
         })();
