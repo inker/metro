@@ -72,11 +72,20 @@ class MetroMap {
             this.overlay.style.opacity = null;
             this.map.dragging.enable();
         });
-        this.overlay.addEventListener('click', e => {
-            let coordinates = this.map.containerPointToLatLng(new L.Point(e.x, e.y));
-            console.log(coordinates);
-            this.map.fireEvent('click', {latlng: coordinates});
-        });
+        let map = this.map;
+        (function SVGClick() {
+            let overlay = document.getElementById('overlay');
+            this.start = null;
+            overlay.addEventListener('click', e => {
+                if (this.start) {
+                    let end = map.containerPointToLatLng(new L.Point(e.x, e.y));
+                    alert(this.start.distanceTo(end));
+                    this.start = null;
+                } else {
+                    this.start = map.containerPointToLatLng(new L.Point(e.x, e.y));
+                }
+            })
+        })();
     }
 
     private getGraphAndFillMap(kml: string): void {

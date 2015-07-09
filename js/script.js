@@ -95,11 +95,21 @@ var MetroMap = (function () {
             _this.overlay.style.opacity = null;
             _this.map.dragging.enable();
         });
-        this.overlay.addEventListener('click', function (e) {
-            var coordinates = _this.map.containerPointToLatLng(new L.Point(e.x, e.y));
-            console.log(coordinates);
-            _this.map.fireEvent('click', { latlng: coordinates });
-        });
+        var map = this.map;
+        (function SVGClick() {
+            var _this = this;
+            var overlay = document.getElementById('overlay');
+            this.start = null;
+            overlay.addEventListener('click', function (e) {
+                if (_this.start) {
+                    var end = map.containerPointToLatLng(new L.Point(e.x, e.y));
+                    alert(_this.start.distanceTo(end));
+                    _this.start = null;
+                } else {
+                    _this.start = map.containerPointToLatLng(new L.Point(e.x, e.y));
+                }
+            });
+        })();
     };
     MetroMap.prototype.getGraphAndFillMap = function (kml) {
         var _this = this;
