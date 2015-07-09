@@ -77,7 +77,7 @@ class MetroMap {
             let polyline = new L.Polyline([], { color: 'red' });
             polyline.addTo(this.map);
             let marker = new L.CircleMarker([60, 30]);
-            let popup = new L.Popup().openOn(this.map);
+            let popup = new L.Popup().addTo(this.map);
             overlay.addEventListener('click', e => {
                 if (!e.shiftKey) return;
                 let pt = this.map.containerPointToLatLng(new L.Point(e.x, e.y));
