@@ -47,7 +47,7 @@ a {
 .plate-text {
     color: black;
     font-size: 10px;
-    font-family: Roboto, Corbel, Corbel, Candara, Colibri, Arial;
+    font-family: "Open Sans", Roboto, Corbel, Candara, Colibri, Arial;
     font-weight: bold;
     text-anchor: end;
     text-align: right;
