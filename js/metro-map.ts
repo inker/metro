@@ -86,10 +86,11 @@ class MetroMap {
                 polyline.addLatLng(pt).redraw();
                 popup.setLatLng(pt).update();
                 marker.bindPopup(popup)
-                    .on('dblclick', e => {
-                        polyline.setLatLngs([]).redraw();
-                        this.map.removeLayer(marker);
-                    }).openPopup()
+                    //.on('dblclick', e => {
+                    //    polyline.setLatLngs([]).redraw();
+                    //    this.map.removeLayer(marker);
+                    //})
+                    .openPopup()
                     .addTo(this.map);
                 let pts = polyline.getLatLngs();
                 if (pts.length > 1) {

@@ -108,10 +108,7 @@ var MetroMap = (function () {
                 var pt = _this.map.containerPointToLatLng(new L.Point(e.x, e.y));
                 polyline.addLatLng(pt).redraw();
                 popup.setLatLng(pt).update();
-                marker.bindPopup(popup).on('dblclick', function (e) {
-                    polyline.setLatLngs([]).redraw();
-                    _this.map.removeLayer(marker);
-                }).openPopup().addTo(_this.map);
+                marker.bindPopup(popup).openPopup().addTo(_this.map);
                 var pts = polyline.getLatLngs();
                 if (pts.length > 1) {
                     var distance = 0;
