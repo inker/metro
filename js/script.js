@@ -211,7 +211,7 @@ var MetroMap = (function () {
 
         var _this = this;
         this.refillSVG();
-        this.updatePos();
+        //this.updatePos();
         var whiskers = new Array(this.graph.platforms.length);
         var circleFrag = document.createDocumentFragment();
         var stationCircles = document.getElementById('station-circles');

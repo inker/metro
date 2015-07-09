@@ -188,7 +188,7 @@ ${xhr.status}: ${xhr.statusText}`);
      */
     private redrawNetwork(): void {
         this.refillSVG();
-        this.updatePos();
+        //this.updatePos();
 
         let whiskers = new Array<L.Point[]>(this.graph.platforms.length);
 
