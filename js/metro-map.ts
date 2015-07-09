@@ -185,10 +185,6 @@ ${xhr.status}: ${xhr.statusText}`);
     private redrawNetwork(): void {
 
         this.refillSVG();
-        //console.log('user: ' + navigator.userLanguage);
-        //console.log('language: ' + navigator.language);
-        //console.log('browser: ' + navigator.browserLanguage);
-        //console.log('system: ' + navigator.systemLanguage);
         this.updatePos();
 
         console.log(util.getUserLanguage());

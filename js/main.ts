@@ -17,3 +17,8 @@ const openMapSurfer = (() => new L.TileLayer('http://openmapsurfer.uni-hd.de/til
 }))();
 
 var metroMap = new MetroMap('map-container', 'json/graph.json', (zoom: number) => (zoom < 15) ? mapbox : openMapSurfer);
+
+console.log('user: ' + navigator.userLanguage);
+console.log('language: ' + navigator.language);
+console.log('browser: ' + navigator.browserLanguage);
+console.log('system: ' + navigator.systemLanguage);
