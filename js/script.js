@@ -54,6 +54,7 @@ var MetroMap = (function () {
         layerControl.addTo(this.map);
         // update the control widget to the specific theme.
         layerControl.renderUniformControl();
+        L.Control['measureControl']().addTo(this.map);
         console.log('map should be created by now');
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
@@ -210,10 +211,8 @@ var MetroMap = (function () {
         var _this2 = this;
 
         var _this = this;
-        L.control.zoom();
         this.refillSVG();
         this.updatePos();
-        console.log(util.getUserLanguage());
         var whiskers = new Array(this.graph.platforms.length);
         var circleFrag = document.createDocumentFragment();
         var stationCircles = document.getElementById('station-circles');

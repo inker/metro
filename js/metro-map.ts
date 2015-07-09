@@ -33,6 +33,9 @@ class MetroMap {
         layerControl.addTo(this.map);
         // update the control widget to the specific theme.
         layerControl.renderUniformControl();
+
+        L.Control['measureControl']().addTo(this.map);
+
         console.log('map should be created by now');
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
@@ -183,11 +186,8 @@ ${xhr.status}: ${xhr.statusText}`);
      *  ...
      */
     private redrawNetwork(): void {
-        L.control.zoom()
         this.refillSVG();
         this.updatePos();
-
-        console.log(util.getUserLanguage());
 
         let whiskers = new Array<L.Point[]>(this.graph.platforms.length);
 
