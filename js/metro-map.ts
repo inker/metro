@@ -167,7 +167,7 @@ ${xhr.status}: ${xhr.statusText}`);
         //TODO: test which one is faster
         //origin.style.transform = `translate3d(${originShift.x}px, ${originShift.y}px, 0px)`;
         origin.style.left = originShift.x + 'px';
-        origin.style.right = originShift.y + 'px';
+        origin.style.top = originShift.y + 'px';
 
         let tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
         this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
