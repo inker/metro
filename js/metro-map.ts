@@ -39,7 +39,8 @@ class MetroMap {
         console.log('map should be created by now');
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-        this.overlay = <any>document.querySelector('.leaflet-zoom-animated');
+        this.overlay = document.createElement('svg');
+        document.getElementsByClassName('leaflet-overlay-pane')[0].appendChild(this.overlay);
         //this.map.getContainer().appendChild(this.overlay);
         this.overlay.id = 'overlay';
         //console.log(this.overlay);
