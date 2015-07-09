@@ -72,20 +72,34 @@ class MetroMap {
             this.overlay.style.opacity = null;
             this.map.dragging.enable();
         });
-        let map = this.map;
-        (function SVGClick() {
+        (() => {
             let overlay = document.getElementById('overlay');
-            let start = null;
+            let polyline = new L.Polyline([], { color: 'red' });
+            polyline.addTo(this.map);
+            let marker: L.Marker;
             overlay.addEventListener('click', e => {
                 if (!e.shiftKey) return;
-                if (start) {
-                    let end = map.containerPointToLatLng(new L.Point(e.x, e.y));
-                    alert(this.start.distanceTo(end).toPrecision(1));
-                    start = null;
+                let pt = this.map.containerPointToLatLng(new L.Point(e.x, e.y));
+                polyline.addLatLng(pt).redraw();
+                if (marker) {
+                    let distance = 0;
+                    let pts = polyline.getLatLngs();
+                    for (let i = 1; i < pts.length; ++i) {
+                        distance += pts[i - 1].distanceTo(pts[i]);
+                    }
+                    marker.setLatLng(pt)
+                        .bindPopup(distance.toPrecision(1) + 'm')
+                        .update();
                 } else {
-                    start = map.containerPointToLatLng(new L.Point(e.x, e.y));
+                    marker = new L.Marker(pt).addTo(this.map);
                 }
-            })
+            });
+            overlay.addEventListener('keydown', e => {
+                if (e.keyCode == 27) {
+                    polyline.setLatLngs([]).redraw();
+                    this.map.removeLayer(marker);
+                }
+            });
         })();
     }
 

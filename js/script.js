@@ -95,19 +95,30 @@ var MetroMap = (function () {
             _this.overlay.style.opacity = null;
             _this.map.dragging.enable();
         });
-        var map = this.map;
-        (function SVGClick() {
-            var _this = this;
+        (function () {
             var overlay = document.getElementById('overlay');
-            var start = null;
+            var polyline = new L.Polyline([], { color: 'red' });
+            polyline.addTo(_this.map);
+            var marker = undefined;
             overlay.addEventListener('click', function (e) {
                 if (!e.shiftKey) return;
-                if (start) {
-                    var end = map.containerPointToLatLng(new L.Point(e.x, e.y));
-                    alert(_this.start.distanceTo(end).toPrecision(1));
-                    start = null;
+                var pt = _this.map.containerPointToLatLng(new L.Point(e.x, e.y));
+                polyline.addLatLng(pt).redraw();
+                if (marker) {
+                    var distance = 0;
+                    var pts = polyline.getLatLngs();
+                    for (var i = 1; i < pts.length; ++i) {
+                        distance += pts[i - 1].distanceTo(pts[i]);
+                    }
+                    marker.setLatLng(pt).bindPopup(distance.toPrecision(1) + 'm').update();
                 } else {
-                    start = map.containerPointToLatLng(new L.Point(e.x, e.y));
+                    marker = new L.Marker(pt).addTo(_this.map);
+                }
+            });
+            overlay.addEventListener('keydown', function (e) {
+                if (e.keyCode == 27) {
+                    polyline.setLatLngs([]).redraw();
+                    _this.map.removeLayer(marker);
                 }
             });
         })();
