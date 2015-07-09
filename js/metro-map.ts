@@ -39,8 +39,7 @@ class MetroMap {
         console.log('map should be created by now');
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-        this.overlay = document.createElement('svg');
-        document.getElementsByClassName('leaflet-overlay-pane')[0].appendChild(this.overlay);
+        this.overlay = document.getElementById('overlay');
         //this.map.getContainer().appendChild(this.overlay);
         this.overlay.id = 'overlay';
         //console.log(this.overlay);
@@ -55,7 +54,7 @@ class MetroMap {
         let mapPane = this.map.getPanes().mapPane;
         let prevZoom: number;
         this.map.on('movestart', e => this.map.touchZoom.disable());
-        //this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
+        this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
         this.map.on('moveend', e => {
             this.map.touchZoom.enable();
         });
@@ -163,15 +162,15 @@ ${xhr.status}: ${xhr.statusText}`);
         let transform = util.parseTransform(this.overlay.style.transform);
 
         let pixelBoundsSize = pixelBounds.getSize();
-        //let topLeft = pixelBounds.min.subtract(transform).subtract(pixelBoundsSize);
-        //this.overlay.style.left = topLeft.x + 'px';
-        //this.overlay.style.top = topLeft.y + 'px';
-        //let originShift = pixelBoundsSize;
-        //let origin = document.getElementById('origin');
-        ////TODO: test which one is faster
-        //origin.style.transform = `translate3d(${originShift.x}px, ${originShift.y}px, 0px)`;
-        ////origin.style.left = originShift.x + 'px';
-        ////origin.style.top = originShift.y + 'px';
+        let topLeft = pixelBounds.min.subtract(transform).subtract(pixelBoundsSize);
+        this.overlay.style.left = topLeft.x + 'px';
+        this.overlay.style.top = topLeft.y + 'px';
+        let originShift = pixelBoundsSize;
+        let origin = document.getElementById('origin');
+        //TODO: test which one is faster
+        origin.style.transform = `translate3d(${originShift.x}px, ${originShift.y}px, 0px)`;
+        //origin.style.left = originShift.x + 'px';
+        //origin.style.top = originShift.y + 'px';
 
         let tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
         this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
