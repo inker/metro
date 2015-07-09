@@ -42,7 +42,6 @@ class MetroMap {
         //console.log(this.overlay);
         this.overlay.style.fill = 'white';
         this.overlay.style.zIndex = '10';
-        //this.refillSVG(); not required here
         this.addListeners();
         this.getGraphAndFillMap(kml);
     }
