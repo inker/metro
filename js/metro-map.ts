@@ -163,15 +163,15 @@ ${xhr.status}: ${xhr.statusText}`);
         let transform = util.parseTransform(this.overlay.style.transform);
 
         let pixelBoundsSize = pixelBounds.getSize();
-        let topLeft = pixelBounds.min.subtract(transform).subtract(pixelBoundsSize);
-        this.overlay.style.left = topLeft.x + 'px';
-        this.overlay.style.top = topLeft.y + 'px';
-        let originShift = pixelBoundsSize;
-        let origin = document.getElementById('origin');
-        //TODO: test which one is faster
-        origin.style.transform = `translate3d(${originShift.x}px, ${originShift.y}px, 0px)`;
-        //origin.style.left = originShift.x + 'px';
-        //origin.style.top = originShift.y + 'px';
+        //let topLeft = pixelBounds.min.subtract(transform).subtract(pixelBoundsSize);
+        //this.overlay.style.left = topLeft.x + 'px';
+        //this.overlay.style.top = topLeft.y + 'px';
+        //let originShift = pixelBoundsSize;
+        //let origin = document.getElementById('origin');
+        ////TODO: test which one is faster
+        //origin.style.transform = `translate3d(${originShift.x}px, ${originShift.y}px, 0px)`;
+        ////origin.style.left = originShift.x + 'px';
+        ////origin.style.top = originShift.y + 'px';
 
         let tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
         this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
@@ -188,7 +188,7 @@ ${xhr.status}: ${xhr.statusText}`);
      */
     private redrawNetwork(): void {
         this.refillSVG();
-        //this.updatePos();
+        this.updatePos();
 
         let whiskers = new Array<L.Point[]>(this.graph.platforms.length);
 

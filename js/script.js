@@ -185,15 +185,15 @@ var MetroMap = (function () {
         var pixelBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
         var transform = util.parseTransform(this.overlay.style.transform);
         var pixelBoundsSize = pixelBounds.getSize();
-        var topLeft = pixelBounds.min.subtract(transform).subtract(pixelBoundsSize);
-        this.overlay.style.left = topLeft.x + 'px';
-        this.overlay.style.top = topLeft.y + 'px';
-        var originShift = pixelBoundsSize;
-        var origin = document.getElementById('origin');
-        //TODO: test which one is faster
-        origin.style.transform = 'translate3d(' + originShift.x + 'px, ' + originShift.y + 'px, 0px)';
-        //origin.style.left = originShift.x + 'px';
-        //origin.style.top = originShift.y + 'px';
+        //let topLeft = pixelBounds.min.subtract(transform).subtract(pixelBoundsSize);
+        //this.overlay.style.left = topLeft.x + 'px';
+        //this.overlay.style.top = topLeft.y + 'px';
+        //let originShift = pixelBoundsSize;
+        //let origin = document.getElementById('origin');
+        ////TODO: test which one is faster
+        //origin.style.transform = `translate3d(${originShift.x}px, ${originShift.y}px, 0px)`;
+        ////origin.style.left = originShift.x + 'px';
+        ////origin.style.top = originShift.y + 'px';
         var tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
         this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
         this.overlay.style.height = tripleSvgBoundsSize.y + 'px';
@@ -211,7 +211,7 @@ var MetroMap = (function () {
 
         var _this = this;
         this.refillSVG();
-        //this.updatePos();
+        this.updatePos();
         var whiskers = new Array(this.graph.platforms.length);
         var circleFrag = document.createDocumentFragment();
         var stationCircles = document.getElementById('station-circles');
