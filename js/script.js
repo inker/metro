@@ -191,9 +191,9 @@ var MetroMap = (function () {
         var originShift = pixelBoundsSize;
         var origin = document.getElementById('origin');
         //TODO: test which one is faster
-        //origin.style.transform = `translate3d(${originShift.x}px, ${originShift.y}px, 0px)`;
-        origin.style.left = originShift.x + 'px';
-        origin.style.top = originShift.y + 'px';
+        origin.style.transform = 'translate3d(' + originShift.x + 'px, ' + originShift.y + 'px, 0px)';
+        //origin.style.left = originShift.x + 'px';
+        //origin.style.top = originShift.y + 'px';
         var tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
         this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
         this.overlay.style.height = tripleSvgBoundsSize.y + 'px';
