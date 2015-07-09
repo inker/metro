@@ -159,6 +159,7 @@ var MetroMap = (function () {
         var dummyCircle = event.target;
         var dataset = util.getSVGDataset(dummyCircle);
         //const dataset = dummyCircle.dataset;
+        console.log(dataset);
         var circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
         var g = svg.makePlate(circle);
         var dummyCircles = dummyCircle.parentNode;

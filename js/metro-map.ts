@@ -130,7 +130,7 @@ ${xhr.status}: ${xhr.statusText}`);
         let dummyCircle: SVGElement = <any>event.target;
         const dataset = util.getSVGDataset(dummyCircle);
         //const dataset = dummyCircle.dataset;
-
+        console.log(dataset);
         let circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
         let g = svg.makePlate(circle);
 
