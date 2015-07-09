@@ -40,9 +40,9 @@ export function getSVGDataset(el: Element): any {
     const attrs = el.attributes;
     let dataset = {};
     for (let i = 0; i < attrs.length; ++i) {
-        let attr = attrs[i].value
+        let attr = attrs[i].name;
         if (attr.startsWith('data-')) {
-            dataset[attr.slice(5)] = el.getAttribute(attr);
+            dataset[attr.slice(5)] = el.getAttribute(attrs[i].value);
         }
     }
     return dataset;

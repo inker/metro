@@ -508,9 +508,9 @@ function getSVGDataset(el) {
     var attrs = el.attributes;
     var dataset = {};
     for (var i = 0; i < attrs.length; ++i) {
-        var attr = attrs[i].value;
+        var attr = attrs[i].name;
         if (attr.startsWith('data-')) {
-            dataset[attr.slice(5)] = el.getAttribute(attr);
+            dataset[attr.slice(5)] = el.getAttribute(attrs[i].value);
         }
     }
     return dataset;
