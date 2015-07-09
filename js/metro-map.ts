@@ -77,12 +77,14 @@ class MetroMap {
             let polyline = new L.Polyline([], { color: 'red' });
             polyline.addTo(this.map);
             let marker = new L.CircleMarker([60, 30]);
+            let text = '0m';
             let popup = new L.Popup();
+            //marker.on('mouseover', e => popup.)
             overlay.addEventListener('click', e => {
                 if (!e.shiftKey) return;
                 let pt = this.map.containerPointToLatLng(new L.Point(e.x, e.y));
                 polyline.addLatLng(pt).redraw();
-                popup.setLatLng(pt);
+                popup.setLatLng(pt).update();
                 marker.bindPopup(popup)
                     .on('dblclick', e => {
                         polyline.setLatLngs([]).redraw();

@@ -100,12 +100,14 @@ var MetroMap = (function () {
             var polyline = new L.Polyline([], { color: 'red' });
             polyline.addTo(_this.map);
             var marker = new L.CircleMarker([60, 30]);
+            var text = '0m';
             var popup = new L.Popup();
+            //marker.on('mouseover', e => popup.)
             overlay.addEventListener('click', function (e) {
                 if (!e.shiftKey) return;
                 var pt = _this.map.containerPointToLatLng(new L.Point(e.x, e.y));
                 polyline.addLatLng(pt).redraw();
-                popup.setLatLng(pt);
+                popup.setLatLng(pt).update();
                 marker.bindPopup(popup).on('dblclick', function (e) {
                     polyline.setLatLngs([]).redraw();
                     _this.map.removeLayer(marker);
