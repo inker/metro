@@ -1,7 +1,7 @@
 import L = require('leaflet');
 import svg = require('./svg');
 import util = require('./util');
-import Plain = require('./plain-objects');
+import Plain = require('../plain-objects');
 //import 'leaflet';
 //import * as svg from './svg';
 //import * as util from '../../util';
@@ -10,17 +10,9 @@ import Plain = require('./plain-objects');
 class MetroMap {
     private map: L.Map;
     private overlay: HTMLElement;
-    private graph: {
-        platforms: Plain.Platform[];
-        stations: Plain.Station[];
-        lines: {};
-        transfers: Plain.Transfer[];
-        spans: Plain.Span[];
-        routes: Plain.Route[];
-    };
+    private graph: Plain.Graph;
     private _tileLayer: L.TileLayer;
     private bounds: L.LatLngBounds;
-    private exTranslate: L.Point;
     private tileLayersForZoom: (zoom: number) => L.TileLayer;
 
     constructor(containerId: string, kml: string, tileLayersForZoom: (zoom: number) => L.TileLayer) {
@@ -31,6 +23,20 @@ class MetroMap {
             .addLayer(this._tileLayer)
             .setView(new L.LatLng(60, 30), zoom)
             .addControl(new L.Control.Scale({imperial: false}));
+
+        let tileLayers = {
+            'I': tileLayersForZoom(10),
+            'II': tileLayersForZoom(16)
+        };
+        var control = L.control['UniForm'](tileLayers, null, {
+                collapsed: false,
+                position: 'topright'
+            }
+        );
+        // add control widget to map and html dom.
+        control.addTo(this.map);
+        // update the control widget to the specific theme.
+        control.renderUniformControl();
         console.log('map should be created by now');
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
@@ -51,7 +57,6 @@ class MetroMap {
         this.map.on('movestart', e => this.map.touchZoom.disable());
         this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
         this.map.on('moveend', e => {
-            this.exTranslate = util.parseTransform(this.overlay.style.transform);
             this.map.touchZoom.enable();
         });
         this.map.on('zoomstart', e => {
@@ -183,7 +188,7 @@ ${xhr.status}: ${xhr.statusText}`);
      *  ...
      */
     private redrawNetwork(): void {
-
+        L.control.zoom()
         this.refillSVG();
         this.updatePos();
 

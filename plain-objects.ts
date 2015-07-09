@@ -1,4 +1,4 @@
-/// <reference path="./../typings/tsd.d.ts" />
+/// <reference path="./typings/tsd.d.ts" />
 import L = require('leaflet');
 
 declare module Plain {
@@ -41,7 +41,16 @@ declare module Plain {
         location: L.LatLng;
         name: string;
         altName: string;
-    }
+    };
+
+    type Graph = {
+        platforms: Plain.Platform[];
+        stations: Plain.Station[];
+        lines: {};
+        transfers: Plain.Transfer[];
+        spans: Plain.Span[];
+        routes: Plain.Route[];
+    };
 }
 
 //export default Plain;

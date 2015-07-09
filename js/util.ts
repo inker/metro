@@ -2,8 +2,7 @@
 import L = require('leaflet');
 
 export function getUserLanguage(): string {
-    let userLanguage = (navigator.userLanguage || navigator.language).substr(0, 2).toLowerCase();
-    return (['ru', 'fi'].indexOf(userLanguage) > -1) ? userLanguage : 'en';
+    return (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();
 }
 
 export function parseTransform(val: string): L.Point {
