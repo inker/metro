@@ -101,6 +101,7 @@ var MetroMap = (function () {
             var overlay = document.getElementById('overlay');
             this.start = null;
             overlay.addEventListener('click', function (e) {
+                if (!e.shiftKey) return;
                 if (_this.start) {
                     var end = map.containerPointToLatLng(new L.Point(e.x, e.y));
                     alert(_this.start.distanceTo(end));

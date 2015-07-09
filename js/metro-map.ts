@@ -77,6 +77,7 @@ class MetroMap {
             let overlay = document.getElementById('overlay');
             this.start = null;
             overlay.addEventListener('click', e => {
+                if (!e.shiftKey) return;
                 if (this.start) {
                     let end = map.containerPointToLatLng(new L.Point(e.x, e.y));
                     alert(this.start.distanceTo(end));
