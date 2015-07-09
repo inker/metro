@@ -76,26 +76,26 @@ class MetroMap {
             let overlay = document.getElementById('overlay');
             let polyline = new L.Polyline([], { color: 'red' });
             polyline.addTo(this.map);
-            let marker: L.Marker;
+            let marker = new L.CircleMarker([60, 30]);
+            let popup = new L.Popup();
             overlay.addEventListener('click', e => {
                 if (!e.shiftKey) return;
                 let pt = this.map.containerPointToLatLng(new L.Point(e.x, e.y));
                 polyline.addLatLng(pt).redraw();
-                if (marker) {
+                popup.setLatLng(pt);
+                marker.bindPopup(popup)
+                    .on('dblclick', e => {
+                        polyline.setLatLngs([]).redraw();
+                        this.map.removeLayer(marker);
+                    }).addTo(this.map);
+                let pts = polyline.getLatLngs();
+                if (pts.length > 1) {
                     let distance = 0;
-                    let pts = polyline.getLatLngs();
                     for (let i = 1; i < pts.length; ++i) {
                         distance += pts[i - 1].distanceTo(pts[i]);
                     }
-                    marker.setLatLng(pt)
-                        .setPopupContent(distance.toPrecision(1) + 'm')
-                        .update();
-                } else {
-                    marker = new L.Marker(pt).addTo(this.map);
-                    marker.on('dblclick', e => {
-                        polyline.setLatLngs([]).redraw();
-                        this.map.removeLayer(marker);
-                    });
+                    popup.setContent(distance.toPrecision(1) + 'm');
+                    marker.setLatLng(pt).redraw();
                 }
             });
         })();

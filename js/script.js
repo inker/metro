@@ -99,24 +99,25 @@ var MetroMap = (function () {
             var overlay = document.getElementById('overlay');
             var polyline = new L.Polyline([], { color: 'red' });
             polyline.addTo(_this.map);
-            var marker = undefined;
+            var marker = new L.CircleMarker([60, 30]);
+            var popup = new L.Popup();
             overlay.addEventListener('click', function (e) {
                 if (!e.shiftKey) return;
                 var pt = _this.map.containerPointToLatLng(new L.Point(e.x, e.y));
                 polyline.addLatLng(pt).redraw();
-                if (marker) {
+                popup.setLatLng(pt);
+                marker.bindPopup(popup).on('dblclick', function (e) {
+                    polyline.setLatLngs([]).redraw();
+                    _this.map.removeLayer(marker);
+                }).addTo(_this.map);
+                var pts = polyline.getLatLngs();
+                if (pts.length > 1) {
                     var distance = 0;
-                    var pts = polyline.getLatLngs();
                     for (var i = 1; i < pts.length; ++i) {
                         distance += pts[i - 1].distanceTo(pts[i]);
                     }
-                    marker.setLatLng(pt).setPopupContent(distance.toPrecision(1) + 'm').update();
-                } else {
-                    marker = new L.Marker(pt).addTo(_this.map);
-                    marker.on('dblclick', function (e) {
-                        polyline.setLatLngs([]).redraw();
-                        _this.map.removeLayer(marker);
-                    });
+                    popup.setContent(distance.toPrecision(1) + 'm');
+                    marker.setLatLng(pt).redraw();
                 }
             });
         })();
