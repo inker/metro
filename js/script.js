@@ -76,9 +76,7 @@ var MetroMap = (function () {
         this.map.on('movestart', function (e) {
             return _this.map.touchZoom.disable();
         });
-        this.map.on('move', function (e) {
-            return _this.overlay.style.transform = mapPane.style.transform;
-        });
+        //this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
         this.map.on('moveend', function (e) {
             _this.map.touchZoom.enable();
         });

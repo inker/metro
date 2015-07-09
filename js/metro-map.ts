@@ -55,7 +55,7 @@ class MetroMap {
         let mapPane = this.map.getPanes().mapPane;
         let prevZoom: number;
         this.map.on('movestart', e => this.map.touchZoom.disable());
-        this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
+        //this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
         this.map.on('moveend', e => {
             this.map.touchZoom.enable();
         });
