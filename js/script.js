@@ -157,6 +157,7 @@ var MetroMap = (function () {
     });
     MetroMap.prototype.showPlate = function (event) {
         var dummyCircle = event.target;
+        console.log(dummyCircle);
         var dataset = util.getSVGDataset(dummyCircle);
         //const dataset = dummyCircle.dataset;
         console.log(dataset);

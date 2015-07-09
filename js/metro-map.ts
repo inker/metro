@@ -128,6 +128,7 @@ ${xhr.status}: ${xhr.statusText}`);
 
     private showPlate(event: MouseEvent) {
         let dummyCircle: SVGElement = <any>event.target;
+        console.log(dummyCircle);
         const dataset = util.getSVGDataset(dummyCircle);
         //const dataset = dummyCircle.dataset;
         console.log(dataset);
