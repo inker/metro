@@ -58,7 +58,7 @@ var MetroMap = (function () {
         console.log('map should be created by now');
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-        this.overlay = document.getElementById('overlay');
+        this.overlay = document.querySelector('.leaflet-zoom-animated');
         //this.map.getContainer().appendChild(this.overlay);
         this.overlay.id = 'overlay';
         //console.log(this.overlay);
