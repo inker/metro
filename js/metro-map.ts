@@ -72,6 +72,9 @@ class MetroMap {
             this.overlay.style.opacity = null;
             this.map.dragging.enable();
         });
+        this.overlay.addEventListener('click', e => {
+            alert(e.x + ', ' + e.y);
+        });
     }
 
     private getGraphAndFillMap(kml: string): void {

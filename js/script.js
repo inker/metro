@@ -95,6 +95,9 @@ var MetroMap = (function () {
             _this.overlay.style.opacity = null;
             _this.map.dragging.enable();
         });
+        this.overlay.addEventListener('click', function (e) {
+            alert(e.x + ', ' + e.y);
+        });
     };
     MetroMap.prototype.getGraphAndFillMap = function (kml) {
         var _this = this;
