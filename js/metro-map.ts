@@ -89,7 +89,8 @@ class MetroMap {
                     .on('dblclick', e => {
                         polyline.setLatLngs([]).redraw();
                         this.map.removeLayer(marker);
-                    }).addTo(this.map);
+                    }).openPopup()
+                    .addTo(this.map);
                 let pts = polyline.getLatLngs();
                 if (pts.length > 1) {
                     let distance = 0;
