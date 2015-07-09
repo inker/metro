@@ -109,6 +109,7 @@ var MetroMap = (function () {
                 marker.bindPopup('foo');
                 marker.on('mouseover', function (e) {
                     var popup = L.popup().setLatLng(pt).setContent('Popup').openOn(_this.map);
+                    console.log('foobar');
                 });
                 marker.on('mouseout', function (e) {
                     return marker.closePopup();

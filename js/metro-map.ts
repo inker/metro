@@ -89,6 +89,7 @@ class MetroMap {
                         .setLatLng(pt)
                         .setContent('Popup')
                         .openOn(this.map);
+                    console.log('foobar');
                 });
                 marker.on('mouseout', e => marker.closePopup());
                     //.on('dblclick', e => {
