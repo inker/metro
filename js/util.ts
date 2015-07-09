@@ -27,9 +27,9 @@ export function getCircumcenter(positions: L.Point[]): L.Point {
     console.log(positions[1]);
     const b = positions[1].subtract(positions[0]);
     const c = positions[2].subtract(positions[0]);
-    const bSq = b.x * b.x + b.y * b.y;
-    const cSq = c.x * c.x + c.y * c.y;
-    return new L.Point((c.y * bSq - b.y * cSq), (b.x * cSq - c.x * bSq))
+    const bDot = b.x * b.x + b.y * b.y;
+    const cDot = c.x * c.x + c.y * c.y;
+    return new L.Point((c.y * bDot - b.y * cDot), (b.x * cDot - c.x * bDot))
         .divideBy(2.0 * (b.x * c.y - b.y * c.x))
         .add(positions[0]);
 }

@@ -151,27 +151,6 @@ ${xhr.status}: ${xhr.statusText}`);
 
     private updatePos() {
 
-        //// TODO: explore map.getBounds, etc like in the example on github
-        //var pixelSize = this.map.getSize(); // size of the viewport (browser viewport)
-        //var pixelBounds = this.map.getPixelBounds(); // on the giant map itself
-        //var pixelOrigin = this.map.getPixelOrigin(); // some origin on the giant map
-        //console.log('origin: ', `${pixelOrigin.x},${pixelOrigin.y}`);
-        //console.log('bounds: ', `${pixelBounds.min.x},${pixelBounds.min.y} to ${pixelBounds.max.x},${pixelBounds.max.y}`);
-        //console.log('size: ', `${pixelSize.x},${pixelSize.y}`);
-        //
-        //let topLeft = pixelBounds.min.subtract(pixelOrigin).subtract(pixelSize);
-        //let size = pixelSize.multiplyBy(3);
-        //
-        //this.overlay.setAttribute('width', size.x + 'px');
-        //this.overlay.setAttribute('height', size.y + 'px');
-        //this.overlay.setAttribute('viewBox', `0 0 ${size.x} ${size.y}`);
-        //this.overlay.style.left = topLeft.x + 'px';
-        //this.overlay.style.top = topLeft.y + 'px';
-        //let originOffset = pixelOrigin.subtract(pixelBounds.min).add(pixelSize);
-        //console.log(`translate(${-topLeft.x},${-topLeft.y})`);
-        //document.getElementById('origin')
-        //    .setAttribute('transform', `translate(${-topLeft.x},${-topLeft.y})`);
-
         let nw = this.bounds.getNorthWest();
         let se = this.bounds.getSouthEast();
         // svg bounds in pixels relative to container
@@ -184,6 +163,7 @@ ${xhr.status}: ${xhr.statusText}`);
         this.overlay.style.top = topLeft.y + 'px';
         let originShift = pixelBoundsSize;
         let origin = document.getElementById('origin');
+        //TODO: test which one is faster
         origin.style.transform = `translate3d(${originShift.x}px, ${originShift.y}px, 0px)`;
         //origin.style.left = originShift.x + 'px';
         //origin.style.right = originShift.y + 'px';
