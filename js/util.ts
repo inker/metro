@@ -49,6 +49,10 @@ export function getSVGDataset(el: Element): any {
     return dataset;
 }
 
+export function setSVGDataset(el: Element, dataset: any): void {
+    Object.keys(dataset).forEach(key => el.setAttribute('data-' + key, dataset[key]));
+}
+
 //export function getSegmentLength(source: L.Point, target: L.Point): number {
 //    const a = target.subtract(source);
 //    return Math.sqrt(a.x * a.x + a.y * a.y);

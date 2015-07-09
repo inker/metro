@@ -18,11 +18,16 @@ export function convertToStation(circle: HTMLElement, id: string, s: Plain.Stati
     circle.id = id;
     circle.classList.add('station-circle');
     circle.style.strokeWidth = circleBorder.toString();
-    let dataset = util.getSVGDataset(circle);
-    dataset['lat'] = s.location.lat.toString();
-    dataset['lng'] = s.location.lng.toString();
-    dataset['ru'] = s.name;
-    dataset['fi'] = s.altName;
+    util.setSVGDataset(circle, {
+        lat: s.location.lat,
+        lng: s.location.lng,
+        ru: s.name,
+        fi: s.altName
+    });
+    //circle.dataset['lat'] = s.location.lat.toString();
+    //circle.dataset['lng'] = s.location.lng.toString();
+    //circle.dataset['ru'] = s.name;
+    //circle.dataset['fi'] = s.altName;
 }
 
 export function makeCubicBezier(controlPoints: L.Point[]): HTMLElement {
