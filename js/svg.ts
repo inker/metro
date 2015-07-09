@@ -18,10 +18,11 @@ export function convertToStation(circle: HTMLElement, id: string, s: Plain.Stati
     circle.id = id;
     circle.classList.add('station-circle');
     circle.style.strokeWidth = circleBorder.toString();
-    circle.dataset['lat'] = s.location.lat.toString();
-    circle.dataset['lng'] = s.location.lng.toString();
-    circle.dataset['ru'] = s.name;
-    circle.dataset['fi'] = s.altName;
+    let dataset = util.getSVGDataset(circle);
+    dataset['lat'] = s.location.lat.toString();
+    dataset['lng'] = s.location.lng.toString();
+    dataset['ru'] = s.name;
+    dataset['fi'] = s.altName;
 }
 
 export function makeCubicBezier(controlPoints: L.Point[]): HTMLElement {
@@ -53,8 +54,9 @@ export function makePlate(circle: HTMLElement) {
     pole.setAttribute('y2', poleBounds.max.y.toString());
     pole.classList.add('plate-pole');
 
-    const ru = circle.dataset['ru'];
-    const fi = circle.dataset['fi'];
+    let dataset = util.getSVGDataset(circle);
+    const ru = dataset['ru'];
+    const fi = dataset['fi'];
 
     const maxLen = fi ? Math.max(ru.length, fi.length) : ru.length;
 
