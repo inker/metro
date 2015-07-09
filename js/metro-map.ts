@@ -73,7 +73,7 @@ class MetroMap {
             this.map.dragging.enable();
         });
         this.overlay.addEventListener('click', e => {
-            alert(e.x + ', ' + e.y);
+            this.map.fireEvent('click', {containerPoint: [e.x, e.y]});
         });
     }
 
