@@ -84,7 +84,12 @@ class MetroMap {
                 let pt = this.map.containerPointToLatLng(new L.Point(e.x, e.y));
                 polyline.addLatLng(pt).redraw();
                 marker.bindPopup("foo");
-                marker.on('mouseover', e => marker.openPopup());
+                marker.on('mouseover', e => {
+                    var popup = L.popup()
+                        .setLatLng(pt)
+                        .setContent('Popup')
+                        .openOn(this.map);
+                });
                 marker.on('mouseout', e => marker.closePopup());
                     //.on('dblclick', e => {
                     //    polyline.setLatLngs([]).redraw();
