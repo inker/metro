@@ -1,1 +1,529 @@
-!function t(e,r,n){function a(i,s){if(!r[i]){if(!e[i]){var l="function"==typeof require&&require;if(!s&&l)return l(i,!0);if(o)return o(i,!0);var u=new Error("Cannot find module '"+i+"'");throw u.code="MODULE_NOT_FOUND",u}var c=r[i]={exports:{}};e[i][0].call(c.exports,function(t){var r=e[i][1][t];return a(r?r:t)},c,c.exports,t,e,r,n)}return r[i].exports}for(var o="function"==typeof require&&require,i=0;i<n.length;i++)a(n[i]);return a}({1:[function(t,e,r){"use strict";{var n=t("./metro-map"),a=function(){return new L.TileLayer("https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png",{minZoom:9,id:"inker.mlo91c41",reuseTiles:!0,bounds:null,attribution:'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://mapbox.com">Mapbox</a>'})}(),o=function(){return new L.TileLayer("http://openmapsurfer.uni-hd.de/tiles/roads/x={x}&y={y}&z={z}",{minZoom:9,reuseTiles:!0,attribution:'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'})}();new n("map-container","json/graph.json",function(t){return 15>t?a:o})}console.log("user: "+navigator.userLanguage),console.log("language: "+navigator.language),console.log("browser: "+navigator.browserLanguage),console.log("system: "+navigator.systemLanguage)},{"./metro-map":2}],2:[function(t,e,r){"use strict";var n=window.L,a=t("./svg"),o=t("./util"),i=function(){function t(t,e,r){var a=11;this.tileLayersForZoom=r,this._tileLayer=r(11),this.map=new n.Map(t,{inertia:!1}).addLayer(this._tileLayer).setView(new n.LatLng(60,30),a).addControl(new n.Control.Scale({imperial:!1}));var o={I:r(10),II:r(16)},i=n.control.UniForm(o,null,{collapsed:!1,position:"topright"});i.addTo(this.map),i.renderUniformControl(),console.log("map should be created by now"),this.overlay=document.getElementById("overlay"),this.overlay.id="overlay",this.overlay.style.fill="white",this.overlay.style.zIndex="10",this.addListeners(),this.getGraphAndFillMap(e)}return t.prototype.addListeners=function(){var t=this,e=this.map.getPanes().mapPane,r=void 0;this.map.on("movestart",function(e){return t.map.touchZoom.disable()}),this.map.on("move",function(r){return t.overlay.style.transform=e.style.transform}),this.map.on("moveend",function(e){t.map.touchZoom.enable()}),this.map.on("zoomstart",function(e){t.map.dragging.disable(),r=t.map.getZoom(),t.overlay.style.opacity="0.5"}),this.map.on("zoomend",function(e){var n=t.tileLayersForZoom(t.map.getZoom());t.tileLayersForZoom(r)!=n&&(t.tileLayer=n),t.redrawNetwork(),t.overlay.style.opacity=null,t.map.dragging.enable()})},t.prototype.getGraphAndFillMap=function(t){var e=this,r=new XMLHttpRequest;r.onreadystatechange=function(){if(4===r.readyState){if(200!==r.status)return console.error("couldn't fetch the graph:\n"+r.status+": "+r.statusText);e.graph=JSON.parse(r.responseText),e.extendBounds(),e.map.setView(e.bounds.getCenter()),e.map.once("moveend",function(t){return e.redrawNetwork()})}},r.open("GET",t,!0),r.setRequestHeader("X-Requested-With","XMLHttpRequest"),r.send()},t.prototype.refillSVG=function(){for(var t=void 0;t=this.overlay.firstChild;)this.overlay.removeChild(t);var e=a.createSVGElement("g");e.id="origin",["paths","transfers","station-circles","dummy-circles"].forEach(function(t){var r=a.createSVGElement("g");r.id=t,e.appendChild(r)}),this.overlay.appendChild(e);var r=document.getElementById("transfers");r.classList.add("transfer")},t.prototype.extendBounds=function(){var t=this,e=this.graph.platforms[0].location;this.bounds=new n.LatLngBounds(e,e),this.graph.platforms.forEach(function(e){return t.bounds.extend(e.location)})},Object.defineProperty(t.prototype,"tileLayer",{get:function(){return this._tileLayer},set:function(t){var e=this;this.map.addLayer(t);var r=this._tileLayer;t.once("load",function(){return e.map.removeLayer(r)}),this._tileLayer=t},enumerable:!0,configurable:!0}),t.prototype.showPlate=function(t){var e=t.target,r=o.getSVGDataset(e),n=document.getElementById(r.platformId||r.stationId),i=a.makePlate(n),s=e.parentNode,l=s.parentNode;e.onmouseout=function(t){return l.removeChild(i)},l.insertBefore(i,s)},t.prototype.posOnSVG=function(t,e){var r=this.map.latLngToContainerPoint(e);return r.subtract(t.min)},t.prototype.updatePos=function(){var t=this.bounds.getNorthWest(),e=this.bounds.getSouthEast(),r=new n.Bounds(this.map.latLngToContainerPoint(t),this.map.latLngToContainerPoint(e)),a=o.parseTransform(this.overlay.style.transform),i=r.getSize(),s=r.min.subtract(a).subtract(i);this.overlay.style.left=s.x+"px",this.overlay.style.top=s.y+"px";var l=i,u=document.getElementById("origin");u.style.transform="translate3d("+l.x+"px, "+l.y+"px, 0px)";var c=i.multiplyBy(3);this.overlay.style.width=c.x+"px",this.overlay.style.height=c.y+"px"},t.prototype.redrawNetwork=function(){var t=this,e=this;n.control.zoom(),this.refillSVG(),this.updatePos(),console.log(o.getUserLanguage());var r=new Array(this.graph.platforms.length),i=document.createDocumentFragment(),s=document.getElementById("station-circles"),l=document.getElementById("dummy-circles"),u=document.getElementById("transfers"),c=this.map.getZoom(),p=this.bounds.getNorthWest(),d=this.bounds.getSouthEast(),g=new n.Bounds(this.map.latLngToContainerPoint(p),this.map.latLngToContainerPoint(d));10>c||(12>c?!function(){{var r=.5*(c-7),n=1.25*r,o=.4*n;document.getElementById("transfers")}t.graph.stations.forEach(function(t,r){var i=e.map.latLngToContainerPoint(t.location),u=i.subtract(g.min),c=a.makeCircle(u,n);a.convertToStation(c,"s-"+r,t,o),s.appendChild(c);var p=a.makeCircle(u,2*n);p.classList.add("invisible-circle"),p.setAttribute("data-stationId",c.id),l.appendChild(p),p.onmouseover=e.showPlate})}():!function(){var p=.5*(c-7),d=.4*p,m=new Set,h=document.getElementById("transfers");t.graph.stations.forEach(function(t,n){var u=o.findCircle(e.graph,t),c=[];if(t.platforms.forEach(function(t){var o=e.graph.platforms[t],s=e.posOnSVG(g,o.location),h=a.makeCircle(s,p);a.convertToStation(h,"p-"+t.toString(),o,d),h.setAttribute("data-station",n.toString());var f=a.makeCircle(s,2*p);f.classList.add("invisible-circle"),f.setAttribute("data-platformId",h.id),i.appendChild(h),l.appendChild(f),f.onmouseover=e.showPlate,2===o.spans.length&&!function(){for(var n=[s,s],a=[0,0],i=0;2>i;++i){var l=e.graph.spans[o.spans[i]],u=l.source===t?l.target:l.source,c=e.graph.platforms[u],p=e.posOnSVG(g,c.location);a[i]=s.distanceTo(p),n[i]=s.add(p).divideBy(2)}var d=n[1].subtract(n[0]).multiplyBy(a[0]/(a[0]+a[1])),m=n[0].add(d),h=s.subtract(m);r[t]=n.map(function(t){return t.add(h)})}(),u&&u.indexOf(o)>-1&&(c.push(s),m.add(t))}),u){var f=o.getCircumcenter(c),y=f.distanceTo(c[0]),v=a.makeCircle(f,y);v.classList.add("transfer"),v.style.strokeWidth=d.toString(),v.style.opacity="0.5",h.appendChild(v)}s.appendChild(i)});for(var f=0;f<t.graph.spans.length;++f){var y=t.graph.spans[f],v=t.graph.platforms[y.source],b=t.graph.platforms[y.target],x=v,S=b;if(2===v.spans.length){var w=f==v.spans[0]?v.spans[1]:v.spans[0],L=t.graph.spans[w],C=L.source==y.source?L.target:L.source;x=t.graph.platforms[C]}if(2===b.spans.length){var w=f==b.spans[0]?b.spans[1]:b.spans[0],L=t.graph.spans[w],E=L.source==y.target?L.target:L.source;S=t.graph.platforms[E]}{[x,v,b,S].map(function(t){return e.map.latLngToContainerPoint(t.location)}).map(function(t){return new n.Point(t.x-g.min.x,t.y-g.min.y)})}}t.graph.transfers.forEach(function(t){if(!m.has(t.source)||!m.has(t.target)){var r=e.graph.platforms[t.source],n=e.graph.platforms[t.target],o=e.posOnSVG(g,r.location),i=e.posOnSVG(g,n.location),s=a.createSVGElement("line");s.setAttribute("x1",o.x.toString()),s.setAttribute("y1",o.y.toString()),s.setAttribute("x2",i.x.toString()),s.setAttribute("y2",i.y.toString()),s.classList.add("transfer"),s.style.strokeWidth=d.toString(),s.style.opacity="0.5",u.appendChild(s)}})}())},t}();e.exports=i},{"./svg":3,"./util":4}],3:[function(t,e,r){"use strict";function n(t,e){var r=i("circle");return r.setAttribute("r",e.toString()),r.setAttribute("cy",t.y.toString()),r.setAttribute("cx",t.x.toString()),r}function a(t,e,r,n){t.id=e,t.classList.add("station-circle"),t.style.strokeWidth=n.toString(),c.setSVGDataset(t,{lat:r.location.lat,lng:r.location.lng,ru:r.name,fi:r.altName})}function o(t){if(4!==t.length)throw new Error("there should be 4 points");var e=i("path"),r=t.reduce(function(t,e,r){return""+t+(1===r?"C":" ")+e.x+","+e.y},"M");return e.setAttribute("d",r),e}function i(t){return document.createElementNS("http://www.w3.org/2000/svg",t)}function s(t){var e=u.createSVGElement("g"),r=u.createSVGElement("line"),n=new l.Point(Number(t.getAttribute("cx")),Number(t.getAttribute("cy"))),a=(Number(t.getAttribute("r")),new l.Point(4,8)),o=new l.Bounds(n,n.subtract(a));r.setAttribute("x1",o.min.x.toString()),r.setAttribute("y1",o.min.y.toString()),r.setAttribute("x2",o.max.x.toString()),r.setAttribute("y2",o.max.y.toString()),r.classList.add("plate-pole");var i=c.getSVGDataset(t),s=i.ru,p=i.fi,d=p?Math.max(s.length,p.length):s.length,g=u.createSVGElement("rect"),m=12,h=new l.Point(10+6*d,p?18+m:18);g.setAttribute("width",h.x.toString()),g.setAttribute("height",h.y.toString());var f=o.min.subtract(h);g.setAttribute("x",f.x.toString()),g.setAttribute("y",f.y.toString()),g.classList.add("plate-box");var y=u.createSVGElement("text"),v=u.createSVGElement("tspan"),b=n.subtract(new l.Point(3,h.y-12)).subtract(o.getSize());v.setAttribute("x",b.x.toString()),v.setAttribute("y",b.y.toString());var x=v.cloneNode();return x.setAttribute("y",(b.y+m).toString()),"fi"===c.getUserLanguage()?(v.textContent=p,x.textContent=s):(v.textContent=s,x.textContent=p),y.setAttribute("fill","black"),y.appendChild(v),y.appendChild(x),y.classList.add("plate-text"),e.appendChild(g),e.appendChild(r),e.appendChild(y),e.id="plate",e}var l=window.L,u=t("./svg"),c=t("./util");r.makeCircle=n,r.convertToStation=a,r.makeCubicBezier=o,r.createSVGElement=i,r.makePlate=s},{"./svg":3,"./util":4}],4:[function(t,e,r){"use strict";function n(){return(navigator.userLanguage||navigator.language).slice(0,2).toLowerCase()}function a(t){var e=t.match(/translate3d\((-?\d+)px,\s?(-?\d+)px,\s?(-?\d+)px\)/i);return e?new u.Point(Number(e[1]),Number(e[2])):new u.Point(0,0)}function o(t,e){var r=[];return e.platforms.forEach(function(e){return r.push(t.platforms[e])}),3===r.length&&r.every(function(t){return 2===t.transfers.length})?r:null}function i(t){if(3!==t.length)throw new Error("must have 3 vertices");console.log(t[1]);var e=t[1].subtract(t[0]),r=t[2].subtract(t[0]),n=e.x*e.x+e.y*e.y,a=r.x*r.x+r.y*r.y;return new u.Point(r.y*n-e.y*a,e.x*a-r.x*n).divideBy(2*(e.x*r.y-e.y*r.x)).add(t[0])}function s(t){if(t.dataset)return t.dataset;for(var e=t.attributes,r={},n=0;n<e.length;++n){var a=e[n].value;a.startsWith("data-")&&(r[a.slice(5)]=t.getAttribute(a))}return r}function l(t,e){Object.keys(e).forEach(function(r){return t.setAttribute("data-"+r,e[r])})}var u=window.L;r.getUserLanguage=n,r.parseTransform=a,r.findCircle=o,r.getCircumcenter=i,r.getSVGDataset=s,r.setSVGDataset=l},{}]},{},[1]);
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
+var MetroMap = require('./metro-map');
+//import MetroMap from './metro-map';
+var mapbox = (function () {
+    return new L.TileLayer('https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png', {
+        minZoom: 9,
+        id: 'inker.mlo91c41',
+        //detectRetina: true,
+        reuseTiles: true,
+        bounds: null,
+        attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://mapbox.com">Mapbox</a>'
+    });
+})();
+var openMapSurfer = (function () {
+    return new L.TileLayer('http://openmapsurfer.uni-hd.de/tiles/roads/x={x}&y={y}&z={z}', {
+        minZoom: 9,
+        reuseTiles: true,
+        attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    });
+})();
+var metroMap = new MetroMap('map-container', 'json/graph.json', function (zoom) {
+    return zoom < 15 ? mapbox : openMapSurfer;
+});
+console.log('user: ' + navigator.userLanguage);
+console.log('language: ' + navigator.language);
+console.log('browser: ' + navigator.browserLanguage);
+console.log('system: ' + navigator.systemLanguage);
+
+
+},{"./metro-map":2}],2:[function(require,module,exports){
+'use strict';
+
+var L = window.L;
+var svg = require('./svg');
+var util = require('./util');
+//import 'leaflet';
+//import * as svg from './svg';
+//import * as util from '../../util';
+//import Plain from './plain-objects';
+var MetroMap = (function () {
+    function MetroMap(containerId, kml, tileLayersForZoom) {
+        var zoom = 11;
+        this.tileLayersForZoom = tileLayersForZoom;
+        this._tileLayer = tileLayersForZoom(11);
+        this.map = new L.Map(containerId, { inertia: false }).addLayer(this._tileLayer).setView(new L.LatLng(60, 30), zoom).addControl(new L.Control.Scale({ imperial: false }));
+        var tileLayers = {
+            'I': tileLayersForZoom(10),
+            'II': tileLayersForZoom(16)
+        };
+        var layerControl = L.control['UniForm'](tileLayers, null, { collapsed: false, position: 'topright' });
+        // add control widget to map and html dom.
+        layerControl.addTo(this.map);
+        // update the control widget to the specific theme.
+        layerControl.renderUniformControl();
+        console.log('map should be created by now');
+        //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
+        //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
+        this.overlay = document.getElementById('overlay');
+        //this.map.getContainer().appendChild(this.overlay);
+        this.overlay.id = 'overlay';
+        //console.log(this.overlay);
+        this.overlay.style.fill = 'white';
+        this.overlay.style.zIndex = '10';
+        //this.refillSVG(); not required here
+        this.addListeners();
+        this.getGraphAndFillMap(kml);
+    }
+    MetroMap.prototype.addListeners = function () {
+        var _this = this;
+        var mapPane = this.map.getPanes().mapPane;
+        var prevZoom = undefined;
+        this.map.on('movestart', function (e) {
+            return _this.map.touchZoom.disable();
+        });
+        this.map.on('move', function (e) {
+            return _this.overlay.style.transform = mapPane.style.transform;
+        });
+        this.map.on('moveend', function (e) {
+            _this.map.touchZoom.enable();
+        });
+        this.map.on('zoomstart', function (e) {
+            _this.map.dragging.disable();
+            prevZoom = _this.map.getZoom();
+            _this.overlay.style.opacity = '0.5';
+        });
+        this.map.on('zoomend', function (e) {
+            var possibleTileLayer = _this.tileLayersForZoom(_this.map.getZoom());
+            if (_this.tileLayersForZoom(prevZoom) != possibleTileLayer) {
+                _this.tileLayer = possibleTileLayer;
+            }
+            _this.redrawNetwork();
+            _this.overlay.style.opacity = null;
+            _this.map.dragging.enable();
+        });
+    };
+    MetroMap.prototype.getGraphAndFillMap = function (kml) {
+        var _this = this;
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status !== 200) {
+                    return console.error('couldn\'t fetch the graph:\n' + xhr.status + ': ' + xhr.statusText);
+                }
+                _this.graph = JSON.parse(xhr.responseText);
+                _this.extendBounds();
+                _this.map.setView(_this.bounds.getCenter());
+                _this.map.once('moveend', function (e) {
+                    return _this.redrawNetwork();
+                });
+            }
+        };
+        xhr.open('GET', kml, true);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.send();
+    };
+    MetroMap.prototype.refillSVG = function () {
+        var child = undefined;
+        while (child = this.overlay.firstChild) {
+            this.overlay.removeChild(child);
+        }
+        var origin = svg.createSVGElement('g');
+        origin.id = 'origin';
+        ['paths', 'transfers', 'station-circles', 'dummy-circles'].forEach(function (groupId) {
+            var group = svg.createSVGElement('g');
+            group.id = groupId;
+            origin.appendChild(group);
+        });
+        this.overlay.appendChild(origin);
+        var transfers = document.getElementById('transfers');
+        transfers.classList.add('transfer');
+    };
+    MetroMap.prototype.extendBounds = function () {
+        var _this = this;
+        var a = this.graph.platforms[0].location;
+        this.bounds = new L.LatLngBounds(a, a);
+        this.graph.platforms.forEach(function (platform) {
+            return _this.bounds.extend(platform.location);
+        });
+    };
+    Object.defineProperty(MetroMap.prototype, 'tileLayer', {
+        get: function get() {
+            return this._tileLayer;
+        },
+        set: function set(tileLayer) {
+            var _this = this;
+            this.map.addLayer(tileLayer);
+            var oldLayer = this._tileLayer;
+            tileLayer.once('load', function () {
+                return _this.map.removeLayer(oldLayer);
+            });
+            this._tileLayer = tileLayer;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    MetroMap.prototype.showPlate = function (event) {
+        var dummyCircle = event.target;
+        var dataset = util.getSVGDataset(dummyCircle);
+        //const dataset = dummyCircle.dataset;
+        var circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
+        var g = svg.makePlate(circle);
+        var dummyCircles = dummyCircle.parentNode;
+        var container = dummyCircles.parentNode;
+        dummyCircle.onmouseout = function (e) {
+            return container.removeChild(g);
+        };
+        container.insertBefore(g, dummyCircles);
+    };
+    /**
+     *
+     * @param SVGBounds
+     * @param location
+     * @returns {Point}
+     */
+    MetroMap.prototype.posOnSVG = function (SVGBounds, location) {
+        var pos = this.map.latLngToContainerPoint(location);
+        return pos.subtract(SVGBounds.min);
+    };
+    MetroMap.prototype.updatePos = function () {
+        var nw = this.bounds.getNorthWest();
+        var se = this.bounds.getSouthEast();
+        // svg bounds in pixels relative to container
+        var pixelBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
+        var transform = util.parseTransform(this.overlay.style.transform);
+        var pixelBoundsSize = pixelBounds.getSize();
+        var topLeft = pixelBounds.min.subtract(transform).subtract(pixelBoundsSize);
+        this.overlay.style.left = topLeft.x + 'px';
+        this.overlay.style.top = topLeft.y + 'px';
+        var originShift = pixelBoundsSize;
+        var origin = document.getElementById('origin');
+        //TODO: test which one is faster
+        origin.style.transform = 'translate3d(' + originShift.x + 'px, ' + originShift.y + 'px, 0px)';
+        //origin.style.left = originShift.x + 'px';
+        //origin.style.right = originShift.y + 'px';
+        var tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
+        this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
+        this.overlay.style.height = tripleSvgBoundsSize.y + 'px';
+    };
+    /**
+     *  lineWidth = (zoom - 7) * 0.5
+     *  9 - only lines (1px)
+     *  10 - lines (1.5px) & roundels (2+1px)
+     *  11 - lines (2px) & roundels (2+2px)
+     *  12 - lines (2.5px), platforms (2+1px) & transfers (2px)
+     *  ...
+     */
+    MetroMap.prototype.redrawNetwork = function () {
+        var _this2 = this;
+
+        var _this = this;
+        L.control.zoom();
+        this.refillSVG();
+        this.updatePos();
+        console.log(util.getUserLanguage());
+        var whiskers = new Array(this.graph.platforms.length);
+        var circleFrag = document.createDocumentFragment();
+        var stationCircles = document.getElementById('station-circles');
+        var dummyCircles = document.getElementById('dummy-circles');
+        var transfers = document.getElementById('transfers');
+        var zoom = this.map.getZoom();
+        var nw = this.bounds.getNorthWest();
+        var se = this.bounds.getSouthEast();
+        var svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
+        if (zoom < 10) {} else if (zoom < 12) {
+            (function () {
+                // elements style parameters
+                var lineWidth = (zoom - 7) * 0.5;
+                var circleRadius = lineWidth * 1.25;
+                var circleBorder = circleRadius * 0.4;
+                var transfers = document.getElementById('transfers');
+                _this2.graph.stations.forEach(function (station, stationIndex) {
+                    var pos = _this.map.latLngToContainerPoint(station.location);
+                    var posOnSVG = pos.subtract(svgBounds.min);
+                    var ci = svg.makeCircle(posOnSVG, circleRadius);
+                    svg.convertToStation(ci, 's-' + stationIndex, station, circleBorder);
+                    stationCircles.appendChild(ci);
+                    var dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
+                    dummyCircle.classList.add('invisible-circle');
+                    dummyCircle.setAttribute('data-stationId', ci.id);
+                    //dummyCircle.dataset['stationId'] = ci.id;
+                    dummyCircles.appendChild(dummyCircle);
+                    dummyCircle.onmouseover = _this.showPlate;
+                    //dummyCircle.onmouseout = e => this.overlay.removeChild(document.getElementById('plate'));
+                });
+            })();
+        } else {
+            (function () {
+                var lineWidth = (zoom - 7) * 0.5;
+                var circleRadius = (zoom - 7) * 0.5;
+                var circleBorder = circleRadius * 0.4;
+                var platformsHavingCircles = new Set();
+                var beziers = [];
+                var transferSegments = document.getElementById('transfers');
+                _this2.graph.stations.forEach(function (station, stationIndex) {
+                    var circular = util.findCircle(_this.graph, station);
+                    var coords = [];
+                    station.platforms.forEach(function (platformNum) {
+                        var platform = _this.graph.platforms[platformNum];
+                        var posOnSVG = _this.posOnSVG(svgBounds, platform.location);
+                        var ci = svg.makeCircle(posOnSVG, circleRadius);
+                        svg.convertToStation(ci, 'p-' + platformNum.toString(), platform, circleBorder);
+                        ci.setAttribute('data-station', stationIndex.toString());
+                        //ci.dataset['station'] = stationIndex.toString();
+                        var dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
+                        dummyCircle.classList.add('invisible-circle');
+                        //dummyCircle.dataset['platformId'] = ci.id;
+                        dummyCircle.setAttribute('data-platformId', ci.id);
+                        circleFrag.appendChild(ci);
+                        dummyCircles.appendChild(dummyCircle);
+                        dummyCircle.onmouseover = _this.showPlate;
+                        //dummyCircle.onmouseout = e => this.overlay.removeChild(document.getElementById('plate'));
+                        // control points
+                        if (platform.spans.length === 2) {
+                            (function () {
+                                var midPts = [posOnSVG, posOnSVG];
+                                var lns = [0, 0];
+                                for (var i = 0; i < 2; ++i) {
+                                    var incidentSpan = _this.graph.spans[platform.spans[i]];
+                                    var neighborNum = incidentSpan.source === platformNum ? incidentSpan.target : incidentSpan.source;
+                                    var neighbor = _this.graph.platforms[neighborNum];
+                                    var neighborOnSVG = _this.posOnSVG(svgBounds, neighbor.location);
+                                    lns[i] = posOnSVG.distanceTo(neighborOnSVG);
+                                    midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
+                                }
+                                var mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lns[0] / (lns[0] + lns[1]));
+                                var mm = midPts[0].add(mdiff);
+                                var diff = posOnSVG.subtract(mm);
+                                whiskers[platformNum] = midPts.map(function (midPt) {
+                                    return midPt.add(diff);
+                                });
+                            })();
+                        } else {}
+                        if (circular && circular.indexOf(platform) > -1) {
+                            coords.push(posOnSVG);
+                            platformsHavingCircles.add(platformNum);
+                        }
+                    });
+                    if (circular) {
+                        var circumcenter = util.getCircumcenter(coords);
+                        var circumradius = circumcenter.distanceTo(coords[0]);
+                        var circumcircle = svg.makeCircle(circumcenter, circumradius);
+                        circumcircle.classList.add('transfer');
+                        circumcircle.style.strokeWidth = circleBorder.toString();
+                        circumcircle.style.opacity = '0.5';
+                        transferSegments.appendChild(circumcircle);
+                    } else {}
+                    stationCircles.appendChild(circleFrag);
+                });
+                for (var i = 0; i < _this2.graph.spans.length; ++i) {
+                    var span = _this2.graph.spans[i];
+                    var src = _this2.graph.platforms[span.source];
+                    var trg = _this2.graph.platforms[span.target];
+                    var transSrc = src,
+                        transTrg = trg;
+                    if (src.spans.length === 2) {
+                        var otherSpanNum = i == src.spans[0] ? src.spans[1] : src.spans[0];
+                        var otherSpan = _this2.graph.spans[otherSpanNum];
+                        var transSrcNum = otherSpan.source == span.source ? otherSpan.target : otherSpan.source;
+                        transSrc = _this2.graph.platforms[transSrcNum];
+                    }
+                    if (trg.spans.length === 2) {
+                        var otherSpanNum = i == trg.spans[0] ? trg.spans[1] : trg.spans[0];
+                        var otherSpan = _this2.graph.spans[otherSpanNum];
+                        var transTrgNum = otherSpan.source == span.target ? otherSpan.target : otherSpan.source;
+                        transTrg = _this2.graph.platforms[transTrgNum];
+                    }
+                    var posOnSVG = [transSrc, src, trg, transTrg].map(function (item) {
+                        return _this.map.latLngToContainerPoint(item.location);
+                    }).map(function (p) {
+                        return new L.Point(p.x - svgBounds.min.x, p.y - svgBounds.min.y);
+                    });
+                }
+                _this2.graph.transfers.forEach(function (tr) {
+                    if (platformsHavingCircles.has(tr.source) && platformsHavingCircles.has(tr.target)) return;
+                    var pl1 = _this.graph.platforms[tr.source];
+                    var pl2 = _this.graph.platforms[tr.target];
+                    var posOnSVG1 = _this.posOnSVG(svgBounds, pl1.location);
+                    var posOnSVG2 = _this.posOnSVG(svgBounds, pl2.location);
+                    var transfer = svg.createSVGElement('line');
+                    transfer.setAttribute('x1', posOnSVG1.x.toString());
+                    transfer.setAttribute('y1', posOnSVG1.y.toString());
+                    transfer.setAttribute('x2', posOnSVG2.x.toString());
+                    transfer.setAttribute('y2', posOnSVG2.y.toString());
+                    transfer.classList.add('transfer');
+                    transfer.style.strokeWidth = circleBorder.toString();
+                    transfer.style.opacity = '0.5';
+                    transfers.appendChild(transfer);
+                });
+            })();
+        }
+    };
+    return MetroMap;
+})();
+module.exports = MetroMap;
+//export default MetroMap;
+
+
+},{"./svg":3,"./util":4}],3:[function(require,module,exports){
+'use strict';
+
+var L = window.L;
+var svg = require('./svg');
+var util = require('./util');
+//import L from 'leaflet';
+//import * as svg from './svg';
+//import * as util from '../../util';
+function makeCircle(position, radius) {
+    var ci = createSVGElement('circle');
+    ci.setAttribute('r', radius.toString());
+    ci.setAttribute('cy', position.y.toString());
+    ci.setAttribute('cx', position.x.toString());
+    return ci;
+}
+exports.makeCircle = makeCircle;
+function convertToStation(circle, id, s, circleBorder) {
+    circle.id = id;
+    circle.classList.add('station-circle');
+    circle.style.strokeWidth = circleBorder.toString();
+    util.setSVGDataset(circle, {
+        lat: s.location.lat,
+        lng: s.location.lng,
+        ru: s.name,
+        fi: s.altName
+    });
+    //circle.dataset['lat'] = s.location.lat.toString();
+    //circle.dataset['lng'] = s.location.lng.toString();
+    //circle.dataset['ru'] = s.name;
+    //circle.dataset['fi'] = s.altName;
+}
+exports.convertToStation = convertToStation;
+function makeCubicBezier(controlPoints) {
+    if (controlPoints.length !== 4) {
+        throw new Error('there should be 4 points');
+    }
+    var path = createSVGElement('path');
+    var d = controlPoints.reduce(function (prev, cp, i) {
+        return '' + prev + (i === 1 ? 'C' : ' ') + cp.x + ',' + cp.y;
+    }, 'M');
+    path.setAttribute('d', d);
+    return path;
+}
+exports.makeCubicBezier = makeCubicBezier;
+function createSVGElement(tagName) {
+    return document.createElementNS('http://www.w3.org/2000/svg', tagName);
+}
+exports.createSVGElement = createSVGElement;
+function makePlate(circle) {
+    var plateGroup = svg.createSVGElement('g');
+    var pole = svg.createSVGElement('line');
+    var c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
+    var r = Number(circle.getAttribute('r'));
+    var poleSize = new L.Point(4, 8);
+    var poleBounds = new L.Bounds(c, c.subtract(poleSize));
+    pole.setAttribute('x1', poleBounds.min.x.toString());
+    pole.setAttribute('y1', poleBounds.min.y.toString());
+    pole.setAttribute('x2', poleBounds.max.x.toString());
+    pole.setAttribute('y2', poleBounds.max.y.toString());
+    pole.classList.add('plate-pole');
+    var dataset = util.getSVGDataset(circle);
+    var ru = dataset['ru'];
+    var fi = dataset['fi'];
+    var maxLen = fi ? Math.max(ru.length, fi.length) : ru.length;
+    var rect = svg.createSVGElement('rect');
+    var spacing = 12;
+    var rectSize = new L.Point(10 + maxLen * 6, fi ? 18 + spacing : 18);
+    rect.setAttribute('width', rectSize.x.toString());
+    rect.setAttribute('height', rectSize.y.toString());
+    var rectUpperLeft = poleBounds.min.subtract(rectSize);
+    rect.setAttribute('x', rectUpperLeft.x.toString());
+    rect.setAttribute('y', rectUpperLeft.y.toString());
+    rect.classList.add('plate-box');
+    var text = svg.createSVGElement('text');
+    var t1 = svg.createSVGElement('tspan');
+    //t1.classList.add('plate-text');
+    var textUpperLeft = c.subtract(new L.Point(3, rectSize.y - 12)).subtract(poleBounds.getSize());
+    t1.setAttribute('x', textUpperLeft.x.toString());
+    t1.setAttribute('y', textUpperLeft.y.toString());
+    var t2 = t1.cloneNode();
+    t2.setAttribute('y', (textUpperLeft.y + spacing).toString());
+    if (util.getUserLanguage() === 'fi') {
+        t1.textContent = fi;
+        t2.textContent = ru;
+    } else {
+        t1.textContent = ru;
+        t2.textContent = fi;
+    }
+    text.setAttribute('fill', 'black');
+    text.appendChild(t1);
+    text.appendChild(t2);
+    //text.style.color = 'black';
+    text.classList.add('plate-text');
+    plateGroup.appendChild(rect);
+    plateGroup.appendChild(pole);
+    plateGroup.appendChild(text);
+    plateGroup.id = 'plate';
+    return plateGroup;
+}
+exports.makePlate = makePlate;
+
+
+},{"./svg":3,"./util":4}],4:[function(require,module,exports){
+/// <reference path="./../typings/tsd.d.ts" />
+'use strict';
+
+var L = window.L;
+function getUserLanguage() {
+    return (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();
+}
+exports.getUserLanguage = getUserLanguage;
+function parseTransform(val) {
+    var matches = val.match(/translate3d\((-?\d+)px,\s?(-?\d+)px,\s?(-?\d+)px\)/i);
+    return matches ? new L.Point(Number(matches[1]), Number(matches[2])) : new L.Point(0, 0);
+}
+exports.parseTransform = parseTransform;
+function findCircle(graph, station) {
+    var platforms = [];
+    station.platforms.forEach(function (platformNum) {
+        return platforms.push(graph.platforms[platformNum]);
+    });
+    if (platforms.length === 3 && platforms.every(function (platform) {
+        return platform.transfers.length === 2;
+    })) {
+        return platforms;
+    }
+    return null;
+}
+exports.findCircle = findCircle;
+function getCircumcenter(positions) {
+    if (positions.length !== 3) {
+        throw new Error('must have 3 vertices');
+    }
+    console.log(positions[1]);
+    var b = positions[1].subtract(positions[0]);
+    var c = positions[2].subtract(positions[0]);
+    var bDot = b.x * b.x + b.y * b.y;
+    var cDot = c.x * c.x + c.y * c.y;
+    return new L.Point(c.y * bDot - b.y * cDot, b.x * cDot - c.x * bDot).divideBy(2.0 * (b.x * c.y - b.y * c.x)).add(positions[0]);
+}
+exports.getCircumcenter = getCircumcenter;
+function getSVGDataset(el) {
+    if (el['dataset']) {
+        return el['dataset'];
+    }
+    var attrs = el.attributes;
+    var dataset = {};
+    for (var i = 0; i < attrs.length; ++i) {
+        var attr = attrs[i].value;
+        if (attr.startsWith('data-')) {
+            dataset[attr.slice(5)] = el.getAttribute(attr);
+        }
+    }
+    return dataset;
+}
+exports.getSVGDataset = getSVGDataset;
+function setSVGDataset(el, dataset) {
+    Object.keys(dataset).forEach(function (key) {
+        return el.setAttribute('data-' + key, dataset[key]);
+    });
+}
+exports.setSVGDataset = setSVGDataset;
+//export function getSegmentLength(source: L.Point, target: L.Point): number {
+//    const a = target.subtract(source);
+//    return Math.sqrt(a.x * a.x + a.y * a.y);
+//}
+
+
+},{}]},{},[1]);
