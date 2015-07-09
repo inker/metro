@@ -126,8 +126,9 @@ ${xhr.status}: ${xhr.statusText}`);
     }
 
     private showPlate(event: MouseEvent) {
-        let dummyCircle: HTMLElement = <any>event.target;
-        const dataset = dummyCircle.dataset;
+        let dummyCircle: SVGElement = <any>event.target;
+        const dataset = util.getSVGDataset(dummyCircle);
+        //const dataset = dummyCircle.dataset;
 
         let circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
         let g = svg.makePlate(circle);
@@ -223,7 +224,8 @@ ${xhr.status}: ${xhr.statusText}`);
 
                 let dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
                 dummyCircle.classList.add('invisible-circle');
-                dummyCircle.dataset['stationId'] = ci.id;
+                dummyCircle.setAttribute('data-stationId', ci.id);
+                //dummyCircle.dataset['stationId'] = ci.id;
                 dummyCircles.appendChild(dummyCircle);
 
                 dummyCircle.onmouseover = this.showPlate;
@@ -248,11 +250,13 @@ ${xhr.status}: ${xhr.statusText}`);
 
                     let ci = svg.makeCircle(posOnSVG, circleRadius);
                     svg.convertToStation(ci, 'p-' + platformNum.toString(), platform, circleBorder);
-                    ci.dataset['station'] = stationIndex.toString();
+                    ci.setAttribute('data-station', stationIndex.toString());
+                    //ci.dataset['station'] = stationIndex.toString();
 
                     let dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
                     dummyCircle.classList.add('invisible-circle');
-                    dummyCircle.dataset['platformId'] = ci.id;
+                    //dummyCircle.dataset['platformId'] = ci.id;
+                    dummyCircle.setAttribute('data-platformId', ci.id);
                     circleFrag.appendChild(ci);
                     dummyCircles.appendChild(dummyCircle);
 
