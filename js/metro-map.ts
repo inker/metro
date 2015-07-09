@@ -83,14 +83,6 @@ class MetroMap {
                 if (!e.shiftKey) return;
                 let pt = this.map.containerPointToLatLng(new L.Point(e.x, e.y));
                 polyline.addLatLng(pt).redraw();
-                marker.bindPopup("foo");
-                marker.on('mouseover', e => {
-                    var popup = L.popup()
-                        .setLatLng(pt)
-                        .setContent('Popup')
-                        .openOn(this.map);
-                    console.log('foobar');
-                });
                 marker.on('mouseout', e => marker.closePopup());
                     //.on('dblclick', e => {
                     //    polyline.setLatLngs([]).redraw();
@@ -103,10 +95,10 @@ class MetroMap {
                     for (let i = 1; i < pts.length; ++i) {
                         distance += pts[i - 1].distanceTo(pts[i]);
                     }
-                    marker.setLatLng(pt)
-                        .unbindPopup()
-                        .bindPopup(distance.toPrecision(1) + 'm')
-                        .redraw();
+                    L.popup()
+                        .setLatLng(pt)
+                        .setContent('Popup')
+                        .openOn(this.map);
                 }
             });
         })();
