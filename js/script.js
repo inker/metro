@@ -455,14 +455,11 @@ function makePlate(circle) {
     var ru = dataset['ru'];
     var fi = dataset['fi'];
     var maxLen = fi ? Math.max(ru.length, fi.length) : ru.length;
-    var foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+    var foreignObject = createSVGElement('foreignObject');
+    foreignObject.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
     var div = document.createElementNS('http://www.w3.org/2000/svg', 'div');
     if (fi) {
-        if (util.getUserLanguage() === 'fi') {
-            div.innerHTML = fi + '<br>' + ru;
-        } else {
-            div.innerHTML = ru;
-        }
+        div.innerHTML = util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru;
     } else {
         div.innerHTML = ru;
     }
