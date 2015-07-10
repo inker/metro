@@ -473,7 +473,7 @@ function makePlate(circle) {
     var t2 = t1.cloneNode();
     t2.setAttribute('y', (textUpperLeft.y + spacing).toString());
     if (util.getUserLanguage() === 'fi') {
-        t1.textContent = fi;
+        t1.textContent = fi || ru;
         t2.textContent = ru;
     } else {
         t1.textContent = ru;
