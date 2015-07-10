@@ -64,6 +64,22 @@ export function makePlate(circle: HTMLElement) {
     const fi = dataset['fi'];
 
     const maxLen = fi ? Math.max(ru.length, fi.length) : ru.length;
+    
+    let foreignObject = <HTMLElement>document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+    let div = <HTMLElement>document.createElementNS('http://www.w3.org/2000/svg', 'div');
+    if (fi) {
+        if (util.getUserLanguage() === 'fi') {
+            div.innerHTML = fi + '<br>' + ru;
+        } else {
+            div.innerHTML = ru;
+        }
+    } else {
+        div.innerHTML = ru;
+    }
+    div.classList.add('plate-box');
+    div.classList.add('plate-text');
+    
+    foreignObject.appendChild(div);
 
     let rect = svg.createSVGElement('rect');
     const spacing = 12;
@@ -95,9 +111,17 @@ export function makePlate(circle: HTMLElement) {
     text.appendChild(t2);
     //text.style.color = 'black';
     text.classList.add('plate-text');
-    plateGroup.appendChild(rect);
+    
+    let plate = svg.createSVGElement('g');
+    plate.appendChild(rect);
+    plate.appendChild(text);
+
+    let sw = svg.createSVGElement('switch');
+    sw.appendChild(foreignObject);
+    sw.appendChild(plate);
+    
     plateGroup.appendChild(pole);
-    plateGroup.appendChild(text);
+    plateGroup.appendChild(sw);
     plateGroup.id = 'plate';
     return plateGroup;
 }

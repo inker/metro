@@ -455,6 +455,20 @@ function makePlate(circle) {
     var ru = dataset['ru'];
     var fi = dataset['fi'];
     var maxLen = fi ? Math.max(ru.length, fi.length) : ru.length;
+    var foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+    var div = document.createElementNS('http://www.w3.org/2000/svg', 'div');
+    if (fi) {
+        if (util.getUserLanguage() === 'fi') {
+            div.innerHTML = fi + '<br>' + ru;
+        } else {
+            div.innerHTML = ru;
+        }
+    } else {
+        div.innerHTML = ru;
+    }
+    div.classList.add('plate-box');
+    div.classList.add('plate-text');
+    foreignObject.appendChild(div);
     var rect = svg.createSVGElement('rect');
     var spacing = 12;
     var rectSize = new L.Point(10 + maxLen * 6, fi ? 18 + spacing : 18);
@@ -484,9 +498,14 @@ function makePlate(circle) {
     text.appendChild(t2);
     //text.style.color = 'black';
     text.classList.add('plate-text');
-    plateGroup.appendChild(rect);
+    var plate = svg.createSVGElement('g');
+    plate.appendChild(rect);
+    plate.appendChild(text);
+    var sw = svg.createSVGElement('switch');
+    sw.appendChild(foreignObject);
+    sw.appendChild(plate);
     plateGroup.appendChild(pole);
-    plateGroup.appendChild(text);
+    plateGroup.appendChild(sw);
     plateGroup.id = 'plate';
     return plateGroup;
 }
