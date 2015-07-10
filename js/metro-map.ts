@@ -24,15 +24,11 @@ class MetroMap {
             .setView(new L.LatLng(60, 30), zoom)
             .addControl(new L.Control.Scale({imperial: false}));
 
-        let tileLayers = {
+        this.addLayerControl({
             'I': tileLayersForZoom(10),
             'II': tileLayersForZoom(16)
-        };
-        let layerControl = L.control['UniForm'](tileLayers, null, { collapsed: false, position: 'topright' });
-        // add control widget to map and html dom.
-        layerControl.addTo(this.map);
-        // update the control widget to the specific theme.
-        layerControl.renderUniformControl();
+        });
+
 
         //L.Control['measureControl']().addTo(this.map);
 
@@ -72,36 +68,44 @@ class MetroMap {
             this.overlay.style.opacity = null;
             this.map.dragging.enable();
         });
-        (() => {
-            let overlay = document.getElementById('overlay');
-            let polyline = new L.Polyline([], { color: 'red' });
-            polyline.addTo(this.map);
-            let marker = new L.CircleMarker([60, 30]);
-            let text = '0m';
-            //marker.on('mouseover', e => popup.)
-            overlay.addEventListener('click', e => {
-                if (!e.shiftKey) return;
-                let pt = this.map.containerPointToLatLng(new L.Point(e.x, e.y));
-                polyline.addLatLng(pt).redraw();
-                marker.on('mouseout', e => marker.closePopup());
-                    //.on('dblclick', e => {
-                    //    polyline.setLatLngs([]).redraw();
-                    //    this.map.removeLayer(marker);
-                    //})
-                marker.addTo(this.map);
-                let pts = polyline.getLatLngs();
-                if (pts.length > 1) {
-                    let distance = 0;
-                    for (let i = 1; i < pts.length; ++i) {
-                        distance += pts[i - 1].distanceTo(pts[i]);
-                    }
-                    L.popup()
-                        .setLatLng(pt)
-                        .setContent('Popup')
-                        .openOn(this.map);
+    }
+
+    private addLayerControl(tileLayers: any, otherLayers?: any): void {
+        let layerControl = L.control['UniForm'](tileLayers, otherLayers || null, { collapsed: false, position: 'topright' });
+        // add control widget to map and html dom.
+        layerControl.addTo(this.map);
+        // update the control widget to the specific theme.
+        layerControl.renderUniformControl();
+    }
+
+    private addMeasurementControl(): void {
+        let polyline = new L.Polyline([], { color: 'red' });
+        polyline.addTo(this.map);
+        let marker = new L.CircleMarker([60, 30]);
+        let text = '0m';
+        //marker.on('mouseover', e => popup.)
+        this.overlay.addEventListener('click', e => {
+            if (!e.shiftKey) return;
+            let pt = this.map.containerPointToLatLng(new L.Point(e.x, e.y));
+            polyline.addLatLng(pt).redraw();
+            marker.on('mouseout', e => marker.closePopup());
+            //.on('dblclick', e => {
+            //    polyline.setLatLngs([]).redraw();
+            //    this.map.removeLayer(marker);
+            //})
+            marker.addTo(this.map);
+            let pts = polyline.getLatLngs();
+            if (pts.length > 1) {
+                let distance = 0;
+                for (let i = 1; i < pts.length; ++i) {
+                    distance += pts[i - 1].distanceTo(pts[i]);
                 }
-            });
-        })();
+                L.popup()
+                    .setLatLng(pt)
+                    .setContent('Popup')
+                    .openOn(this.map);
+            }
+        });
     }
 
     private getGraphAndFillMap(kml: string): void {

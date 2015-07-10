@@ -45,15 +45,10 @@ var MetroMap = (function () {
         this.tileLayersForZoom = tileLayersForZoom;
         this._tileLayer = tileLayersForZoom(11);
         this.map = new L.Map(containerId, { inertia: false }).addLayer(this._tileLayer).setView(new L.LatLng(60, 30), zoom).addControl(new L.Control.Scale({ imperial: false }));
-        var tileLayers = {
+        this.addLayerControl({
             'I': tileLayersForZoom(10),
             'II': tileLayersForZoom(16)
-        };
-        var layerControl = L.control['UniForm'](tileLayers, null, { collapsed: false, position: 'topright' });
-        // add control widget to map and html dom.
-        layerControl.addTo(this.map);
-        // update the control widget to the specific theme.
-        layerControl.renderUniformControl();
+        });
         //L.Control['measureControl']().addTo(this.map);
         console.log('map should be created by now');
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
@@ -95,35 +90,42 @@ var MetroMap = (function () {
             _this.overlay.style.opacity = null;
             _this.map.dragging.enable();
         });
-        (function () {
-            var overlay = document.getElementById('overlay');
-            var polyline = new L.Polyline([], { color: 'red' });
-            polyline.addTo(_this.map);
-            var marker = new L.CircleMarker([60, 30]);
-            var text = '0m';
-            //marker.on('mouseover', e => popup.)
-            overlay.addEventListener('click', function (e) {
-                if (!e.shiftKey) return;
-                var pt = _this.map.containerPointToLatLng(new L.Point(e.x, e.y));
-                polyline.addLatLng(pt).redraw();
-                marker.on('mouseout', function (e) {
-                    return marker.closePopup();
-                });
-                //.on('dblclick', e => {
-                //    polyline.setLatLngs([]).redraw();
-                //    this.map.removeLayer(marker);
-                //})
-                marker.addTo(_this.map);
-                var pts = polyline.getLatLngs();
-                if (pts.length > 1) {
-                    var distance = 0;
-                    for (var i = 1; i < pts.length; ++i) {
-                        distance += pts[i - 1].distanceTo(pts[i]);
-                    }
-                    L.popup().setLatLng(pt).setContent('Popup').openOn(_this.map);
-                }
+    };
+    MetroMap.prototype.addLayerControl = function (tileLayers, otherLayers) {
+        var layerControl = L.control['UniForm'](tileLayers, otherLayers || null, { collapsed: false, position: 'topright' });
+        // add control widget to map and html dom.
+        layerControl.addTo(this.map);
+        // update the control widget to the specific theme.
+        layerControl.renderUniformControl();
+    };
+    MetroMap.prototype.addMeasurementControl = function () {
+        var _this = this;
+        var polyline = new L.Polyline([], { color: 'red' });
+        polyline.addTo(this.map);
+        var marker = new L.CircleMarker([60, 30]);
+        var text = '0m';
+        //marker.on('mouseover', e => popup.)
+        this.overlay.addEventListener('click', function (e) {
+            if (!e.shiftKey) return;
+            var pt = _this.map.containerPointToLatLng(new L.Point(e.x, e.y));
+            polyline.addLatLng(pt).redraw();
+            marker.on('mouseout', function (e) {
+                return marker.closePopup();
             });
-        })();
+            //.on('dblclick', e => {
+            //    polyline.setLatLngs([]).redraw();
+            //    this.map.removeLayer(marker);
+            //})
+            marker.addTo(_this.map);
+            var pts = polyline.getLatLngs();
+            if (pts.length > 1) {
+                var distance = 0;
+                for (var i = 1; i < pts.length; ++i) {
+                    distance += pts[i - 1].distanceTo(pts[i]);
+                }
+                L.popup().setLatLng(pt).setContent('Popup').openOn(_this.map);
+            }
+        });
     };
     MetroMap.prototype.getGraphAndFillMap = function (kml) {
         var _this = this;
