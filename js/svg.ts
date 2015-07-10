@@ -85,7 +85,7 @@ export function makePlate(circle: HTMLElement) {
     t2.setAttribute('y', (textUpperLeft.y + spacing).toString());
     if (util.getUserLanguage() === 'fi') {
         t1.textContent = fi || ru;
-        t2.textContent = ru;
+        t2.textContent = fi ? ru : '';
     } else {
         t1.textContent = ru;
         t2.textContent = fi;
