@@ -65,9 +65,9 @@ export function makePlate(circle: HTMLElement) {
 
     const maxLen = fi ? Math.max(ru.length, fi.length) : ru.length;
     
-    let foreignObject = <SVGElement>createSVGElement('foreignObject');
+    let foreignObject = createSVGElement('foreignObject');
     foreignObject.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
-    let div = <HTMLElement>document.createElementNS('http://www.w3.org/2000/svg', 'div');
+    let div = <HTMLElement>document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
     div.innerHTML = (fi && util.getUserLanguage() === 'fi') ? fi + '<br>' + ru : ru;
     div.classList.add('plate-box');
     div.classList.add('plate-text');

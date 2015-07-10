@@ -457,12 +457,8 @@ function makePlate(circle) {
     var maxLen = fi ? Math.max(ru.length, fi.length) : ru.length;
     var foreignObject = createSVGElement('foreignObject');
     foreignObject.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
-    var div = document.createElementNS('http://www.w3.org/2000/svg', 'div');
-    if (fi) {
-        div.innerHTML = util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru;
-    } else {
-        div.innerHTML = ru;
-    }
+    var div = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+    div.innerHTML = fi && util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru;
     div.classList.add('plate-box');
     div.classList.add('plate-text');
     foreignObject.appendChild(div);
