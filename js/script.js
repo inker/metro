@@ -92,7 +92,10 @@ var MetroMap = (function () {
         });
     };
     MetroMap.prototype.addLayerControl = function (tileLayers, otherLayers) {
-        var layerControl = L.control['UniForm'](tileLayers, otherLayers || null, { collapsed: false, position: 'topright' });
+        var layerControl = L.control['UniForm'](tileLayers, otherLayers || null, {
+            collapsed: false,
+            position: 'topright'
+        });
         // add control widget to map and html dom.
         layerControl.addTo(this.map);
         // update the control widget to the specific theme.

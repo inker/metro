@@ -19,10 +19,10 @@ class MetroMap {
         const zoom = 11;
         this.tileLayersForZoom = tileLayersForZoom;
         this._tileLayer = tileLayersForZoom(11);
-        this.map = new L.Map(containerId, {inertia: false})
+        this.map = new L.Map(containerId, { inertia: false })
             .addLayer(this._tileLayer)
             .setView(new L.LatLng(60, 30), zoom)
-            .addControl(new L.Control.Scale({imperial: false}));
+            .addControl(new L.Control.Scale({ imperial: false }));
 
         this.addLayerControl({
             'I': tileLayersForZoom(10),
@@ -71,7 +71,10 @@ class MetroMap {
     }
 
     private addLayerControl(tileLayers: any, otherLayers?: any): void {
-        let layerControl = L.control['UniForm'](tileLayers, otherLayers || null, { collapsed: false, position: 'topright' });
+        let layerControl = L.control['UniForm'](tileLayers, otherLayers || null, {
+            collapsed: false,
+            position: 'topright'
+        });
         // add control widget to map and html dom.
         layerControl.addTo(this.map);
         // update the control widget to the specific theme.
@@ -143,7 +146,6 @@ ${xhr.status}: ${xhr.statusText}`);
         let transfers = document.getElementById('transfers');
         transfers.classList.add('transfer');
     }
-
 
 
     private extendBounds(): void {
@@ -222,6 +224,7 @@ ${xhr.status}: ${xhr.statusText}`);
     private redrawNetwork(): void {
         this.refillSVG();
         this.updatePos();
+
 
         let whiskers = new Array<L.Point[]>(this.graph.platforms.length);
 
