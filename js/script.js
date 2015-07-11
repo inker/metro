@@ -449,17 +449,19 @@ function createSVGElement(tagName) {
     return document.createElementNS('http://www.w3.org/2000/svg', tagName);
 }
 exports.createSVGElement = createSVGElement;
-function makeForeignDiv(text) {
-    var foreignObject = createSVGElement('foreignObject');
-    foreignObject.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
-    foreignObject.setAttribute('width', '200');
-    foreignObject.setAttribute('height', '50');
+function makeForeignDiv(topLeft, text) {
+    var foreign = createSVGElement('foreignObject');
+    foreign.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
+    foreign.setAttribute('x', topLeft.x.toString());
+    foreign.setAttribute('y', topLeft.y.toString());
+    foreign.setAttribute('width', '200');
+    foreign.setAttribute('height', '50');
     var div = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
     div.innerHTML = text;
     div.classList.add('plate-box');
     div.classList.add('plate-text');
-    foreignObject.appendChild(div);
-    return foreignObject;
+    foreign.appendChild(div);
+    return foreign;
 }
 function makePlate(circle) {
     var plateGroup = svg.createSVGElement('g');
@@ -476,7 +478,6 @@ function makePlate(circle) {
     var dataset = util.getSVGDataset(circle);
     var ru = dataset['ru'];
     var fi = dataset['fi'];
-    var foreignObject = makeForeignDiv(!fi ? ru : util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru + '<br>' + fi);
     var maxLen = fi ? Math.max(ru.length, fi.length) : ru.length;
     var rect = svg.createSVGElement('rect');
     var spacing = 12;
@@ -510,6 +511,7 @@ function makePlate(circle) {
     var plate = svg.createSVGElement('g');
     plate.appendChild(rect);
     plate.appendChild(text);
+    var foreignObject = makeForeignDiv(rectTopLeft, !fi ? ru : util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru + '<br>' + fi);
     var sw = svg.createSVGElement('switch');
     sw.appendChild(foreignObject);
     sw.appendChild(plate);

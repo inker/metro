@@ -44,17 +44,19 @@ export function createSVGElement(tagName: string): HTMLElement {
     return <HTMLElement>document.createElementNS('http://www.w3.org/2000/svg', tagName);
 }
 
-function makeForeignDiv(text: string): SVGElement {
-    let foreignObject = createSVGElement('foreignObject');
-    foreignObject.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
-    foreignObject.setAttribute('width', '200');
-    foreignObject.setAttribute('height', '50');
+function makeForeignDiv(topLeft: L.Point, text: string): SVGElement {
+    let foreign = createSVGElement('foreignObject');
+    foreign.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
+    foreign.setAttribute('x', topLeft.x.toString());
+    foreign.setAttribute('y', topLeft.y.toString());
+    foreign.setAttribute('width', '200');
+    foreign.setAttribute('height', '50');
     let div = <HTMLElement>document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
     div.innerHTML = text;
     div.classList.add('plate-box');
     div.classList.add('plate-text');
-    foreignObject.appendChild(div);
-    return <any>foreignObject;
+    foreign.appendChild(div);
+    return <any>foreign;
 }
 
 export function makePlate(circle: HTMLElement) {
@@ -75,8 +77,6 @@ export function makePlate(circle: HTMLElement) {
     let dataset = util.getSVGDataset(circle);
     const ru = dataset['ru'];
     const fi = dataset['fi'];
-    
-    let foreignObject = makeForeignDiv(!fi ? ru : util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru + '<br>' + fi);
 
     const maxLen = fi ? Math.max(ru.length, fi.length) : ru.length;
 
@@ -114,6 +114,8 @@ export function makePlate(circle: HTMLElement) {
     let plate = svg.createSVGElement('g');
     plate.appendChild(rect);
     plate.appendChild(text);
+
+    let foreignObject = makeForeignDiv(rectTopLeft, !fi ? ru : util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru + '<br>' + fi);
 
     let sw = svg.createSVGElement('switch');
     sw.appendChild(foreignObject);
