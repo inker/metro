@@ -27,8 +27,8 @@ var metroMap = new MetroMap('map-container', 'json/graph.json', function (zoom) 
     var titles = ['Plan metro Sankt-Peterburga', 'Pietarin metron hankesuunnitelma', 'St Petersburg metro plan proposal'];
     var i = 0;
     setInterval(function () {
-        return document.title = titles[i++ % titles.length];
-    }, 2000);
+        return document.title = titles[++i % titles.length];
+    }, 3000);
 })();
 console.log('user: ' + navigator.userLanguage);
 console.log('language: ' + navigator.language);

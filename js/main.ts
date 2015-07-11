@@ -21,7 +21,7 @@ var metroMap = new MetroMap('map-container', 'json/graph.json', (zoom: number) =
 (() => {
     let titles = ['Plan metro Sankt-Peterburga', 'Pietarin metron hankesuunnitelma', 'St Petersburg metro plan proposal'];
     let i = 0;
-    setInterval(() => document.title = titles[i++ % titles.length], 2000);
+    setInterval(() => document.title = titles[++i % titles.length], 3000);
 })();
 
 console.log('user: ' + navigator.userLanguage);
