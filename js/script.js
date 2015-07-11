@@ -451,7 +451,7 @@ function createSVGElement(tagName) {
 exports.createSVGElement = createSVGElement;
 function makeForeignDiv(topLeft, text) {
     var foreign = createSVGElement('foreignObject');
-    foreign.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
+    //foreign.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
     foreign.setAttribute('x', topLeft.x.toString());
     foreign.setAttribute('y', topLeft.y.toString());
     foreign.setAttribute('width', '200');
