@@ -36,7 +36,7 @@ class MetroMap {
         this.addOverlay();
         //this.refillSVG(); not required here
         this.addListeners();
-        graphPromise.then(this.handleJSON)
+        graphPromise.then(text => this.handleJSON(text))
             .then(this.redrawNetwork)
             .catch(text => alert(text));
     }

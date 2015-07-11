@@ -48,6 +48,7 @@ var util = require('./util');
 //import Plain from './plain-objects';
 var MetroMap = (function () {
     function MetroMap(containerId, kml, tileLayersForZoom) {
+        var _this = this;
         var graphPromise = this.fetchGraph(kml);
         var zoom = 11;
         this.tileLayersForZoom = tileLayersForZoom;
@@ -62,7 +63,9 @@ var MetroMap = (function () {
         this.addOverlay();
         //this.refillSVG(); not required here
         this.addListeners();
-        graphPromise.then(this.handleJSON).then(this.redrawNetwork)['catch'](function (text) {
+        graphPromise.then(function (text) {
+            return _this.handleJSON(text);
+        }).then(this.redrawNetwork)['catch'](function (text) {
             return alert(text);
         });
     }
