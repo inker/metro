@@ -51,7 +51,8 @@ function makeForeignDiv(topLeft: L.Point, text: string): SVGElement {
     foreign.setAttribute('y', topLeft.y.toString());
     foreign.setAttribute('width', '200');
     foreign.setAttribute('height', '50');
-    let div = <HTMLElement>document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+    //let div = <HTMLElement>document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+    let div = document.createElement('div');
     div.innerHTML = text;
     div.classList.add('plate-box');
     div.classList.add('plate-text');
