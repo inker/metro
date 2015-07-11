@@ -48,9 +48,10 @@ a {
     color: black;
     font-size: 0.9em;
     font-family: Corbel, Candara, Calibri, Verdana, Arial, sans-serif;
-    /*font-weight: bold;*/
+    font-weight: bold;
     text-anchor: end;
     text-align: right;
+    -webkit-font-smoothing: antialiased;
     /*stroke-opacity: 1;*/
     /*opacity: 1;*/
 }
