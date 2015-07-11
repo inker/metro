@@ -33,14 +33,7 @@ class MetroMap {
         //L.Control['measureControl']().addTo(this.map);
 
         console.log('map should be created by now');
-        //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
-        //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-        this.overlay = document.getElementById('overlay');
-        //this.map.getContainer().appendChild(this.overlay);
-        this.overlay.id = 'overlay';
-        //console.log(this.overlay);
-        this.overlay.style.fill = 'white';
-        this.overlay.style.zIndex = '10';
+
         //this.refillSVG(); not required here
         this.addListeners();
         this.getGraphAndFillMap(kml);
@@ -123,9 +116,17 @@ class MetroMap {
                     return console.error(`couldn't fetch the graph:
 ${xhr.status}: ${xhr.statusText}`);
                 }
+                //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
+                //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
                 this.graph = JSON.parse(xhr.responseText);
                 this.extendBounds();
-                this.map.setView(this.bounds.getCenter(), 11, { pan: { animate: false } });
+                this.map.setView(this.bounds.getCenter());
+                this.overlay = document.getElementById('overlay');
+                //this.map.getContainer().appendChild(this.overlay);
+                this.overlay.id = 'overlay';
+                //console.log(this.overlay);
+                this.overlay.style.fill = 'white';
+                this.overlay.style.zIndex = '10';
                 this.map.once('moveend', e => this.redrawNetwork());
             }
         };

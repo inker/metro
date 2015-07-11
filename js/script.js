@@ -58,14 +58,6 @@ var MetroMap = (function () {
         });
         //L.Control['measureControl']().addTo(this.map);
         console.log('map should be created by now');
-        //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
-        //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-        this.overlay = document.getElementById('overlay');
-        //this.map.getContainer().appendChild(this.overlay);
-        this.overlay.id = 'overlay';
-        //console.log(this.overlay);
-        this.overlay.style.fill = 'white';
-        this.overlay.style.zIndex = '10';
         //this.refillSVG(); not required here
         this.addListeners();
         this.getGraphAndFillMap(kml);
@@ -149,9 +141,17 @@ var MetroMap = (function () {
                 if (xhr.status !== 200) {
                     return console.error('couldn\'t fetch the graph:\n' + xhr.status + ': ' + xhr.statusText);
                 }
+                //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
+                //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
                 _this.graph = JSON.parse(xhr.responseText);
                 _this.extendBounds();
-                _this.map.setView(_this.bounds.getCenter(), 11, { pan: { animate: false } });
+                _this.map.setView(_this.bounds.getCenter());
+                _this.overlay = document.getElementById('overlay');
+                //this.map.getContainer().appendChild(this.overlay);
+                _this.overlay.id = 'overlay';
+                //console.log(this.overlay);
+                _this.overlay.style.fill = 'white';
+                _this.overlay.style.zIndex = '10';
                 _this.map.once('moveend', function (e) {
                     return _this.redrawNetwork();
                 });
