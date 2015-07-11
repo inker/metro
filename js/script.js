@@ -171,7 +171,6 @@ var MetroMap = (function () {
             pan: { animate: false },
             zoom: { animate: false }
         });
-        //this.redrawNetwork();
     };
     MetroMap.prototype.refillSVG = function () {
         var child = undefined;
@@ -480,6 +479,35 @@ function makeForeignDiv(topLeft, text) {
     foreign.appendChild(div);
     return foreign;
 }
+function makeFittingRect(bottomRight, lines) {
+    var rect = svg.createSVGElement('rect');
+    var spacing = 12;
+    var longest = lines.reduce(function (prev, cur) {
+        return prev.length < cur.length ? cur : prev;
+    });
+    var rectSize = new L.Point(10 + longest.length * 6, 6 + spacing * lines.length);
+    rect.setAttribute('width', rectSize.x.toString());
+    rect.setAttribute('height', rectSize.y.toString());
+    var rectTopLeft = bottomRight.subtract(rectSize);
+    rect.setAttribute('x', rectTopLeft.x.toString());
+    rect.setAttribute('y', rectTopLeft.y.toString());
+    rect.classList.add('plate-box');
+    var text = svg.createSVGElement('text');
+    text.setAttribute('fill', 'black');
+    text.classList.add('plate-text');
+    lines.forEach(function (line) {
+        var t = svg.createSVGElement('tspan');
+        var textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - 12));
+        t.setAttribute('x', textTopLeft.x.toString());
+        t.setAttribute('y', textTopLeft.y.toString());
+        t.textContent = line;
+        text.appendChild(t);
+    });
+    var plate = svg.createSVGElement('g');
+    plate.appendChild(rect);
+    plate.appendChild(text);
+    return plate;
+}
 function makePlate(circle) {
     var plateGroup = svg.createSVGElement('g');
     var pole = svg.createSVGElement('line');
@@ -495,40 +523,14 @@ function makePlate(circle) {
     var dataset = util.getSVGDataset(circle);
     var ru = dataset['ru'];
     var fi = dataset['fi'];
-    var maxLen = fi ? Math.max(ru.length, fi.length) : ru.length;
-    var rect = svg.createSVGElement('rect');
-    var spacing = 12;
-    var rectSize = new L.Point(10 + maxLen * 6, fi ? 18 + spacing : 18);
-    rect.setAttribute('width', rectSize.x.toString());
-    rect.setAttribute('height', rectSize.y.toString());
-    var rectTopLeft = poleBounds.min.subtract(rectSize);
-    rect.setAttribute('x', rectTopLeft.x.toString());
-    rect.setAttribute('y', rectTopLeft.y.toString());
-    rect.classList.add('plate-box');
-    var text = svg.createSVGElement('text');
-    var t1 = svg.createSVGElement('tspan');
-    //t1.classList.add('plate-text');
-    var textUpperLeft = c.subtract(new L.Point(3, rectSize.y - 12)).subtract(poleBounds.getSize());
-    t1.setAttribute('x', textUpperLeft.x.toString());
-    t1.setAttribute('y', textUpperLeft.y.toString());
-    var t2 = t1.cloneNode();
-    t2.setAttribute('y', (textUpperLeft.y + spacing).toString());
-    if (util.getUserLanguage() === 'fi') {
-        t1.textContent = fi || ru;
-        t2.textContent = fi ? ru : '';
-    } else {
-        t1.textContent = ru;
-        t2.textContent = fi;
+    var names = !fi ? [ru] : util.getUserLanguage() === 'fi' ? [fi, ru] : [ru, fi];
+    if (/^Centra.*?voxal/.test(ru)) {
+        names.push('Central Railway Station');
+    } else if (ru === 'Aeroport') {
+        names.push('Airport');
     }
-    text.setAttribute('fill', 'black');
-    text.appendChild(t1);
-    text.appendChild(t2);
-    //text.style.color = 'black';
-    text.classList.add('plate-text');
-    var plate = svg.createSVGElement('g');
-    plate.appendChild(rect);
-    plate.appendChild(text);
-    var foreignObject = makeForeignDiv(rectTopLeft, !fi ? ru : util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru + '<br>' + fi);
+    var plate = makeFittingRect(poleBounds.min, names);
+    //let foreignObject = makeForeignDiv(rectTopLeft, !fi ? ru : util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru + '<br>' + fi);
     var sw = svg.createSVGElement('switch');
     //sw.appendChild(foreignObject); // to fix later
     sw.appendChild(plate);

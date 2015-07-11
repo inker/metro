@@ -148,7 +148,6 @@ ${xhr.status}: ${xhr.statusText}`);
             pan: { animate: false },
             zoom: { animate: false }
         });
-        //this.redrawNetwork();
     }
 
     private refillSVG(): void {

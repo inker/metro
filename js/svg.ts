@@ -60,11 +60,42 @@ function makeForeignDiv(topLeft: L.Point, text: string): SVGElement {
     return <any>foreign;
 }
 
+function makeFittingRect(bottomRight: L.Point, lines: string[]): HTMLElement {
+    let rect = svg.createSVGElement('rect');
+    const spacing = 12;
+    const longest = lines.reduce((prev, cur) => prev.length < cur.length ? cur : prev);
+    let rectSize = new L.Point(10 + longest.length * 6, 6 + spacing * lines.length);
+    rect.setAttribute('width', rectSize.x.toString());
+    rect.setAttribute('height', rectSize.y.toString());
+    let rectTopLeft = bottomRight.subtract(rectSize);
+    rect.setAttribute('x', rectTopLeft.x.toString());
+    rect.setAttribute('y', rectTopLeft.y.toString());
+    rect.classList.add('plate-box');
+
+    let text = svg.createSVGElement('text');
+    text.setAttribute('fill', 'black');
+    text.classList.add('plate-text');
+    lines.forEach(line => {
+        let t = svg.createSVGElement('tspan');
+        const textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - 12));
+        t.setAttribute('x', textTopLeft.x.toString());
+        t.setAttribute('y', textTopLeft.y.toString());
+        t.textContent = line;
+        text.appendChild(t);
+    });
+
+    let plate = svg.createSVGElement('g');
+    plate.appendChild(rect);
+    plate.appendChild(text);
+
+    return plate;
+}
+
 export function makePlate(circle: HTMLElement) {
     let plateGroup = svg.createSVGElement('g');
 
     let pole = svg.createSVGElement('line');
-    let c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
+    const c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
     let r = Number(circle.getAttribute('r'));
     let poleSize = new L.Point(4, 8);
     let poleBounds = new L.Bounds(c, c.subtract(poleSize));
@@ -76,52 +107,24 @@ export function makePlate(circle: HTMLElement) {
     pole.classList.add('plate-pole');
 
     let dataset = util.getSVGDataset(circle);
-    const ru = dataset['ru'];
-    const fi = dataset['fi'];
+    const ru: string = dataset['ru'];
+    const fi: string = dataset['fi'];
 
-    const maxLen = fi ? Math.max(ru.length, fi.length) : ru.length;
-
-    let rect = svg.createSVGElement('rect');
-    const spacing = 12;
-    let rectSize = new L.Point(10 + maxLen * 6, fi ? 18 + spacing : 18);
-    rect.setAttribute('width', rectSize.x.toString());
-    rect.setAttribute('height', rectSize.y.toString());
-    let rectTopLeft = poleBounds.min.subtract(rectSize);
-    rect.setAttribute('x', rectTopLeft.x.toString());
-    rect.setAttribute('y', rectTopLeft.y.toString());
-    rect.classList.add('plate-box');
-
-    let text = svg.createSVGElement('text');
-    let t1 = svg.createSVGElement('tspan');
-    //t1.classList.add('plate-text');
-    let textUpperLeft = c.subtract(new L.Point(3, rectSize.y - 12)).subtract(poleBounds.getSize());
-    t1.setAttribute('x', textUpperLeft.x.toString());
-    t1.setAttribute('y', textUpperLeft.y.toString());
-    let t2: HTMLElement = <any>t1.cloneNode();
-    t2.setAttribute('y', (textUpperLeft.y + spacing).toString());
-    if (util.getUserLanguage() === 'fi') {
-        t1.textContent = fi || ru;
-        t2.textContent = fi ? ru : '';
-    } else {
-        t1.textContent = ru;
-        t2.textContent = fi;
+    let names = !fi ? [ru] : util.getUserLanguage() === 'fi' ? [fi, ru] : [ru, fi];
+    if (/^Centra.*?voxal/.test(ru)) {
+        names.push('Central Railway Station');
+    } else if (ru === 'Aeroport') {
+        names.push('Airport');
     }
-    text.setAttribute('fill', 'black');
-    text.appendChild(t1);
-    text.appendChild(t2);
-    //text.style.color = 'black';
-    text.classList.add('plate-text');
-    
-    let plate = svg.createSVGElement('g');
-    plate.appendChild(rect);
-    plate.appendChild(text);
 
-    let foreignObject = makeForeignDiv(rectTopLeft, !fi ? ru : util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru + '<br>' + fi);
+    let plate = makeFittingRect(poleBounds.min, names);
+
+    //let foreignObject = makeForeignDiv(rectTopLeft, !fi ? ru : util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru + '<br>' + fi);
 
     let sw = svg.createSVGElement('switch');
     //sw.appendChild(foreignObject); // to fix later
     sw.appendChild(plate);
-    
+
     plateGroup.appendChild(pole);
     plateGroup.appendChild(sw);
     plateGroup.id = 'plate';
