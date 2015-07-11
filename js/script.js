@@ -145,16 +145,14 @@ var MetroMap = (function () {
                 //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
                 _this.graph = JSON.parse(xhr.responseText);
                 _this.extendBounds();
-                _this.map.setView(_this.bounds.getCenter());
+                _this.map.setView(_this.bounds.getCenter(), 11, { pan: { animate: true } });
                 _this.overlay = document.getElementById('overlay');
                 //this.map.getContainer().appendChild(this.overlay);
                 _this.overlay.id = 'overlay';
                 //console.log(this.overlay);
                 _this.overlay.style.fill = 'white';
                 _this.overlay.style.zIndex = '10';
-                _this.map.once('moveend', function (e) {
-                    return _this.redrawNetwork();
-                });
+                _this.redrawNetwork();
             }
         };
         xhr.open('GET', kml, true);
