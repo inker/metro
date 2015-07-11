@@ -135,7 +135,7 @@ ${xhr.status}: ${xhr.statusText}`);
         while (child = this.overlay.firstChild) {
             this.overlay.removeChild(child);
         }
-        let origin = svg.createSVGElement('g');
+        let origin = svg.createSVGElement('svg');
         origin.id = 'origin';
         ['paths', 'transfers', 'station-circles', 'dummy-circles'].forEach(groupId => {
             let group = svg.createSVGElement('g');

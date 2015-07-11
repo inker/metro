@@ -162,7 +162,7 @@ var MetroMap = (function () {
         while (child = this.overlay.firstChild) {
             this.overlay.removeChild(child);
         }
-        var origin = svg.createSVGElement('g');
+        var origin = svg.createSVGElement('svg');
         origin.id = 'origin';
         ['paths', 'transfers', 'station-circles', 'dummy-circles'].forEach(function (groupId) {
             var group = svg.createSVGElement('g');
