@@ -151,8 +151,7 @@ var MetroMap = (function () {
                 }
                 _this.graph = JSON.parse(xhr.responseText);
                 _this.extendBounds();
-                //this.map.panTo(this.bounds.getCenter(), { animate: false });
-                _this.map.setView(_this.bounds.getCenter());
+                _this.map.setView(_this.bounds.getCenter(), 11, { pan: { animate: false } });
                 _this.map.once('moveend', function (e) {
                     return _this.redrawNetwork();
                 });
