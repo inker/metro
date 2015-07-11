@@ -60,7 +60,8 @@ a {
     border-radius: 2px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     filter: drop-shadow( 0 1px 2px rgba(0,0,0,0.24) );
-    fill: white;
+    fill: white; /* for rect */
+    background-color: white; /* for div */
 }
 
 .plate-pole {
