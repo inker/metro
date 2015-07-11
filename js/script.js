@@ -82,8 +82,10 @@ var MetroMap = (function () {
         });
         this.map.on('moveend', function (e) {
             _this.map.touchZoom.enable();
-            var t3d = util.parseTransform(mapPane.style.transform);
-            _this.overlay.style.transform = mapPane.style.transform = 'translate(' + t3d.x + 'px, ' + t3d.y + 'px)';
+            setTimeout(function () {
+                var t3d = util.parseTransform(mapPane.style.transform);
+                _this.overlay.style.transform = mapPane.style.transform = 'translate(' + t3d.x + 'px, ' + t3d.y + 'px)';
+            }, 2000);
         });
         this.map.on('zoomstart', function (e) {
             _this.map.dragging.disable();
