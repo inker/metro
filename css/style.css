@@ -45,7 +45,7 @@ a {
 }
 
 .plate-text {
-    transform: translate3d(0,0,0);
+    transform: none !important;
     color: black;
     font-size: 0.9em;
     font-family: Corbel, Candara, Calibri, Verdana, Arial, sans-serif;
