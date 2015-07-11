@@ -67,6 +67,8 @@ export function makePlate(circle: HTMLElement) {
     
     let foreignObject = createSVGElement('foreignObject');
     foreignObject.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
+    foreignObject.setAttribute('width', '200');
+    foreignObject.setAttribute('height', '50');
     let div = <HTMLElement>document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
     div.innerHTML = (fi && util.getUserLanguage() === 'fi') ? fi + '<br>' + ru : ru;
     div.classList.add('plate-box');
