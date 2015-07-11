@@ -80,12 +80,13 @@ var MetroMap = (function () {
         });
         this.map.on('moveend', function (e) {
             _this.map.touchZoom.enable();
-            var t3d = util.parseTransform(mapPane.style.transform);
-            _this.overlay.style.transform = mapPane.style.transform = 'translate(' + t3d.x + 'px, ' + t3d.y + 'px)';
+            //let t3d = util.parseTransform(mapPane.style.transform);
+            //this.overlay.style.transform = mapPane.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
         });
         this.map.on('zoomstart', function (e) {
             _this.map.dragging.disable();
             prevZoom = _this.map.getZoom();
+            _this.overlay.classList.add('leaflet-zoom-anim');
             _this.overlay.style.opacity = '0.5';
         });
         this.map.on('zoomend', function (e) {
@@ -94,6 +95,7 @@ var MetroMap = (function () {
                 _this.tileLayer = possibleTileLayer;
             }
             _this.redrawNetwork();
+            _this.overlay.classList.remove('leaflet-zoom-anim');
             _this.overlay.style.opacity = null;
             _this.map.dragging.enable();
         });

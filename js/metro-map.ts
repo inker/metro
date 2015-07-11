@@ -51,13 +51,15 @@ class MetroMap {
         this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
         this.map.on('moveend', e => {
             this.map.touchZoom.enable();
-            let t3d = util.parseTransform(mapPane.style.transform);
-            this.overlay.style.transform = mapPane.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
+            //let t3d = util.parseTransform(mapPane.style.transform);
+            //this.overlay.style.transform = mapPane.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
         });
         this.map.on('zoomstart', e => {
             this.map.dragging.disable();
             prevZoom = this.map.getZoom();
+            this.overlay.classList.add('leaflet-zoom-anim');
             this.overlay.style.opacity = '0.5';
+            
         });
         this.map.on('zoomend', e => {
             const possibleTileLayer = this.tileLayersForZoom(this.map.getZoom());
@@ -65,6 +67,7 @@ class MetroMap {
                 this.tileLayer = possibleTileLayer;
             }
             this.redrawNetwork();
+            this.overlay.classList.remove('leaflet-zoom-anim');
             this.overlay.style.opacity = null;
             this.map.dragging.enable();
         });
