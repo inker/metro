@@ -34,7 +34,7 @@ class MetroMap {
 
         console.log('map should be created by now');
         this.overlay = document.getElementById('overlay');
-        this.map.getPanes().mapPane.innerHTML += '<svg id="overlay"></svg>';
+        this.map.getPanes().mapPane.innerHTML = this.map.getPanes().mapPane.innerHTML + '<svg id="overlay"></svg>';
         this.overlay = document.getElementById('overlay');
         this.overlay.id = 'overlay';
         //console.log(this.overlay);
