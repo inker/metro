@@ -58,8 +58,7 @@ var MetroMap = (function () {
         });
         //L.Control['measureControl']().addTo(this.map);
         console.log('map should be created by now');
-        this.overlay = document.getElementById('overlay');
-        this.map.getPanes().mapPane.innerHTML = '<svg id="overlay"></svg>' + this.map.getPanes().mapPane.innerHTML;
+        //this.map.getPanes().mapPane.innerHTML = '<svg id="overlay"></svg>' + this.map.getPanes().mapPane.innerHTML;
         this.overlay = document.getElementById('overlay');
         this.overlay.id = 'overlay';
         //console.log(this.overlay);
@@ -76,7 +75,9 @@ var MetroMap = (function () {
         this.map.on('movestart', function (e) {
             return _this.map.touchZoom.disable();
         });
-        //this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
+        this.map.on('move', function (e) {
+            return _this.overlay.style.transform = mapPane.style.transform;
+        });
         this.map.on('moveend', function (e) {
             _this.map.touchZoom.enable();
             //setTimeout(() => {

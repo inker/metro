@@ -33,8 +33,7 @@ class MetroMap {
         //L.Control['measureControl']().addTo(this.map);
 
         console.log('map should be created by now');
-        this.overlay = document.getElementById('overlay');
-        this.map.getPanes().mapPane.innerHTML = '<svg id="overlay"></svg>' + this.map.getPanes().mapPane.innerHTML;
+        //this.map.getPanes().mapPane.innerHTML = '<svg id="overlay"></svg>' + this.map.getPanes().mapPane.innerHTML;
         this.overlay = document.getElementById('overlay');
         this.overlay.id = 'overlay';
         //console.log(this.overlay);
@@ -49,7 +48,7 @@ class MetroMap {
         let mapPane = this.map.getPanes().mapPane;
         let prevZoom: number;
         this.map.on('movestart', e => this.map.touchZoom.disable());
-        //this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
+        this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
         this.map.on('moveend', e => {
             this.map.touchZoom.enable();
             //setTimeout(() => {
