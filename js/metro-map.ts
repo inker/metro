@@ -53,10 +53,10 @@ class MetroMap {
         this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
         this.map.on('moveend', e => {
             this.map.touchZoom.enable();
-            setTimeout(() => {
-                let t3d = util.parseTransform(mapPane.style.transform);
-                this.overlay.style.transform = mapPane.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
-            }, 2000);
+            //setTimeout(() => {
+            //    let t3d = util.parseTransform(mapPane.style.transform);
+            //    this.overlay.style.transform = mapPane.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
+            //}, 2000);
         });
         this.map.on('zoomstart', e => {
             this.map.dragging.disable();
