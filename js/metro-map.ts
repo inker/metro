@@ -36,7 +36,9 @@ class MetroMap {
         this.addOverlay();
         //this.refillSVG(); not required here
         this.addListeners();
-        graphPromise.then(text => this.handleJSON(text)).catch(text => console.error(text));
+        graphPromise.then(this.handleJSON)
+            .then(this.redrawNetwork)
+            .catch(text => alert(text));
     }
 
     private addLayerControl(tileLayers: any, otherLayers?: any): void {
@@ -146,7 +148,7 @@ ${xhr.status}: ${xhr.statusText}`);
             pan: { animate: false },
             zoom: { animate: false }
         });
-        this.redrawNetwork();
+        //this.redrawNetwork();
     }
 
     private refillSVG(): void {
