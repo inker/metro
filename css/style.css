@@ -9,7 +9,6 @@ body {
     padding: 0px; /* redundant */
     height: 100%;
     font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-    -webkit-transform:translateZ(0);
 }
 
 a {
@@ -52,8 +51,8 @@ a {
     font-weight: bold;
     text-anchor: end;
     text-align: right;
-    stroke-opacity: 1;
-    opacity: 1;
+    /*stroke-opacity: 1;*/
+    /*opacity: 1;*/
 }
 
 .plate-box {
