@@ -53,6 +53,8 @@ class MetroMap {
         this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
         this.map.on('moveend', e => {
             this.map.touchZoom.enable();
+            let t3d = util.parseTransform(mapPane.style.transform);
+            this.overlay.style.transform = mapPane.style.transform = `translate(${t3d.x}, ${t3d.y})`;
         });
         this.map.on('zoomstart', e => {
             this.map.dragging.disable();
