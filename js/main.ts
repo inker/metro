@@ -18,6 +18,12 @@ const openMapSurfer = (() => new L.TileLayer('http://openmapsurfer.uni-hd.de/til
 
 var metroMap = new MetroMap('map-container', 'json/graph.json', (zoom: number) => (zoom < 15) ? mapbox : openMapSurfer);
 
+(() => {
+    let titles = ['Plan metro Sankt-Peterburga', 'Pietarin metron hankesuunnitelma', 'St Petersburg metro plan proposal'];
+    let i = 0;
+    setInterval(() => document.title = titles[i++ % titles.length], 2000);
+})();
+
 console.log('user: ' + navigator.userLanguage);
 console.log('language: ' + navigator.language);
 console.log('browser: ' + navigator.browserLanguage);

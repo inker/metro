@@ -1,5 +1,6 @@
 /// <reference path="./../typings/tsd.d.ts" />
 import L = require('leaflet');
+import po = require('../plain-objects');
 
 export function getUserLanguage(): string {
     return (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();
@@ -10,13 +11,9 @@ export function parseTransform(val: string): L.Point {
     return (matches) ? new L.Point(Number(matches[1]), Number(matches[2])) : new L.Point(0, 0);
 }
 
-export function findCircle(graph: {platforms: {transfers: number[]}[]}, station: {platforms: number[]}): {transfers: number[]}[] {
-    let platforms = [];
-    station.platforms.forEach(platformNum => platforms.push(graph.platforms[platformNum]));
-    if (platforms.length === 3 && platforms.every(platform => platform.transfers.length === 2)) {
-        return platforms;
-    }
-    return null;
+export function findCircle(graph: po.Graph, station: po.Station): po.Platform[] {
+    let platforms = station.platforms.map(platformNum => graph.platforms[platformNum]);
+    return (platforms.length === 3 && platforms.every(platform => platform.transfers.length === 2)) ? platforms : null;
 }
 
 export function getCircumcenter(positions: L.Point[]): L.Point {

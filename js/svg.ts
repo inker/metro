@@ -1,7 +1,7 @@
 import L = require('leaflet');
 import svg = require('./svg');
 import util = require('./util');
-import Plain = require('../plain-objects')
+import po = require('../plain-objects')
 //import L from 'leaflet';
 //import * as svg from './svg';
 //import * as util from '../../util';
@@ -14,7 +14,7 @@ export function makeCircle(position: L.Point, radius: number): HTMLElement {
     return ci;
 }
 
-export function convertToStation(circle: HTMLElement, id: string, s: Plain.StationOrPlatform, circleBorder: number): void {
+export function convertToStation(circle: HTMLElement, id: string, s: po.StationOrPlatform, circleBorder: number): void {
     circle.id = id;
     circle.classList.add('station-circle');
     circle.style.strokeWidth = circleBorder.toString();
@@ -44,6 +44,19 @@ export function createSVGElement(tagName: string): HTMLElement {
     return <HTMLElement>document.createElementNS('http://www.w3.org/2000/svg', tagName);
 }
 
+function makeForeignDiv(text: string): SVGElement {
+    let foreignObject = createSVGElement('foreignObject');
+    foreignObject.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
+    foreignObject.setAttribute('width', '200');
+    foreignObject.setAttribute('height', '50');
+    let div = <HTMLElement>document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+    div.innerHTML = text;
+    div.classList.add('plate-box');
+    div.classList.add('plate-text');
+    foreignObject.appendChild(div);
+    return <any>foreignObject;
+}
+
 export function makePlate(circle: HTMLElement) {
     let plateGroup = svg.createSVGElement('g');
 
@@ -62,27 +75,19 @@ export function makePlate(circle: HTMLElement) {
     let dataset = util.getSVGDataset(circle);
     const ru = dataset['ru'];
     const fi = dataset['fi'];
+    
+    let foreignObject = makeForeignDiv(!fi ? ru : util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru + '<br>' + fi);
 
     const maxLen = fi ? Math.max(ru.length, fi.length) : ru.length;
-    
-    let foreignObject = createSVGElement('foreignObject');
-    foreignObject.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
-    foreignObject.setAttribute('width', '200');
-    foreignObject.setAttribute('height', '50');
-    let div = <HTMLElement>document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
-    div.innerHTML = (fi && util.getUserLanguage() === 'fi') ? fi + '<br>' + ru : ru;
-    div.classList.add('plate-box');
-    div.classList.add('plate-text');
-    foreignObject.appendChild(div);
 
     let rect = svg.createSVGElement('rect');
     const spacing = 12;
     let rectSize = new L.Point(10 + maxLen * 6, fi ? 18 + spacing : 18);
     rect.setAttribute('width', rectSize.x.toString());
     rect.setAttribute('height', rectSize.y.toString());
-    let rectUpperLeft = poleBounds.min.subtract(rectSize);
-    rect.setAttribute('x', rectUpperLeft.x.toString());
-    rect.setAttribute('y', rectUpperLeft.y.toString());
+    let rectTopLeft = poleBounds.min.subtract(rectSize);
+    rect.setAttribute('x', rectTopLeft.x.toString());
+    rect.setAttribute('y', rectTopLeft.y.toString());
     rect.classList.add('plate-box');
 
     let text = svg.createSVGElement('text');

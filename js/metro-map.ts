@@ -1,7 +1,7 @@
 import L = require('leaflet');
 import svg = require('./svg');
 import util = require('./util');
-import Plain = require('../plain-objects');
+import po = require('../plain-objects');
 //import 'leaflet';
 //import * as svg from './svg';
 //import * as util from '../../util';
@@ -10,7 +10,7 @@ import Plain = require('../plain-objects');
 class MetroMap {
     private map: L.Map;
     private overlay: HTMLElement;
-    private graph: Plain.Graph;
+    private graph: po.Graph;
     private _tileLayer: L.TileLayer;
     private bounds: L.LatLngBounds;
     private tileLayersForZoom: (zoom: number) => L.TileLayer;
@@ -165,7 +165,7 @@ ${xhr.status}: ${xhr.statusText}`);
         this._tileLayer = tileLayer;
     }
 
-    private showPlate(event: MouseEvent) {
+    private showPlate(event: MouseEvent): void {
         let dummyCircle: SVGElement = <any>event.target;
         const dataset = util.getSVGDataset(dummyCircle);
         //const dataset = dummyCircle.dataset;
@@ -189,7 +189,7 @@ ${xhr.status}: ${xhr.statusText}`);
         return pos.subtract(SVGBounds.min);
     }
 
-    private updatePos() {
+    private updatePos(): void {
 
         let nw = this.bounds.getNorthWest();
         let se = this.bounds.getSouthEast();
@@ -204,7 +204,10 @@ ${xhr.status}: ${xhr.statusText}`);
         let originShift = pixelBoundsSize;
         let origin = document.getElementById('origin');
         //TODO: test which one is faster
-        origin.style.transform = `translate3d(${originShift.x}px, ${originShift.y}px, 0px)`;
+        // transform may not work with svg elements
+        origin.setAttribute('x', originShift.x + 'px');
+        origin.setAttribute('y', originShift.y + 'px');
+        //origin.style.transform = `translate3d(${originShift.x}px, ${originShift.y}px, 0px)`;
         //origin.style.left = originShift.x + 'px';
         //origin.style.top = originShift.y + 'px';
 

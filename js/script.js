@@ -23,6 +23,13 @@ var openMapSurfer = (function () {
 var metroMap = new MetroMap('map-container', 'json/graph.json', function (zoom) {
     return zoom < 15 ? mapbox : openMapSurfer;
 });
+(function () {
+    var titles = ['Plan metro Sankt-Peterburga', 'Pietarin metron hankesuunnitelma', 'St Petersburg metro plan proposal'];
+    var i = 0;
+    setInterval(function () {
+        return document.title = titles[i++ % titles.length];
+    }, 2000);
+})();
 console.log('user: ' + navigator.userLanguage);
 console.log('language: ' + navigator.language);
 console.log('browser: ' + navigator.browserLanguage);
@@ -226,7 +233,10 @@ var MetroMap = (function () {
         var originShift = pixelBoundsSize;
         var origin = document.getElementById('origin');
         //TODO: test which one is faster
-        origin.style.transform = 'translate3d(' + originShift.x + 'px, ' + originShift.y + 'px, 0px)';
+        // transform may not work with svg elements
+        origin.setAttribute('x', originShift.x + 'px');
+        origin.setAttribute('y', originShift.y + 'px');
+        //origin.style.transform = `translate3d(${originShift.x}px, ${originShift.y}px, 0px)`;
         //origin.style.left = originShift.x + 'px';
         //origin.style.top = originShift.y + 'px';
         var tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
@@ -439,6 +449,18 @@ function createSVGElement(tagName) {
     return document.createElementNS('http://www.w3.org/2000/svg', tagName);
 }
 exports.createSVGElement = createSVGElement;
+function makeForeignDiv(text) {
+    var foreignObject = createSVGElement('foreignObject');
+    foreignObject.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
+    foreignObject.setAttribute('width', '200');
+    foreignObject.setAttribute('height', '50');
+    var div = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+    div.innerHTML = text;
+    div.classList.add('plate-box');
+    div.classList.add('plate-text');
+    foreignObject.appendChild(div);
+    return foreignObject;
+}
 function makePlate(circle) {
     var plateGroup = svg.createSVGElement('g');
     var pole = svg.createSVGElement('line');
@@ -454,24 +476,16 @@ function makePlate(circle) {
     var dataset = util.getSVGDataset(circle);
     var ru = dataset['ru'];
     var fi = dataset['fi'];
+    var foreignObject = makeForeignDiv(!fi ? ru : util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru + '<br>' + fi);
     var maxLen = fi ? Math.max(ru.length, fi.length) : ru.length;
-    var foreignObject = createSVGElement('foreignObject');
-    foreignObject.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
-    foreignObject.setAttribute('width', '200');
-    foreignObject.setAttribute('height', '50');
-    var div = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
-    div.innerHTML = fi && util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru;
-    div.classList.add('plate-box');
-    div.classList.add('plate-text');
-    foreignObject.appendChild(div);
     var rect = svg.createSVGElement('rect');
     var spacing = 12;
     var rectSize = new L.Point(10 + maxLen * 6, fi ? 18 + spacing : 18);
     rect.setAttribute('width', rectSize.x.toString());
     rect.setAttribute('height', rectSize.y.toString());
-    var rectUpperLeft = poleBounds.min.subtract(rectSize);
-    rect.setAttribute('x', rectUpperLeft.x.toString());
-    rect.setAttribute('y', rectUpperLeft.y.toString());
+    var rectTopLeft = poleBounds.min.subtract(rectSize);
+    rect.setAttribute('x', rectTopLeft.x.toString());
+    rect.setAttribute('y', rectTopLeft.y.toString());
     rect.classList.add('plate-box');
     var text = svg.createSVGElement('text');
     var t1 = svg.createSVGElement('tspan');
@@ -522,16 +536,12 @@ function parseTransform(val) {
 }
 exports.parseTransform = parseTransform;
 function findCircle(graph, station) {
-    var platforms = [];
-    station.platforms.forEach(function (platformNum) {
-        return platforms.push(graph.platforms[platformNum]);
+    var platforms = station.platforms.map(function (platformNum) {
+        return graph.platforms[platformNum];
     });
-    if (platforms.length === 3 && platforms.every(function (platform) {
+    return platforms.length === 3 && platforms.every(function (platform) {
         return platform.transfers.length === 2;
-    })) {
-        return platforms;
-    }
-    return null;
+    }) ? platforms : null;
 }
 exports.findCircle = findCircle;
 function getCircumcenter(positions) {
