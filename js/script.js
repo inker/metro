@@ -65,7 +65,9 @@ var MetroMap = (function () {
         this.addListeners();
         graphPromise.then(function (text) {
             return _this.handleJSON(text);
-        }).then(this.redrawNetwork)['catch'](function (text) {
+        }).then(function () {
+            return _this.redrawNetwork();
+        })['catch'](function (text) {
             return alert(text);
         });
     }

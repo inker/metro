@@ -37,8 +37,8 @@ class MetroMap {
         //this.refillSVG(); not required here
         this.addListeners();
         graphPromise.then(text => this.handleJSON(text))
-            .then(this.redrawNetwork)
-            .catch(text => alert(text));
+            .then(() => this.redrawNetwork())
+            .catch(text => alert(text))
     }
 
     private addLayerControl(tileLayers: any, otherLayers?: any): void {
