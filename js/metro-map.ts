@@ -125,9 +125,9 @@ ${xhr.status}: ${xhr.statusText}`);
                 }
                 this.graph = JSON.parse(xhr.responseText);
                 this.extendBounds();
-                this.map.panTo(this.bounds.getCenter(), { animate: false });
-                //this.map.setView(this.bounds.getCenter(), 11, {zoo});
-                //this.map.once('moveend', e => this.redrawNetwork());
+                //this.map.panTo(this.bounds.getCenter(), { animate: false });
+                this.map.setView(this.bounds.getCenter());
+                this.map.once('moveend', e => this.redrawNetwork());
             }
         };
         xhr.open('GET', kml, true);
