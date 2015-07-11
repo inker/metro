@@ -123,8 +123,10 @@ ${xhr.status}: ${xhr.statusText}`);
                 //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
                 this.graph = JSON.parse(xhr.responseText);
                 this.extendBounds();
-                this.map.setView(this.bounds.getCenter(), 11, { pan: { animate: false } });
-
+                this.map.setView(this.bounds.getCenter(), 11, { 
+                    pan: { animate: false }, 
+                    zoom: { animate: false } 
+                });
                 this.redrawNetwork();
             }
         };

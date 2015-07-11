@@ -149,7 +149,10 @@ var MetroMap = (function () {
                 //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
                 _this.graph = JSON.parse(xhr.responseText);
                 _this.extendBounds();
-                _this.map.setView(_this.bounds.getCenter(), 11, { pan: { animate: false } });
+                _this.map.setView(_this.bounds.getCenter(), 11, {
+                    pan: { animate: false },
+                    zoom: { animate: false }
+                });
                 _this.redrawNetwork();
             }
         };
