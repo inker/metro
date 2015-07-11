@@ -84,6 +84,7 @@ var MetroMap = (function () {
             _this.map.touchZoom.enable();
             var t3d = util.parseTransform(mapPane.style.transform);
             _this.overlay.style.transform = mapPane.style.transform = 'translate(' + t3d.x + ', ' + t3d.y + ')';
+            alert('ended!');
         });
         this.map.on('zoomstart', function (e) {
             _this.map.dragging.disable();
