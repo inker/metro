@@ -75,14 +75,14 @@ function makeFittingRect(bottomRight: L.Point, lines: string[]): HTMLElement {
     let text = svg.createSVGElement('text');
     text.setAttribute('fill', 'black');
     text.classList.add('plate-text');
-    lines.forEach(line => {
+    for (let i = 0; i < lines.length; ++i) {
+        const textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - (i + 1) * spacing));
         let t = svg.createSVGElement('tspan');
-        const textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - 12));
         t.setAttribute('x', textTopLeft.x.toString());
         t.setAttribute('y', textTopLeft.y.toString());
-        t.textContent = line;
+        t.textContent = lines[i];
         text.appendChild(t);
-    });
+    }
 
     let plate = svg.createSVGElement('g');
     plate.appendChild(rect);

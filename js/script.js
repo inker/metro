@@ -170,9 +170,7 @@ var MetroMap = (function () {
     MetroMap.prototype.handleJSON = function (json) {
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-        console.log('graph setting');
         this.graph = JSON.parse(json);
-        console.log('graph set');
         this.extendBounds();
         this.map.setView(this.bounds.getCenter(), 11, {
             pan: { animate: false },
@@ -502,14 +500,14 @@ function makeFittingRect(bottomRight, lines) {
     var text = svg.createSVGElement('text');
     text.setAttribute('fill', 'black');
     text.classList.add('plate-text');
-    lines.forEach(function (line) {
+    for (var i = 0; i < lines.length; ++i) {
+        var textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - (i + 1) * spacing));
         var t = svg.createSVGElement('tspan');
-        var textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - 12));
         t.setAttribute('x', textTopLeft.x.toString());
         t.setAttribute('y', textTopLeft.y.toString());
-        t.textContent = line;
+        t.textContent = lines[i];
         text.appendChild(t);
-    });
+    }
     var plate = svg.createSVGElement('g');
     plate.appendChild(rect);
     plate.appendChild(text);

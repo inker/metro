@@ -142,9 +142,7 @@ ${xhr.status}: ${xhr.statusText}`);
     private handleJSON(json: string) : void {
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-        console.log('graph setting');
         this.graph = JSON.parse(json);
-        console.log('graph set');
         this.extendBounds();
         this.map.setView(this.bounds.getCenter(), 11, {
             pan: { animate: false },
