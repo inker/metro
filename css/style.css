@@ -9,7 +9,7 @@ body {
     padding: 0px; /* redundant */
     height: 100%;
     font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-    z-index: 1 !important; /* they say it's relevant to fix font rendering ._. */
+    -webkit-transform:translateZ(0);
 }
 
 a {
