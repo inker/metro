@@ -184,6 +184,7 @@ ${xhr.status}: ${xhr.statusText}`);
      * @param location
      * @returns {Point}
      */
+
     private posOnSVG(SVGBounds: L.Bounds, location: L.LatLngExpression): L.Point {
         const pos = this.map.latLngToContainerPoint(location);
         return pos.subtract(SVGBounds.min);

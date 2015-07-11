@@ -514,7 +514,7 @@ function makePlate(circle) {
     plate.appendChild(text);
     var foreignObject = makeForeignDiv(rectTopLeft, !fi ? ru : util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru + '<br>' + fi);
     var sw = svg.createSVGElement('switch');
-    sw.appendChild(foreignObject);
+    //sw.appendChild(foreignObject); // to fix later
     sw.appendChild(plate);
     plateGroup.appendChild(pole);
     plateGroup.appendChild(sw);

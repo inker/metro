@@ -119,7 +119,7 @@ export function makePlate(circle: HTMLElement) {
     let foreignObject = makeForeignDiv(rectTopLeft, !fi ? ru : util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru + '<br>' + fi);
 
     let sw = svg.createSVGElement('switch');
-    sw.appendChild(foreignObject);
+    //sw.appendChild(foreignObject); // to fix later
     sw.appendChild(plate);
     
     plateGroup.appendChild(pole);
