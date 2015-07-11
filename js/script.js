@@ -48,6 +48,8 @@ var util = require('./util');
 //import Plain from './plain-objects';
 var MetroMap = (function () {
     function MetroMap(containerId, kml, tileLayersForZoom) {
+        var _this = this;
+        var graphPromise = this.fetchGraph(kml);
         var zoom = 11;
         this.tileLayersForZoom = tileLayersForZoom;
         this._tileLayer = tileLayersForZoom(11);
@@ -58,16 +60,33 @@ var MetroMap = (function () {
         });
         //L.Control['measureControl']().addTo(this.map);
         console.log('map should be created by now');
+        this.addOverlay();
+        //this.refillSVG(); not required here
+        this.addListeners();
+        graphPromise.then(function (text) {
+            return _this.handleJSON(text);
+        })['catch'](function (text) {
+            return console.error(text);
+        });
+    }
+    MetroMap.prototype.addLayerControl = function (tileLayers, otherLayers) {
+        var layerControl = L.control['UniForm'](tileLayers, otherLayers || null, {
+            collapsed: false,
+            position: 'topright'
+        });
+        // add control widget to map and html dom.
+        layerControl.addTo(this.map);
+        // update the control widget to the specific theme.
+        layerControl.renderUniformControl();
+    };
+    MetroMap.prototype.addOverlay = function () {
         //this.map.getPanes().mapPane.innerHTML = '<svg id="overlay"></svg>' + this.map.getPanes().mapPane.innerHTML;
         this.overlay = document.getElementById('overlay');
         this.overlay.id = 'overlay';
         //console.log(this.overlay);
         this.overlay.style.fill = 'white';
         this.overlay.style.zIndex = '10';
-        //this.refillSVG(); not required here
-        this.addListeners();
-        this.getGraphAndFillMap(kml);
-    }
+    };
     MetroMap.prototype.addListeners = function () {
         var _this = this;
         var mapPane = this.map.getPanes().mapPane;
@@ -86,7 +105,7 @@ var MetroMap = (function () {
         this.map.on('zoomstart', function (e) {
             _this.map.dragging.disable();
             prevZoom = _this.map.getZoom();
-            _this.overlay.classList.add('leaflet-zoom-anim');
+            //this.overlay.classList.add('leaflet-zoom-anim');
             _this.overlay.style.opacity = '0.5';
         });
         this.map.on('zoomend', function (e) {
@@ -95,20 +114,10 @@ var MetroMap = (function () {
                 _this.tileLayer = possibleTileLayer;
             }
             _this.redrawNetwork();
-            _this.overlay.classList.remove('leaflet-zoom-anim');
+            //this.overlay.classList.remove('leaflet-zoom-anim');
             _this.overlay.style.opacity = null;
             _this.map.dragging.enable();
         });
-    };
-    MetroMap.prototype.addLayerControl = function (tileLayers, otherLayers) {
-        var layerControl = L.control['UniForm'](tileLayers, otherLayers || null, {
-            collapsed: false,
-            position: 'topright'
-        });
-        // add control widget to map and html dom.
-        layerControl.addTo(this.map);
-        // update the control widget to the specific theme.
-        layerControl.renderUniformControl();
     };
     MetroMap.prototype.addMeasurementControl = function () {
         var _this = this;
@@ -139,28 +148,33 @@ var MetroMap = (function () {
             }
         });
     };
-    MetroMap.prototype.getGraphAndFillMap = function (kml) {
-        var _this = this;
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                if (xhr.status !== 200) {
-                    return console.error('couldn\'t fetch the graph:\n' + xhr.status + ': ' + xhr.statusText);
+    MetroMap.prototype.fetchGraph = function (kml) {
+        return new Promise(function (resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        resolve(xhr.responseText);
+                    } else {
+                        reject('couldn\'t fetch the graph:\n' + xhr.status + ': ' + xhr.statusText);
+                    }
                 }
-                //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
-                //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-                _this.graph = JSON.parse(xhr.responseText);
-                _this.extendBounds();
-                _this.map.setView(_this.bounds.getCenter(), 11, {
-                    pan: { animate: false },
-                    zoom: { animate: false }
-                });
-                _this.redrawNetwork();
-            }
-        };
-        xhr.open('GET', kml, true);
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        xhr.send();
+            };
+            xhr.open('GET', kml, true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.send();
+        });
+    };
+    MetroMap.prototype.handleJSON = function (json) {
+        //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
+        //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
+        this.graph = JSON.parse(json);
+        this.extendBounds();
+        this.map.setView(this.bounds.getCenter(), 11, {
+            pan: { animate: false },
+            zoom: { animate: false }
+        });
+        this.redrawNetwork();
     };
     MetroMap.prototype.refillSVG = function () {
         var child = undefined;
