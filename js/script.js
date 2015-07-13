@@ -146,8 +146,8 @@ var MetroMap = (function () {
         });
         this.map.on('moveend', function (e) {
             _this.map.touchZoom.enable();
-            //let t3d = util.parseTransform(mapPane.style.transform);
-            //this.overlay.style.transform = mapPane.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
+            var t3d = util.parseTransform(mapPane.style.transform);
+            _this.overlay.style.transform = mapPane.style.transform = 'translate(' + t3d.x + 'px, ' + t3d.y + 'px)';
         });
         this.map.on('zoomstart', function (e) {
             _this.map.dragging.disable();
@@ -166,12 +166,11 @@ var MetroMap = (function () {
         return new Promise(function (resolve, reject) {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        resolve(xhr.responseText);
-                    } else {
-                        reject('couldn\'t fetch the graph: ' + xhr.status + ': ' + xhr.statusText);
-                    }
+                if (xhr.readyState !== 4) return;
+                if (xhr.status === 200) {
+                    resolve(xhr.responseText);
+                } else {
+                    reject('couldn\'t fetch the graph: ' + xhr.status + ': ' + xhr.statusText);
                 }
             };
             xhr.open('GET', kml, true);
@@ -551,7 +550,7 @@ function getUserLanguage() {
 }
 exports.getUserLanguage = getUserLanguage;
 function parseTransform(val) {
-    var matches = val.match(/translate3d\((-?\d+)px,\s?(-?\d+)px,\s?(-?\d+)px\)/i);
+    var matches = val.substr(9, 2) === '3d' ? val.match(/translate3d\((-?\d+).*?,\s?(-?\d+).*?,\s?(-?\d+).*?\)/i) : val.match(/translate\((-?\d+).*?,\s?(-?\d+).*?\)/i);
     return matches ? new L.Point(Number(matches[1]), Number(matches[2])) : new L.Point(0, 0);
 }
 exports.parseTransform = parseTransform;

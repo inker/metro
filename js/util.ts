@@ -7,8 +7,10 @@ export function getUserLanguage(): string {
 }
 
 export function parseTransform(val: string): L.Point {
-    const matches = val.match(/translate3d\((-?\d+)px,\s?(-?\d+)px,\s?(-?\d+)px\)/i);
-    return (matches) ? new L.Point(Number(matches[1]), Number(matches[2])) : new L.Point(0, 0);
+    const matches = val.substr(9, 2) === '3d'
+        ? val.match(/translate3d\((-?\d+).*?,\s?(-?\d+).*?,\s?(-?\d+).*?\)/i)
+        : val.match(/translate\((-?\d+).*?,\s?(-?\d+).*?\)/i);
+    return matches ? new L.Point(Number(matches[1]), Number(matches[2])) : new L.Point(0, 0);
 }
 
 export function findCircle(graph: po.Graph, station: po.Station): po.Platform[] {

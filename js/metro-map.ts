@@ -62,8 +62,8 @@ class MetroMap {
         this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
         this.map.on('moveend', e => {
             this.map.touchZoom.enable();
-            //let t3d = util.parseTransform(mapPane.style.transform);
-            //this.overlay.style.transform = mapPane.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
+            let t3d = util.parseTransform(mapPane.style.transform);
+            this.overlay.style.transform = mapPane.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
         });
         this.map.on('zoomstart', e => {
             this.map.dragging.disable();
@@ -84,12 +84,11 @@ class MetroMap {
         return new Promise((resolve, reject) => {
             let xhr = new XMLHttpRequest();
             xhr.onreadystatechange = () => {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        resolve(xhr.responseText);
-                    } else {
-                        reject(`couldn't fetch the graph: ${xhr.status}: ${xhr.statusText}`);
-                    }
+                if (xhr.readyState !== 4) return;
+                if (xhr.status === 200) {
+                    resolve(xhr.responseText);
+                } else {
+                    reject(`couldn't fetch the graph: ${xhr.status}: ${xhr.statusText}`);
                 }
             };
             xhr.open('GET', kml, true);
