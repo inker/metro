@@ -550,8 +550,8 @@ function getUserLanguage() {
 }
 exports.getUserLanguage = getUserLanguage;
 function parseTransform(val) {
-    var matches = val.substr(9, 2) === '3d' ? val.match(/translate3d\((-?\d+).*?,\s?(-?\d+).*?,\s?(-?\d+).*?\)/i) : val.match(/translate\((-?\d+).*?,\s?(-?\d+).*?\)/i);
-    return matches ? new L.Point(Number(matches[1]), Number(matches[2])) : new L.Point(0, 0);
+    var matches = val.match(/translate(3d)?\((-?\d+).*?,\s?(-?\d+).*?(,\s?(-?\d+).*?)?\)/i);
+    return matches ? new L.Point(Number(matches[2]), Number(matches[3])) : new L.Point(0, 0);
 }
 exports.parseTransform = parseTransform;
 function findCircle(graph, station) {
