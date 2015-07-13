@@ -378,13 +378,13 @@ var MetroMap = (function () {
                     var transSrc = src,
                         transTrg = trg;
                     if (src.spans.length === 2) {
-                        var otherSpanNum = i == src.spans[0] ? src.spans[1] : src.spans[0];
+                        var otherSpanNum = src.spans[i == src.spans[0] ? 1 : 0];
                         var otherSpan = _this2.graph.spans[otherSpanNum];
                         var transSrcNum = otherSpan.source == span.source ? otherSpan.target : otherSpan.source;
                         transSrc = _this2.graph.platforms[transSrcNum];
                     }
                     if (trg.spans.length === 2) {
-                        var otherSpanNum = i == trg.spans[0] ? trg.spans[1] : trg.spans[0];
+                        var otherSpanNum = trg.spans[i == trg.spans[0] ? 1 : 0];
                         var otherSpan = _this2.graph.spans[otherSpanNum];
                         var transTrgNum = otherSpan.source == span.target ? otherSpan.target : otherSpan.source;
                         transTrg = _this2.graph.platforms[transTrgNum];
@@ -529,10 +529,8 @@ function makePlate(circle) {
     var ru = dataset['ru'];
     var fi = dataset['fi'];
     var names = !fi ? [ru] : util.getUserLanguage() === 'fi' ? [fi, ru] : [ru, fi];
-    if (/^Centra.*?voxal/.test(ru)) {
-        names.push('Central Railway Station');
-    } else if (ru === 'Aeroport') {
-        names.push('Airport');
+    if (ru in util.englishStationNames) {
+        names.push(util.englishStationNames[ru]);
     }
     var plate = makeFittingRect(poleBounds.min, names);
     //let foreignObject = makeForeignDiv(rectTopLeft, !fi ? ru : util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru + '<br>' + fi);
@@ -577,9 +575,9 @@ function getCircumcenter(positions) {
     console.log(positions[1]);
     var b = positions[1].subtract(positions[0]);
     var c = positions[2].subtract(positions[0]);
-    var bDot = b.x * b.x + b.y * b.y;
-    var cDot = c.x * c.x + c.y * c.y;
-    return new L.Point(c.y * bDot - b.y * cDot, b.x * cDot - c.x * bDot).divideBy(2.0 * (b.x * c.y - b.y * c.x)).add(positions[0]);
+    var bb = b.x * b.x + b.y * b.y;
+    var cc = c.x * c.x + c.y * c.y;
+    return new L.Point(c.y * bb - b.y * cc, b.x * cc - c.x * bb).divideBy(2.0 * (b.x * c.y - b.y * c.x)).add(positions[0]);
 }
 exports.getCircumcenter = getCircumcenter;
 function getSVGDataset(el) {
@@ -605,6 +603,10 @@ function setSVGDataset(el, dataset) {
     });
 }
 exports.setSVGDataset = setSVGDataset;
+exports.englishStationNames = {
+    'Centraľnyj voxal': 'Central Raiway Station',
+    'Aeroport': 'Airport'
+};
 //export function getSegmentLength(source: L.Point, target: L.Point): number {
 //    const a = target.subtract(source);
 //    return Math.sqrt(a.x * a.x + a.y * a.y);

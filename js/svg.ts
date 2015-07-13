@@ -64,10 +64,10 @@ function makeFittingRect(bottomRight: L.Point, lines: string[]): HTMLElement {
     let rect = svg.createSVGElement('rect');
     const spacing = 12;
     const longest = lines.reduce((prev, cur) => prev.length < cur.length ? cur : prev);
-    let rectSize = new L.Point(10 + longest.length * 6, 6 + spacing * lines.length);
+    const rectSize = new L.Point(10 + longest.length * 6, 6 + spacing * lines.length);
     rect.setAttribute('width', rectSize.x.toString());
     rect.setAttribute('height', rectSize.y.toString());
-    let rectTopLeft = bottomRight.subtract(rectSize);
+    const rectTopLeft = bottomRight.subtract(rectSize);
     rect.setAttribute('x', rectTopLeft.x.toString());
     rect.setAttribute('y', rectTopLeft.y.toString());
     rect.classList.add('plate-box');
@@ -106,15 +106,13 @@ export function makePlate(circle: HTMLElement) {
     pole.setAttribute('y2', poleBounds.max.y.toString());
     pole.classList.add('plate-pole');
 
-    let dataset = util.getSVGDataset(circle);
+    const dataset = util.getSVGDataset(circle);
     const ru: string = dataset['ru'];
     const fi: string = dataset['fi'];
 
-    let names = !fi ? [ru] : util.getUserLanguage() === 'fi' ? [fi, ru] : [ru, fi];
-    if (/^Centra.*?voxal/.test(ru)) {
-        names.push('Central Railway Station');
-    } else if (ru === 'Aeroport') {
-        names.push('Airport');
+    let names = !fi ? [ru] : (util.getUserLanguage() === 'fi') ? [fi, ru] : [ru, fi];
+    if (ru in util.englishStationNames) {
+        names.push(util.englishStationNames[ru]);
     }
 
     let plate = makeFittingRect(poleBounds.min, names);

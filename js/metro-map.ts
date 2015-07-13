@@ -300,7 +300,7 @@ ${xhr.status}: ${xhr.statusText}`);
 
             this.graph.stations.forEach((station, stationIndex) => {
                 let circular = util.findCircle(this.graph, station);
-                let coords = [];
+                let coords: L.Point[] = [];
                 station.platforms.forEach(platformNum => {
                     const platform = this.graph.platforms[platformNum];
                     const posOnSVG = this.posOnSVG(svgBounds, platform.location);
@@ -368,13 +368,13 @@ ${xhr.status}: ${xhr.statusText}`);
                 let trg = this.graph.platforms[span.target];
                 let transSrc = src, transTrg = trg;
                 if (src.spans.length === 2) {
-                    let otherSpanNum = (i == src.spans[0]) ? src.spans[1] : src.spans[0];
+                    let otherSpanNum = src.spans[i == src.spans[0] ? 1 : 0];
                     let otherSpan = this.graph.spans[otherSpanNum];
                     let transSrcNum = (otherSpan.source == span.source) ? otherSpan.target : otherSpan.source;
                     transSrc = this.graph.platforms[transSrcNum];
                 }
                 if (trg.spans.length === 2) {
-                    let otherSpanNum = (i == trg.spans[0]) ? trg.spans[1] : trg.spans[0];
+                    let otherSpanNum = trg.spans[i == trg.spans[0] ? 1 : 0];
                     let otherSpan = this.graph.spans[otherSpanNum];
                     let transTrgNum = (otherSpan.source == span.target) ? otherSpan.target : otherSpan.source;
                     transTrg = this.graph.platforms[transTrgNum];

@@ -23,9 +23,9 @@ export function getCircumcenter(positions: L.Point[]): L.Point {
     console.log(positions[1]);
     const b = positions[1].subtract(positions[0]);
     const c = positions[2].subtract(positions[0]);
-    const bDot = b.x * b.x + b.y * b.y;
-    const cDot = c.x * c.x + c.y * c.y;
-    return new L.Point((c.y * bDot - b.y * cDot), (b.x * cDot - c.x * bDot))
+    const bb = b.x * b.x + b.y * b.y;
+    const cc = c.x * c.x + c.y * c.y;
+    return new L.Point((c.y * bb - b.y * cc), (b.x * cc - c.x * bb))
         .divideBy(2.0 * (b.x * c.y - b.y * c.x))
         .add(positions[0]);
 }
@@ -49,6 +49,11 @@ export function getSVGDataset(el: Element): any {
 
 export function setSVGDataset(el: Element, dataset: any): void {
     Object.keys(dataset).forEach(key => el.setAttribute('data-' + key, dataset[key]));
+}
+
+export let englishStationNames = {
+    'Centraľnyj voxal': 'Central Raiway Station',
+    'Aeroport': 'Airport'
 }
 
 //export function getSegmentLength(source: L.Point, target: L.Point): number {
