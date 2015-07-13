@@ -20,9 +20,7 @@ var openMapSurfer = (function () {
         attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
 })();
-var metroMap = new MetroMap('map-container', 'json/graph.json', function (zoom) {
-    return zoom < 15 ? mapbox : openMapSurfer;
-});
+var metroMap = new MetroMap('map-container', 'json/graph.json', [mapbox, openMapSurfer]);
 (function () {
     var titles = ['Plan metro Sankt-Peterburga', 'Pietarin metron hankesuunnitelma', 'St Petersburg metro plan proposal'];
     var i = 0;
@@ -47,17 +45,15 @@ var util = require('./util');
 //import * as util from '../../util';
 //import Plain from './plain-objects';
 var MetroMap = (function () {
-    function MetroMap(containerId, kml, tileLayersForZoom) {
+    function MetroMap(containerId, kml, tileLayers) {
         var _this = this;
         var graphPromise = this.fetchGraph(kml);
-        var zoom = 11;
-        this.tileLayersForZoom = tileLayersForZoom;
-        this._tileLayer = tileLayersForZoom(11);
-        this.map = new L.Map(containerId, { inertia: false }).addLayer(this._tileLayer).setView(new L.LatLng(60, 30), zoom).addControl(new L.Control.Scale({ imperial: false }));
-        this.addLayerControl({
-            'I': tileLayersForZoom(10),
-            'II': tileLayersForZoom(16)
-        });
+        this.map = new L.Map(containerId, { inertia: false }).addLayer(tileLayers[0]).setView(new L.LatLng(60, 30), 11).addControl(new L.Control.Scale({ imperial: false }));
+        var layers = {};
+        for (var i = 0; i < tileLayers.length; ++i) {
+            layers['Layer ' + i] = tileLayers[i];
+        }
+        this.addLayerControl(layers);
         //L.Control['measureControl']().addTo(this.map);
         console.log('map should be created by now');
         this.addOverlay();
@@ -85,7 +81,6 @@ var MetroMap = (function () {
         //this.map.getPanes().mapPane.innerHTML = '<svg id="overlay"></svg>' + this.map.getPanes().mapPane.innerHTML;
         this.overlay = document.getElementById('overlay');
         this.overlay.id = 'overlay';
-        //console.log(this.overlay);
         this.overlay.style.fill = 'white';
         this.overlay.style.zIndex = '10';
     };
@@ -111,10 +106,6 @@ var MetroMap = (function () {
             _this.overlay.style.opacity = '0.5';
         });
         this.map.on('zoomend', function (e) {
-            var possibleTileLayer = _this.tileLayersForZoom(_this.map.getZoom());
-            if (_this.tileLayersForZoom(prevZoom) != possibleTileLayer) {
-                _this.tileLayer = possibleTileLayer;
-            }
             _this.redrawNetwork();
             //this.overlay.classList.remove('leaflet-zoom-anim');
             _this.overlay.style.opacity = null;
@@ -158,7 +149,7 @@ var MetroMap = (function () {
                     if (xhr.status === 200) {
                         resolve(xhr.responseText);
                     } else {
-                        reject('couldn\'t fetch the graph:\n' + xhr.status + ': ' + xhr.statusText);
+                        reject('couldn\'t fetch the graph: ' + xhr.status + ': ' + xhr.statusText);
                     }
                 }
             };
@@ -201,22 +192,6 @@ var MetroMap = (function () {
             return _this.bounds.extend(platform.location);
         });
     };
-    Object.defineProperty(MetroMap.prototype, 'tileLayer', {
-        get: function get() {
-            return this._tileLayer;
-        },
-        set: function set(tileLayer) {
-            var _this = this;
-            this.map.addLayer(tileLayer);
-            var oldLayer = this._tileLayer;
-            tileLayer.once('load', function () {
-                return _this.map.removeLayer(oldLayer);
-            });
-            this._tileLayer = tileLayer;
-        },
-        enumerable: true,
-        configurable: true
-    });
     MetroMap.prototype.showPlate = function (event) {
         var dummyCircle = event.target;
         var dataset = util.getSVGDataset(dummyCircle);
@@ -518,7 +493,7 @@ function makePlate(circle) {
     var pole = svg.createSVGElement('line');
     var c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
     var r = Number(circle.getAttribute('r'));
-    var poleSize = new L.Point(4, 8);
+    var poleSize = new L.Point(4 + r, 8 + r);
     var poleBounds = new L.Bounds(c, c.subtract(poleSize));
     pole.setAttribute('x1', poleBounds.min.x.toString());
     pole.setAttribute('y1', poleBounds.min.y.toString());

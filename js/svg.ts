@@ -91,14 +91,14 @@ function makeFittingRect(bottomRight: L.Point, lines: string[]): HTMLElement {
     return plate;
 }
 
-export function makePlate(circle: HTMLElement) {
+export function makePlate(circle: HTMLElement): HTMLElement {
     let plateGroup = svg.createSVGElement('g');
 
     let pole = svg.createSVGElement('line');
     const c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
-    let r = Number(circle.getAttribute('r'));
-    let poleSize = new L.Point(4, 8);
-    let poleBounds = new L.Bounds(c, c.subtract(poleSize));
+    const r = Number(circle.getAttribute('r'));
+    const poleSize = new L.Point(4 + r, 8 + r);
+    const poleBounds = new L.Bounds(c, c.subtract(poleSize));
 
     pole.setAttribute('x1', poleBounds.min.x.toString());
     pole.setAttribute('y1', poleBounds.min.y.toString());

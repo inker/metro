@@ -11,24 +11,20 @@ class MetroMap {
     private map: L.Map;
     private overlay: HTMLElement;
     private graph: po.Graph;
-    private _tileLayer: L.TileLayer;
     private bounds: L.LatLngBounds;
-    private tileLayersForZoom: (zoom: number) => L.TileLayer;
 
-    constructor(containerId: string, kml: string, tileLayersForZoom: (zoom: number) => L.TileLayer) {
+    constructor(containerId: string, kml: string, tileLayers: L.TileLayer[]) {
         let graphPromise = this.fetchGraph(kml);
-        const zoom = 11;
-        this.tileLayersForZoom = tileLayersForZoom;
-        this._tileLayer = tileLayersForZoom(11);
         this.map = new L.Map(containerId, { inertia: false })
-            .addLayer(this._tileLayer)
-            .setView(new L.LatLng(60, 30), zoom)
+            .addLayer(tileLayers[0])
+            .setView(new L.LatLng(60, 30), 11)
             .addControl(new L.Control.Scale({ imperial: false }));
-
-        this.addLayerControl({
-            'I': tileLayersForZoom(10),
-            'II': tileLayersForZoom(16)
-        });
+        
+        let layers = {};
+        for (let i = 0; i < tileLayers.length; ++i) {
+            layers['Layer ' + i] = tileLayers[i];
+        }
+        this.addLayerControl(layers);
 
         //L.Control['measureControl']().addTo(this.map);
 
@@ -56,7 +52,6 @@ class MetroMap {
         //this.map.getPanes().mapPane.innerHTML = '<svg id="overlay"></svg>' + this.map.getPanes().mapPane.innerHTML;
         this.overlay = document.getElementById('overlay');
         this.overlay.id = 'overlay';
-        //console.log(this.overlay);
         this.overlay.style.fill = 'white';
         this.overlay.style.zIndex = '10';
     }
@@ -79,10 +74,6 @@ class MetroMap {
             
         });
         this.map.on('zoomend', e => {
-            const possibleTileLayer = this.tileLayersForZoom(this.map.getZoom());
-            if (this.tileLayersForZoom(prevZoom) != possibleTileLayer) {
-                this.tileLayer = possibleTileLayer;
-            }
             this.redrawNetwork();
             //this.overlay.classList.remove('leaflet-zoom-anim');
             this.overlay.style.opacity = null;
@@ -128,8 +119,7 @@ class MetroMap {
                     if (xhr.status === 200) {
                         resolve(xhr.responseText);
                     } else {
-                        reject(`couldn't fetch the graph:
-${xhr.status}: ${xhr.statusText}`);
+                        reject(`couldn't fetch the graph: ${xhr.status}: ${xhr.statusText}`);
                     }
                 }
             };
@@ -172,17 +162,6 @@ ${xhr.status}: ${xhr.statusText}`);
         let a = this.graph.platforms[0].location;
         this.bounds = new L.LatLngBounds(a, a);
         this.graph.platforms.forEach(platform => this.bounds.extend(platform.location));
-    }
-
-    get tileLayer(): L.TileLayer {
-        return this._tileLayer;
-    }
-
-    set tileLayer(tileLayer: L.TileLayer) {
-        this.map.addLayer(tileLayer);
-        let oldLayer = this._tileLayer;
-        tileLayer.once('load', () => this.map.removeLayer(oldLayer));
-        this._tileLayer = tileLayer;
     }
 
     private showPlate(event: MouseEvent): void {
@@ -248,7 +227,6 @@ ${xhr.status}: ${xhr.statusText}`);
     private redrawNetwork(): void {
         this.refillSVG();
         this.updatePos();
-
 
         let whiskers = new Array<L.Point[]>(this.graph.platforms.length);
 

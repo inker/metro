@@ -16,7 +16,7 @@ const openMapSurfer = (() => new L.TileLayer('http://openmapsurfer.uni-hd.de/til
     attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }))();
 
-var metroMap = new MetroMap('map-container', 'json/graph.json', (zoom: number) => (zoom < 15) ? mapbox : openMapSurfer);
+var metroMap = new MetroMap('map-container', 'json/graph.json', [mapbox, openMapSurfer]);
 
 (() => {
     let titles = ['Plan metro Sankt-Peterburga', 'Pietarin metron hankesuunnitelma', 'St Petersburg metro plan proposal'];
