@@ -1,6 +1,59 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
+var LayerControl = (function () {
+    function LayerControl(metroMap, tileLayers, otherLayers) {
+        var layerControl = L.control['UniForm'](tileLayers, otherLayers || null, {
+            collapsed: false,
+            position: 'topright'
+        });
+        // add control widget to map and html dom.
+        layerControl.addTo(metroMap.getMap());
+        // update the control widget to the specific theme.
+        layerControl.renderUniformControl();
+    }
+    return LayerControl;
+})();
+exports.LayerControl = LayerControl;
+var Measurement = (function () {
+    function Measurement(metroMap) {
+        var overlay = metroMap.getOverlay();
+        var map = metroMap.getMap();
+        var polyline = new L.Polyline([], { color: 'red' });
+        polyline.addTo(map);
+        var marker = new L.CircleMarker([60, 30]);
+        var text = '0m';
+        //marker.on('mouseover', e => popup.)
+        overlay.addEventListener('click', function (e) {
+            if (!e.shiftKey) return;
+            var pt = map.containerPointToLatLng(new L.Point(e.x, e.y));
+            polyline.addLatLng(pt).redraw();
+            marker.on('mouseout', function (e) {
+                return marker.closePopup();
+            });
+            //.on('dblclick', e => {
+            //    polyline.setLatLngs([]).redraw();
+            //    this.map.removeLayer(marker);
+            //})
+            marker.addTo(map);
+            var pts = polyline.getLatLngs();
+            if (pts.length > 1) {
+                var distance = 0;
+                for (var i = 1; i < pts.length; ++i) {
+                    distance += pts[i - 1].distanceTo(pts[i]);
+                }
+                L.popup().setLatLng(pt).setContent('Popup').openOn(map);
+            }
+        });
+    }
+    return Measurement;
+})();
+exports.Measurement = Measurement;
+
+
+},{}],2:[function(require,module,exports){
+'use strict';
+
 var MetroMap = require('./metro-map');
 //import MetroMap from './metro-map';
 var mapbox = (function () {
@@ -34,12 +87,13 @@ console.log('browser: ' + navigator.browserLanguage);
 console.log('system: ' + navigator.systemLanguage);
 
 
-},{"./metro-map":2}],2:[function(require,module,exports){
+},{"./metro-map":3}],3:[function(require,module,exports){
 'use strict';
 
 var L = window.L;
 var svg = require('./svg');
 var util = require('./util');
+var addons = require('./addons');
 //import 'leaflet';
 //import * as svg from './svg';
 //import * as util from '../../util';
@@ -53,7 +107,7 @@ var MetroMap = (function () {
         for (var i = 0; i < tileLayers.length; ++i) {
             layers['Layer ' + i] = tileLayers[i];
         }
-        this.addLayerControl(layers);
+        new addons.LayerControl(this, layers);
         //L.Control['measureControl']().addTo(this.map);
         console.log('map should be created by now');
         this.addOverlay();
@@ -67,15 +121,11 @@ var MetroMap = (function () {
             return alert(text);
         });
     }
-    MetroMap.prototype.addLayerControl = function (tileLayers, otherLayers) {
-        var layerControl = L.control['UniForm'](tileLayers, otherLayers || null, {
-            collapsed: false,
-            position: 'topright'
-        });
-        // add control widget to map and html dom.
-        layerControl.addTo(this.map);
-        // update the control widget to the specific theme.
-        layerControl.renderUniformControl();
+    MetroMap.prototype.getMap = function () {
+        return this.map;
+    };
+    MetroMap.prototype.getOverlay = function () {
+        return this.overlay;
     };
     MetroMap.prototype.addOverlay = function () {
         //this.map.getPanes().mapPane.innerHTML = '<svg id="overlay"></svg>' + this.map.getPanes().mapPane.innerHTML;
@@ -110,35 +160,6 @@ var MetroMap = (function () {
             //this.overlay.classList.remove('leaflet-zoom-anim');
             _this.overlay.style.opacity = null;
             _this.map.dragging.enable();
-        });
-    };
-    MetroMap.prototype.addMeasurementControl = function () {
-        var _this = this;
-        var polyline = new L.Polyline([], { color: 'red' });
-        polyline.addTo(this.map);
-        var marker = new L.CircleMarker([60, 30]);
-        var text = '0m';
-        //marker.on('mouseover', e => popup.)
-        this.overlay.addEventListener('click', function (e) {
-            if (!e.shiftKey) return;
-            var pt = _this.map.containerPointToLatLng(new L.Point(e.x, e.y));
-            polyline.addLatLng(pt).redraw();
-            marker.on('mouseout', function (e) {
-                return marker.closePopup();
-            });
-            //.on('dblclick', e => {
-            //    polyline.setLatLngs([]).redraw();
-            //    this.map.removeLayer(marker);
-            //})
-            marker.addTo(_this.map);
-            var pts = polyline.getLatLngs();
-            if (pts.length > 1) {
-                var distance = 0;
-                for (var i = 1; i < pts.length; ++i) {
-                    distance += pts[i - 1].distanceTo(pts[i]);
-                }
-                L.popup().setLatLng(pt).setContent('Popup').openOn(_this.map);
-            }
         });
     };
     MetroMap.prototype.fetchGraph = function (kml) {
@@ -395,7 +416,7 @@ module.exports = MetroMap;
 //export default MetroMap;
 
 
-},{"./svg":3,"./util":4}],3:[function(require,module,exports){
+},{"./addons":1,"./svg":4,"./util":5}],4:[function(require,module,exports){
 'use strict';
 
 var L = window.L;
@@ -520,7 +541,7 @@ function makePlate(circle) {
 exports.makePlate = makePlate;
 
 
-},{"./svg":3,"./util":4}],4:[function(require,module,exports){
+},{"./svg":4,"./util":5}],5:[function(require,module,exports){
 /// <reference path="./../typings/tsd.d.ts" />
 'use strict';
 
@@ -588,4 +609,4 @@ exports.englishStationNames = {
 //}
 
 
-},{}]},{},[1]);
+},{}]},{},[2]);

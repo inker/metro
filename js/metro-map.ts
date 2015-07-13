@@ -2,6 +2,8 @@ import L = require('leaflet');
 import svg = require('./svg');
 import util = require('./util');
 import po = require('../plain-objects');
+import addons = require('./addons');
+
 //import 'leaflet';
 //import * as svg from './svg';
 //import * as util from '../../util';
@@ -12,6 +14,14 @@ class MetroMap {
     private overlay: HTMLElement;
     private graph: po.Graph;
     private bounds: L.LatLngBounds;
+    
+    getMap(): L.Map {
+        return this.map;
+    }
+    
+    getOverlay(): HTMLElement {
+        return this.overlay;
+    }
 
     constructor(containerId: string, kml: string, tileLayers: L.TileLayer[]) {
         let graphPromise = this.fetchGraph(kml);
@@ -24,7 +34,7 @@ class MetroMap {
         for (let i = 0; i < tileLayers.length; ++i) {
             layers['Layer ' + i] = tileLayers[i];
         }
-        this.addLayerControl(layers);
+        new addons.LayerControl(this, layers);
 
         //L.Control['measureControl']().addTo(this.map);
 
@@ -35,17 +45,6 @@ class MetroMap {
         graphPromise.then(text => this.handleJSON(text))
             .then(() => this.redrawNetwork())
             .catch(text => alert(text))
-    }
-
-    private addLayerControl(tileLayers: any, otherLayers?: any): void {
-        let layerControl = L.control['UniForm'](tileLayers, otherLayers || null, {
-            collapsed: false,
-            position: 'topright'
-        });
-        // add control widget to map and html dom.
-        layerControl.addTo(this.map);
-        // update the control widget to the specific theme.
-        layerControl.renderUniformControl();
     }
     
     private addOverlay(): void {
@@ -78,36 +77,6 @@ class MetroMap {
             //this.overlay.classList.remove('leaflet-zoom-anim');
             this.overlay.style.opacity = null;
             this.map.dragging.enable();
-        });
-    }
-
-    private addMeasurementControl(): void {
-        let polyline = new L.Polyline([], { color: 'red' });
-        polyline.addTo(this.map);
-        let marker = new L.CircleMarker([60, 30]);
-        let text = '0m';
-        //marker.on('mouseover', e => popup.)
-        this.overlay.addEventListener('click', e => {
-            if (!e.shiftKey) return;
-            let pt = this.map.containerPointToLatLng(new L.Point(e.x, e.y));
-            polyline.addLatLng(pt).redraw();
-            marker.on('mouseout', e => marker.closePopup());
-            //.on('dblclick', e => {
-            //    polyline.setLatLngs([]).redraw();
-            //    this.map.removeLayer(marker);
-            //})
-            marker.addTo(this.map);
-            let pts = polyline.getLatLngs();
-            if (pts.length > 1) {
-                let distance = 0;
-                for (let i = 1; i < pts.length; ++i) {
-                    distance += pts[i - 1].distanceTo(pts[i]);
-                }
-                L.popup()
-                    .setLatLng(pt)
-                    .setContent('Popup')
-                    .openOn(this.map);
-            }
         });
     }
 
@@ -236,8 +205,8 @@ class MetroMap {
         let transfers = document.getElementById('transfers');
 
         const zoom = this.map.getZoom();
-        let nw = this.bounds.getNorthWest();
-        let se = this.bounds.getSouthEast();
+        const nw = this.bounds.getNorthWest();
+        const se = this.bounds.getSouthEast();
         let svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
         if (zoom < 10) {
 
