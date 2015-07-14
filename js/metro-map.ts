@@ -245,6 +245,7 @@ class MetroMap {
             const lineWidth = (zoom - 7) * 0.5;
             const circleRadius = (zoom - 7) * 0.5;
             const circleBorder = circleRadius * 0.4;
+            const transferWidth = lineWidth;
             let platformsHavingCircles = new Set<number>();
             let platformsOnSVG = this.graph.platforms.map(platform => this.posOnSVG(svgBounds, platform.location));
             let beziers: HTMLElement[] = [];

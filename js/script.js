@@ -305,6 +305,7 @@ var MetroMap = (function () {
                 var lineWidth = (zoom - 7) * 0.5;
                 var circleRadius = (zoom - 7) * 0.5;
                 var circleBorder = circleRadius * 0.4;
+                var transferWidth = lineWidth;
                 var platformsHavingCircles = new Set();
                 var platformsOnSVG = _this2.graph.platforms.map(function (platform) {
                     return _this.posOnSVG(svgBounds, platform.location);
