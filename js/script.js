@@ -522,9 +522,13 @@ function makeCubicBezier(controlPoints) {
         throw new Error('there should be 4 points');
     }
     var path = createSVGElement('path');
-    var d = controlPoints.reduce(function (prev, cp, i) {
-        return '' + prev + (i === 1 ? ' C ' : ' ') + cp.x + ',' + cp.y;
-    }, 'M');
+    var s = controlPoints.map(function (pt) {
+        return pt.x + ',' + pt.y;
+    });
+    s.unshift('M');
+    s.splice(2, 0, 'C');
+    var d = s.join(' ');
+    //let d = controlPoints.reduce((prev, cp, i) => `${prev}${i === 1 ? ' C ' : ' '}${cp.x},${cp.y}`, 'M');
     path.setAttribute('d', d);
     return path;
 }
