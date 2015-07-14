@@ -314,9 +314,9 @@ var MetroMap = (function () {
                 _this2.graph.stations.forEach(function (station, stationIndex) {
                     var circular = util.findCircle(_this.graph, station);
                     var coords = [];
-                    station.platforms.forEach(function (platformNum, platformIndex) {
+                    station.platforms.forEach(function (platformNum) {
                         var platform = _this.graph.platforms[platformNum];
-                        var posOnSVG = platformsOnSVG[platformIndex];
+                        var posOnSVG = platformsOnSVG[platformNum];
                         var ci = svg.makeCircle(posOnSVG, circleRadius);
                         svg.convertToStation(ci, 'p-' + platformNum.toString(), platform, circleBorder);
                         ci.setAttribute('data-station', stationIndex.toString());

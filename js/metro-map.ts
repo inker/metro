@@ -254,9 +254,9 @@ class MetroMap {
             this.graph.stations.forEach((station, stationIndex) => {
                 let circular = util.findCircle(this.graph, station);
                 let coords: L.Point[] = [];
-                station.platforms.forEach((platformNum, platformIndex) => {
+                station.platforms.forEach((platformNum) => {
                     const platform = this.graph.platforms[platformNum];
-                    const posOnSVG = platformsOnSVG[platformIndex];
+                    const posOnSVG = platformsOnSVG[platformNum];
 
                     let ci = svg.makeCircle(posOnSVG, circleRadius);
                     svg.convertToStation(ci, 'p-' + platformNum.toString(), platform, circleBorder);
