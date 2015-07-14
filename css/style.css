@@ -29,6 +29,7 @@ a {
     cursor: default;
     position: absolute;
     z-index: 50;
+    fill-opacity: 0;
 }
 
 /* map elements */
