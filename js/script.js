@@ -411,17 +411,17 @@ var MetroMap = (function () {
                         trgN = span.target;
                     var src = _this2.graph.platforms[srcN];
                     var trg = _this2.graph.platforms[trgN];
-                    var foo = whiskers[srcN];
                     try {
                         var bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][1], whiskers[trgN][0], platformsOnSVG[trgN]]);
                         var routes = span.routes.map(function (n) {
                             return _this.graph.routes[n];
                         });
-                        var matches = routes[0].line.match(/M(\d{1,2})/);
+                        var matches = routes[0].line.match(/[MEL](\d{1,2})/);
                         bezier.style.strokeWidth = lineWidth.toString();
                         if (matches) {
                             bezier.classList.add(matches[0]);
                         }
+                        bezier.classList.add(routes[0].line.charAt(0) + '-line');
                         paths.appendChild(bezier);
                     } catch (err) {
                         console.error(span);

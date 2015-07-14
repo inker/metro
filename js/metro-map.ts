@@ -359,15 +359,15 @@ class MetroMap {
                 let srcN = span.source, trgN = span.target;
                 let src = this.graph.platforms[srcN];
                 let trg = this.graph.platforms[trgN];
-                let foo = whiskers[srcN];
                 try {
                     let bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][1], whiskers[trgN][0], platformsOnSVG[trgN]]);
                     let routes = span.routes.map(n => this.graph.routes[n]);
-                    let matches = routes[0].line.match(/M(\d{1,2})/);
+                    let matches = routes[0].line.match(/[MEL](\d{1,2})/);
                     bezier.style.strokeWidth = lineWidth.toString();
                     if (matches) {
                         bezier.classList.add(matches[0]);
                     }
+                    bezier.classList.add(routes[0].line.charAt(0) + '-line');
                     paths.appendChild(bezier);
                 } catch (err) {
                     console.error(span);

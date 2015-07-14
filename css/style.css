@@ -76,12 +76,12 @@ a {
 }
 
 .M-line {
-    stroke-width: 2;
+    /*stroke-width: 2;*/
 }
 
 .E-line {
     stroke: #808080;
-    stroke-width: 2;
+    /*stroke-width: 2;*/
     stroke-dasharray: 2, 2;
 }
 
@@ -94,7 +94,7 @@ a {
 }
 
 .L-line {
-    stroke-width: 1.5;
+    /*stroke-width: 1.5;*/
     stroke-dasharray: 2, 0;
 }
 
