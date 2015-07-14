@@ -381,8 +381,8 @@ var MetroMap = (function () {
                                             prevs.push(neighborPos);
                                         }
                                     }
-                                    var prev = prevs.length === 1 ? prevs[0] : prevs[0].add(prevs[1]);
-                                    var next = nexts.length === 1 ? nexts[0] : nexts[0].add(nexts[1]);
+                                    var prev = prevs.length === 1 ? prevs[0] : prevs[0].add(prevs[1]).divideBy(2);
+                                    var next = nexts.length === 1 ? nexts[0] : nexts[0].add(nexts[1]).divideBy(2);
                                     var distToPrev = posOnSVG.distanceTo(prev),
                                         distToNext = posOnSVG.distanceTo(next);
                                     var midPtPrev = posOnSVG.add(prev).divideBy(2),
