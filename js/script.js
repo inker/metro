@@ -523,7 +523,7 @@ function makeCubicBezier(controlPoints) {
     }
     var path = createSVGElement('path');
     var d = controlPoints.reduce(function (prev, cp, i) {
-        return '' + prev + (i === 1 ? 'C' : ' ') + cp.x + ',' + cp.y;
+        return '' + prev + (i === 1 ? ' C ' : ' ') + cp.x + ',' + cp.y;
     }, 'M');
     path.setAttribute('d', d);
     return path;

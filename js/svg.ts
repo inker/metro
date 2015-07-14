@@ -35,7 +35,7 @@ export function makeCubicBezier(controlPoints: L.Point[]): HTMLElement {
         throw new Error('there should be 4 points');
     }
     let path = createSVGElement('path');
-    let d = controlPoints.reduce((prev, cp, i) => `${prev}${i === 1 ? 'C' : ' '}${cp.x},${cp.y}`, 'M');
+    let d = controlPoints.reduce((prev, cp, i) => `${prev}${i === 1 ? ' C ' : ' '}${cp.x},${cp.y}`, 'M');
     path.setAttribute('d', d);
     return path;
 }
