@@ -29,12 +29,10 @@ a {
     cursor: default;
     position: absolute;
     z-index: 50;
-    fill-opacity: 0;
 }
 
 /* map elements */
 .station-circle {
-    opacity: 1;
     fill: white;
     stroke: black;
 }
@@ -101,7 +99,7 @@ a {
 }
 
 /* lines */
-.M1 { stroke: #E32017; }
+.M1 { stroke: #E32017; fill-opacity: 0 }
 .M2 { stroke: #003688; }
 .M3 { stroke: #00782A; }
 .M4 { stroke: #EE7C0E; }
