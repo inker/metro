@@ -295,9 +295,9 @@ class MetroMap {
                         let diff = posOnSVG.subtract(mm);
                         whiskers[platformNum] = midPts.map(midPt => midPt.add(diff));
                     }
-                    else if (platform.spans.length === 1) {
+                    else if (platform.spans.length !== 3) {
                         whiskers[platformNum] = [posOnSVG, posOnSVG];
-                    } else {
+                    } else if (platform.spans.length === 3) {
                         let midPts = [posOnSVG, posOnSVG];
                         let lens = [0, 0];
                         //// true = is source of the span
