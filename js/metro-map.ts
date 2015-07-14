@@ -346,7 +346,7 @@ class MetroMap {
                     let circumcircle = svg.makeCircle(circumcenter, circumradius);
                     circumcircle.classList.add('transfer');
                     circumcircle.style.strokeWidth = transferWidth.toString();
-                    circumcircle.style.opacity = '0.5';
+                    circumcircle.style.opacity = '0.25';
                     transferSegments.appendChild(circumcircle);
                 } else {
 
@@ -416,7 +416,7 @@ class MetroMap {
                 transfer.setAttribute('y2', posOnSVG2.y.toString());
                 transfer.classList.add('transfer');
                 transfer.style.strokeWidth = transferWidth.toString();
-                transfer.style.opacity = '0.5';
+                transfer.style.opacity = '0.25';
                 transfers.appendChild(transfer);
             });
 
