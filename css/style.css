@@ -32,7 +32,6 @@ a {
 }
 
 /* map elements */
-
 .station-circle {
     fill: white;
     stroke: black;
@@ -74,3 +73,40 @@ a {
     stroke: black;
     fill-opacity: 0;
 }
+
+.M-line {
+    stroke-width: 2;
+}
+
+.E-line {
+    stroke: #808080;
+    stroke-width: 2;
+    stroke-dasharray: 2, 2;
+}
+
+.E-highlighted {
+    stroke: #606060;
+}
+
+.L-line, .L-highlighted {
+    stroke: #00A4A7;
+}
+
+.L-line {
+    stroke-width: 1.5;
+    stroke-dasharray: 2, 0;
+}
+
+/* lines */
+.M1 { stroke: #E32017; }
+.M2 { stroke: #003688; }
+.M3 { stroke: #00782A; }
+.M4 { stroke: #EE7C0E; }
+.M5 { stroke: #9B0056; }
+.M6 { stroke: #B36305; }
+.M7 { stroke: #FFD300; }
+.M8 { stroke: #0098D4; }
+.M9 { stroke: #A0A5A9; }
+.M10 { stroke: #F371BB; }
+.M11 { stroke: #000000; }
+.M12 { stroke: #84B817; }

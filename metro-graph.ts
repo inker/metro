@@ -2,6 +2,7 @@
 /// <reference path="./typings/tsd.d.ts" />
 import geo = require('./geo');
 import plain = require('./plain-objects');
+import util = require('./js/util');
 //import L = require('leaflet');
 //import * as geo from './geo';
 
@@ -12,11 +13,11 @@ const enum Elevation {
 export class Platform {
     private _name: string; // overrides the parent station's name
     private _altName: string;
+    private _oldName: string;
     private _station: Station;
     private _spans: Span[];
     location: L.LatLng;
     elevation: Elevation;
-    private _oldName: string;
 
     constructor(location: L.LatLng, elevation = Elevation.Underground, name = "", altName = "", oldName = "") {
         this._name = name;
@@ -28,7 +29,7 @@ export class Platform {
     }
 
     get name(): string {
-        return this._name ? this._name : this._station.name;
+        return this._name || this._station.name;
     }
 
     set name(name: string) {
@@ -36,7 +37,7 @@ export class Platform {
     }
 
     get altName(): string {
-        return this._altName ? this._altName : this._station.altName;
+        return this._altName || this._station.altName;
     }
 
     set altName(name: string) {
@@ -44,38 +45,15 @@ export class Platform {
     }
 
     get oldName(): string {
-        return this._oldName ? this._oldName : this._station.oldName;
+        return this._oldName || this._station.oldName;
     }
 
     set oldName(name: string) {
         this._oldName = name;
     }
 
-    passingRoutes(): Route[] {
-        let s = [];
-        this._spans.forEach(span => span.routes.forEach(line => s.push(line)));
-        return s;
-    }
-
-    passingLines(): Line[] {
-        let s = [];
-        this._spans.forEach(span => {
-            span.routes.forEach(route => s.push(route.line));
-        });
-        return s;
-    }
-
     get spans(): Span[] {
         return this._spans;
-    }
-
-    nextStop(connector: Span) {
-        if (connector.source == this) {
-            return connector.target;
-        } else if (connector.target == this) {
-            return connector.source;
-        }
-        throw new Error("span doesn't belong to the platform");
     }
 
     get station(): Station {
@@ -89,6 +67,27 @@ export class Platform {
         this._station = station;
     }
 
+    nextStop(connector: Span): Platform {
+        if (connector.source == this) {
+            return connector.target;
+        } else if (connector.target == this) {
+            return connector.source;
+        }
+        throw new Error("span doesn't belong to the platform");
+    }
+
+    passingRoutes(): Route[] {
+        let s = [];
+        this._spans.forEach(span => span.routes.forEach(line => s.push(line)));
+        return s;
+    }
+
+    passingLines(): Line[] {
+        let s = [];
+        this._spans.forEach(span => span.routes.forEach(route => s.push(route.line)));
+        return s;
+    }
+
 }
 
 export class Station {
@@ -98,7 +97,7 @@ export class Station {
     oldName: string;
     private _loc: L.LatLng;
 
-    constructor(name: string, altName: string, platforms: Platform[], oldName: string = '') {
+    constructor(name: string, altName: string = "", platforms: Platform[] = [], oldName: string = "") {
         this.name = name;
         this.altName = altName;
         this.platforms = platforms;
@@ -112,8 +111,7 @@ export class Station {
             avg.y += platform.location.lat;
             avg.x += platform.location.lng;
         });
-        const div = 1.0 / this.platforms.length;
-        return new L.LatLng(avg.y * div, avg.x * div);
+        return new L.LatLng(avg.y / this.platforms.length, avg.x / this.platforms.length);
     }
 
 }

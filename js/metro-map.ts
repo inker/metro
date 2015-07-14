@@ -9,6 +9,11 @@ import addons = require('./addons');
 //import * as util from '../../util';
 //import Plain from './plain-objects';
 
+type Neighbor = {
+    platform: L.Point;
+    midPt: L.Point;
+};
+
 class MetroMap {
     private map: L.Map;
     private overlay: HTMLElement;
@@ -202,6 +207,7 @@ class MetroMap {
         let stationCircles = document.getElementById('station-circles');
         let dummyCircles = document.getElementById('dummy-circles');
         let transfers = document.getElementById('transfers');
+        let paths = document.getElementById('paths');
 
         const zoom = this.map.getZoom();
         const nw = this.bounds.getNorthWest();
@@ -240,6 +246,7 @@ class MetroMap {
             const circleRadius = (zoom - 7) * 0.5;
             const circleBorder = circleRadius * 0.4;
             let platformsHavingCircles = new Set<number>();
+            let platformsOnSVG = this.graph.platforms.map(platform => this.posOnSVG(svgBounds, platform.location));
             let beziers: HTMLElement[] = [];
 
             let transferSegments = document.getElementById('transfers');
@@ -247,9 +254,9 @@ class MetroMap {
             this.graph.stations.forEach((station, stationIndex) => {
                 let circular = util.findCircle(this.graph, station);
                 let coords: L.Point[] = [];
-                station.platforms.forEach(platformNum => {
+                station.platforms.forEach((platformNum, platformIndex) => {
                     const platform = this.graph.platforms[platformNum];
-                    const posOnSVG = this.posOnSVG(svgBounds, platform.location);
+                    const posOnSVG = platformsOnSVG[platformIndex];
 
                     let ci = svg.makeCircle(posOnSVG, circleRadius);
                     svg.convertToStation(ci, 'p-' + platformNum.toString(), platform, circleBorder);
@@ -269,21 +276,58 @@ class MetroMap {
                     // control points
                     if (platform.spans.length === 2) {
                         let midPts = [posOnSVG, posOnSVG];
-                        let lns = [0, 0];
+                        let lens = [0, 0];
+                        let firstSpan = this.graph.spans[platform.spans[0]];
+                        if (firstSpan.source === platformNum) {
+                            platform.spans.reverse();
+                        }
+                        // previous node should come first
                         for (let i = 0; i < 2; ++i) {
-                            let incidentSpan = this.graph.spans[platform.spans[i]];
-                            let neighborNum = (incidentSpan.source === platformNum) ? incidentSpan.target : incidentSpan.source;
+                            let span = this.graph.spans[platform.spans[i]];
+                            let neighborNum = (span.source === platformNum) ? span.target : span.source;
                             let neighbor = this.graph.platforms[neighborNum];
-                            let neighborOnSVG = this.posOnSVG(svgBounds, neighbor.location);
-                            lns[i] = posOnSVG.distanceTo(neighborOnSVG);
+                            let neighborOnSVG = platformsOnSVG[neighborNum]
+                            lens[i] = posOnSVG.distanceTo(neighborOnSVG);
                             midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
                         }
-                        let mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lns[0] / (lns[0] + lns[1]));
+                        let mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
                         let mm = midPts[0].add(mdiff);
                         let diff = posOnSVG.subtract(mm);
                         whiskers[platformNum] = midPts.map(midPt => midPt.add(diff));
-                    } else {
-                        //
+                    } else if (platform.spans.length === 1) {
+                        whiskers[platformNum] = [posOnSVG, posOnSVG];
+                    } else if (platform.spans.length === 3) {
+                        let midPts = [posOnSVG, posOnSVG];
+                        let lens = [0, 0];
+                        //// true = is source of the span
+                        //let patterns = this.graph.spans.map(span => span.source === platformNum);
+                        //// true = ⅄, false - Y
+                        //let reversed = patterns.reduce((p: boolean, c: boolean) => p ? !c : c);
+                        //let outSpans: po.Span[] = [], inSpans: typeof outSpans = [];
+
+                        let nexts: L.Point[] = [], prevs: L.Point[] = [];
+                        for (let i = 0; i < 3; ++i) {
+                            let span = this.graph.spans[platform.spans[i]];
+                            //(span.source === platformNum ? outSpans : inSpans).push(span);
+                            if (span.source === platformNum) {
+                                let neighbor = this.graph.platforms[span.target];
+                                let neighborPos = platformsOnSVG[span.target]
+                                nexts.push(neighborPos);
+                            } else {
+                                let neighbor = this.graph.platforms[span.source];
+                                let neighborPos = platformsOnSVG[span.source]
+                                prevs.push(neighborPos);
+                            }
+                            //(span.source === platformNum ? nextNeighbors : prevNeighbors).push(span);
+                        }
+                        let prev = (prevs.length === 1) ? prevs[0] : prevs[0].add(prevs[1]);
+                        let next = (nexts.length === 1) ? nexts[0] : nexts[0].add(nexts[1]);
+                        let distToPrev = posOnSVG.distanceTo(prev), distToNext = posOnSVG.distanceTo(next);
+                        let midPtPrev = posOnSVG.add(prev).divideBy(2), midPtNext = posOnSVG.add(next).divideBy(2);
+                        let mdiff = midPtNext.subtract(midPtPrev).multiplyBy(distToPrev / (distToPrev + distToNext));
+                        let mm = midPtPrev.add(mdiff);
+                        let diff = posOnSVG.subtract(mm);
+                        whiskers[platformNum] = [midPtPrev.add(diff), midPtNext.add(diff)];
                     }
                     if (circular && circular.indexOf(platform) > -1) {
                         coords.push(posOnSVG);
@@ -294,15 +338,15 @@ class MetroMap {
                 });
 
                 if (circular) {
-                    let circumcenter = util.getCircumcenter(coords);
-                    let circumradius = circumcenter.distanceTo(coords[0]);
+                    const circumcenter = util.getCircumcenter(coords);
+                    const circumradius = circumcenter.distanceTo(coords[0]);
                     let circumcircle = svg.makeCircle(circumcenter, circumradius);
                     circumcircle.classList.add('transfer');
                     circumcircle.style.strokeWidth = circleBorder.toString();
                     circumcircle.style.opacity = '0.5';
                     transferSegments.appendChild(circumcircle);
                 } else {
-
+    
                 }
 
                 stationCircles.appendChild(circleFrag);
@@ -310,19 +354,34 @@ class MetroMap {
 
             for (let i = 0; i < this.graph.spans.length; ++i) {
                 let span = this.graph.spans[i];
+                let srcN = span.source, trgN = span.target;
+                let src = this.graph.platforms[span.source];
+                let trg = this.graph.platforms[span.target];
+                let bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][1], whiskers[trgN][0], platformsOnSVG[trgN]]);
+                let routes = span.routes.map(n => this.graph.routes[n]);
+                let matches = routes[0].line.match(/M(\d{1,2})/);
+                bezier.style.strokeWidth = lineWidth.toString();
+                if (matches) {
+                    bezier.classList.add(matches[0]);
+                }
+                paths.appendChild(bezier);
+            }
+
+            for (let i = 0; i < this.graph.spans.length; ++i) {
+                let span = this.graph.spans[i];
                 let src = this.graph.platforms[span.source];
                 let trg = this.graph.platforms[span.target];
                 let transSrc = src, transTrg = trg;
                 if (src.spans.length === 2) {
-                    let otherSpanNum = src.spans[i == src.spans[0] ? 1 : 0];
+                    let otherSpanNum = src.spans[i === src.spans[0] ? 1 : 0];
                     let otherSpan = this.graph.spans[otherSpanNum];
-                    let transSrcNum = (otherSpan.source == span.source) ? otherSpan.target : otherSpan.source;
+                    let transSrcNum = (otherSpan.source === span.source) ? otherSpan.target : otherSpan.source;
                     transSrc = this.graph.platforms[transSrcNum];
                 }
                 if (trg.spans.length === 2) {
-                    let otherSpanNum = trg.spans[i == trg.spans[0] ? 1 : 0];
+                    let otherSpanNum = trg.spans[i === trg.spans[0] ? 1 : 0];
                     let otherSpan = this.graph.spans[otherSpanNum];
-                    let transTrgNum = (otherSpan.source == span.target) ? otherSpan.target : otherSpan.source;
+                    let transTrgNum = (otherSpan.source === span.target) ? otherSpan.target : otherSpan.source;
                     transTrg = this.graph.platforms[transTrgNum];
                 }
                 let posOnSVG = [transSrc, src, trg, transTrg]
@@ -337,8 +396,8 @@ class MetroMap {
 
             this.graph.transfers.forEach(tr => {
                 if (platformsHavingCircles.has(tr.source) && platformsHavingCircles.has(tr.target)) return;
-                let pl1 = this.graph.platforms[tr.source];
-                let pl2 = this.graph.platforms[tr.target];
+                const pl1 = this.graph.platforms[tr.source];
+                const pl2 = this.graph.platforms[tr.target];
                 const posOnSVG1 = this.posOnSVG(svgBounds, pl1.location);
                 const posOnSVG2 = this.posOnSVG(svgBounds, pl2.location);
                 let transfer = svg.createSVGElement('line');
