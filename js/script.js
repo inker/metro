@@ -400,7 +400,7 @@ var MetroMap = (function () {
                         var circumradius = circumcenter.distanceTo(coords[0]);
                         var circumcircle = svg.makeCircle(circumcenter, circumradius);
                         circumcircle.classList.add('transfer');
-                        circumcircle.style.strokeWidth = circleBorder.toString();
+                        circumcircle.style.strokeWidth = transferWidth.toString();
                         circumcircle.style.opacity = '0.5';
                         transferSegments.appendChild(circumcircle);
                     } else {}
@@ -465,7 +465,7 @@ var MetroMap = (function () {
                     transfer.setAttribute('x2', posOnSVG2.x.toString());
                     transfer.setAttribute('y2', posOnSVG2.y.toString());
                     transfer.classList.add('transfer');
-                    transfer.style.strokeWidth = circleBorder.toString();
+                    transfer.style.strokeWidth = transferWidth.toString();
                     transfer.style.opacity = '0.5';
                     transfers.appendChild(transfer);
                 });
