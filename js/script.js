@@ -328,73 +328,66 @@ var MetroMap = (function () {
                         circleFrag.appendChild(ci);
                         dummyCircles.appendChild(dummyCircle);
                         dummyCircle.onmouseover = _this.showPlate;
-                        switch (platform.spans.length) {
-                            case 2:
-                                {
-                                    var _ret3 = (function () {
-                                        var midPts = [posOnSVG, posOnSVG];
-                                        var lens = [0, 0];
-                                        var firstSpan = _this.graph.spans[platform.spans[0]];
-                                        if (firstSpan.source === platformNum) {
-                                            platform.spans.reverse();
-                                        }
-                                        for (var i = 0; i < 2; ++i) {
-                                            var span = _this.graph.spans[platform.spans[i]];
-                                            var neighborNum = span.source === platformNum ? span.target : span.source;
-                                            var neighbor = _this.graph.platforms[neighborNum];
-                                            var neighborOnSVG = platformsOnSVG[neighborNum];
-                                            lens[i] = posOnSVG.distanceTo(neighborOnSVG);
-                                            midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
-                                        }
-                                        var mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
-                                        var mm = midPts[0].add(mdiff);
-                                        var diff = posOnSVG.subtract(mm);
-                                        whiskers[platformNum] = midPts.map(function (midPt) {
-                                            return midPt.add(diff);
-                                        });
-                                        return 'break';
-                                    })();
-
-                                    if (_ret3 === 'break') break;
+                        //dummyCircle.onmouseout = e => this.overlay.removeChild(document.getElementById('plate'));
+                        // control points
+                        if (platform.spans.length === 2) {
+                            (function () {
+                                var midPts = [posOnSVG, posOnSVG];
+                                var lens = [0, 0];
+                                var firstSpan = _this.graph.spans[platform.spans[0]];
+                                if (firstSpan.source === platformNum) {
+                                    platform.spans.reverse();
                                 }
-                            case 3:
-                                {
-                                    var midPts = [posOnSVG, posOnSVG];
-                                    var lens = [0, 0];
-                                    //// true = is source of the span
-                                    //let patterns = this.graph.spans.map(span => span.source === platformNum);
-                                    //// true = ⅄, false - Y
-                                    //let reversed = patterns.reduce((p: boolean, c: boolean) => p ? !c : c);
-                                    //let outSpans: po.Span[] = [], inSpans: typeof outSpans = [];
-                                    var nexts = [],
-                                        prevs = [];
-                                    for (var i = 0; i < 3; ++i) {
-                                        var span = _this.graph.spans[platform.spans[i]];
-                                        //(span.source === platformNum ? outSpans : inSpans).push(span);
-                                        if (span.source === platformNum) {
-                                            var neighbor = _this.graph.platforms[span.target];
-                                            var neighborPos = platformsOnSVG[span.target];
-                                            nexts.push(neighborPos);
-                                        } else {
-                                            var neighbor = _this.graph.platforms[span.source];
-                                            var neighborPos = platformsOnSVG[span.source];
-                                            prevs.push(neighborPos);
-                                        }
-                                    }
-                                    var prev = prevs.length === 1 ? prevs[0] : prevs[0].add(prevs[1]).divideBy(2);
-                                    var next = nexts.length === 1 ? nexts[0] : nexts[0].add(nexts[1]).divideBy(2);
-                                    var distToPrev = posOnSVG.distanceTo(prev),
-                                        distToNext = posOnSVG.distanceTo(next);
-                                    var midPtPrev = posOnSVG.add(prev).divideBy(2),
-                                        midPtNext = posOnSVG.add(next).divideBy(2);
-                                    var mdiff = midPtNext.subtract(midPtPrev).multiplyBy(distToPrev / (distToPrev + distToNext));
-                                    var mm = midPtPrev.add(mdiff);
-                                    var diff = posOnSVG.subtract(mm);
-                                    whiskers[platformNum] = [midPtPrev.add(diff), midPtNext.add(diff)];
-                                    break;
+                                for (var i = 0; i < 2; ++i) {
+                                    var span = _this.graph.spans[platform.spans[i]];
+                                    var neighborNum = span.source === platformNum ? span.target : span.source;
+                                    var neighbor = _this.graph.platforms[neighborNum];
+                                    var neighborOnSVG = platformsOnSVG[neighborNum];
+                                    lens[i] = posOnSVG.distanceTo(neighborOnSVG);
+                                    midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
                                 }
-                            default:
-                                whiskers[platformNum] = [posOnSVG, posOnSVG];
+                                var mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
+                                var mm = midPts[0].add(mdiff);
+                                var diff = posOnSVG.subtract(mm);
+                                whiskers[platformNum] = midPts.map(function (midPt) {
+                                    return midPt.add(diff);
+                                });
+                            })();
+                        } else if (platform.spans.length === 1) {
+                            whiskers[platformNum] = [posOnSVG, posOnSVG];
+                        } else {
+                            var midPts = [posOnSVG, posOnSVG];
+                            var lens = [0, 0];
+                            //// true = is source of the span
+                            //let patterns = this.graph.spans.map(span => span.source === platformNum);
+                            //// true = ⅄, false - Y
+                            //let reversed = patterns.reduce((p: boolean, c: boolean) => p ? !c : c);
+                            //let outSpans: po.Span[] = [], inSpans: typeof outSpans = [];
+                            var nexts = [],
+                                prevs = [];
+                            for (var i = 0; i < 3; ++i) {
+                                var span = _this.graph.spans[platform.spans[i]];
+                                //(span.source === platformNum ? outSpans : inSpans).push(span);
+                                if (span.source === platformNum) {
+                                    var neighbor = _this.graph.platforms[span.target];
+                                    var neighborPos = platformsOnSVG[span.target];
+                                    nexts.push(neighborPos);
+                                } else {
+                                    var neighbor = _this.graph.platforms[span.source];
+                                    var neighborPos = platformsOnSVG[span.source];
+                                    prevs.push(neighborPos);
+                                }
+                            }
+                            var prev = prevs.length === 1 ? prevs[0] : prevs[0].add(prevs[1]).divideBy(2);
+                            var next = nexts.length === 1 ? nexts[0] : nexts[0].add(nexts[1]).divideBy(2);
+                            var distToPrev = posOnSVG.distanceTo(prev),
+                                distToNext = posOnSVG.distanceTo(next);
+                            var midPtPrev = posOnSVG.add(prev).divideBy(2),
+                                midPtNext = posOnSVG.add(next).divideBy(2);
+                            var mdiff = midPtNext.subtract(midPtPrev).multiplyBy(distToPrev / (distToPrev + distToNext));
+                            var mm = midPtPrev.add(mdiff);
+                            var diff = posOnSVG.subtract(mm);
+                            whiskers[platformNum] = [midPtPrev.add(diff), midPtNext.add(diff)];
                         }
                         if (circular && circular.indexOf(platform) > -1) {
                             coords.push(posOnSVG);
@@ -675,6 +668,14 @@ exports.englishStationNames = {
     'Centraľnyj voxal': 'Central Raiway Station',
     'Aeroport': 'Airport'
 };
+function dot(a, b) {
+    return a.x * b.x + a.y * b.y;
+}
+exports.dot = dot;
+function angle(v1, v2) {
+    return dot(v1, v2) / v1.distanceTo(v2);
+}
+exports.angle = angle;
 //export function getSegmentLength(source: L.Point, target: L.Point): number {
 //    const a = target.subtract(source);
 //    return Math.sqrt(a.x * a.x + a.y * a.y);

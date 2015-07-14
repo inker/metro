@@ -56,6 +56,14 @@ export let englishStationNames = {
     'Aeroport': 'Airport'
 }
 
+export function dot(a: L.Point, b: L.Point): number {
+    return a.x * b.x + a.y * b.y;
+}
+
+export function angle(v1: L.Point, v2: L.Point): number {
+    return dot(v1, v2) / v1.distanceTo(v2);
+}
+
 //export function getSegmentLength(source: L.Point, target: L.Point): number {
 //    const a = target.subtract(source);
 //    return Math.sqrt(a.x * a.x + a.y * a.y);

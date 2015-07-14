@@ -19,11 +19,11 @@ class MetroMap {
     private overlay: HTMLElement;
     private graph: po.Graph;
     private bounds: L.LatLngBounds;
-    
+
     getMap(): L.Map {
         return this.map;
     }
-    
+
     getOverlay(): HTMLElement {
         return this.overlay;
     }
@@ -34,7 +34,7 @@ class MetroMap {
             .addLayer(tileLayers[0])
             .setView(new L.LatLng(60, 30), 11)
             .addControl(new L.Control.Scale({ imperial: false }));
-        
+
         let layers = {};
         for (let i = 0; i < tileLayers.length; ++i) {
             layers['Layer ' + i] = tileLayers[i];
@@ -51,7 +51,7 @@ class MetroMap {
             .then(() => this.redrawNetwork())
             .catch(text => alert(text))
     }
-    
+
     private addOverlay(): void {
         //this.map.getPanes().mapPane.innerHTML = '<svg id="overlay"></svg>' + this.map.getPanes().mapPane.innerHTML;
         this.overlay = document.getElementById('overlay');
@@ -75,7 +75,7 @@ class MetroMap {
             prevZoom = this.map.getZoom();
             //this.overlay.classList.add('leaflet-zoom-anim');
             this.overlay.style.opacity = '0.5';
-            
+
         });
         this.map.on('zoomend', e => {
             this.redrawNetwork();
@@ -101,8 +101,8 @@ class MetroMap {
             xhr.send();
         });
     }
-    
-    private handleJSON(json: string) : void {
+
+    private handleJSON(json: string): void {
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
         this.graph = JSON.parse(json);
@@ -274,67 +274,61 @@ class MetroMap {
                     //dummyCircle.onmouseout = e => this.overlay.removeChild(document.getElementById('plate'));
 
                     // control points
-                    switch (platform.spans.length) {
-                        case 2:
-                        {
-                            let midPts = [posOnSVG, posOnSVG];
-                            let lens = [0, 0];
-                            let firstSpan = this.graph.spans[platform.spans[0]];
-                            if (firstSpan.source === platformNum) {
-                                platform.spans.reverse();
-                            }
-                            // previous node should come first
-                            for (let i = 0; i < 2; ++i) {
-                                let span = this.graph.spans[platform.spans[i]];
-                                let neighborNum = (span.source === platformNum) ? span.target : span.source;
-                                let neighbor = this.graph.platforms[neighborNum];
-                                let neighborOnSVG = platformsOnSVG[neighborNum]
-                                lens[i] = posOnSVG.distanceTo(neighborOnSVG);
-                                midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
-                            }
-                            let mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
-                            let mm = midPts[0].add(mdiff);
-                            let diff = posOnSVG.subtract(mm);
-                            whiskers[platformNum] = midPts.map(midPt => midPt.add(diff));
-                            break;
+                    if (platform.spans.length === 2) {
+                        let midPts = [posOnSVG, posOnSVG];
+                        let lens = [0, 0];
+                        let firstSpan = this.graph.spans[platform.spans[0]];
+                        if (firstSpan.source === platformNum) {
+                            platform.spans.reverse();
                         }
-                        case 3:
-                        {
-                            let midPts = [posOnSVG, posOnSVG];
-                            let lens = [0, 0];
-                            //// true = is source of the span
-                            //let patterns = this.graph.spans.map(span => span.source === platformNum);
-                            //// true = ⅄, false - Y
-                            //let reversed = patterns.reduce((p: boolean, c: boolean) => p ? !c : c);
-                            //let outSpans: po.Span[] = [], inSpans: typeof outSpans = [];
+                        // previous node should come first
+                        for (let i = 0; i < 2; ++i) {
+                            let span = this.graph.spans[platform.spans[i]];
+                            let neighborNum = (span.source === platformNum) ? span.target : span.source;
+                            let neighbor = this.graph.platforms[neighborNum];
+                            let neighborOnSVG = platformsOnSVG[neighborNum]
+                            lens[i] = posOnSVG.distanceTo(neighborOnSVG);
+                            midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
+                        }
+                        let mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
+                        let mm = midPts[0].add(mdiff);
+                        let diff = posOnSVG.subtract(mm);
+                        whiskers[platformNum] = midPts.map(midPt => midPt.add(diff));
+                    }
+                    else if (platform.spans.length === 1) {
+                        whiskers[platformNum] = [posOnSVG, posOnSVG];
+                    } else {
+                        let midPts = [posOnSVG, posOnSVG];
+                        let lens = [0, 0];
+                        //// true = is source of the span
+                        //let patterns = this.graph.spans.map(span => span.source === platformNum);
+                        //// true = ⅄, false - Y
+                        //let reversed = patterns.reduce((p: boolean, c: boolean) => p ? !c : c);
+                        //let outSpans: po.Span[] = [], inSpans: typeof outSpans = [];
 
-                            let nexts: L.Point[] = [], prevs: L.Point[] = [];
-                            for (let i = 0; i < 3; ++i) {
-                                let span = this.graph.spans[platform.spans[i]];
-                                //(span.source === platformNum ? outSpans : inSpans).push(span);
-                                if (span.source === platformNum) {
-                                    let neighbor = this.graph.platforms[span.target];
-                                    let neighborPos = platformsOnSVG[span.target]
-                                    nexts.push(neighborPos);
-                                } else {
-                                    let neighbor = this.graph.platforms[span.source];
-                                    let neighborPos = platformsOnSVG[span.source]
-                                    prevs.push(neighborPos);
-                                }
-                                //(span.source === platformNum ? nextNeighbors : prevNeighbors).push(span);
+                        let nexts: L.Point[] = [], prevs: L.Point[] = [];
+                        for (let i = 0; i < 3; ++i) {
+                            let span = this.graph.spans[platform.spans[i]];
+                            //(span.source === platformNum ? outSpans : inSpans).push(span);
+                            if (span.source === platformNum) {
+                                let neighbor = this.graph.platforms[span.target];
+                                let neighborPos = platformsOnSVG[span.target];
+                                nexts.push(neighborPos);
+                            } else {
+                                let neighbor = this.graph.platforms[span.source];
+                                let neighborPos = platformsOnSVG[span.source];
+                                prevs.push(neighborPos);
                             }
-                            let prev = (prevs.length === 1) ? prevs[0] : prevs[0].add(prevs[1]).divideBy(2);
-                            let next = (nexts.length === 1) ? nexts[0] : nexts[0].add(nexts[1]).divideBy(2);
-                            let distToPrev = posOnSVG.distanceTo(prev), distToNext = posOnSVG.distanceTo(next);
-                            let midPtPrev = posOnSVG.add(prev).divideBy(2), midPtNext = posOnSVG.add(next).divideBy(2);
-                            let mdiff = midPtNext.subtract(midPtPrev).multiplyBy(distToPrev / (distToPrev + distToNext));
-                            let mm = midPtPrev.add(mdiff);
-                            let diff = posOnSVG.subtract(mm);
-                            whiskers[platformNum] = [midPtPrev.add(diff), midPtNext.add(diff)];
-                            break;
+                            //(span.source === platformNum ? nextNeighbors : prevNeighbors).push(span);
                         }
-                        default:
-                            whiskers[platformNum] = [posOnSVG, posOnSVG];
+                        let prev = (prevs.length === 1) ? prevs[0] : prevs[0].add(prevs[1]).divideBy(2);
+                        let next = (nexts.length === 1) ? nexts[0] : nexts[0].add(nexts[1]).divideBy(2);
+                        let distToPrev = posOnSVG.distanceTo(prev), distToNext = posOnSVG.distanceTo(next);
+                        let midPtPrev = posOnSVG.add(prev).divideBy(2), midPtNext = posOnSVG.add(next).divideBy(2);
+                        let mdiff = midPtNext.subtract(midPtPrev).multiplyBy(distToPrev / (distToPrev + distToNext));
+                        let mm = midPtPrev.add(mdiff);
+                        let diff = posOnSVG.subtract(mm);
+                        whiskers[platformNum] = [midPtPrev.add(diff), midPtNext.add(diff)];
                     }
 
                     if (circular && circular.indexOf(platform) > -1) {
@@ -354,7 +348,7 @@ class MetroMap {
                     circumcircle.style.opacity = '0.5';
                     transferSegments.appendChild(circumcircle);
                 } else {
-    
+
                 }
 
                 stationCircles.appendChild(circleFrag);
