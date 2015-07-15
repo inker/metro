@@ -71,7 +71,7 @@ export function makeDropShadow() {
     filter.setAttribute('height', '200%');
     filter.innerHTML = `
         <feOffset result="offOut" in="SourceAlpha" dx="0" dy="1" />
-        <feGaussianBlur result="blurOut" in="offOut" stdDeviation="3" />
+        <feGaussianBlur result="blurOut" in="offOut" stdDeviation="2" />
         <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
     `;
     return filter;
