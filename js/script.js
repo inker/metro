@@ -110,8 +110,12 @@ var MetroMap = (function () {
         this.addOverlay();
         //this.refillSVG(); not required here
         this.addListeners();
-        Promise.all([graphPromise, hintsPromise]).then(function (results) {
-            return _this.handleJSON(results);
+        graphPromise.then(function (graphText) {
+            return _this.handleJSON(graphText);
+        }).then(function () {
+            return hintsPromise;
+        }).then(function (hintsText) {
+            return _this.appendHintsToGraph(hintsText);
         }).then(function () {
             return _this.redrawNetwork();
         })['catch'](function (text) {
@@ -178,17 +182,16 @@ var MetroMap = (function () {
     MetroMap.prototype.handleJSON = function (json) {
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-        if (typeof json !== 'Array') {
-            this.graph = JSON.parse(json);
-        } else {
-            this.graph = JSON.parse(json[0]);
-            this.graph.hints = JSON.parse(json[1]);
-        }
+        this.graph = JSON.parse(json);
         this.extendBounds();
         this.map.setView(this.bounds.getCenter(), 11, {
             pan: { animate: false },
             zoom: { animate: false }
         });
+    };
+    MetroMap.prototype.appendHintsToGraph = function (json) {
+        this.graph.hints = JSON.parse(json);
+        console.log(this.graph.hints);
     };
     MetroMap.prototype.refillSVG = function () {
         var child = undefined;

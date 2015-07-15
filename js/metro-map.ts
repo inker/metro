@@ -48,8 +48,9 @@ class MetroMap {
         this.addOverlay();
         //this.refillSVG(); not required here
         this.addListeners();
-        Promise.all([graphPromise, hintsPromise])
-            .then(results => this.handleJSON(results))
+        graphPromise.then(graphText => this.handleJSON(graphText))
+            .then(() => hintsPromise)
+            .then(hintsText => this.appendHintsToGraph(hintsText))
             .then(() => this.redrawNetwork())
             .catch(text => alert(text))
     }
@@ -104,21 +105,21 @@ class MetroMap {
         });
     }
 
-    private handleJSON(json: string|string[]): void {
+    private handleJSON(json: string): void {
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-        if (typeof json !== 'Array') {
-            this.graph = JSON.parse(<string>json);
-        } else {
-            this.graph = JSON.parse(json[0]);
-            this.graph.hints = JSON.parse(json[1]);
-        }
+        this.graph = JSON.parse(json);
         
         this.extendBounds();
         this.map.setView(this.bounds.getCenter(), 11, {
             pan: { animate: false },
             zoom: { animate: false }
         });
+    }
+    
+    private appendHintsToGraph(json: string): void {
+        this.graph.hints = JSON.parse(json);
+        console.log(this.graph.hints);
     }
 
     private refillSVG(): void {
