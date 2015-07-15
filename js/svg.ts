@@ -64,6 +64,20 @@ function makeForeignDiv(topLeft: L.Point, text: string): SVGElement {
     return <any>foreign;
 }
 
+export function makeDropShadow() {
+    let filter = createSVGElement('filter');
+    filter.id = 'shadow';
+    filter.setAttribute('width', '200%');
+    filter.setAttribute('height', '200%');
+    filter.innerHTML = `
+        <feOffset result="offOut" in="SourceAlpha" dx="0" dy="1" />
+        <feGaussianBlur result="blurOut" in="offOut" stdDeviation="3" />
+        <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+    `;
+    return filter;
+    
+}
+
 function makeFittingRect(bottomRight: L.Point, lines: string[]): HTMLElement {
     let rect = svg.createSVGElement('rect');
     const spacing = 12;
@@ -74,6 +88,7 @@ function makeFittingRect(bottomRight: L.Point, lines: string[]): HTMLElement {
     const rectTopLeft = bottomRight.subtract(rectSize);
     rect.setAttribute('x', rectTopLeft.x.toString());
     rect.setAttribute('y', rectTopLeft.y.toString());
+    rect.setAttribute('filter', 'url(#f3)');
     rect.classList.add('plate-box');
 
     let text = svg.createSVGElement('text');

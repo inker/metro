@@ -48,7 +48,8 @@ class MetroMap {
         this.addOverlay();
         //this.refillSVG(); not required here
         this.addListeners();
-        graphPromise.then(graphText => this.handleJSON(graphText))
+        graphPromise
+            .then(graphText => this.handleJSON(graphText))
             .then(() => hintsPromise)
             .then(hintsText => this.appendHintsToGraph(hintsText))
             .then(() => this.redrawNetwork())
@@ -127,6 +128,12 @@ class MetroMap {
         while (child = this.overlay.firstChild) {
             this.overlay.removeChild(child);
         }
+        
+        let defs = svg.createSVGElement('defs');
+        defs.id = 'defs';
+        defs.appendChild(svg.makeDropShadow());
+        this.overlay.appendChild(defs);
+        
         let origin = svg.createSVGElement('svg');
         origin.id = 'origin';
         ['paths', 'transfers', 'station-circles', 'dummy-circles'].forEach(groupId => {

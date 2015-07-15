@@ -198,6 +198,10 @@ var MetroMap = (function () {
         while (child = this.overlay.firstChild) {
             this.overlay.removeChild(child);
         }
+        var defs = svg.createSVGElement('defs');
+        defs.id = 'defs';
+        defs.appendChild(svg.makeDropShadow());
+        this.overlay.appendChild(defs);
         var origin = svg.createSVGElement('svg');
         origin.id = 'origin';
         ['paths', 'transfers', 'station-circles', 'dummy-circles'].forEach(function (groupId) {
@@ -555,6 +559,15 @@ function makeForeignDiv(topLeft, text) {
     foreign.appendChild(div);
     return foreign;
 }
+function makeDropShadow() {
+    var filter = createSVGElement('filter');
+    filter.id = 'shadow';
+    filter.setAttribute('width', '200%');
+    filter.setAttribute('height', '200%');
+    filter.innerHTML = '\n        <feOffset result="offOut" in="SourceAlpha" dx="0" dy="1" />\n        <feGaussianBlur result="blurOut" in="offOut" stdDeviation="3" />\n        <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />\n    ';
+    return filter;
+}
+exports.makeDropShadow = makeDropShadow;
 function makeFittingRect(bottomRight, lines) {
     var rect = svg.createSVGElement('rect');
     var spacing = 12;
@@ -567,6 +580,7 @@ function makeFittingRect(bottomRight, lines) {
     var rectTopLeft = bottomRight.subtract(rectSize);
     rect.setAttribute('x', rectTopLeft.x.toString());
     rect.setAttribute('y', rectTopLeft.y.toString());
+    rect.setAttribute('filter', 'url(#f3)');
     rect.classList.add('plate-box');
     var text = svg.createSVGElement('text');
     text.setAttribute('fill', 'black');
