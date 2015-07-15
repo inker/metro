@@ -354,8 +354,6 @@ var MetroMap = (function () {
                                     return midPt.add(diff);
                                 });
                             })();
-                        } else if (platform.spans.length !== 3) {
-                            whiskers[platformNum] = [posOnSVG, posOnSVG];
                         } else if (platform.spans.length === 3) {
                             var midPts = [posOnSVG, posOnSVG];
                             var lens = [0, 0];
@@ -389,6 +387,8 @@ var MetroMap = (function () {
                             var mm = midPtPrev.add(mdiff);
                             var diff = posOnSVG.subtract(mm);
                             whiskers[platformNum] = [midPtPrev.add(diff), midPtNext.add(diff)];
+                        } else {
+                            whiskers[platformNum] = [posOnSVG, posOnSVG];
                         }
                         if (circular && circular.indexOf(platform) > -1) {
                             coords.push(posOnSVG);
