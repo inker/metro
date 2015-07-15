@@ -34,5 +34,24 @@
   "Malinovka": {
     "M8": "Porochovyje",
     "M10": "Belorusskaja"
+  },
+  
+  
+  "Streľna": {
+    "M6": "Kikenka",
+    "E": "Sergievo"
+  },
+  "Sergievo": {
+    "M1": "Mitkazi",
+    "E": "Sosnovaja Poľana"
+  },
+  "Ligovo": {
+    "M8": "Jegorovka",
+    "E": ["Volchonskaja", "Sosnovaja Poľana"]
+  },
+  "Ligovskij kanal": {
+    "E": ["Dačnoje", "Predportovaja"]
   }
+  
+        
 }
