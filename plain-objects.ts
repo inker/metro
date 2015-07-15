@@ -50,6 +50,7 @@ declare module Plain {
         transfers: Plain.Transfer[];
         spans: Plain.Span[];
         routes: Plain.Route[];
+        hints?: any;
     };
 }
 

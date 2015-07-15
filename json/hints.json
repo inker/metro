@@ -1,0 +1,38 @@
+{
+  "Technologičeskij institut": {
+    "M1": "Semency",
+    "M2": "Sennaja ploščaď"
+  }, 
+  "Lahta-centr": {
+    "M4": "Stadion",
+    "M9": "Jachtennaja"
+  },
+  "Stadion": {
+    "M3": "Jachtennaja",
+    "M4": "Lahta-centr"
+  },
+  "Sportivnaja": {
+    "M5": "Heslerovskaja",
+    "M7": "Puškarskaja"
+  },
+  "Jablonovka": {
+    "M4": "Ledovyj dvorec",
+    "M8": "Ladožskij park"
+  },
+  "Poľustrovo": {
+    "M6": "Park Sacharova",
+    "M7": "Ptičij rynok"
+  },
+  "Pleseckaja": {
+    "M3": "Akademgorodok",
+    "M5": "Kamenka"
+  },
+  "Politechničeskaja": {
+    "M1": "Sad Benois",
+    "M9": "Akademičeskaja"
+  },
+  "Malinovka": {
+    "M8": "Porochovyje",
+    "M10": "Belorusskaja"
+  }
+}

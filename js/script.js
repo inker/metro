@@ -97,7 +97,8 @@ var addons = require('./addons');
 var MetroMap = (function () {
     function MetroMap(containerId, kml, tileLayers) {
         var _this = this;
-        var graphPromise = this.fetchGraph(kml);
+        var graphPromise = this.fetch(kml);
+        var hintsPromise = this.fetch('json/hints.json');
         this.map = new L.Map(containerId, { inertia: false }).addLayer(tileLayers[0]).setView(new L.LatLng(60, 30), 11).addControl(new L.Control.Scale({ imperial: false }));
         var layers = {};
         for (var i = 0; i < tileLayers.length; ++i) {
@@ -109,8 +110,8 @@ var MetroMap = (function () {
         this.addOverlay();
         //this.refillSVG(); not required here
         this.addListeners();
-        graphPromise.then(function (text) {
-            return _this.handleJSON(text);
+        Promise.all([graphPromise, hintsPromise]).then(function (results) {
+            return _this.handleJSON(results);
         }).then(function () {
             return _this.redrawNetwork();
         })['catch'](function (text) {
@@ -158,7 +159,7 @@ var MetroMap = (function () {
             _this.map.dragging.enable();
         });
     };
-    MetroMap.prototype.fetchGraph = function (kml) {
+    MetroMap.prototype.fetch = function (resource) {
         return new Promise(function (resolve, reject) {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
@@ -166,10 +167,10 @@ var MetroMap = (function () {
                 if (xhr.status === 200) {
                     resolve(xhr.responseText);
                 } else {
-                    reject('couldn\'t fetch the graph: ' + xhr.status + ': ' + xhr.statusText);
+                    reject('couldn\'t fetch ' + resource + ': ' + xhr.status + ': ' + xhr.statusText);
                 }
             };
-            xhr.open('GET', kml, true);
+            xhr.open('GET', resource, true);
             xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             xhr.send();
         });
@@ -177,7 +178,12 @@ var MetroMap = (function () {
     MetroMap.prototype.handleJSON = function (json) {
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-        this.graph = JSON.parse(json);
+        if (typeof json !== 'Array') {
+            this.graph = JSON.parse(json);
+        } else {
+            this.graph = JSON.parse(json[0]);
+            this.graph.hints = JSON.parse(json[1]);
+        }
         this.extendBounds();
         this.map.setView(this.bounds.getCenter(), 11, {
             pan: { animate: false },

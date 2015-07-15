@@ -29,7 +29,8 @@ class MetroMap {
     }
 
     constructor(containerId: string, kml: string, tileLayers: L.TileLayer[]) {
-        let graphPromise = this.fetchGraph(kml);
+        let graphPromise = this.fetch(kml);
+        let hintsPromise = this.fetch('json/hints.json');
         this.map = new L.Map(containerId, { inertia: false })
             .addLayer(tileLayers[0])
             .setView(new L.LatLng(60, 30), 11)
@@ -47,7 +48,8 @@ class MetroMap {
         this.addOverlay();
         //this.refillSVG(); not required here
         this.addListeners();
-        graphPromise.then(text => this.handleJSON(text))
+        Promise.all([graphPromise, hintsPromise])
+            .then(results => this.handleJSON(results))
             .then(() => this.redrawNetwork())
             .catch(text => alert(text))
     }
@@ -85,7 +87,7 @@ class MetroMap {
         });
     }
 
-    private fetchGraph(kml: string): Promise<string> {
+    private fetch(resource: string): Promise<string> {
         return new Promise((resolve, reject) => {
             let xhr = new XMLHttpRequest();
             xhr.onreadystatechange = () => {
@@ -93,19 +95,25 @@ class MetroMap {
                 if (xhr.status === 200) {
                     resolve(xhr.responseText);
                 } else {
-                    reject(`couldn't fetch the graph: ${xhr.status}: ${xhr.statusText}`);
+                    reject(`couldn't fetch ${resource}: ${xhr.status}: ${xhr.statusText}`);
                 }
             };
-            xhr.open('GET', kml, true);
+            xhr.open('GET', resource, true);
             xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             xhr.send();
         });
     }
 
-    private handleJSON(json: string): void {
+    private handleJSON(json: string|string[]): void {
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-        this.graph = JSON.parse(json);
+        if (typeof json !== 'Array') {
+            this.graph = JSON.parse(<string>json);
+        } else {
+            this.graph = JSON.parse(json[0]);
+            this.graph.hints = JSON.parse(json[1]);
+        }
+        
         this.extendBounds();
         this.map.setView(this.bounds.getCenter(), 11, {
             pan: { animate: false },
