@@ -88,7 +88,7 @@ function makeFittingRect(bottomRight: L.Point, lines: string[]): HTMLElement {
     const rectTopLeft = bottomRight.subtract(rectSize);
     rect.setAttribute('x', rectTopLeft.x.toString());
     rect.setAttribute('y', rectTopLeft.y.toString());
-    rect.setAttribute('filter', 'url(#f3)');
+    rect.setAttribute('filter', 'url(#shadow)');
     rect.classList.add('plate-box');
 
     let text = svg.createSVGElement('text');
