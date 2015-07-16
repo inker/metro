@@ -259,15 +259,16 @@ class MetroMap {
         //    }
         } else {
             const lineWidth = (zoom - 7) * 0.5;
-            const circleRadius = lineWidth * 1.25;
+            const circleRadius = zoom < 12 ? lineWidth : lineWidth * 1.25;
             const circleBorder = circleRadius * 0.4;
             const transferWidth = lineWidth;
             
             let platformsHavingCircles = new Set<number>();
             
-            let posTransform = zoom < 12 
-                ? platform => this.posOnSVG(svgBounds, platform.location) 
-                : platform => this.posOnSVG(svgBounds, this.graph.stations[platform.station].location);
+            let posTransform = zoom < 12
+                ? platform => this.posOnSVG(svgBounds, this.graph.stations[platform.station].location)
+                : platform => this.posOnSVG(svgBounds, platform.location);
+                
             let platformsOnSVG = this.graph.platforms.map(posTransform);
             
             for (let stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
