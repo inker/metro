@@ -137,7 +137,6 @@ var MetroMap = (function () {
     MetroMap.prototype.addListeners = function () {
         var _this = this;
         var mapPane = this.map.getPanes().mapPane;
-        var prevZoom = undefined;
         this.map.on('movestart', function (e) {
             return _this.map.touchZoom.disable();
         });
@@ -151,7 +150,6 @@ var MetroMap = (function () {
         });
         this.map.on('zoomstart', function (e) {
             _this.map.dragging.disable();
-            prevZoom = _this.map.getZoom();
             //this.overlay.classList.add('leaflet-zoom-anim');
             _this.overlay.style.opacity = '0.5';
         });

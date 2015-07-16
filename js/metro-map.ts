@@ -62,7 +62,6 @@ class MetroMap {
 
     private addListeners(): void {
         let mapPane = this.map.getPanes().mapPane;
-        let prevZoom: number;
         this.map.on('movestart', e => this.map.touchZoom.disable());
         this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
         this.map.on('moveend', e => {
@@ -72,7 +71,6 @@ class MetroMap {
         });
         this.map.on('zoomstart', e => {
             this.map.dragging.disable();
-            prevZoom = this.map.getZoom();
             //this.overlay.classList.add('leaflet-zoom-anim');
             this.overlay.style.opacity = '0.5';
 
