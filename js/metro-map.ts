@@ -316,8 +316,8 @@ class MetroMap {
                 }
 
             });
-
-            if (circular) {
+            
+            if (zoom > 11 && circular) {
                 const circumcenter = util.getCircumcenter(coords);
                 const circumradius = circumcenter.distanceTo(coords[0]);
                 //let circumcircle = svg.makeCircle(circumcenter, circumradius);
@@ -328,24 +328,26 @@ class MetroMap {
                 frag['transfers'].appendChild(circumcircle);
             }
         }
-
-        this.graph.transfers.forEach(tr => {
-            if (platformsHavingCircles.has(tr.source) && platformsHavingCircles.has(tr.target)) return;
-            const pl1 = this.graph.platforms[tr.source];
-            const pl2 = this.graph.platforms[tr.target];
-            const posOnSVG1 = this.posOnSVG(svgBounds, pl1.location);
-            const posOnSVG2 = this.posOnSVG(svgBounds, pl2.location);
-            let transfer = svg.makeTransfer(posOnSVG1, posOnSVG2, transferWidth, circleBorder);
-            //let transfer = svg.createSVGElement('line');
-            //transfer.setAttribute('x1', posOnSVG1.x.toString());
-            //transfer.setAttribute('y1', posOnSVG1.y.toString());
-            //transfer.setAttribute('x2', posOnSVG2.x.toString());
-            //transfer.setAttribute('y2', posOnSVG2.y.toString());
-            //transfer.classList.add('transfer');
-            //transfer.style.strokeWidth = transferWidth.toString();
-            //transfer.style.opacity = '0.25';
-            frag['transfers'].appendChild(transfer);
-        });
+        
+        if (zoom > 11) {
+            this.graph.transfers.forEach(tr => {
+                if (platformsHavingCircles.has(tr.source) && platformsHavingCircles.has(tr.target)) return;
+                const pl1 = this.graph.platforms[tr.source];
+                const pl2 = this.graph.platforms[tr.target];
+                const posOnSVG1 = this.posOnSVG(svgBounds, pl1.location);
+                const posOnSVG2 = this.posOnSVG(svgBounds, pl2.location);
+                let transfer = svg.makeTransfer(posOnSVG1, posOnSVG2, transferWidth, circleBorder);
+                //let transfer = svg.createSVGElement('line');
+                //transfer.setAttribute('x1', posOnSVG1.x.toString());
+                //transfer.setAttribute('y1', posOnSVG1.y.toString());
+                //transfer.setAttribute('x2', posOnSVG2.x.toString());
+                //transfer.setAttribute('y2', posOnSVG2.y.toString());
+                //transfer.classList.add('transfer');
+                //transfer.style.strokeWidth = transferWidth.toString();
+                //transfer.style.opacity = '0.25';
+                frag['transfers'].appendChild(transfer);
+            });
+        }
 
         for (let i = 0; i < this.graph.spans.length; ++i) {
             let span = this.graph.spans[i];
