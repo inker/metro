@@ -335,14 +335,15 @@ class MetroMap {
             const pl2 = this.graph.platforms[tr.target];
             const posOnSVG1 = this.posOnSVG(svgBounds, pl1.location);
             const posOnSVG2 = this.posOnSVG(svgBounds, pl2.location);
-            let transfer = svg.createSVGElement('line');
-            transfer.setAttribute('x1', posOnSVG1.x.toString());
-            transfer.setAttribute('y1', posOnSVG1.y.toString());
-            transfer.setAttribute('x2', posOnSVG2.x.toString());
-            transfer.setAttribute('y2', posOnSVG2.y.toString());
-            transfer.classList.add('transfer');
-            transfer.style.strokeWidth = transferWidth.toString();
-            transfer.style.opacity = '0.25';
+            let transfer = svg.makeTransfer(new L.Bounds(posOnSVG1, posOnSVG2), transferWidth, circleBorder);
+            //let transfer = svg.createSVGElement('line');
+            //transfer.setAttribute('x1', posOnSVG1.x.toString());
+            //transfer.setAttribute('y1', posOnSVG1.y.toString());
+            //transfer.setAttribute('x2', posOnSVG2.x.toString());
+            //transfer.setAttribute('y2', posOnSVG2.y.toString());
+            //transfer.classList.add('transfer');
+            //transfer.style.strokeWidth = transferWidth.toString();
+            //transfer.style.opacity = '0.25';
             frag['transfers'].appendChild(transfer);
         });
 

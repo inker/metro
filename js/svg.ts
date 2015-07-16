@@ -51,6 +51,21 @@ export function makeRingWithBorders(center: L.Point, radius: number, thickness: 
     return g;
 }
 
+export function makeTransfer(bounds: L.Bounds, thickness: number, borderWidth: number) {
+    let g = createSVGElement('g');
+    g.classList.add('transfer');
+    let halfThickness = thickness * 0.5;
+    [borderWidth, thickness].forEach(t => {
+        let line = createSVGElement('line');
+        line.setAttribute('x1', bounds.min.x.toString());
+        line.setAttribute('y1', bounds.min.y.toString());
+        line.setAttribute('x2', bounds.max.x.toString());
+        line.setAttribute('y2', bounds.max.y.toString());
+        g.appendChild(line);
+    });
+    return g;
+}
+
 export function createSVGElement(tagName: string): HTMLElement {
     return <HTMLElement>document.createElementNS('http://www.w3.org/2000/svg', tagName);
 }
