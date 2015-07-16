@@ -133,8 +133,8 @@ class MetroMap {
         defs.id = 'defs';
         defs.appendChild(svg.makeDropShadow());
         this.overlay.appendChild(defs);
-        
-        let origin = svg.createSVGElement('svg');
+        // svg element won't work because it does not have negative dimensions (top-left station is partially visible)
+        let origin = svg.createSVGElement('g');
         origin.id = 'origin';
         ['paths', 'transfers', 'station-circles', 'dummy-circles'].forEach(groupId => {
             let group = svg.createSVGElement('g');
@@ -194,9 +194,9 @@ class MetroMap {
         let origin = document.getElementById('origin');
         //TODO: test which one is faster
         // transform may not work with svg elements
-        origin.setAttribute('x', originShift.x + 'px');
-        origin.setAttribute('y', originShift.y + 'px');
-        //origin.style.transform = `translate3d(${originShift.x}px, ${originShift.y}px, 0px)`;
+        //origin.setAttribute('x', originShift.x + 'px');
+        //origin.setAttribute('y', originShift.y + 'px');
+        origin.style.transform = `translate(${originShift.x}px, ${originShift.y}px)`;
         //origin.style.left = originShift.x + 'px';
         //origin.style.top = originShift.y + 'px';
 
