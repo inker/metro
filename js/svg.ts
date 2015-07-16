@@ -44,6 +44,7 @@ export function makeRingWithBorders(center: L.Point, radius: number, thickness: 
     let halfThickness = thickness * 0.5;
     let rings = [radius, radius - halfThickness, radius + halfThickness].forEach(r => {
         let ci = makeCircle(center, r);
+        ci.style.strokeOpacity = '0.5';
         ci.style.fillOpacity = '0';
         if (r === radius) {
             ci.style.stroke = '#ffffff';
