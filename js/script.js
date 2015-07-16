@@ -297,7 +297,7 @@ var MetroMap = (function () {
         if (zoom < 10) {} else {
             (function () {
                 var lineWidth = (zoom - 7) * 0.5;
-                var circleRadius = zoom < 12 ? lineWidth : lineWidth * 1.25;
+                var circleRadius = zoom < 12 ? lineWidth * 1.25 : lineWidth;
                 var circleBorder = circleRadius * 0.4;
                 var transferWidth = lineWidth;
                 var platformsHavingCircles = new Set();

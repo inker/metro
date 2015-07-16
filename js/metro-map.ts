@@ -259,7 +259,7 @@ class MetroMap {
         //    }
         } else {
             const lineWidth = (zoom - 7) * 0.5;
-            const circleRadius = zoom < 12 ? lineWidth : lineWidth * 1.25;
+            const circleRadius = zoom < 12 ? lineWidth * 1.25 : lineWidth;
             const circleBorder = circleRadius * 0.4;
             const transferWidth = lineWidth;
             
