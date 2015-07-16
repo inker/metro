@@ -69,12 +69,12 @@ class MetroMap {
         });
         this.map.on('zoomstart', e => {
             this.map.dragging.disable();
-            this.overlay.classList.add('leaflet-zoom-anim');
+            //this.overlay.classList.add('leaflet-zoom-anim');
             this.overlay.style.opacity = '0.5';
         });
         this.map.on('zoomend', e => {
             this.redrawNetwork();
-            this.overlay.classList.remove('leaflet-zoom-anim');
+            //this.overlay.classList.remove('leaflet-zoom-anim');
             this.overlay.style.opacity = null;
             this.map.dragging.enable();
         });
@@ -103,13 +103,10 @@ class MetroMap {
         this.graph = JSON.parse(json);
         
         this.extendBounds();
-        let zoomPanOptions = {
+        this.map.setView(this.bounds.getCenter(), 11, {
             pan: { animate: false },
             zoom: { animate: false }
-        };
-        this.map
-            .setMaxBounds(this.bounds, zoomPanOptions)
-            .setView(this.bounds.getCenter(), 11, zoomPanOptions);
+        });
     }
     
     private appendHintsToGraph(json: string): void {
