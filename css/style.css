@@ -110,7 +110,6 @@ path {
 }
 .transfer :nth-child(2) {
     stroke: #FFFFFF;
-    stroke-opacity: 0.5;
 }
 
 /* lines */
