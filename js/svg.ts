@@ -46,9 +46,10 @@ export function makeRingWithBorders(center: L.Point, radius: number, thickness: 
         let ci = makeCircle(center, r);
         ci.style.fillOpacity = '0';
         if (r === radius) {
-            ci.style.strokeWidth = borderWidth.toString();
+            ci.style.stroke = '#ffffff';
+            ci.style.strokeWidth = thickness.toString();
         } else {
-            ci.style.strokeWidth = '1px';
+            ci.style.strokeWidth = borderWidth.toString();
         }
         g.appendChild(ci);
     });
