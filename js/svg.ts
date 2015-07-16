@@ -16,7 +16,7 @@ export function makeCircle(position: L.Point, radius: number): HTMLElement {
 
 export function convertToStation(circle: HTMLElement, id: string, data: po.StationOrPlatform, borderWidth: number): void {
     circle.id = id;
-    circle.classList.add('station-circle');
+    //circle.classList.add('station-circle');
     circle.style.strokeWidth = borderWidth + 'px';
     util.setSVGDataset(circle, {
         lat: data.location.lat,
@@ -41,17 +41,11 @@ export function makeCubicBezier(controlPoints: L.Point[]): HTMLElement {
 
 export function makeRingWithBorders(center: L.Point, radius: number, thickness: number, borderWidth: number): HTMLElement {
     let g = createSVGElement('g');
+    g.classList.add('transfer');
     let halfThickness = thickness * 0.5;
-    let rings = [radius, radius - halfThickness, radius + halfThickness].forEach(r => {
+    [radius, radius - halfThickness, radius + halfThickness].forEach(r => {
         let ci = makeCircle(center, r);
-        ci.style.strokeOpacity = '0.5';
-        ci.style.fillOpacity = '0';
-        if (r === radius) {
-            ci.style.stroke = '#ffffff';
-            ci.style.strokeWidth = thickness.toString();
-        } else {
-            ci.style.strokeWidth = borderWidth.toString();
-        }
+        ci.style.strokeWidth = (r === radius ? thickness : borderWidth) + 'px';
         g.appendChild(ci);
     });
     return g;
