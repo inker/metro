@@ -335,7 +335,7 @@ class MetroMap {
             const pl2 = this.graph.platforms[tr.target];
             const posOnSVG1 = this.posOnSVG(svgBounds, pl1.location);
             const posOnSVG2 = this.posOnSVG(svgBounds, pl2.location);
-            let transfer = svg.makeTransfer(new L.Bounds([posOnSVG1, posOnSVG2]), transferWidth, circleBorder);
+            let transfer = svg.makeTransfer(posOnSVG1, posOnSVG2, transferWidth, circleBorder);
             //let transfer = svg.createSVGElement('line');
             //transfer.setAttribute('x1', posOnSVG1.x.toString());
             //transfer.setAttribute('y1', posOnSVG1.y.toString());
