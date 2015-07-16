@@ -297,14 +297,14 @@ var MetroMap = (function () {
         if (zoom < 10) {} else {
             (function () {
                 var lineWidth = (zoom - 7) * 0.5;
-                var circleRadius = lineWidth * 1.25;
+                var circleRadius = zoom < 12 ? lineWidth : lineWidth * 1.25;
                 var circleBorder = circleRadius * 0.4;
                 var transferWidth = lineWidth;
                 var platformsHavingCircles = new Set();
                 var posTransform = zoom < 12 ? function (platform) {
-                    return _this.posOnSVG(svgBounds, platform.location);
-                } : function (platform) {
                     return _this.posOnSVG(svgBounds, _this.graph.stations[platform.station].location);
+                } : function (platform) {
+                    return _this.posOnSVG(svgBounds, platform.location);
                 };
                 var platformsOnSVG = _this2.graph.platforms.map(posTransform);
 
