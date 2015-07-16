@@ -131,8 +131,6 @@ class MetroMap {
             origin.appendChild(group);
         });
         this.overlay.appendChild(origin);
-        let transfers = document.getElementById('transfers');
-        transfers.classList.add('transfer');
         let stationCircles = document.getElementById('station-circles');
         stationCircles.classList.add('station-circle');
     }

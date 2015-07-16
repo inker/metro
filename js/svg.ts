@@ -45,7 +45,7 @@ export function makeRingWithBorders(center: L.Point, radius: number, thickness: 
     let halfThickness = thickness * 0.5;
     [radius, radius - halfThickness, radius + halfThickness].forEach(r => {
         let ci = makeCircle(center, r);
-        ci.style.strokeWidth = (r === radius ? thickness : borderWidth) + 'px';
+        ci.style.strokeWidth = (r === radius ? thickness - borderWidth : borderWidth) + 'px';
         g.appendChild(ci);
     });
     return g;
