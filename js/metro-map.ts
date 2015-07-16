@@ -9,11 +9,6 @@ import addons = require('./addons');
 //import * as util from '../../util';
 //import Plain from './plain-objects';
 
-type Neighbor = {
-    platform: L.Point;
-    midPt: L.Point;
-};
-
 class MetroMap {
     private map: L.Map;
     private overlay: HTMLElement;
@@ -301,10 +296,12 @@ class MetroMap {
                         }
                         //(span.source === platformNum ? nextNeighbors : prevNeighbors).push(span);
                     }
-                    let prev = (prevs.length === 1) ? prevs[0] : prevs[0].add(prevs[1]).divideBy(2);
-                    let next = (nexts.length === 1) ? nexts[0] : nexts[0].add(nexts[1]).divideBy(2);
-                    let distToPrev = posOnSVG.distanceTo(prev), distToNext = posOnSVG.distanceTo(next);
-                    let midPtPrev = posOnSVG.add(prev).divideBy(2), midPtNext = posOnSVG.add(next).divideBy(2);
+                    let prev = (prevs.length === 1) ? prevs[0] : prevs[0].add(prevs[1]).divideBy(2),
+                        next = (nexts.length === 1) ? nexts[0] : nexts[0].add(nexts[1]).divideBy(2);
+                    let distToPrev = posOnSVG.distanceTo(prev),
+                        distToNext = posOnSVG.distanceTo(next);
+                    let midPtPrev = posOnSVG.add(prev).divideBy(2),
+                        midPtNext = posOnSVG.add(next).divideBy(2);
                     let mdiff = midPtNext.subtract(midPtPrev).multiplyBy(distToPrev / (distToPrev + distToNext));
                     let mm = midPtPrev.add(mdiff);
                     let diff = posOnSVG.subtract(mm);
@@ -323,10 +320,11 @@ class MetroMap {
             if (circular) {
                 const circumcenter = util.getCircumcenter(coords);
                 const circumradius = circumcenter.distanceTo(coords[0]);
-                let circumcircle = svg.makeCircle(circumcenter, circumradius);
-                circumcircle.classList.add('transfer');
-                circumcircle.style.strokeWidth = transferWidth.toString();
-                circumcircle.style.opacity = '0.25';
+                //let circumcircle = svg.makeCircle(circumcenter, circumradius);
+                let circumcircle = svg.makeRingWithBorders(circumcenter, circumradius, transferWidth, circleBorder);
+                //circumcircle.classList.add('transfer');
+                //circumcircle.style.strokeWidth = transferWidth.toString();
+                //circumcircle.style.opacity = '0.25';
                 frag['transfers'].appendChild(circumcircle);
             }
         }
