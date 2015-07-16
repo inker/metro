@@ -68,7 +68,6 @@ class MetroMap {
             this.map.dragging.disable();
             //this.overlay.classList.add('leaflet-zoom-anim');
             this.overlay.style.opacity = '0.5';
-
         });
         this.map.on('zoomend', e => {
             this.redrawNetwork();
@@ -168,18 +167,17 @@ class MetroMap {
     }
 
     private updatePos(): void {
-
-        let nw = this.bounds.getNorthWest();
-        let se = this.bounds.getSouthEast();
+        const nw = this.bounds.getNorthWest(),
+            se = this.bounds.getSouthEast();
         // svg bounds in pixels relative to container
-        let pixelBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
-        let transform = util.parseTransform(this.overlay.style.transform);
+        const pixelBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
+        const transform = util.parseTransform(this.overlay.style.transform);
 
-        let pixelBoundsSize = pixelBounds.getSize();
-        let topLeft = pixelBounds.min.subtract(transform).subtract(pixelBoundsSize);
+        const pixelBoundsSize = pixelBounds.getSize();
+        const topLeft = pixelBounds.min.subtract(transform).subtract(pixelBoundsSize);
         this.overlay.style.left = topLeft.x + 'px';
         this.overlay.style.top = topLeft.y + 'px';
-        let originShift = pixelBoundsSize;
+        const originShift = pixelBoundsSize;
         let origin = document.getElementById('origin');
         //TODO: test which one is faster
         // transform may not work with svg elements
@@ -189,7 +187,7 @@ class MetroMap {
         //origin.style.left = originShift.x + 'px';
         //origin.style.top = originShift.y + 'px';
 
-        let tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
+        const tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
         this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
         this.overlay.style.height = tripleSvgBoundsSize.y + 'px';
     }
@@ -229,7 +227,7 @@ class MetroMap {
         const circleBorder = circleRadius * 0.4;
         const transferWidth = lineWidth;
         
-        let platformsHavingCircles = new Set<number>();
+        let platformsInCircles = new Set<number>();
         
         for (let stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
             let station = this.graph.stations[stationIndex];
@@ -281,10 +279,10 @@ class MetroMap {
                     let midPts = [posOnSVG, posOnSVG];
                     let lens = [0, 0];
 
-                    let nexts: L.Point[] = [], prevs: L.Point[] = [];
+                    let nexts: L.Point[] = [],
+                        prevs: L.Point[] = [];
                     for (let i = 0; i < 3; ++i) {
                         let span = this.graph.spans[platform.spans[i]];
-                        //(span.source === platformNum ? outSpans : inSpans).push(span);
                         if (span.source === platformNum) {
                             let neighbor = this.graph.platforms[span.target];
                             let neighborPos = platformsOnSVG[span.target];
@@ -296,15 +294,15 @@ class MetroMap {
                         }
                         //(span.source === platformNum ? nextNeighbors : prevNeighbors).push(span);
                     }
-                    let prev = (prevs.length === 1) ? prevs[0] : prevs[0].add(prevs[1]).divideBy(2),
+                    const prev = (prevs.length === 1) ? prevs[0] : prevs[0].add(prevs[1]).divideBy(2),
                         next = (nexts.length === 1) ? nexts[0] : nexts[0].add(nexts[1]).divideBy(2);
-                    let distToPrev = posOnSVG.distanceTo(prev),
+                    const distToPrev = posOnSVG.distanceTo(prev),
                         distToNext = posOnSVG.distanceTo(next);
-                    let midPtPrev = posOnSVG.add(prev).divideBy(2),
+                    const midPtPrev = posOnSVG.add(prev).divideBy(2),
                         midPtNext = posOnSVG.add(next).divideBy(2);
-                    let mdiff = midPtNext.subtract(midPtPrev).multiplyBy(distToPrev / (distToPrev + distToNext));
-                    let mm = midPtPrev.add(mdiff);
-                    let diff = posOnSVG.subtract(mm);
+                    const mdiff = midPtNext.subtract(midPtPrev).multiplyBy(distToPrev / (distToPrev + distToNext));
+                    const mm = midPtPrev.add(mdiff);
+                    const diff = posOnSVG.subtract(mm);
                     whiskers[platformNum] = [midPtPrev.add(diff), midPtNext.add(diff)];
                 } else {
                     whiskers[platformNum] = [posOnSVG, posOnSVG];
@@ -312,48 +310,36 @@ class MetroMap {
                 
                 if (circular && circular.indexOf(platform) > -1) {
                     coords.push(posOnSVG);
-                    platformsHavingCircles.add(platformNum);
+                    platformsInCircles.add(platformNum);
                 }
 
             });
             
             if (zoom > 11 && circular) {
-                const circumcenter = util.getCircumcenter(coords);
-                const circumradius = circumcenter.distanceTo(coords[0]);
-                //let circumcircle = svg.makeCircle(circumcenter, circumradius);
-                let circumcircle = svg.makeRingWithBorders(circumcenter, circumradius, transferWidth, circleBorder);
-                //circumcircle.classList.add('transfer');
-                //circumcircle.style.strokeWidth = transferWidth.toString();
-                //circumcircle.style.opacity = '0.25';
+                const circumC = util.getCircumcenter(coords);
+                const circumR = circumC.distanceTo(coords[0]);
+                const circumcircle = svg.makeRingWithBorders(circumC, circumR, transferWidth, circleBorder);
                 frag['transfers'].appendChild(circumcircle);
             }
         }
         
         if (zoom > 11) {
             this.graph.transfers.forEach(tr => {
-                if (platformsHavingCircles.has(tr.source) && platformsHavingCircles.has(tr.target)) return;
-                const pl1 = this.graph.platforms[tr.source];
-                const pl2 = this.graph.platforms[tr.target];
-                const posOnSVG1 = this.posOnSVG(svgBounds, pl1.location);
-                const posOnSVG2 = this.posOnSVG(svgBounds, pl2.location);
-                let transfer = svg.makeTransfer(posOnSVG1, posOnSVG2, transferWidth, circleBorder);
-                //let transfer = svg.createSVGElement('line');
-                //transfer.setAttribute('x1', posOnSVG1.x.toString());
-                //transfer.setAttribute('y1', posOnSVG1.y.toString());
-                //transfer.setAttribute('x2', posOnSVG2.x.toString());
-                //transfer.setAttribute('y2', posOnSVG2.y.toString());
-                //transfer.classList.add('transfer');
-                //transfer.style.strokeWidth = transferWidth.toString();
-                //transfer.style.opacity = '0.25';
+                if (platformsInCircles.has(tr.source) && platformsInCircles.has(tr.target)) return;
+                const pl1 = this.graph.platforms[tr.source],
+                    pl2 = this.graph.platforms[tr.target];
+                const transferPos = [this.posOnSVG(svgBounds, pl1.location), this.posOnSVG(svgBounds, pl2.location)];
+                const transfer = svg.makeTransfer(transferPos[0], transferPos[1], transferWidth, circleBorder);
                 frag['transfers'].appendChild(transfer);
             });
         }
 
         for (let i = 0; i < this.graph.spans.length; ++i) {
-            let span = this.graph.spans[i];
-            let srcN = span.source, trgN = span.target;
-            let src = this.graph.platforms[srcN];
-            let trg = this.graph.platforms[trgN];
+            const span = this.graph.spans[i];
+            const srcN = span.source,
+                trgN = span.target;
+            const src = this.graph.platforms[srcN],
+                trg = this.graph.platforms[trgN];
             let bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][1], whiskers[trgN][0], platformsOnSVG[trgN]]);
             let routes = span.routes.map(n => this.graph.routes[n]);
             let matches = routes[0].line.match(/[MEL](\d{1,2})/);
