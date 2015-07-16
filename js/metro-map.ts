@@ -26,10 +26,13 @@ class MetroMap {
     constructor(containerId: string, kml: string, tileLayers: {}) {
         let graphPromise = this.fetch(kml);
         let hintsPromise = this.fetch('json/hints.json');
-        this.map = new L.Map(containerId, { inertia: false })
-            .addLayer(tileLayers['Mapbox'] || tileLayers[Object.keys(tileLayers).toString()])
-            .setView(new L.LatLng(60, 30), 11)
-            .addControl(new L.Control.Scale({ imperial: false }));
+        this.map = new L.Map(containerId, {
+            layers: tileLayers['Mapbox'] || tileLayers[Object.keys(tileLayers).toString()],
+            center: new L.LatLng(60, 30),
+            zoom: 11,
+            minZoom: 9,
+            inertia: false
+        }).addControl(new L.Control.Scale({ imperial: false }));
         
         new addons.LayerControl(this, tileLayers);
 
@@ -100,10 +103,13 @@ class MetroMap {
         this.graph = JSON.parse(json);
         
         this.extendBounds();
-        this.map.setView(this.bounds.getCenter(), 11, {
+        let zoomPanOptions = {
             pan: { animate: false },
             zoom: { animate: false }
-        });
+        };
+        this.map
+            .setMaxBounds(this.bounds, zoomPanOptions)
+            .setView(this.bounds.getCenter(), 11, zoomPanOptions);
     }
     
     private appendHintsToGraph(json: string): void {
