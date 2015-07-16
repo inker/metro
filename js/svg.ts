@@ -116,7 +116,8 @@ export function makePlate(circle: HTMLElement): HTMLElement {
     let pole = svg.createSVGElement('line');
     const c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
     const r = Number(circle.getAttribute('r'));
-    const poleSize = new L.Point(4 + r, 8 + r);
+    const iR = Math.trunc(r);
+    const poleSize = new L.Point(4 + iR, 8 + iR);
     const poleBounds = new L.Bounds(c, c.subtract(poleSize));
 
     pole.setAttribute('x1', poleBounds.min.x.toString());

@@ -603,7 +603,8 @@ function makePlate(circle) {
     var pole = svg.createSVGElement('line');
     var c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
     var r = Number(circle.getAttribute('r'));
-    var poleSize = new L.Point(4 + r, 8 + r);
+    var iR = Math.trunc(r);
+    var poleSize = new L.Point(4 + iR, 8 + iR);
     var poleBounds = new L.Bounds(c, c.subtract(poleSize));
     pole.setAttribute('x1', poleBounds.min.x.toString());
     pole.setAttribute('y1', poleBounds.min.y.toString());
