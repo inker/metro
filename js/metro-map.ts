@@ -69,12 +69,12 @@ class MetroMap {
         });
         this.map.on('zoomstart', e => {
             this.map.dragging.disable();
-            //this.overlay.classList.add('leaflet-zoom-anim');
+            this.overlay.classList.add('leaflet-zoom-anim');
             this.overlay.style.opacity = '0.5';
         });
         this.map.on('zoomend', e => {
             this.redrawNetwork();
-            //this.overlay.classList.remove('leaflet-zoom-anim');
+            this.overlay.classList.remove('leaflet-zoom-anim');
             this.overlay.style.opacity = null;
             this.map.dragging.enable();
         });
