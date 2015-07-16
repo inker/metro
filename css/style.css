@@ -108,7 +108,7 @@ path {
     stroke: #000000;
     stroke-opacity: 0.5;
 }
-.transfer :nth-child(1) {
+.transfer :nth-child(2) {
     stroke: #FFFFFF;
     stroke-opacity: 0.5;
 }

@@ -42,12 +42,14 @@ export function makeCubicBezier(controlPoints: L.Point[]): HTMLElement {
 export function makeRingWithBorders(center: L.Point, radius: number, thickness: number, borderWidth: number): HTMLElement {
     let g = createSVGElement('g');
     g.classList.add('transfer');
-    let halfThickness = thickness * 0.5;
-    [radius, radius - halfThickness, radius + halfThickness].forEach(r => {
-        let ci = makeCircle(center, r);
-        ci.style.strokeWidth = (r === radius ? thickness - borderWidth : borderWidth) + 'px';
-        g.appendChild(ci);
-    });
+    let halfBorder = borderWidth * 0.5;
+    let border = makeCircle(center, radius);
+    let ring = makeCircle(center, radius);
+    border.style.strokeWidth = (thickness + halfBorder) + 'px';
+    ring.style.strokeWidth = (thickness - halfBorder) + 'px';
+    g.appendChild(border);
+    g.appendChild(ring);
+    
     return g;
 }
 
