@@ -57,7 +57,7 @@ export function makeTransfer(start: L.Point, end: L.Point, thickness: number, bo
     let g = createSVGElement('g');
     g.classList.add('transfer');
     let halfBorder = thickness * 0.5;
-    [thickness + halfBorder, borderWidth - halfBorder].forEach(t => {
+    [thickness + halfBorder, thickness - halfBorder].forEach(t => {
         let line = createSVGElement('line');
         line.setAttribute('x1', start.x.toString());
         line.setAttribute('y1', start.y.toString());
