@@ -14,15 +14,15 @@ export function makeCircle(position: L.Point, radius: number): HTMLElement {
     return ci;
 }
 
-export function convertToStation(circle: HTMLElement, id: string, s: po.StationOrPlatform, circleBorder: number): void {
+export function convertToStation(circle: HTMLElement, id: string, data: po.StationOrPlatform, circleBorder: number): void {
     circle.id = id;
     circle.classList.add('station-circle');
     circle.style.strokeWidth = circleBorder.toString();
     util.setSVGDataset(circle, {
-        lat: s.location.lat,
-        lng: s.location.lng,
-        ru: s.name,
-        fi: s.altName
+        lat: data.location.lat,
+        lng: data.location.lng,
+        ru: data.name,
+        fi: data.altName
     });
     //circle.dataset['lat'] = s.location.lat.toString();
     //circle.dataset['lng'] = s.location.lng.toString();
