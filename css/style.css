@@ -105,7 +105,7 @@ path {
 /* transfers */
 .transfer {
     fill-opacity: 0;
-    stroke: #808080;
+    stroke: #404040;
     stroke-opacity: 1;
 }
 .transfer :nth-child(2) {
