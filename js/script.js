@@ -73,7 +73,10 @@ var openMapSurfer = (function () {
         attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
 })();
-var metroMap = new MetroMap('map-container', 'json/graph.json', [mapbox, openMapSurfer]);
+var metroMap = new MetroMap('map-container', 'json/graph.json', {
+    'Mapbox': mapbox,
+    'OpenMapSurfer': openMapSurfer
+});
 (function () {
     var titles = ['Plan metro Sankt-Peterburga', 'Pietarin metron hankesuunnitelma', 'St Petersburg metro plan proposal'];
     var i = 0;
@@ -99,12 +102,8 @@ var MetroMap = (function () {
         var _this = this;
         var graphPromise = this.fetch(kml);
         var hintsPromise = this.fetch('json/hints.json');
-        this.map = new L.Map(containerId, { inertia: false }).addLayer(tileLayers[0]).setView(new L.LatLng(60, 30), 11).addControl(new L.Control.Scale({ imperial: false }));
-        var layers = {};
-        for (var i = 0; i < tileLayers.length; ++i) {
-            layers['Layer ' + i] = tileLayers[i];
-        }
-        new addons.LayerControl(this, layers);
+        this.map = new L.Map(containerId, { inertia: false }).addLayer(tileLayers['Mapbox'] || tileLayers[Object.keys(tileLayers).toString()]).setView(new L.LatLng(60, 30), 11).addControl(new L.Control.Scale({ imperial: false }));
+        new addons.LayerControl(this, tileLayers);
         //L.Control['measureControl']().addTo(this.map);
         console.log('map should be created by now');
         this.addOverlay();
@@ -282,49 +281,32 @@ var MetroMap = (function () {
         var _this = this;
         this.refillSVG();
         this.updatePos();
-        var whiskers = new Array(this.graph.platforms.length);
         var stationCirclesFrag = document.createDocumentFragment();
         var dummyCirclesFrag = document.createDocumentFragment();
         var pathsFrag = document.createDocumentFragment();
+        var transfersFrag = document.createDocumentFragment();
         var stationCircles = document.getElementById('station-circles');
         var dummyCircles = document.getElementById('dummy-circles');
         var transfers = document.getElementById('transfers');
         var paths = document.getElementById('paths');
+        var whiskers = new Array(this.graph.platforms.length);
         var zoom = this.map.getZoom();
         var nw = this.bounds.getNorthWest();
         var se = this.bounds.getSouthEast();
         var svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
-        if (zoom < 10) {} else if (zoom < 12) {
-            // elements style parameters
-            var lineWidth = (zoom - 7) * 0.5;
-            var circleRadius = lineWidth * 1.25;
-            var circleBorder = circleRadius * 0.4;
-            var _transfers = document.getElementById('transfers');
-            for (var stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
-                var station = this.graph.stations[stationIndex];
-                var pos = this.map.latLngToContainerPoint(station.location);
-                var posOnSVG = pos.subtract(svgBounds.min);
-                var ci = svg.makeCircle(posOnSVG, circleRadius);
-                svg.convertToStation(ci, 's-' + stationIndex, station, circleBorder);
-                stationCircles.appendChild(ci);
-                var dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
-                dummyCircle.classList.add('invisible-circle');
-                dummyCircle.setAttribute('data-stationId', ci.id);
-                //dummyCircle.dataset['stationId'] = ci.id;
-                dummyCircle.onmouseover = this.showPlate;
-                dummyCirclesFrag.appendChild(dummyCircle);
-            }
-        } else {
+        if (zoom < 10) {} else {
             (function () {
                 var lineWidth = (zoom - 7) * 0.5;
-                var circleRadius = (zoom - 7) * 0.5;
+                var circleRadius = lineWidth * 1.25;
                 var circleBorder = circleRadius * 0.4;
                 var transferWidth = lineWidth;
                 var platformsHavingCircles = new Set();
-                var platformsOnSVG = _this2.graph.platforms.map(function (platform) {
+                var posTransform = zoom < 12 ? function (platform) {
                     return _this.posOnSVG(svgBounds, platform.location);
-                });
-                var transferSegments = document.getElementById('transfers');
+                } : function (platform) {
+                    return _this.posOnSVG(svgBounds, _this.graph.stations[platform.station].location);
+                };
+                var platformsOnSVG = _this2.graph.platforms.map(posTransform);
 
                 var _loop = function (stationIndex) {
                     var station = _this2.graph.stations[stationIndex];
@@ -372,11 +354,6 @@ var MetroMap = (function () {
                         } else if (platform.spans.length === 3) {
                             var midPts = [posOnSVG, posOnSVG];
                             var lens = [0, 0];
-                            //// true = is source of the span
-                            //let patterns = this.graph.spans.map(span => span.source === platformNum);
-                            //// true = ⅄, false - Y
-                            //let reversed = patterns.reduce((p: boolean, c: boolean) => p ? !c : c);
-                            //let outSpans: po.Span[] = [], inSpans: typeof outSpans = [];
                             var nexts = [],
                                 prevs = [];
                             for (var i = 0; i < 3; ++i) {
@@ -417,7 +394,7 @@ var MetroMap = (function () {
                         circumcircle.classList.add('transfer');
                         circumcircle.style.strokeWidth = transferWidth.toString();
                         circumcircle.style.opacity = '0.25';
-                        transferSegments.appendChild(circumcircle);
+                        transfersFrag.appendChild(circumcircle);
                     }
                 };
 
@@ -442,7 +419,6 @@ var MetroMap = (function () {
                     bezier.classList.add(routes[0].line.charAt(0) + '-line');
                     pathsFrag.appendChild(bezier);
                 }
-                paths.appendChild(pathsFrag);
                 _this2.graph.transfers.forEach(function (tr) {
                     if (platformsHavingCircles.has(tr.source) && platformsHavingCircles.has(tr.target)) return;
                     var pl1 = _this.graph.platforms[tr.source];
@@ -457,12 +433,14 @@ var MetroMap = (function () {
                     transfer.classList.add('transfer');
                     transfer.style.strokeWidth = transferWidth.toString();
                     transfer.style.opacity = '0.25';
-                    transfers.appendChild(transfer);
+                    transfersFrag.appendChild(transfer);
                 });
             })();
         }
         stationCircles.appendChild(stationCirclesFrag);
         dummyCircles.appendChild(dummyCirclesFrag);
+        paths.appendChild(pathsFrag);
+        document.getElementById('transfers').appendChild(transfersFrag);
     };
     return MetroMap;
 })();
@@ -497,10 +475,6 @@ function convertToStation(circle, id, data, circleBorder) {
         ru: data.name,
         fi: data.altName
     });
-    //circle.dataset['lat'] = s.location.lat.toString();
-    //circle.dataset['lng'] = s.location.lng.toString();
-    //circle.dataset['ru'] = s.name;
-    //circle.dataset['fi'] = s.altName;
 }
 exports.convertToStation = convertToStation;
 function makeCubicBezier(controlPoints) {
@@ -513,9 +487,8 @@ function makeCubicBezier(controlPoints) {
     });
     s.unshift('M');
     s.splice(2, 0, 'C');
-    var d = s.join(' ');
     //let d = controlPoints.reduce((prev, cp, i) => `${prev}${i === 1 ? ' C ' : ' '}${cp.x},${cp.y}`, 'M');
-    path.setAttribute('d', d);
+    path.setAttribute('d', s.join(' '));
     return path;
 }
 exports.makeCubicBezier = makeCubicBezier;

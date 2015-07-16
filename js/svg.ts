@@ -24,10 +24,6 @@ export function convertToStation(circle: HTMLElement, id: string, data: po.Stati
         ru: data.name,
         fi: data.altName
     });
-    //circle.dataset['lat'] = s.location.lat.toString();
-    //circle.dataset['lng'] = s.location.lng.toString();
-    //circle.dataset['ru'] = s.name;
-    //circle.dataset['fi'] = s.altName;
 }
 
 export function makeCubicBezier(controlPoints: L.Point[]): HTMLElement {
@@ -38,9 +34,8 @@ export function makeCubicBezier(controlPoints: L.Point[]): HTMLElement {
     let s = controlPoints.map(pt => pt.x + ',' + pt.y);
     s.unshift('M');
     s.splice(2, 0, 'C');
-    let d = s.join(' ');
     //let d = controlPoints.reduce((prev, cp, i) => `${prev}${i === 1 ? ' C ' : ' '}${cp.x},${cp.y}`, 'M');
-    path.setAttribute('d', d);
+    path.setAttribute('d', s.join(' '));
     return path;
 }
 
