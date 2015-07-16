@@ -56,7 +56,7 @@ export function makeRingWithBorders(center: L.Point, radius: number, thickness: 
 export function makeTransfer(start: L.Point, end: L.Point, thickness: number, borderWidth: number) {
     let g = createSVGElement('g');
     g.classList.add('transfer');
-    let halfBorder = thickness * 0.5;
+    let halfBorder = borderWidth * 0.5;
     [thickness + halfBorder, thickness - halfBorder].forEach(t => {
         let line = createSVGElement('line');
         line.setAttribute('x1', start.x.toString());
