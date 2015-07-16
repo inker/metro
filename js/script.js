@@ -281,166 +281,160 @@ var MetroMap = (function () {
         var _this = this;
         this.refillSVG();
         this.updatePos();
-        var stationCirclesFrag = document.createDocumentFragment();
-        var dummyCirclesFrag = document.createDocumentFragment();
-        var pathsFrag = document.createDocumentFragment();
-        var transfersFrag = document.createDocumentFragment();
-        var stationCircles = document.getElementById('station-circles');
-        var dummyCircles = document.getElementById('dummy-circles');
-        var transfers = document.getElementById('transfers');
-        var paths = document.getElementById('paths');
+        var frag = {
+            'station-circles': document.createDocumentFragment(),
+            'dummy-circles': document.createDocumentFragment(),
+            'transfers': document.createDocumentFragment(),
+            'paths': document.createDocumentFragment()
+        };
         var whiskers = new Array(this.graph.platforms.length);
         var zoom = this.map.getZoom();
         var nw = this.bounds.getNorthWest();
         var se = this.bounds.getSouthEast();
         var svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
-        if (zoom < 10) {} else {
-            (function () {
-                var lineWidth = (zoom - 7) * 0.5;
-                var circleRadius = zoom < 12 ? lineWidth * 1.25 : lineWidth;
-                var circleBorder = circleRadius * 0.4;
-                var transferWidth = lineWidth;
-                var platformsHavingCircles = new Set();
-                var posTransform = zoom < 12 ? function (platform) {
-                    return _this.posOnSVG(svgBounds, _this.graph.stations[platform.station].location);
-                } : function (platform) {
-                    return _this.posOnSVG(svgBounds, platform.location);
-                };
-                var platformsOnSVG = _this2.graph.platforms.map(posTransform);
+        var posTransform = zoom < 12 ? function (platform) {
+            return _this.posOnSVG(svgBounds, _this.graph.stations[platform.station].location);
+        } : function (platform) {
+            return _this.posOnSVG(svgBounds, platform.location);
+        };
+        var platformsOnSVG = this.graph.platforms.map(posTransform);
+        var lineWidth = (zoom - 7) * 0.5;
+        var circleRadius = zoom < 12 ? lineWidth * 1.25 : lineWidth;
+        var circleBorder = circleRadius * 0.4;
+        var transferWidth = lineWidth;
+        var platformsHavingCircles = new Set();
 
-                var _loop = function (stationIndex) {
-                    var station = _this2.graph.stations[stationIndex];
-                    var circular = util.findCircle(_this2.graph, station);
-                    var coords = [];
-                    station.platforms.forEach(function (platformNum) {
-                        var platform = _this.graph.platforms[platformNum];
-                        var posOnSVG = platformsOnSVG[platformNum];
-                        var ci = svg.makeCircle(posOnSVG, circleRadius);
-                        svg.convertToStation(ci, 'p-' + platformNum, platform, circleBorder);
-                        ci.setAttribute('data-station', stationIndex.toString());
-                        //ci.dataset['station'] = stationIndex.toString();
-                        var dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
-                        dummyCircle.classList.add('invisible-circle');
-                        //dummyCircle.dataset['platformId'] = ci.id;
-                        dummyCircle.setAttribute('data-platformId', ci.id);
-                        stationCirclesFrag.appendChild(ci);
-                        dummyCirclesFrag.appendChild(dummyCircle);
-                        dummyCircle.onmouseover = _this.showPlate;
-                        //dummyCircle.onmouseout = e => this.overlay.removeChild(document.getElementById('plate'));
-                        // control points
-                        if (platform.spans.length === 2) {
-                            (function () {
-                                var midPts = [posOnSVG, posOnSVG];
-                                var lens = [0, 0];
-                                var firstSpan = _this.graph.spans[platform.spans[0]];
-                                if (firstSpan.source === platformNum) {
-                                    platform.spans.reverse();
-                                }
-                                for (var i = 0; i < 2; ++i) {
-                                    var span = _this.graph.spans[platform.spans[i]];
-                                    var neighborNum = span.source === platformNum ? span.target : span.source;
-                                    var neighbor = _this.graph.platforms[neighborNum];
-                                    var neighborOnSVG = platformsOnSVG[neighborNum];
-                                    lens[i] = posOnSVG.distanceTo(neighborOnSVG);
-                                    midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
-                                }
-                                var mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
-                                var mm = midPts[0].add(mdiff);
-                                var diff = posOnSVG.subtract(mm);
-                                whiskers[platformNum] = midPts.map(function (midPt) {
-                                    return midPt.add(diff);
-                                });
-                            })();
-                        } else if (platform.spans.length === 3) {
-                            var midPts = [posOnSVG, posOnSVG];
-                            var lens = [0, 0];
-                            var nexts = [],
-                                prevs = [];
-                            for (var i = 0; i < 3; ++i) {
-                                var span = _this.graph.spans[platform.spans[i]];
-                                //(span.source === platformNum ? outSpans : inSpans).push(span);
-                                if (span.source === platformNum) {
-                                    var neighbor = _this.graph.platforms[span.target];
-                                    var neighborPos = platformsOnSVG[span.target];
-                                    nexts.push(neighborPos);
-                                } else {
-                                    var neighbor = _this.graph.platforms[span.source];
-                                    var neighborPos = platformsOnSVG[span.source];
-                                    prevs.push(neighborPos);
-                                }
-                            }
-                            var prev = prevs.length === 1 ? prevs[0] : prevs[0].add(prevs[1]).divideBy(2);
-                            var next = nexts.length === 1 ? nexts[0] : nexts[0].add(nexts[1]).divideBy(2);
-                            var distToPrev = posOnSVG.distanceTo(prev),
-                                distToNext = posOnSVG.distanceTo(next);
-                            var midPtPrev = posOnSVG.add(prev).divideBy(2),
-                                midPtNext = posOnSVG.add(next).divideBy(2);
-                            var mdiff = midPtNext.subtract(midPtPrev).multiplyBy(distToPrev / (distToPrev + distToNext));
-                            var mm = midPtPrev.add(mdiff);
-                            var diff = posOnSVG.subtract(mm);
-                            whiskers[platformNum] = [midPtPrev.add(diff), midPtNext.add(diff)];
+        var _loop = function (stationIndex) {
+            var station = _this2.graph.stations[stationIndex];
+            var circular = util.findCircle(_this2.graph, station);
+            var coords = [];
+            station.platforms.forEach(function (platformNum) {
+                var platform = _this.graph.platforms[platformNum];
+                var posOnSVG = platformsOnSVG[platformNum];
+                if (zoom > 9) {
+                    var ci = svg.makeCircle(posOnSVG, circleRadius);
+                    svg.convertToStation(ci, 'p-' + platformNum, platform, circleBorder);
+                    ci.setAttribute('data-station', stationIndex.toString());
+                    //ci.dataset['station'] = stationIndex.toString();
+                    var dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
+                    dummyCircle.classList.add('invisible-circle');
+                    //dummyCircle.dataset['platformId'] = ci.id;
+                    dummyCircle.setAttribute('data-platformId', ci.id);
+                    frag['station-circles'].appendChild(ci);
+                    frag['dummy-circles'].appendChild(dummyCircle);
+                    dummyCircle.onmouseover = _this.showPlate;
+                }
+                // control points
+                if (platform.spans.length === 2) {
+                    (function () {
+                        var midPts = [posOnSVG, posOnSVG];
+                        var lens = [0, 0];
+                        var firstSpan = _this.graph.spans[platform.spans[0]];
+                        if (firstSpan.source === platformNum) {
+                            platform.spans.reverse();
+                        }
+                        for (var i = 0; i < 2; ++i) {
+                            var span = _this.graph.spans[platform.spans[i]];
+                            var neighborNum = span.source === platformNum ? span.target : span.source;
+                            var neighbor = _this.graph.platforms[neighborNum];
+                            var neighborOnSVG = platformsOnSVG[neighborNum];
+                            lens[i] = posOnSVG.distanceTo(neighborOnSVG);
+                            midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
+                        }
+                        var mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
+                        var mm = midPts[0].add(mdiff);
+                        var diff = posOnSVG.subtract(mm);
+                        whiskers[platformNum] = midPts.map(function (midPt) {
+                            return midPt.add(diff);
+                        });
+                    })();
+                } else if (platform.spans.length === 3) {
+                    var midPts = [posOnSVG, posOnSVG];
+                    var lens = [0, 0];
+                    var nexts = [],
+                        prevs = [];
+                    for (var i = 0; i < 3; ++i) {
+                        var span = _this.graph.spans[platform.spans[i]];
+                        //(span.source === platformNum ? outSpans : inSpans).push(span);
+                        if (span.source === platformNum) {
+                            var neighbor = _this.graph.platforms[span.target];
+                            var neighborPos = platformsOnSVG[span.target];
+                            nexts.push(neighborPos);
                         } else {
-                            whiskers[platformNum] = [posOnSVG, posOnSVG];
+                            var neighbor = _this.graph.platforms[span.source];
+                            var neighborPos = platformsOnSVG[span.source];
+                            prevs.push(neighborPos);
                         }
-                        if (circular && circular.indexOf(platform) > -1) {
-                            coords.push(posOnSVG);
-                            platformsHavingCircles.add(platformNum);
-                        }
-                    });
-                    if (circular) {
-                        var circumcenter = util.getCircumcenter(coords);
-                        var circumradius = circumcenter.distanceTo(coords[0]);
-                        var circumcircle = svg.makeCircle(circumcenter, circumradius);
-                        circumcircle.classList.add('transfer');
-                        circumcircle.style.strokeWidth = transferWidth.toString();
-                        circumcircle.style.opacity = '0.25';
-                        transfersFrag.appendChild(circumcircle);
                     }
-                };
+                    var prev = prevs.length === 1 ? prevs[0] : prevs[0].add(prevs[1]).divideBy(2);
+                    var next = nexts.length === 1 ? nexts[0] : nexts[0].add(nexts[1]).divideBy(2);
+                    var distToPrev = posOnSVG.distanceTo(prev),
+                        distToNext = posOnSVG.distanceTo(next);
+                    var midPtPrev = posOnSVG.add(prev).divideBy(2),
+                        midPtNext = posOnSVG.add(next).divideBy(2);
+                    var mdiff = midPtNext.subtract(midPtPrev).multiplyBy(distToPrev / (distToPrev + distToNext));
+                    var mm = midPtPrev.add(mdiff);
+                    var diff = posOnSVG.subtract(mm);
+                    whiskers[platformNum] = [midPtPrev.add(diff), midPtNext.add(diff)];
+                } else {
+                    whiskers[platformNum] = [posOnSVG, posOnSVG];
+                }
+                if (circular && circular.indexOf(platform) > -1) {
+                    coords.push(posOnSVG);
+                    platformsHavingCircles.add(platformNum);
+                }
+            });
+            if (circular) {
+                var circumcenter = util.getCircumcenter(coords);
+                var circumradius = circumcenter.distanceTo(coords[0]);
+                var circumcircle = svg.makeCircle(circumcenter, circumradius);
+                circumcircle.classList.add('transfer');
+                circumcircle.style.strokeWidth = transferWidth.toString();
+                circumcircle.style.opacity = '0.25';
+                frag['transfers'].appendChild(circumcircle);
+            }
+        };
 
-                for (var stationIndex = 0; stationIndex < _this2.graph.stations.length; ++stationIndex) {
-                    _loop(stationIndex);
-                }
-                for (var i = 0; i < _this2.graph.spans.length; ++i) {
-                    var span = _this2.graph.spans[i];
-                    var srcN = span.source,
-                        trgN = span.target;
-                    var src = _this2.graph.platforms[srcN];
-                    var trg = _this2.graph.platforms[trgN];
-                    var bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][1], whiskers[trgN][0], platformsOnSVG[trgN]]);
-                    var routes = span.routes.map(function (n) {
-                        return _this.graph.routes[n];
-                    });
-                    var matches = routes[0].line.match(/[MEL](\d{1,2})/);
-                    bezier.style.strokeWidth = lineWidth.toString();
-                    if (matches) {
-                        bezier.classList.add(matches[0]);
-                    }
-                    bezier.classList.add(routes[0].line.charAt(0) + '-line');
-                    pathsFrag.appendChild(bezier);
-                }
-                _this2.graph.transfers.forEach(function (tr) {
-                    if (platformsHavingCircles.has(tr.source) && platformsHavingCircles.has(tr.target)) return;
-                    var pl1 = _this.graph.platforms[tr.source];
-                    var pl2 = _this.graph.platforms[tr.target];
-                    var posOnSVG1 = _this.posOnSVG(svgBounds, pl1.location);
-                    var posOnSVG2 = _this.posOnSVG(svgBounds, pl2.location);
-                    var transfer = svg.createSVGElement('line');
-                    transfer.setAttribute('x1', posOnSVG1.x.toString());
-                    transfer.setAttribute('y1', posOnSVG1.y.toString());
-                    transfer.setAttribute('x2', posOnSVG2.x.toString());
-                    transfer.setAttribute('y2', posOnSVG2.y.toString());
-                    transfer.classList.add('transfer');
-                    transfer.style.strokeWidth = transferWidth.toString();
-                    transfer.style.opacity = '0.25';
-                    transfersFrag.appendChild(transfer);
-                });
-            })();
+        for (var stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
+            _loop(stationIndex);
         }
-        stationCircles.appendChild(stationCirclesFrag);
-        dummyCircles.appendChild(dummyCirclesFrag);
-        paths.appendChild(pathsFrag);
-        document.getElementById('transfers').appendChild(transfersFrag);
+        this.graph.transfers.forEach(function (tr) {
+            if (platformsHavingCircles.has(tr.source) && platformsHavingCircles.has(tr.target)) return;
+            var pl1 = _this.graph.platforms[tr.source];
+            var pl2 = _this.graph.platforms[tr.target];
+            var posOnSVG1 = _this.posOnSVG(svgBounds, pl1.location);
+            var posOnSVG2 = _this.posOnSVG(svgBounds, pl2.location);
+            var transfer = svg.createSVGElement('line');
+            transfer.setAttribute('x1', posOnSVG1.x.toString());
+            transfer.setAttribute('y1', posOnSVG1.y.toString());
+            transfer.setAttribute('x2', posOnSVG2.x.toString());
+            transfer.setAttribute('y2', posOnSVG2.y.toString());
+            transfer.classList.add('transfer');
+            transfer.style.strokeWidth = transferWidth.toString();
+            transfer.style.opacity = '0.25';
+            frag['transfers'].appendChild(transfer);
+        });
+        for (var i = 0; i < this.graph.spans.length; ++i) {
+            var span = this.graph.spans[i];
+            var srcN = span.source,
+                trgN = span.target;
+            var src = this.graph.platforms[srcN];
+            var trg = this.graph.platforms[trgN];
+            var bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][1], whiskers[trgN][0], platformsOnSVG[trgN]]);
+            var routes = span.routes.map(function (n) {
+                return _this.graph.routes[n];
+            });
+            var matches = routes[0].line.match(/[MEL](\d{1,2})/);
+            bezier.style.strokeWidth = lineWidth.toString();
+            if (matches) {
+                bezier.classList.add(matches[0]);
+            }
+            bezier.classList.add(routes[0].line.charAt(0) + '-line');
+            frag['paths'].appendChild(bezier);
+        }
+        Object.keys(frag).forEach(function (i) {
+            return document.getElementById(i).appendChild(frag[i]);
+        });
     };
     return MetroMap;
 })();

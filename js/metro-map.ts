@@ -213,14 +213,12 @@ class MetroMap {
         this.refillSVG();
         this.updatePos();
         
-        let stationCirclesFrag = document.createDocumentFragment();
-        let dummyCirclesFrag = document.createDocumentFragment();
-        let pathsFrag = document.createDocumentFragment();
-        let transfersFrag = document.createDocumentFragment();
-        let stationCircles = document.getElementById('station-circles');
-        let dummyCircles = document.getElementById('dummy-circles');
-        let transfers = document.getElementById('transfers');
-        let paths = document.getElementById('paths');
+        let frag = {
+            'station-circles': document.createDocumentFragment(),
+            'dummy-circles': document.createDocumentFragment(),
+            'transfers': document.createDocumentFragment(),
+            'paths': document.createDocumentFragment(),
+        };
 
         let whiskers = new Array<L.Point[]>(this.graph.platforms.length);
 
@@ -228,57 +226,27 @@ class MetroMap {
         const nw = this.bounds.getNorthWest();
         const se = this.bounds.getSouthEast();
         let svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
-        if (zoom < 10) {
+        let posTransform = zoom < 12
+            ? platform => this.posOnSVG(svgBounds, this.graph.stations[platform.station].location)
+            : platform => this.posOnSVG(svgBounds, platform.location);
+        let platformsOnSVG = this.graph.platforms.map(posTransform);
 
-        //} else if (zoom < 12) {
-        //    // elements style parameters
-        //    const lineWidth = (zoom - 7) * 0.5;
-        //    const circleRadius = lineWidth * 1.25;
-        //    const circleBorder = circleRadius * 0.4;
-        //
-        //    let transfers = document.getElementById('transfers');
-        //
-        //    for (let stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
-        //        let station = this.graph.stations[stationIndex];
-        //        let pos = this.map.latLngToContainerPoint(station.location);
-        //        let posOnSVG = pos.subtract(svgBounds.min);
-        //        let ci = svg.makeCircle(posOnSVG, circleRadius);
-        //        svg.convertToStation(ci, 's-' + stationIndex, station, circleBorder);
-        //
-        //        stationCircles.appendChild(ci);
-        //
-        //        let dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
-        //        dummyCircle.classList.add('invisible-circle');
-        //        dummyCircle.setAttribute('data-stationId', ci.id);
-        //        //dummyCircle.dataset['stationId'] = ci.id;
-        //        
-        //        dummyCircle.onmouseover = this.showPlate;
-        //        dummyCirclesFrag.appendChild(dummyCircle);
-        //        //dummyCircle.onmouseout = e => this.overlay.removeChild(document.getElementById('plate'));
-        //
-        //    }
-        } else {
-            const lineWidth = (zoom - 7) * 0.5;
-            const circleRadius = zoom < 12 ? lineWidth * 1.25 : lineWidth;
-            const circleBorder = circleRadius * 0.4;
-            const transferWidth = lineWidth;
-            
-            let platformsHavingCircles = new Set<number>();
-            
-            let posTransform = zoom < 12
-                ? platform => this.posOnSVG(svgBounds, this.graph.stations[platform.station].location)
-                : platform => this.posOnSVG(svgBounds, platform.location);
+        const lineWidth = (zoom - 7) * 0.5;
+        const circleRadius = zoom < 12 ? lineWidth * 1.25 : lineWidth;
+        const circleBorder = circleRadius * 0.4;
+        const transferWidth = lineWidth;
+        
+        let platformsHavingCircles = new Set<number>();
+        
+        for (let stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
+            let station = this.graph.stations[stationIndex];
+            let circular = util.findCircle(this.graph, station);
+            let coords: L.Point[] = [];
+            station.platforms.forEach(platformNum => {
+                const platform = this.graph.platforms[platformNum];
+                const posOnSVG = platformsOnSVG[platformNum];
                 
-            let platformsOnSVG = this.graph.platforms.map(posTransform);
-            
-            for (let stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
-                let station = this.graph.stations[stationIndex];
-                let circular = util.findCircle(this.graph, station);
-                let coords: L.Point[] = [];
-                station.platforms.forEach(platformNum => {
-                    const platform = this.graph.platforms[platformNum];
-                    const posOnSVG = platformsOnSVG[platformNum];
-
+                if (zoom > 9) {
                     let ci = svg.makeCircle(posOnSVG, circleRadius);
                     svg.convertToStation(ci, 'p-' + platformNum, platform, circleBorder);
                     ci.setAttribute('data-station', stationIndex.toString());
@@ -288,121 +256,117 @@ class MetroMap {
                     dummyCircle.classList.add('invisible-circle');
                     //dummyCircle.dataset['platformId'] = ci.id;
                     dummyCircle.setAttribute('data-platformId', ci.id);
-                    stationCirclesFrag.appendChild(ci);
-                    dummyCirclesFrag.appendChild(dummyCircle);
+                    frag['station-circles'].appendChild(ci);
+                    frag['dummy-circles'].appendChild(dummyCircle);
 
                     dummyCircle.onmouseover = this.showPlate;
                     //dummyCircle.onmouseout = e => this.overlay.removeChild(document.getElementById('plate'));
-                    
-                    // control points
-                    if (platform.spans.length === 2) {
-                        let midPts = [posOnSVG, posOnSVG];
-                        let lens = [0, 0];
-                        let firstSpan = this.graph.spans[platform.spans[0]];
-                        if (firstSpan.source === platformNum) {
-                            platform.spans.reverse();
-                        }
-                        // previous node should come first
-                        for (let i = 0; i < 2; ++i) {
-                            let span = this.graph.spans[platform.spans[i]];
-                            let neighborNum = (span.source === platformNum) ? span.target : span.source;
-                            let neighbor = this.graph.platforms[neighborNum];
-                            let neighborOnSVG = platformsOnSVG[neighborNum]
-                            lens[i] = posOnSVG.distanceTo(neighborOnSVG);
-                            midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
-                        }
-                        let mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
-                        let mm = midPts[0].add(mdiff);
-                        let diff = posOnSVG.subtract(mm);
-                        whiskers[platformNum] = midPts.map(midPt => midPt.add(diff));
-                    } else if (platform.spans.length === 3) {
-                        let midPts = [posOnSVG, posOnSVG];
-                        let lens = [0, 0];
-
-                        let nexts: L.Point[] = [], prevs: L.Point[] = [];
-                        for (let i = 0; i < 3; ++i) {
-                            let span = this.graph.spans[platform.spans[i]];
-                            //(span.source === platformNum ? outSpans : inSpans).push(span);
-                            if (span.source === platformNum) {
-                                let neighbor = this.graph.platforms[span.target];
-                                let neighborPos = platformsOnSVG[span.target];
-                                nexts.push(neighborPos);
-                            } else {
-                                let neighbor = this.graph.platforms[span.source];
-                                let neighborPos = platformsOnSVG[span.source];
-                                prevs.push(neighborPos);
-                            }
-                            //(span.source === platformNum ? nextNeighbors : prevNeighbors).push(span);
-                        }
-                        let prev = (prevs.length === 1) ? prevs[0] : prevs[0].add(prevs[1]).divideBy(2);
-                        let next = (nexts.length === 1) ? nexts[0] : nexts[0].add(nexts[1]).divideBy(2);
-                        let distToPrev = posOnSVG.distanceTo(prev), distToNext = posOnSVG.distanceTo(next);
-                        let midPtPrev = posOnSVG.add(prev).divideBy(2), midPtNext = posOnSVG.add(next).divideBy(2);
-                        let mdiff = midPtNext.subtract(midPtPrev).multiplyBy(distToPrev / (distToPrev + distToNext));
-                        let mm = midPtPrev.add(mdiff);
-                        let diff = posOnSVG.subtract(mm);
-                        whiskers[platformNum] = [midPtPrev.add(diff), midPtNext.add(diff)];
-                    } else {
-                        whiskers[platformNum] = [posOnSVG, posOnSVG];
-                    }
-                    
-                    if (circular && circular.indexOf(platform) > -1) {
-                        coords.push(posOnSVG);
-                        platformsHavingCircles.add(platformNum);
-                    }
-
-                });
-
-                if (circular) {
-                    const circumcenter = util.getCircumcenter(coords);
-                    const circumradius = circumcenter.distanceTo(coords[0]);
-                    let circumcircle = svg.makeCircle(circumcenter, circumradius);
-                    circumcircle.classList.add('transfer');
-                    circumcircle.style.strokeWidth = transferWidth.toString();
-                    circumcircle.style.opacity = '0.25';
-                    transfersFrag.appendChild(circumcircle);
                 }
-            }
+                
+                // control points
+                if (platform.spans.length === 2) {
+                    let midPts = [posOnSVG, posOnSVG];
+                    let lens = [0, 0];
+                    let firstSpan = this.graph.spans[platform.spans[0]];
+                    if (firstSpan.source === platformNum) {
+                        platform.spans.reverse();
+                    }
+                    // previous node should come first
+                    for (let i = 0; i < 2; ++i) {
+                        let span = this.graph.spans[platform.spans[i]];
+                        let neighborNum = (span.source === platformNum) ? span.target : span.source;
+                        let neighbor = this.graph.platforms[neighborNum];
+                        let neighborOnSVG = platformsOnSVG[neighborNum]
+                        lens[i] = posOnSVG.distanceTo(neighborOnSVG);
+                        midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
+                    }
+                    let mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
+                    let mm = midPts[0].add(mdiff);
+                    let diff = posOnSVG.subtract(mm);
+                    whiskers[platformNum] = midPts.map(midPt => midPt.add(diff));
+                } else if (platform.spans.length === 3) {
+                    let midPts = [posOnSVG, posOnSVG];
+                    let lens = [0, 0];
 
-            for (let i = 0; i < this.graph.spans.length; ++i) {
-                let span = this.graph.spans[i];
-                let srcN = span.source, trgN = span.target;
-                let src = this.graph.platforms[srcN];
-                let trg = this.graph.platforms[trgN];
-                let bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][1], whiskers[trgN][0], platformsOnSVG[trgN]]);
-                let routes = span.routes.map(n => this.graph.routes[n]);
-                let matches = routes[0].line.match(/[MEL](\d{1,2})/);
-                bezier.style.strokeWidth = lineWidth.toString();
-                if (matches) {
-                    bezier.classList.add(matches[0]);
+                    let nexts: L.Point[] = [], prevs: L.Point[] = [];
+                    for (let i = 0; i < 3; ++i) {
+                        let span = this.graph.spans[platform.spans[i]];
+                        //(span.source === platformNum ? outSpans : inSpans).push(span);
+                        if (span.source === platformNum) {
+                            let neighbor = this.graph.platforms[span.target];
+                            let neighborPos = platformsOnSVG[span.target];
+                            nexts.push(neighborPos);
+                        } else {
+                            let neighbor = this.graph.platforms[span.source];
+                            let neighborPos = platformsOnSVG[span.source];
+                            prevs.push(neighborPos);
+                        }
+                        //(span.source === platformNum ? nextNeighbors : prevNeighbors).push(span);
+                    }
+                    let prev = (prevs.length === 1) ? prevs[0] : prevs[0].add(prevs[1]).divideBy(2);
+                    let next = (nexts.length === 1) ? nexts[0] : nexts[0].add(nexts[1]).divideBy(2);
+                    let distToPrev = posOnSVG.distanceTo(prev), distToNext = posOnSVG.distanceTo(next);
+                    let midPtPrev = posOnSVG.add(prev).divideBy(2), midPtNext = posOnSVG.add(next).divideBy(2);
+                    let mdiff = midPtNext.subtract(midPtPrev).multiplyBy(distToPrev / (distToPrev + distToNext));
+                    let mm = midPtPrev.add(mdiff);
+                    let diff = posOnSVG.subtract(mm);
+                    whiskers[platformNum] = [midPtPrev.add(diff), midPtNext.add(diff)];
+                } else {
+                    whiskers[platformNum] = [posOnSVG, posOnSVG];
                 }
-                bezier.classList.add(routes[0].line.charAt(0) + '-line');
-                pathsFrag.appendChild(bezier);
-            }
+                
+                if (circular && circular.indexOf(platform) > -1) {
+                    coords.push(posOnSVG);
+                    platformsHavingCircles.add(platformNum);
+                }
 
-            this.graph.transfers.forEach(tr => {
-                if (platformsHavingCircles.has(tr.source) && platformsHavingCircles.has(tr.target)) return;
-                const pl1 = this.graph.platforms[tr.source];
-                const pl2 = this.graph.platforms[tr.target];
-                const posOnSVG1 = this.posOnSVG(svgBounds, pl1.location);
-                const posOnSVG2 = this.posOnSVG(svgBounds, pl2.location);
-                let transfer = svg.createSVGElement('line');
-                transfer.setAttribute('x1', posOnSVG1.x.toString());
-                transfer.setAttribute('y1', posOnSVG1.y.toString());
-                transfer.setAttribute('x2', posOnSVG2.x.toString());
-                transfer.setAttribute('y2', posOnSVG2.y.toString());
-                transfer.classList.add('transfer');
-                transfer.style.strokeWidth = transferWidth.toString();
-                transfer.style.opacity = '0.25';
-                transfersFrag.appendChild(transfer);
             });
 
+            if (circular) {
+                const circumcenter = util.getCircumcenter(coords);
+                const circumradius = circumcenter.distanceTo(coords[0]);
+                let circumcircle = svg.makeCircle(circumcenter, circumradius);
+                circumcircle.classList.add('transfer');
+                circumcircle.style.strokeWidth = transferWidth.toString();
+                circumcircle.style.opacity = '0.25';
+                frag['transfers'].appendChild(circumcircle);
+            }
         }
 
-        stationCircles.appendChild(stationCirclesFrag);
-        dummyCircles.appendChild(dummyCirclesFrag);
-        paths.appendChild(pathsFrag);
-        document.getElementById('transfers').appendChild(transfersFrag);
+        this.graph.transfers.forEach(tr => {
+            if (platformsHavingCircles.has(tr.source) && platformsHavingCircles.has(tr.target)) return;
+            const pl1 = this.graph.platforms[tr.source];
+            const pl2 = this.graph.platforms[tr.target];
+            const posOnSVG1 = this.posOnSVG(svgBounds, pl1.location);
+            const posOnSVG2 = this.posOnSVG(svgBounds, pl2.location);
+            let transfer = svg.createSVGElement('line');
+            transfer.setAttribute('x1', posOnSVG1.x.toString());
+            transfer.setAttribute('y1', posOnSVG1.y.toString());
+            transfer.setAttribute('x2', posOnSVG2.x.toString());
+            transfer.setAttribute('y2', posOnSVG2.y.toString());
+            transfer.classList.add('transfer');
+            transfer.style.strokeWidth = transferWidth.toString();
+            transfer.style.opacity = '0.25';
+            frag['transfers'].appendChild(transfer);
+        });
+
+        for (let i = 0; i < this.graph.spans.length; ++i) {
+            let span = this.graph.spans[i];
+            let srcN = span.source, trgN = span.target;
+            let src = this.graph.platforms[srcN];
+            let trg = this.graph.platforms[trgN];
+            let bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][1], whiskers[trgN][0], platformsOnSVG[trgN]]);
+            let routes = span.routes.map(n => this.graph.routes[n]);
+            let matches = routes[0].line.match(/[MEL](\d{1,2})/);
+            bezier.style.strokeWidth = lineWidth.toString();
+            if (matches) {
+                bezier.classList.add(matches[0]);
+            }
+            bezier.classList.add(routes[0].line.charAt(0) + '-line');
+            frag['paths'].appendChild(bezier);
+        }
+        
+        Object.keys(frag).forEach(i => document.getElementById(i).appendChild(frag[i]));
 
     }
 }
