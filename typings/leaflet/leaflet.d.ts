@@ -3278,7 +3278,7 @@ declare module L {
         /**
           * Sets the pointer-events attribute on the path if SVG backend is used.
           */
-        pointerEvents?: string;
+        pointerEvents?: boolean;
 
         /**
           * Custom class name set on an element.

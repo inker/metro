@@ -61,9 +61,9 @@ gulp.task('client-transpile-merge-compress', function() {
         .bundle()
         // writes to bundle.js
         .pipe(source('script.js'))
-        .pipe(buffer())
+        //.pipe(buffer())
         // compress it
-        .pipe(uglify())
+        //.pipe(uglify())
         // copy to destination
         .pipe(gulp.dest('./js/'));
     //es.merge(null, [gulp.src('./public/js/leaflet.js'), b]).pipe(gulp.dest('./public/js/'));

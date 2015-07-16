@@ -1,23 +1,19 @@
 /// <reference path="./../typings/tsd.d.ts" />
 import L = require('leaflet');
+import po = require('../plain-objects');
 
 export function getUserLanguage(): string {
-    let userLanguage = (navigator.userLanguage || navigator.language).substr(0, 2).toLowerCase();
-    return (['ru', 'fi'].indexOf(userLanguage) > -1) ? userLanguage : 'en';
+    return (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();
 }
 
 export function parseTransform(val: string): L.Point {
-    const matches = val.match(/translate3d\((-?\d+)px,\s?(-?\d+)px,\s?(-?\d+)px\)/i);
-    return (matches) ? new L.Point(Number(matches[1]), Number(matches[2])) : new L.Point(0, 0);
+    const matches = val.match(/translate(3d)?\((-?\d+).*?,\s?(-?\d+).*?(,\s?(-?\d+).*?)?\)/i);
+    return matches ? new L.Point(Number(matches[2]), Number(matches[3])) : new L.Point(0, 0);
 }
 
-export function findCircle(graph: {platforms: {transfers: number[]}[]}, station: {platforms: number[]}): {transfers: number[]}[] {
-    let platforms = [];
-    station.platforms.forEach(platformNum => platforms.push(graph.platforms[platformNum]));
-    if (platforms.length === 3 && platforms.every(platform => platform.transfers.length === 2)) {
-        return platforms;
-    }
-    return null;
+export function findCircle(graph: po.Graph, station: po.Station): po.Platform[] {
+    let platforms = station.platforms.map(platformNum => graph.platforms[platformNum]);
+    return (platforms.length === 3 && platforms.every(platform => platform.transfers.length === 2)) ? platforms : null;
 }
 
 export function getCircumcenter(positions: L.Point[]): L.Point {
@@ -27,11 +23,45 @@ export function getCircumcenter(positions: L.Point[]): L.Point {
     console.log(positions[1]);
     const b = positions[1].subtract(positions[0]);
     const c = positions[2].subtract(positions[0]);
-    const bSq = b.x * b.x + b.y * b.y;
-    const cSq = c.x * c.x + c.y * c.y;
-    return new L.Point((c.y * bSq - b.y * cSq), (b.x * cSq - c.x * bSq))
+    const bb = b.x * b.x + b.y * b.y;
+    const cc = c.x * c.x + c.y * c.y;
+    return new L.Point((c.y * bb - b.y * cc), (b.x * cc - c.x * bb))
         .divideBy(2.0 * (b.x * c.y - b.y * c.x))
         .add(positions[0]);
+}
+
+export function getSVGDataset(el: Element): any {
+    // for webkit-based browsers
+    if (el['dataset']) {
+        return el['dataset'];
+    }
+    // for the rest
+    const attrs = el.attributes;
+    let dataset = {};
+    for (let i = 0; i < attrs.length; ++i) {
+        let attr = attrs[i].name;
+        if (attr.startsWith('data-')) {
+            dataset[attr.slice(5)] = el.getAttribute(attr);
+        }
+    }
+    return dataset;
+}
+
+export function setSVGDataset(el: Element, dataset: any): void {
+    Object.keys(dataset).forEach(key => el.setAttribute('data-' + key, dataset[key]));
+}
+
+export let englishStationNames = {
+    'Centraľnyj voxal': 'Central Raiway Station',
+    'Aeroport': 'Airport'
+}
+
+export function dot(a: L.Point, b: L.Point): number {
+    return a.x * b.x + a.y * b.y;
+}
+
+export function angle(v1: L.Point, v2: L.Point): number {
+    return dot(v1, v2) / v1.distanceTo(v2);
 }
 
 //export function getSegmentLength(source: L.Point, target: L.Point): number {

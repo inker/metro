@@ -2535,7 +2535,6 @@ declare module d3 {
 
             tickFormat(): (t: any) => string;
             tickFormat(format: (t: any) => string): Axis;
-            tickFormat(format:string): Axis;
         }
 
         export function brush(): Brush<any>;

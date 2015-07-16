@@ -1,1 +1,656 @@
-!function t(e,r,n){function a(i,s){if(!r[i]){if(!e[i]){var l="function"==typeof require&&require;if(!s&&l)return l(i,!0);if(o)return o(i,!0);var u=new Error("Cannot find module '"+i+"'");throw u.code="MODULE_NOT_FOUND",u}var c=r[i]={exports:{}};e[i][0].call(c.exports,function(t){var r=e[i][1][t];return a(r?r:t)},c,c.exports,t,e,r,n)}return r[i].exports}for(var o="function"==typeof require&&require,i=0;i<n.length;i++)a(n[i]);return a}({1:[function(t,e,r){"use strict";var n=t("./metro-map"),a=function(){return new L.TileLayer("https://{s}.tiles.mapbox.com/v3/inker.km1inchd/{z}/{x}/{y}.png",{minZoom:9,id:"inker.km1inchd",reuseTiles:!0,bounds:null,attribution:'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://mapbox.com">Mapbox</a>'})}(),o=function(){return new L.TileLayer("http://openmapsurfer.uni-hd.de/tiles/roads/x={x}&y={y}&z={z}",{minZoom:9,reuseTiles:!0,attribution:'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'})}(),i=new n("map-container",function(t){return 15>t?a:o});i.getGraphAndFillMap()},{"./metro-map":2}],2:[function(t,e,r){"use strict";var n=window.L,a=t("./svg"),o=t("./util"),i=function(){function t(t,e){var r=11;this.tileLayersForZoom=e,this._tileLayer=e(11),this.map=new n.Map(t,{inertia:!1}).addLayer(this._tileLayer).setView(new n.LatLng(60,30),r).addControl(new n.Control.Scale({imperial:!1})),console.log("map should be created by now"),this.overlay=document.getElementById("overlay"),this.overlay.id="overlay",this.overlay.style.fill="white",this.overlay.style.zIndex="10",this.addListeners()}return t.prototype.addListeners=function(){var t=this,e=this.map.getPanes().mapPane,r=void 0;this.map.on("movestart",function(e){return t.map.touchZoom.disable()}),this.map.on("move",function(r){return t.overlay.style.transform=e.style.transform}),this.map.on("moveend",function(e){t.exTranslate=o.parseTransform(t.overlay.style.transform),t.map.touchZoom.enable()}),this.map.on("zoomstart",function(e){t.map.dragging.disable(),r=t.map.getZoom(),t.overlay.style.opacity="0.5"}),this.map.on("zoomend",function(e){var n=t.tileLayersForZoom(t.map.getZoom());t.tileLayersForZoom(r)!=n&&(t.tileLayer=n),t.redrawNetwork(),t.overlay.style.opacity=null,t.map.dragging.enable()})},t.prototype.refillSVG=function(){for(var t=this,e=void 0;e=this.overlay.firstChild;)this.overlay.removeChild(e);["paths","transfers","station-circles","dummy-circles"].forEach(function(e){var r=a.createSVGElement("g");r.id=e,t.overlay.appendChild(r)});var r=document.getElementById("transfers");r.classList.add("transfer")},t.prototype.getGraphAndFillMap=function(){var t=this,e=new XMLHttpRequest;e.onreadystatechange=function(){if(4===e.readyState){if(200!==e.status)return console.error("couldn't fetch the graph:\n"+e.status+": "+e.statusText);t.graph=JSON.parse(e.responseText),t.extendBounds(),t.map.setView(t.bounds.getCenter()),t.map.once("moveend",function(e){return t.redrawNetwork()})}},e.open("GET","json/graph.json",!0),e.setRequestHeader("X-Requested-With","XMLHttpRequest"),e.send()},t.prototype.extendBounds=function(){var t=this,e=this.graph.platforms[0].location;this.bounds=new n.LatLngBounds(e,e),this.graph.platforms.forEach(function(e){return t.bounds.extend(e.location)})},Object.defineProperty(t.prototype,"tileLayer",{get:function(){return this._tileLayer},set:function(t){var e=this;this.map.addLayer(t);var r=this._tileLayer;t.once("load",function(){return e.map.removeLayer(r)}),this._tileLayer=t},enumerable:!0,configurable:!0}),t.prototype.showPlate=function(t){var e=t.target,r=e.dataset,n=document.getElementById(r.platformId||r.stationId),o=a.makePlate(n),i=e.parentNode,s=i.parentNode;e.onmouseout=function(t){return s.removeChild(o)},s.insertBefore(o,i)},t.prototype.posOnSVG=function(t,e){var r=this.map.latLngToContainerPoint(e);return r.subtract(t.min)},t.prototype.redrawNetwork=function(){var t=this,e=this;this.refillSVG(),console.log(o.getUserLanguage()),console.log(this.graph.platforms.length);var r=this.map.getZoom(),i=this.bounds.getNorthWest(),s=this.bounds.getSouthEast(),l=new n.Bounds(this.map.latLngToContainerPoint(i),this.map.latLngToContainerPoint(s));console.log("bounds: "+l.min),console.log(this.overlay.style.transform);var u=o.parseTransform(this.overlay.style.transform);this.overlay.style.left=(l.min.x-u.x).toString()+"px",this.overlay.style.top=(l.min.y-u.y).toString()+"px";var c=l.getSize();this.overlay.style.width=c.x+"px",this.overlay.style.height=c.y+"px";var p=new Array(this.graph.platforms.length),d=document.createDocumentFragment(),m=document.getElementById("station-circles"),h=document.getElementById("dummy-circles");10>r||(12>r?!function(){{var n=.5*(r-7),o=1.25*n,i=.4*o;document.getElementById("transfers")}t.graph.stations.forEach(function(t,r){var n=e.map.latLngToContainerPoint(t.location),s=n.subtract(l.min),u=a.makeCircle(s,o);a.convertToStation(u,"s-"+r,t,i),m.appendChild(u);var c=a.makeCircle(s,2*o);c.classList.add("invisible-circle"),c.dataset.stationId=u.id,h.appendChild(c),c.onmouseover=e.showPlate})}():!function(){var i=.5*(r-7),s=.4*i,u=new Set,c=document.getElementById("transfers");t.graph.stations.forEach(function(t,r){var n=o.findCircle(e.graph,t),m=[];if(t.platforms.forEach(function(t){var c=e.graph.platforms[t],g=e.posOnSVG(l,c.location),f=a.makeCircle(g,i);a.convertToStation(f,"p-"+t.toString(),c,s),f.dataset.station=r.toString();var y=a.makeCircle(g,2*i);if(y.classList.add("invisible-circle"),y.dataset.platformId=f.id,d.appendChild(f),h.appendChild(y),y.onmouseover=e.showPlate,2===c.spans.length){for(var v=[g,g],x=[0,0],b=0;2>b;++b){var S=e.graph.spans[c.spans[b]],w=S.source===t?S.target:S.source,L=e.graph.platforms[w],C=e.posOnSVG(l,L.location);x[b]=o.getSegmentLength(g,C),v[b]=g.add(C).divideBy(2)}var E=v[1].subtract(v[0]).multiplyBy(x[0]/(x[0]+x[1])),A=v[0].add(E),P=g.subtract(A);p[t]=[v[0].add(P),v[1].add(P)]}n&&n.indexOf(c)>-1&&(m.push(g),u.add(t))}),n){var g=o.getCircumcenter(m),f=o.getSegmentLength(g,m[0]),y=a.makeCircle(g,f);y.classList.add("transfer"),y.style.strokeWidth=s.toString(),y.style.opacity="0.5",c.appendChild(y)}document.getElementById("station-circles").appendChild(d)});for(var m=0;m<t.graph.spans.length;++m){var g=t.graph.spans[m],f=t.graph.platforms[g.source],y=t.graph.platforms[g.target],v=f,x=y;if(2===f.spans.length){var b=m==f.spans[0]?f.spans[1]:f.spans[0],S=t.graph.spans[b],w=S.source==g.source?S.target:S.source;v=t.graph.platforms[w]}if(2===y.spans.length){var b=m==y.spans[0]?y.spans[1]:y.spans[0],S=t.graph.spans[b],L=S.source==g.target?S.target:S.source;x=t.graph.platforms[L]}{[v,f,y,x].map(function(t){return e.map.latLngToContainerPoint(t.location)}).map(function(t){return new n.Point(t.x-l.min.x,t.y-l.min.y)})}}t.graph.transfers.forEach(function(t){if(!u.has(t.source)||!u.has(t.target)){var r=e.graph.platforms[t.source],n=e.graph.platforms[t.target],o=e.posOnSVG(l,r.location),i=e.posOnSVG(l,n.location),c=a.createSVGElement("line");c.setAttribute("x1",o.x.toString()),c.setAttribute("y1",o.y.toString()),c.setAttribute("x2",i.x.toString()),c.setAttribute("y2",i.y.toString()),c.classList.add("transfer"),c.style.strokeWidth=s.toString(),c.style.opacity="0.5",document.getElementById("transfers").appendChild(c)}})}())},t}();e.exports=i},{"./svg":3,"./util":4}],3:[function(t,e,r){"use strict";function n(t,e){var r=i("circle");return r.setAttribute("r",e.toString()),r.setAttribute("cy",t.y.toString()),r.setAttribute("cx",t.x.toString()),r}function a(t,e,r,n){t.id=e,t.classList.add("station-circle"),t.style.strokeWidth=n.toString(),t.dataset.lat=r.location.lat.toString(),t.dataset.lng=r.location.lng.toString(),t.dataset.ru=r.name,t.dataset.fi=r.altName}function o(t){if(4!==t.length)throw new Error("there should be 4 points");var e=i("path"),r=t.reduce(function(t,e,r){return""+t+(1===r?"C":" ")+e.x+","+e.y},"M");return e.setAttribute("d",r),e}function i(t){return document.createElementNS("http://www.w3.org/2000/svg",t)}function s(t){var e=u.createSVGElement("g"),r=u.createSVGElement("line"),n=new l.Point(Number(t.getAttribute("cx")),Number(t.getAttribute("cy"))),a=(Number(t.getAttribute("r")),new l.Point(4,8)),o=new l.Bounds(n,n.subtract(a));r.setAttribute("x1",o.min.x.toString()),r.setAttribute("y1",o.min.y.toString()),r.setAttribute("x2",o.max.x.toString()),r.setAttribute("y2",o.max.y.toString()),r.classList.add("plate-pole");var i=t.dataset.ru,s=t.dataset.fi,p=s?Math.max(i.length,s.length):i.length,d=u.createSVGElement("rect"),m=12,h=new l.Point(10+6*p,s?18+m:18);d.setAttribute("width",h.x.toString()),d.setAttribute("height",h.y.toString());var g=o.min.subtract(h);d.setAttribute("x",g.x.toString()),d.setAttribute("y",g.y.toString()),d.classList.add("plate-box");var f=u.createSVGElement("text"),y=u.createSVGElement("tspan"),v=n.subtract(new l.Point(3,h.y-12)).subtract(o.getSize());y.setAttribute("x",v.x.toString()),y.setAttribute("y",v.y.toString());var x=y.cloneNode();return x.setAttribute("y",(v.y+m).toString()),"fi"===c.getUserLanguage()?(y.textContent=s,x.textContent=i):(y.textContent=i,x.textContent=s),f.setAttribute("fill","black"),f.appendChild(y),f.appendChild(x),f.classList.add("plate-text"),e.appendChild(d),e.appendChild(r),e.appendChild(f),e.id="plate",e}var l=window.L,u=t("./svg"),c=t("./util");r.makeCircle=n,r.convertToStation=a,r.makeCubicBezier=o,r.createSVGElement=i,r.makePlate=s},{"./svg":3,"./util":4}],4:[function(t,e,r){"use strict";function n(){var t=(navigator.userLanguage||navigator.language).substr(0,2).toLowerCase();return["ru","fi"].indexOf(t)>-1?t:"en"}function a(t){var e=t.match(/translate3d\((-?\d+)px,\s?(-?\d+)px,\s?(-?\d+)px\)/i);return e?new l.Point(Number(e[1]),Number(e[2])):new l.Point(0,0)}function o(t,e){var r=[];return e.platforms.forEach(function(e){return r.push(t.platforms[e])}),3===r.length&&r.every(function(t){return 2===t.transfers.length})?r:null}function i(t){if(3!=t.length)throw new Error("must have 3 vertices");console.log(t[1]);var e=t[1].subtract(t[0]),r=t[2].subtract(t[0]);return new l.Point(r.y*(e.x*e.x+e.y*e.y)-e.y*(r.x*r.x+r.y*r.y),e.x*(r.x*r.x+r.y*r.y)-r.x*(e.x*e.x+e.y*e.y)).divideBy(2*(e.x*r.y-e.y*r.x)).add(t[0])}function s(t,e){var r=e.subtract(t);return Math.sqrt(r.x*r.x+r.y*r.y)}var l=window.L;r.getUserLanguage=n,r.parseTransform=a,r.findCircle=o,r.getCircumcenter=i,r.getSegmentLength=s},{}]},{},[1]);
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
+var LayerControl = (function () {
+    function LayerControl(metroMap, tileLayers, otherLayers) {
+        var layerControl = L.control['UniForm'](tileLayers, otherLayers || null, {
+            collapsed: false,
+            position: 'topright'
+        });
+        // add control widget to map and html dom.
+        layerControl.addTo(metroMap.getMap());
+        // update the control widget to the specific theme.
+        layerControl.renderUniformControl();
+    }
+    return LayerControl;
+})();
+exports.LayerControl = LayerControl;
+var Measurement = (function () {
+    function Measurement(metroMap) {
+        var overlay = metroMap.getOverlay();
+        var map = metroMap.getMap();
+        var polyline = new L.Polyline([], { color: 'red' });
+        polyline.addTo(map);
+        var marker = new L.CircleMarker([60, 30]);
+        var text = '0m';
+        //marker.on('mouseover', e => popup.)
+        overlay.addEventListener('click', function (e) {
+            if (!e.shiftKey) return;
+            var pt = map.containerPointToLatLng(new L.Point(e.x, e.y));
+            polyline.addLatLng(pt).redraw();
+            marker.on('mouseout', function (e) {
+                return marker.closePopup();
+            });
+            //.on('dblclick', e => {
+            //    polyline.setLatLngs([]).redraw();
+            //    this.map.removeLayer(marker);
+            //})
+            marker.addTo(map);
+            var pts = polyline.getLatLngs();
+            if (pts.length > 1) {
+                var distance = 0;
+                for (var i = 1; i < pts.length; ++i) {
+                    distance += pts[i - 1].distanceTo(pts[i]);
+                }
+                L.popup().setLatLng(pt).setContent('Popup').openOn(map);
+            }
+        });
+    }
+    return Measurement;
+})();
+exports.Measurement = Measurement;
+
+
+},{}],2:[function(require,module,exports){
+'use strict';
+
+var MetroMap = require('./metro-map');
+//import MetroMap from './metro-map';
+var mapbox = (function () {
+    return new L.TileLayer('https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png', {
+        minZoom: 9,
+        id: 'inker.mlo91c41',
+        //detectRetina: true,
+        reuseTiles: true,
+        bounds: null,
+        attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://mapbox.com">Mapbox</a>'
+    });
+})();
+var openMapSurfer = (function () {
+    return new L.TileLayer('http://openmapsurfer.uni-hd.de/tiles/roads/x={x}&y={y}&z={z}', {
+        minZoom: 9,
+        reuseTiles: true,
+        attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    });
+})();
+var metroMap = new MetroMap('map-container', 'json/graph.json', {
+    'Mapbox': mapbox,
+    'OpenMapSurfer': openMapSurfer
+});
+(function () {
+    var titles = ['Plan metro Sankt-Peterburga', 'Pietarin metron hankesuunnitelma', 'St Petersburg metro plan proposal'];
+    var i = 0;
+    setInterval(function () {
+        return document.title = titles[++i % titles.length];
+    }, 3000);
+})();
+console.log('user: ' + navigator.userLanguage);
+console.log('language: ' + navigator.language);
+console.log('browser: ' + navigator.browserLanguage);
+console.log('system: ' + navigator.systemLanguage);
+
+
+},{"./metro-map":3}],3:[function(require,module,exports){
+'use strict';
+
+var L = window.L;
+var svg = require('./svg');
+var util = require('./util');
+var addons = require('./addons');
+var MetroMap = (function () {
+    function MetroMap(containerId, kml, tileLayers) {
+        var _this = this;
+        var graphPromise = this.fetch(kml);
+        var hintsPromise = this.fetch('json/hints.json');
+        this.map = new L.Map(containerId, { inertia: false }).addLayer(tileLayers['Mapbox'] || tileLayers[Object.keys(tileLayers).toString()]).setView(new L.LatLng(60, 30), 11).addControl(new L.Control.Scale({ imperial: false }));
+        new addons.LayerControl(this, tileLayers);
+        //L.Control['measureControl']().addTo(this.map);
+        console.log('map should be created by now');
+        this.addOverlay();
+        //this.refillSVG(); not required here
+        this.addListeners();
+        graphPromise.then(function (graphText) {
+            return _this.handleJSON(graphText);
+        }).then(function () {
+            return hintsPromise;
+        }).then(function (hintsText) {
+            return _this.appendHintsToGraph(hintsText);
+        }).then(function () {
+            return _this.redrawNetwork();
+        })['catch'](function (text) {
+            return alert(text);
+        });
+    }
+    MetroMap.prototype.getMap = function () {
+        return this.map;
+    };
+    MetroMap.prototype.getOverlay = function () {
+        return this.overlay;
+    };
+    MetroMap.prototype.addOverlay = function () {
+        //this.map.getPanes().mapPane.innerHTML = '<svg id="overlay"></svg>' + this.map.getPanes().mapPane.innerHTML;
+        this.overlay = document.getElementById('overlay');
+        this.overlay.id = 'overlay';
+        this.overlay.style.fill = 'white';
+        this.overlay.style.zIndex = '10';
+    };
+    MetroMap.prototype.addListeners = function () {
+        var _this = this;
+        var mapPane = this.map.getPanes().mapPane;
+        var prevZoom = undefined;
+        this.map.on('movestart', function (e) {
+            return _this.map.touchZoom.disable();
+        });
+        this.map.on('move', function (e) {
+            return _this.overlay.style.transform = mapPane.style.transform;
+        });
+        this.map.on('moveend', function (e) {
+            _this.map.touchZoom.enable();
+            var t3d = util.parseTransform(mapPane.style.transform);
+            _this.overlay.style.transform = mapPane.style.transform = 'translate(' + t3d.x + 'px, ' + t3d.y + 'px)';
+        });
+        this.map.on('zoomstart', function (e) {
+            _this.map.dragging.disable();
+            prevZoom = _this.map.getZoom();
+            //this.overlay.classList.add('leaflet-zoom-anim');
+            _this.overlay.style.opacity = '0.5';
+        });
+        this.map.on('zoomend', function (e) {
+            _this.redrawNetwork();
+            //this.overlay.classList.remove('leaflet-zoom-anim');
+            _this.overlay.style.opacity = null;
+            _this.map.dragging.enable();
+        });
+    };
+    MetroMap.prototype.fetch = function (resource) {
+        return new Promise(function (resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState !== 4) return;
+                if (xhr.status === 200) {
+                    resolve(xhr.responseText);
+                } else {
+                    reject('couldn\'t fetch ' + resource + ': ' + xhr.status + ': ' + xhr.statusText);
+                }
+            };
+            xhr.open('GET', resource, true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.send();
+        });
+    };
+    MetroMap.prototype.handleJSON = function (json) {
+        //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
+        //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
+        this.graph = JSON.parse(json);
+        this.extendBounds();
+        this.map.setView(this.bounds.getCenter(), 11, {
+            pan: { animate: false },
+            zoom: { animate: false }
+        });
+    };
+    MetroMap.prototype.appendHintsToGraph = function (json) {
+        this.graph.hints = JSON.parse(json);
+        console.log(this.graph.hints);
+    };
+    MetroMap.prototype.refillSVG = function () {
+        var child = undefined;
+        while (child = this.overlay.firstChild) {
+            this.overlay.removeChild(child);
+        }
+        var defs = svg.createSVGElement('defs');
+        defs.id = 'defs';
+        defs.appendChild(svg.makeDropShadow());
+        this.overlay.appendChild(defs);
+        // svg element won't work because it does not have negative dimensions (top-left station is partially visible)
+        var origin = svg.createSVGElement('g');
+        origin.id = 'origin';
+        ['paths', 'transfers', 'station-circles', 'dummy-circles'].forEach(function (groupId) {
+            var group = svg.createSVGElement('g');
+            group.id = groupId;
+            origin.appendChild(group);
+        });
+        this.overlay.appendChild(origin);
+        var transfers = document.getElementById('transfers');
+        transfers.classList.add('transfer');
+    };
+    MetroMap.prototype.extendBounds = function () {
+        var _this = this;
+        var a = this.graph.platforms[0].location;
+        this.bounds = new L.LatLngBounds(a, a);
+        this.graph.platforms.forEach(function (platform) {
+            return _this.bounds.extend(platform.location);
+        });
+    };
+    MetroMap.prototype.showPlate = function (event) {
+        var dummyCircle = event.target;
+        var dataset = util.getSVGDataset(dummyCircle);
+        //const dataset = dummyCircle.dataset;
+        var circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
+        var g = svg.makePlate(circle);
+        var dummyCircles = dummyCircle.parentNode;
+        var container = dummyCircles.parentNode;
+        dummyCircle.onmouseout = function (e) {
+            return container.removeChild(g);
+        };
+        container.insertBefore(g, dummyCircles);
+    };
+    /**
+     *
+     * @param SVGBounds
+     * @param location
+     * @returns {Point}
+     */
+    MetroMap.prototype.posOnSVG = function (SVGBounds, location) {
+        var pos = this.map.latLngToContainerPoint(location);
+        return pos.subtract(SVGBounds.min);
+    };
+    MetroMap.prototype.updatePos = function () {
+        var nw = this.bounds.getNorthWest();
+        var se = this.bounds.getSouthEast();
+        // svg bounds in pixels relative to container
+        var pixelBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
+        var transform = util.parseTransform(this.overlay.style.transform);
+        var pixelBoundsSize = pixelBounds.getSize();
+        var topLeft = pixelBounds.min.subtract(transform).subtract(pixelBoundsSize);
+        this.overlay.style.left = topLeft.x + 'px';
+        this.overlay.style.top = topLeft.y + 'px';
+        var originShift = pixelBoundsSize;
+        var origin = document.getElementById('origin');
+        //TODO: test which one is faster
+        // transform may not work with svg elements
+        //origin.setAttribute('x', originShift.x + 'px');
+        //origin.setAttribute('y', originShift.y + 'px');
+        origin.style.transform = 'translate(' + originShift.x + 'px, ' + originShift.y + 'px)';
+        //origin.style.left = originShift.x + 'px';
+        //origin.style.top = originShift.y + 'px';
+        var tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
+        this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
+        this.overlay.style.height = tripleSvgBoundsSize.y + 'px';
+    };
+    /**
+     *  lineWidth = (zoom - 7) * 0.5
+     *  9 - only lines (1px)
+     *  10 - lines (1.5px) & roundels (2+1px)
+     *  11 - lines (2px) & roundels (2+2px)
+     *  12 - lines (2.5px), platforms (2+1px) & transfers (2px)
+     *  ...
+     */
+    MetroMap.prototype.redrawNetwork = function () {
+        var _this2 = this;
+
+        var _this = this;
+        this.refillSVG();
+        this.updatePos();
+        var frag = {
+            'station-circles': document.createDocumentFragment(),
+            'dummy-circles': document.createDocumentFragment(),
+            'transfers': document.createDocumentFragment(),
+            'paths': document.createDocumentFragment()
+        };
+        var whiskers = new Array(this.graph.platforms.length);
+        var zoom = this.map.getZoom();
+        var nw = this.bounds.getNorthWest();
+        var se = this.bounds.getSouthEast();
+        var svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
+        var posTransform = zoom < 12 ? function (platform) {
+            return _this.posOnSVG(svgBounds, _this.graph.stations[platform.station].location);
+        } : function (platform) {
+            return _this.posOnSVG(svgBounds, platform.location);
+        };
+        var platformsOnSVG = this.graph.platforms.map(posTransform);
+        var lineWidth = (zoom - 7) * 0.5;
+        var circleRadius = zoom < 12 ? lineWidth * 1.25 : lineWidth;
+        var circleBorder = circleRadius * 0.4;
+        var transferWidth = lineWidth;
+        var platformsHavingCircles = new Set();
+
+        var _loop = function (stationIndex) {
+            var station = _this2.graph.stations[stationIndex];
+            var circular = util.findCircle(_this2.graph, station);
+            var coords = [];
+            station.platforms.forEach(function (platformNum) {
+                var platform = _this.graph.platforms[platformNum];
+                var posOnSVG = platformsOnSVG[platformNum];
+                if (zoom > 9) {
+                    var ci = svg.makeCircle(posOnSVG, circleRadius);
+                    svg.convertToStation(ci, 'p-' + platformNum, platform, circleBorder);
+                    ci.setAttribute('data-station', stationIndex.toString());
+                    //ci.dataset['station'] = stationIndex.toString();
+                    var dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
+                    dummyCircle.classList.add('invisible-circle');
+                    //dummyCircle.dataset['platformId'] = ci.id;
+                    dummyCircle.setAttribute('data-platformId', ci.id);
+                    frag['station-circles'].appendChild(ci);
+                    frag['dummy-circles'].appendChild(dummyCircle);
+                    dummyCircle.onmouseover = _this.showPlate;
+                }
+                // control points
+                if (platform.spans.length === 2) {
+                    (function () {
+                        var midPts = [posOnSVG, posOnSVG];
+                        var lens = [0, 0];
+                        var firstSpan = _this.graph.spans[platform.spans[0]];
+                        if (firstSpan.source === platformNum) {
+                            platform.spans.reverse();
+                        }
+                        for (var i = 0; i < 2; ++i) {
+                            var span = _this.graph.spans[platform.spans[i]];
+                            var neighborNum = span.source === platformNum ? span.target : span.source;
+                            var neighbor = _this.graph.platforms[neighborNum];
+                            var neighborOnSVG = platformsOnSVG[neighborNum];
+                            lens[i] = posOnSVG.distanceTo(neighborOnSVG);
+                            midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
+                        }
+                        var mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
+                        var mm = midPts[0].add(mdiff);
+                        var diff = posOnSVG.subtract(mm);
+                        whiskers[platformNum] = midPts.map(function (midPt) {
+                            return midPt.add(diff);
+                        });
+                    })();
+                } else if (platform.spans.length === 3) {
+                    var midPts = [posOnSVG, posOnSVG];
+                    var lens = [0, 0];
+                    var nexts = [],
+                        prevs = [];
+                    for (var i = 0; i < 3; ++i) {
+                        var span = _this.graph.spans[platform.spans[i]];
+                        //(span.source === platformNum ? outSpans : inSpans).push(span);
+                        if (span.source === platformNum) {
+                            var neighbor = _this.graph.platforms[span.target];
+                            var neighborPos = platformsOnSVG[span.target];
+                            nexts.push(neighborPos);
+                        } else {
+                            var neighbor = _this.graph.platforms[span.source];
+                            var neighborPos = platformsOnSVG[span.source];
+                            prevs.push(neighborPos);
+                        }
+                    }
+                    var prev = prevs.length === 1 ? prevs[0] : prevs[0].add(prevs[1]).divideBy(2);
+                    var next = nexts.length === 1 ? nexts[0] : nexts[0].add(nexts[1]).divideBy(2);
+                    var distToPrev = posOnSVG.distanceTo(prev),
+                        distToNext = posOnSVG.distanceTo(next);
+                    var midPtPrev = posOnSVG.add(prev).divideBy(2),
+                        midPtNext = posOnSVG.add(next).divideBy(2);
+                    var mdiff = midPtNext.subtract(midPtPrev).multiplyBy(distToPrev / (distToPrev + distToNext));
+                    var mm = midPtPrev.add(mdiff);
+                    var diff = posOnSVG.subtract(mm);
+                    whiskers[platformNum] = [midPtPrev.add(diff), midPtNext.add(diff)];
+                } else {
+                    whiskers[platformNum] = [posOnSVG, posOnSVG];
+                }
+                if (circular && circular.indexOf(platform) > -1) {
+                    coords.push(posOnSVG);
+                    platformsHavingCircles.add(platformNum);
+                }
+            });
+            if (circular) {
+                var circumcenter = util.getCircumcenter(coords);
+                var circumradius = circumcenter.distanceTo(coords[0]);
+                var circumcircle = svg.makeCircle(circumcenter, circumradius);
+                circumcircle.classList.add('transfer');
+                circumcircle.style.strokeWidth = transferWidth.toString();
+                circumcircle.style.opacity = '0.25';
+                frag['transfers'].appendChild(circumcircle);
+            }
+        };
+
+        for (var stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
+            _loop(stationIndex);
+        }
+        this.graph.transfers.forEach(function (tr) {
+            if (platformsHavingCircles.has(tr.source) && platformsHavingCircles.has(tr.target)) return;
+            var pl1 = _this.graph.platforms[tr.source];
+            var pl2 = _this.graph.platforms[tr.target];
+            var posOnSVG1 = _this.posOnSVG(svgBounds, pl1.location);
+            var posOnSVG2 = _this.posOnSVG(svgBounds, pl2.location);
+            var transfer = svg.createSVGElement('line');
+            transfer.setAttribute('x1', posOnSVG1.x.toString());
+            transfer.setAttribute('y1', posOnSVG1.y.toString());
+            transfer.setAttribute('x2', posOnSVG2.x.toString());
+            transfer.setAttribute('y2', posOnSVG2.y.toString());
+            transfer.classList.add('transfer');
+            transfer.style.strokeWidth = transferWidth.toString();
+            transfer.style.opacity = '0.25';
+            frag['transfers'].appendChild(transfer);
+        });
+        for (var i = 0; i < this.graph.spans.length; ++i) {
+            var span = this.graph.spans[i];
+            var srcN = span.source,
+                trgN = span.target;
+            var src = this.graph.platforms[srcN];
+            var trg = this.graph.platforms[trgN];
+            var bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][1], whiskers[trgN][0], platformsOnSVG[trgN]]);
+            var routes = span.routes.map(function (n) {
+                return _this.graph.routes[n];
+            });
+            var matches = routes[0].line.match(/[MEL](\d{1,2})/);
+            bezier.style.strokeWidth = lineWidth.toString();
+            if (matches) {
+                bezier.classList.add(matches[0]);
+            }
+            bezier.classList.add(routes[0].line.charAt(0) + '-line');
+            frag['paths'].appendChild(bezier);
+        }
+        Object.keys(frag).forEach(function (i) {
+            return document.getElementById(i).appendChild(frag[i]);
+        });
+    };
+    return MetroMap;
+})();
+module.exports = MetroMap;
+//export default MetroMap;
+
+
+},{"./addons":1,"./svg":4,"./util":5}],4:[function(require,module,exports){
+'use strict';
+
+var L = window.L;
+var svg = require('./svg');
+var util = require('./util');
+//import L from 'leaflet';
+//import * as svg from './svg';
+//import * as util from '../../util';
+function makeCircle(position, radius) {
+    var ci = createSVGElement('circle');
+    ci.setAttribute('r', radius.toString());
+    ci.setAttribute('cy', position.y.toString());
+    ci.setAttribute('cx', position.x.toString());
+    return ci;
+}
+exports.makeCircle = makeCircle;
+function convertToStation(circle, id, data, circleBorder) {
+    circle.id = id;
+    circle.classList.add('station-circle');
+    circle.style.strokeWidth = circleBorder.toString();
+    util.setSVGDataset(circle, {
+        lat: data.location.lat,
+        lng: data.location.lng,
+        ru: data.name,
+        fi: data.altName
+    });
+}
+exports.convertToStation = convertToStation;
+function makeCubicBezier(controlPoints) {
+    if (controlPoints.length !== 4) {
+        throw new Error('there should be 4 points');
+    }
+    var path = createSVGElement('path');
+    var s = controlPoints.map(function (pt) {
+        return pt.x + ',' + pt.y;
+    });
+    s.unshift('M');
+    s.splice(2, 0, 'C');
+    //let d = controlPoints.reduce((prev, cp, i) => `${prev}${i === 1 ? ' C ' : ' '}${cp.x},${cp.y}`, 'M');
+    path.setAttribute('d', s.join(' '));
+    return path;
+}
+exports.makeCubicBezier = makeCubicBezier;
+function createSVGElement(tagName) {
+    return document.createElementNS('http://www.w3.org/2000/svg', tagName);
+}
+exports.createSVGElement = createSVGElement;
+function makeForeignDiv(topLeft, text) {
+    var foreign = createSVGElement('foreignObject');
+    //foreign.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
+    foreign.setAttribute('x', topLeft.x.toString());
+    foreign.setAttribute('y', topLeft.y.toString());
+    foreign.setAttribute('width', '200');
+    foreign.setAttribute('height', '50');
+    //let div = <HTMLElement>document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+    var div = document.createElement('div');
+    div.innerHTML = text;
+    div.classList.add('plate-box');
+    div.classList.add('plate-text');
+    foreign.appendChild(div);
+    return foreign;
+}
+function makeDropShadow() {
+    var filter = createSVGElement('filter');
+    filter.id = 'shadow';
+    filter.setAttribute('width', '200%');
+    filter.setAttribute('height', '200%');
+    filter.innerHTML = '\n        <feOffset result="offOut" in="SourceAlpha" dx="0" dy="2" />\n        <feGaussianBlur result="blurOut" in="offOut" stdDeviation="2" />\n        <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />\n    ';
+    return filter;
+}
+exports.makeDropShadow = makeDropShadow;
+function makeFittingRect(bottomRight, lines) {
+    var rect = svg.createSVGElement('rect');
+    var spacing = 12;
+    var longest = lines.reduce(function (prev, cur) {
+        return prev.length < cur.length ? cur : prev;
+    });
+    var rectSize = new L.Point(10 + longest.length * 6, 6 + spacing * lines.length);
+    rect.setAttribute('width', rectSize.x.toString());
+    rect.setAttribute('height', rectSize.y.toString());
+    var rectTopLeft = bottomRight.subtract(rectSize);
+    rect.setAttribute('x', rectTopLeft.x.toString());
+    rect.setAttribute('y', rectTopLeft.y.toString());
+    rect.setAttribute('filter', 'url(#shadow)');
+    rect.classList.add('plate-box');
+    var text = svg.createSVGElement('text');
+    text.setAttribute('fill', 'black');
+    text.classList.add('plate-text');
+    for (var i = 0; i < lines.length; ++i) {
+        var textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - (i + 1) * spacing));
+        var t = svg.createSVGElement('tspan');
+        t.setAttribute('x', textTopLeft.x.toString());
+        t.setAttribute('y', textTopLeft.y.toString());
+        t.textContent = lines[i];
+        text.appendChild(t);
+    }
+    var plate = svg.createSVGElement('g');
+    plate.appendChild(rect);
+    plate.appendChild(text);
+    return plate;
+}
+function makePlate(circle) {
+    var plateGroup = svg.createSVGElement('g');
+    var pole = svg.createSVGElement('line');
+    var c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
+    var r = Number(circle.getAttribute('r'));
+    var iR = Math.trunc(r);
+    var poleSize = new L.Point(4 + iR, 8 + iR);
+    var poleBounds = new L.Bounds(c, c.subtract(poleSize));
+    pole.setAttribute('x1', poleBounds.min.x.toString());
+    pole.setAttribute('y1', poleBounds.min.y.toString());
+    pole.setAttribute('x2', poleBounds.max.x.toString());
+    pole.setAttribute('y2', poleBounds.max.y.toString());
+    pole.classList.add('plate-pole');
+    var dataset = util.getSVGDataset(circle);
+    var ru = dataset['ru'];
+    var fi = dataset['fi'];
+    var names = !fi ? [ru] : util.getUserLanguage() === 'fi' ? [fi, ru] : [ru, fi];
+    if (ru in util.englishStationNames) {
+        names.push(util.englishStationNames[ru]);
+    }
+    var plate = makeFittingRect(poleBounds.min, names);
+    //let foreignObject = makeForeignDiv(rectTopLeft, !fi ? ru : util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru + '<br>' + fi);
+    var sw = svg.createSVGElement('switch');
+    //sw.appendChild(foreignObject); // to fix later
+    sw.appendChild(plate);
+    plateGroup.appendChild(pole);
+    plateGroup.appendChild(sw);
+    plateGroup.id = 'plate';
+    return plateGroup;
+}
+exports.makePlate = makePlate;
+
+
+},{"./svg":4,"./util":5}],5:[function(require,module,exports){
+/// <reference path="./../typings/tsd.d.ts" />
+'use strict';
+
+var L = window.L;
+function getUserLanguage() {
+    return (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();
+}
+exports.getUserLanguage = getUserLanguage;
+function parseTransform(val) {
+    var matches = val.match(/translate(3d)?\((-?\d+).*?,\s?(-?\d+).*?(,\s?(-?\d+).*?)?\)/i);
+    return matches ? new L.Point(Number(matches[2]), Number(matches[3])) : new L.Point(0, 0);
+}
+exports.parseTransform = parseTransform;
+function findCircle(graph, station) {
+    var platforms = station.platforms.map(function (platformNum) {
+        return graph.platforms[platformNum];
+    });
+    return platforms.length === 3 && platforms.every(function (platform) {
+        return platform.transfers.length === 2;
+    }) ? platforms : null;
+}
+exports.findCircle = findCircle;
+function getCircumcenter(positions) {
+    if (positions.length !== 3) {
+        throw new Error('must have 3 vertices');
+    }
+    console.log(positions[1]);
+    var b = positions[1].subtract(positions[0]);
+    var c = positions[2].subtract(positions[0]);
+    var bb = b.x * b.x + b.y * b.y;
+    var cc = c.x * c.x + c.y * c.y;
+    return new L.Point(c.y * bb - b.y * cc, b.x * cc - c.x * bb).divideBy(2.0 * (b.x * c.y - b.y * c.x)).add(positions[0]);
+}
+exports.getCircumcenter = getCircumcenter;
+function getSVGDataset(el) {
+    // for webkit-based browsers
+    if (el['dataset']) {
+        return el['dataset'];
+    }
+    // for the rest
+    var attrs = el.attributes;
+    var dataset = {};
+    for (var i = 0; i < attrs.length; ++i) {
+        var attr = attrs[i].name;
+        if (attr.startsWith('data-')) {
+            dataset[attr.slice(5)] = el.getAttribute(attr);
+        }
+    }
+    return dataset;
+}
+exports.getSVGDataset = getSVGDataset;
+function setSVGDataset(el, dataset) {
+    Object.keys(dataset).forEach(function (key) {
+        return el.setAttribute('data-' + key, dataset[key]);
+    });
+}
+exports.setSVGDataset = setSVGDataset;
+exports.englishStationNames = {
+    'Centraľnyj voxal': 'Central Raiway Station',
+    'Aeroport': 'Airport'
+};
+function dot(a, b) {
+    return a.x * b.x + a.y * b.y;
+}
+exports.dot = dot;
+function angle(v1, v2) {
+    return dot(v1, v2) / v1.distanceTo(v2);
+}
+exports.angle = angle;
+//export function getSegmentLength(source: L.Point, target: L.Point): number {
+//    const a = target.subtract(source);
+//    return Math.sqrt(a.x * a.x + a.y * a.y);
+//}
+
+
+},{}]},{},[2]);

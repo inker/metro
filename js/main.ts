@@ -1,9 +1,9 @@
 import MetroMap = require('./metro-map');
 //import MetroMap from './metro-map';
 
-const mapbox = (() => new L.TileLayer('https://{s}.tiles.mapbox.com/v3/inker.km1inchd/{z}/{x}/{y}.png', {
+const mapbox = (() => new L.TileLayer('https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png', {
     minZoom: 9,
-    id: 'inker.km1inchd',
+    id: 'inker.mlo91c41',
     //detectRetina: true,
     reuseTiles: true,
     bounds: null,
@@ -16,5 +16,18 @@ const openMapSurfer = (() => new L.TileLayer('http://openmapsurfer.uni-hd.de/til
     attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }))();
 
-var metroMap = new MetroMap('map-container', (zoom: number) => (zoom < 15) ? mapbox : openMapSurfer);
-metroMap.getGraphAndFillMap();
+var metroMap = new MetroMap('map-container', 'json/graph.json', {
+    'Mapbox': mapbox,
+    'OpenMapSurfer': openMapSurfer
+});
+
+(() => {
+    let titles = ['Plan metro Sankt-Peterburga', 'Pietarin metron hankesuunnitelma', 'St Petersburg metro plan proposal'];
+    let i = 0;
+    setInterval(() => document.title = titles[++i % titles.length], 3000);
+})();
+
+console.log('user: ' + navigator.userLanguage);
+console.log('language: ' + navigator.language);
+console.log('browser: ' + navigator.browserLanguage);
+console.log('system: ' + navigator.systemLanguage);

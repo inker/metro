@@ -1,15 +1,15 @@
+/// <reference path="./typings/tsd.d.ts" />
+import L = require('leaflet');
+
 declare module Plain {
     type Platform = {
         name: string;
         altName: string;
         oldName: string;
         station: number;
-        location: {
-            lat: number;
-            lng: number
-        };
+        location: L.LatLng;
         elevation: number;
-        spans: number[];
+        spans: number[]; 
         transfers: number[];
     };
 
@@ -17,10 +17,7 @@ declare module Plain {
         name: string;
         altName: string;
         oldName: string;
-        location: {
-            lat: number;
-            lng: number
-        };
+        location: L.LatLng;
         platforms: number[];
     };
 
@@ -41,13 +38,20 @@ declare module Plain {
     };
 
     type StationOrPlatform = {
-        location: {
-            lat: number;
-            lng: number;
-        };
+        location: L.LatLng;
         name: string;
         altName: string;
-    }
+    };
+
+    type Graph = {
+        platforms: Plain.Platform[];
+        stations: Plain.Station[];
+        lines: {};
+        transfers: Plain.Transfer[];
+        spans: Plain.Span[];
+        routes: Plain.Route[];
+        hints?: any;
+    };
 }
 
 //export default Plain;
