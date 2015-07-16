@@ -61,6 +61,7 @@ export function makeTransfer(bounds: L.Bounds, thickness: number, borderWidth: n
         line.setAttribute('y1', bounds.min.y.toString());
         line.setAttribute('x2', bounds.max.x.toString());
         line.setAttribute('y2', bounds.max.y.toString());
+        line.style.strokeWidth = t + 'px';
         g.appendChild(line);
     });
     return g;
