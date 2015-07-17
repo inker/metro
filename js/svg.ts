@@ -101,7 +101,7 @@ export function makeDropShadow() {
 
 }
 
-function makeFittingRect(bottomRight: L.Point, lines: string[]) {
+function changePlateBox(bottomRight: L.Point, lines: string[]) {
     let rect = document.getElementById('plate-box');
     const spacing = 12;
     const longest = lines.reduce((prev, cur) => prev.length < cur.length ? cur : prev);
@@ -150,6 +150,6 @@ export function changePlate(circle: HTMLElement): HTMLElement {
         names.push(util.englishStationNames[ru]);
     }
 
-    makeFittingRect(poleBounds.min, names);
+    changePlateBox(poleBounds.min, names);
     return plateGroup;
 }

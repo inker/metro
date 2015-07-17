@@ -19,7 +19,7 @@ export class Platform {
     location: L.LatLng;
     elevation: Elevation;
 
-    constructor(location: L.LatLng, elevation = Elevation.Underground, name = "", altName = "", oldName = "") {
+    constructor(location: L.LatLng, elevation = Elevation.Underground, name: string = null, altName: string = null, oldName: string = null) {
         this._name = name;
         this._altName = altName;
         this._oldName = oldName;
@@ -97,7 +97,7 @@ export class Station {
     oldName: string;
     private _loc: L.LatLng;
 
-    constructor(name: string, altName: string = "", platforms: Platform[] = [], oldName: string = "") {
+    constructor(name: string, altName: string = null, platforms: Platform[] = [], oldName: string = null) {
         this.name = name;
         this.altName = altName;
         this.platforms = platforms;
@@ -121,7 +121,7 @@ class Edge {
     protected trg: Platform;
     bidirectional: boolean;
 
-    constructor(source: Platform, target: Platform, bidirectional: boolean = true) {
+    constructor(source: Platform, target: Platform, bidirectional = true) {
         if (source == target) throw new Error("source & target cannot be the same platform (" + source.name + ', ' + source.location + ')');
         this.src = source;
         this.trg = target;
@@ -150,7 +150,7 @@ class Edge {
 export class Span extends Edge {
     routes: Route[];
 
-    constructor(source: Platform, target: Platform, routes: Route[], bidirectional: boolean = true) {
+    constructor(source: Platform, target: Platform, routes: Route[], bidirectional = true) {
         super(source, target, bidirectional);
         source.spans.push(this);
         target.spans.push(this);
@@ -202,7 +202,7 @@ export class Line {
     num: number;
     name: string;
 
-    constructor(type: string, num?: number, name: string = '') {
+    constructor(type: string, num?: number, name: string = null) {
         if (type.length != 1) throw new Error("type must be one letter");
         this.type = type;
         if (num && num.toString() != num.toPrecision()) throw new Error('line number ' + num + ' cannot be fractional');
