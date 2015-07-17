@@ -113,7 +113,6 @@ function makeFittingRect(bottomRight: L.Point, lines: string[]) {
     rect.setAttribute('y', rectTopLeft.y.toString());
     
     let text = document.getElementById('plate-text');
-    text.innerHTML = '';
     let i = 0;
     for (; i < lines.length; ++i) {
         const textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - (i + 1) * spacing));
