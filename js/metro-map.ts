@@ -210,6 +210,8 @@ class MetroMap {
             'transfers': document.createDocumentFragment(),
             'paths': document.createDocumentFragment(),
         };
+        
+        let stationPlate = document.getElementById('station-plate');
 
         let whiskers = new Array<L.Point[]>(this.graph.platforms.length);
 
@@ -246,7 +248,7 @@ class MetroMap {
                     dummyCircle.classList.add('invisible-circle');
                     dummyCircle.setAttribute('data-platformId', ci.id);
                     dummyCircle.onmouseover = this.showPlate;
-                    //dummyCircle.onmouseout = e => this.overlay.removeChild(document.getElementById('plate'));
+                    dummyCircle.onmouseout = e => stationPlate.parentElement.removeChild(stationPlate);
                     
                     frag['station-circles'].appendChild(ci);
                     frag['dummy-circles'].appendChild(dummyCircle);
@@ -265,7 +267,7 @@ class MetroMap {
                         let span = this.graph.spans[platform.spans[i]];
                         let neighborNum = (span.source === platformNum) ? span.target : span.source;
                         let neighbor = this.graph.platforms[neighborNum];
-                        let neighborOnSVG = platformsOnSVG[neighborNum]
+                        let neighborOnSVG = platformsOnSVG[neighborNum];
                         lens[i] = posOnSVG.distanceTo(neighborOnSVG);
                         midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
                     }
