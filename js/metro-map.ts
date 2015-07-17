@@ -127,14 +127,21 @@ class MetroMap {
         // svg element won't work because it does not have negative dimensions (top-left station is partially visible)
         let origin = svg.createSVGElement('g');
         origin.id = 'origin';
-        ['paths', 'transfers', 'station-circles', 'dummy-circles'].forEach(groupId => {
+        ['paths', 'transfers', 'station-circles', 'station-plate', 'dummy-circles'].forEach(groupId => {
             let group = svg.createSVGElement('g');
             group.id = groupId;
             origin.appendChild(group);
         });
         this.overlay.appendChild(origin);
         let stationCircles = document.getElementById('station-circles');
-        stationCircles.classList.add('station-circle');
+        document.getElementById('station-plate').innerHTML = `
+            <line id="pole" class="plate-pole"/>
+            <g>
+                <rect id="plate-box" class="plate-box" filter="url(#shadow)"/>
+                <text id="plate-text" fill="black" class="plate-text"/>
+            </g>`;
+        document.getElementById('station-plate').style.display = 'none';
+        
     }
 
 
@@ -145,23 +152,13 @@ class MetroMap {
     }
 
     private showPlate(event: MouseEvent): void {
-        console.time('plate emergence');
-        console.time('plate dataset stuff');
         let dummyCircle: SVGElement = <any>event.target;
         const dataset = util.getSVGDataset(dummyCircle);
         //const dataset = dummyCircle.dataset;
         let circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
-        console.timeEnd('plate dataset stuff');
-        console.time('making plate');
         let g = svg.makePlate(circle);
-        console.timeEnd('making plate');
-        console.time('adding plate listeners');
-        let dummyCircles = dummyCircle.parentNode;
-        let container = dummyCircles.parentNode;
-        dummyCircle.onmouseout = e => container.removeChild(g);
-        container.insertBefore(g, dummyCircles);
-        console.timeEnd('adding plate listeners');
-        console.timeEnd('plate emergence');
+        g.style.display = null;
+        dummyCircle.onmouseout = e => g.style.display = 'none';
     }
 
     /**

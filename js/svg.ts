@@ -98,12 +98,11 @@ export function makeDropShadow() {
         <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
     `;
     return filter;
-    
+
 }
 
-function makeFittingRect(bottomRight: L.Point, lines: string[]): HTMLElement {
-    console.time('making rect');
-    let rect = svg.createSVGElement('rect');
+function makeFittingRect(bottomRight: L.Point, lines: string[]) {
+    let rect = document.getElementById('plate-box');
     const spacing = 12;
     const longest = lines.reduce((prev, cur) => prev.length < cur.length ? cur : prev);
     const rectSize = new L.Point(10 + longest.length * 6, 6 + spacing * lines.length);
@@ -112,13 +111,8 @@ function makeFittingRect(bottomRight: L.Point, lines: string[]): HTMLElement {
     const rectTopLeft = bottomRight.subtract(rectSize);
     rect.setAttribute('x', rectTopLeft.x.toString());
     rect.setAttribute('y', rectTopLeft.y.toString());
-    rect.setAttribute('filter', 'url(#shadow)');
-    rect.classList.add('plate-box');
-    console.timeEnd('making rect');
-    console.time('making text');
-    let text = svg.createSVGElement('text');
-    text.setAttribute('fill', 'black');
-    text.classList.add('plate-text');
+    
+    let text = document.getElementById('plate-text');
     for (let i = 0; i < lines.length; ++i) {
         const textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - (i + 1) * spacing));
         let t = svg.createSVGElement('tspan');
@@ -127,20 +121,11 @@ function makeFittingRect(bottomRight: L.Point, lines: string[]): HTMLElement {
         t.textContent = lines[i];
         text.appendChild(t);
     }
-
-    console.timeEnd('making text');
-
-    let plate = svg.createSVGElement('g');
-    plate.appendChild(rect);
-    plate.appendChild(text);
-
-    return plate;
 }
 
 export function makePlate(circle: HTMLElement): HTMLElement {
-    let plateGroup = svg.createSVGElement('g');
-    console.time('making pole');
-    let pole = svg.createSVGElement('line');
+    let plateGroup = document.getElementById('station-plate');
+    let pole = <HTMLElement>plateGroup.children[0];
     const c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
     const r = Number(circle.getAttribute('r'));
     const iR = Math.trunc(r);
@@ -151,9 +136,7 @@ export function makePlate(circle: HTMLElement): HTMLElement {
     pole.setAttribute('y1', poleBounds.min.y.toString());
     pole.setAttribute('x2', poleBounds.max.x.toString());
     pole.setAttribute('y2', poleBounds.max.y.toString());
-    pole.classList.add('plate-pole');
-    console.timeEnd('making pole');
-    console.time('languages');
+    
     const dataset = util.getSVGDataset(circle);
     const ru: string = dataset['ru'];
     const fi: string = dataset['fi'];
@@ -162,18 +145,7 @@ export function makePlate(circle: HTMLElement): HTMLElement {
     if (ru in util.englishStationNames) {
         names.push(util.englishStationNames[ru]);
     }
-    console.timeEnd('making text');
 
-    let plate = makeFittingRect(poleBounds.min, names);
-
-    //let foreignObject = makeForeignDiv(rectTopLeft, !fi ? ru : util.getUserLanguage() === 'fi' ? fi + '<br>' + ru : ru + '<br>' + fi);
-
-    //let sw = svg.createSVGElement('switch');
-    //sw.appendChild(foreignObject); // to fix later
-    //sw.appendChild(plate);
-
-    plateGroup.appendChild(pole);
-    plateGroup.appendChild(plate);
-    plateGroup.id = 'plate';
+    makeFittingRect(poleBounds.min, names);
     return plateGroup;
 }
