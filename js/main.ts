@@ -1,20 +1,7 @@
 import MetroMap = require('./metro-map');
 //import MetroMap from './metro-map';
 
-if (!('Promise' in window) || !('then' in Promise.prototype) || !('catch' in Promise.prototype)) {
-    console.log('promises not present, using a polyfill');
-    require('es6-promise').polyfill();
-}
-
-if (!('Set' in window) || !('add' in Set.prototype) || !('has' in Set.prototype)) {
-    console.log('set not present, using a polyfill');
-    require('es6-set/implement');
-}
-
-if (!('classList' in HTMLElement.prototype)) {
-    console.log('classlist not present, using a polyfill');
-    require('classlist-polyfill');
-}
+require('./polyfills')();
 
 const mapbox = (() => new L.TileLayer('https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png', {
     minZoom: 9,

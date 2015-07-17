@@ -154,7 +154,7 @@ class MetroMap {
         this.graph.platforms.forEach(platform => this.bounds.extend(platform.location));
     }
 
-    private showPlate(event: MouseEvent): void {
+    private static showPlate(event: MouseEvent): void {
         let dummyCircle: SVGElement = <any>event.target;
         const dataset = util.getSVGDataset(dummyCircle);
         //const dataset = dummyCircle.dataset;
@@ -256,7 +256,7 @@ class MetroMap {
                     let dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
                     dummyCircle.classList.add('invisible-circle');
                     dummyCircle.setAttribute('data-platformId', ci.id);
-                    dummyCircle.onmouseover = this.showPlate;
+                    dummyCircle.onmouseover = MetroMap.showPlate;
                     dummyCircle.onmouseout = e => stationPlate.style.display = 'none';
                     
                     frag['station-circles'].appendChild(ci);
