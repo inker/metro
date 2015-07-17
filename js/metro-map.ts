@@ -153,7 +153,7 @@ class MetroMap {
 
         let dummyCircles = dummyCircle.parentNode;
         let container = dummyCircles.parentNode;
-        dummyCircle.onmouseout = e => container.removeChild(g);
+        //dummyCircle.onmouseout = e => container.removeChild(g);
         container.insertBefore(g, dummyCircles);
     }
 
@@ -244,17 +244,15 @@ class MetroMap {
                     let ci = svg.makeCircle(posOnSVG, circleRadius);
                     svg.convertToStation(ci, 'p-' + platformNum, platform, circleBorder);
                     ci.setAttribute('data-station', stationIndex.toString());
-                    //ci.dataset['station'] = stationIndex.toString();
-
+                    
                     let dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
                     dummyCircle.classList.add('invisible-circle');
-                    //dummyCircle.dataset['platformId'] = ci.id;
                     dummyCircle.setAttribute('data-platformId', ci.id);
+                    dummyCircle.onmouseover = this.showPlate;
+                    dummyCircle.onmouseout = e => this.overlay.removeChild(document.getElementById('plate'));
+                    
                     frag['station-circles'].appendChild(ci);
                     frag['dummy-circles'].appendChild(dummyCircle);
-
-                    dummyCircle.onmouseover = this.showPlate;
-                    //dummyCircle.onmouseout = e => this.overlay.removeChild(document.getElementById('plate'));
                 }
                 
                 // control points

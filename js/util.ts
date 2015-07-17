@@ -12,8 +12,9 @@ export function parseTransform(val: string): L.Point {
 }
 
 export function findCircle(graph: po.Graph, station: po.Station): po.Platform[] {
+    if (station.platforms.length !== 3) return null;
     let platforms = station.platforms.map(platformNum => graph.platforms[platformNum]);
-    return (platforms.length === 3 && platforms.every(platform => platform.transfers.length === 2)) ? platforms : null;
+    return platforms.every(platform => platform.transfers.length === 2) ? platforms : null;
 }
 
 export function getCircumcenter(positions: L.Point[]): L.Point {
@@ -54,7 +55,7 @@ export function setSVGDataset(el: Element, dataset: any): void {
 export let englishStationNames = {
     'Centraľnyj voxal': 'Central Raiway Station',
     'Aeroport': 'Airport'
-}
+};
 
 export function dot(a: L.Point, b: L.Point): number {
     return a.x * b.x + a.y * b.y;
