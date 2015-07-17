@@ -248,7 +248,7 @@ class MetroMap {
                     dummyCircle.classList.add('invisible-circle');
                     dummyCircle.setAttribute('data-platformId', ci.id);
                     dummyCircle.onmouseover = this.showPlate;
-                    dummyCircle.onmouseout = e => stationPlate.parentElement.removeChild(stationPlate);
+                    dummyCircle.onmouseout = e => stationPlate.style.display = 'none';
                     
                     frag['station-circles'].appendChild(ci);
                     frag['dummy-circles'].appendChild(dummyCircle);
