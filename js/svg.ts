@@ -124,7 +124,7 @@ function makeFittingRect(bottomRight: L.Point, lines: string[]) {
     }
 }
 
-export function makePlate(circle: HTMLElement): HTMLElement {
+export function changePlate(circle: HTMLElement): HTMLElement {
     let plateGroup = document.getElementById('station-plate');
     let pole = <HTMLElement>plateGroup.children[0];
     const c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));

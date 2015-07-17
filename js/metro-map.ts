@@ -134,14 +134,15 @@ class MetroMap {
         });
         this.overlay.appendChild(origin);
         let stationCircles = document.getElementById('station-circles');
-        document.getElementById('station-plate').innerHTML = `
-            <line id="pole" class="plate-pole"/>
+        stationCircles.classList.add('station-circle');
+        let stationPlate = document.getElementById('station-plate');
+        stationPlate.style.display = 'none';
+        stationPlate.innerHTML = 
+            `<line id="pole" class="plate-pole"/>
             <g>
                 <rect id="plate-box" class="plate-box" filter="url(#shadow)"/>
                 <text id="plate-text" fill="black" class="plate-text"/>
             </g>`;
-        document.getElementById('station-plate').style.display = 'none';
-        
     }
 
 
@@ -156,7 +157,7 @@ class MetroMap {
         const dataset = util.getSVGDataset(dummyCircle);
         //const dataset = dummyCircle.dataset;
         let circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
-        let g = svg.makePlate(circle);
+        let g = svg.changePlate(circle);
         g.style.display = null;
         dummyCircle.onmouseout = e => g.style.display = 'none';
     }
