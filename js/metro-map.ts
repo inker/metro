@@ -31,7 +31,7 @@ class MetroMap {
             center: new L.LatLng(60, 30),
             zoom: 11,
             minZoom: 9,
-            inertia: false
+            inertia: true
         }).addControl(new L.Control.Scale({ imperial: false }));
         
         new addons.LayerControl(this, tileLayers);
@@ -61,9 +61,17 @@ class MetroMap {
     private addListeners(): void {
         let mapPane = this.map.getPanes().mapPane;
         this.map.on('movestart', e => this.map.touchZoom.disable());
-        this.map.on('move', e => this.overlay.style.transform = mapPane.style.transform);
+        this.map.on('move', e => {
+            this.overlay.style['-webkit-transition'] = mapPane.style['-webkit-transition'];
+            this.overlay.style.transition = mapPane.style.transition;
+            this.overlay.style.transform = mapPane.style.transform
+        });
+        
+        // the secret of correct positioning is the movend transform check for corrent transform
         this.map.on('moveend', e => {
             this.map.touchZoom.enable();
+            this.overlay.style['-webkit-transition'] = null;
+            this.overlay.style.transition = null;
             let t3d = util.parseTransform(mapPane.style.transform);
             this.overlay.style.transform = mapPane.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
         });
