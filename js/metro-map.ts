@@ -141,7 +141,7 @@ class MetroMap {
             `<line id="pole" class="plate-pole"/>
             <g>
                 <rect id="plate-box" class="plate-box" filter="url(#shadow)"/>
-                <text id="plate-text" fill="black" class="plate-text"/>
+                <text id="plate-text" fill="black" class="plate-text"><tspan/><tspan/><tspan/></text>
             </g>`;
     }
 

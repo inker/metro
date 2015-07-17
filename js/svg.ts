@@ -114,14 +114,18 @@ function makeFittingRect(bottomRight: L.Point, lines: string[]) {
     
     let text = document.getElementById('plate-text');
     text.innerHTML = '';
-    for (let i = 0; i < lines.length; ++i) {
+    let i = 0;
+    for (; i < lines.length; ++i) {
         const textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - (i + 1) * spacing));
-        let t = svg.createSVGElement('tspan');
+        let t = <HTMLElement>text.children[i];
         t.setAttribute('x', textTopLeft.x.toString());
         t.setAttribute('y', textTopLeft.y.toString());
         t.textContent = lines[i];
-        text.appendChild(t);
     }
+    for (; i < text.children.length; ++i) {
+        text.children[i].textContent = null;
+    }
+    
 }
 
 export function changePlate(circle: HTMLElement): HTMLElement {
