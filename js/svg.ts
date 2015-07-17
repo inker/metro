@@ -102,6 +102,7 @@ export function makeDropShadow() {
 }
 
 function makeFittingRect(bottomRight: L.Point, lines: string[]): HTMLElement {
+    console.time('making rect');
     let rect = svg.createSVGElement('rect');
     const spacing = 12;
     const longest = lines.reduce((prev, cur) => prev.length < cur.length ? cur : prev);
@@ -113,7 +114,8 @@ function makeFittingRect(bottomRight: L.Point, lines: string[]): HTMLElement {
     rect.setAttribute('y', rectTopLeft.y.toString());
     rect.setAttribute('filter', 'url(#shadow)');
     rect.classList.add('plate-box');
-
+    console.timeEnd('making rect');
+    console.time('making text');
     let text = svg.createSVGElement('text');
     text.setAttribute('fill', 'black');
     text.classList.add('plate-text');
@@ -126,6 +128,8 @@ function makeFittingRect(bottomRight: L.Point, lines: string[]): HTMLElement {
         text.appendChild(t);
     }
 
+    console.timeEnd('making text');
+
     let plate = svg.createSVGElement('g');
     plate.appendChild(rect);
     plate.appendChild(text);
@@ -135,7 +139,7 @@ function makeFittingRect(bottomRight: L.Point, lines: string[]): HTMLElement {
 
 export function makePlate(circle: HTMLElement): HTMLElement {
     let plateGroup = svg.createSVGElement('g');
-
+    console.time('making pole');
     let pole = svg.createSVGElement('line');
     const c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
     const r = Number(circle.getAttribute('r'));
@@ -148,7 +152,8 @@ export function makePlate(circle: HTMLElement): HTMLElement {
     pole.setAttribute('x2', poleBounds.max.x.toString());
     pole.setAttribute('y2', poleBounds.max.y.toString());
     pole.classList.add('plate-pole');
-
+    console.timeEnd('making pole');
+    console.time('languages');
     const dataset = util.getSVGDataset(circle);
     const ru: string = dataset['ru'];
     const fi: string = dataset['fi'];
@@ -157,6 +162,7 @@ export function makePlate(circle: HTMLElement): HTMLElement {
     if (ru in util.englishStationNames) {
         names.push(util.englishStationNames[ru]);
     }
+    console.timeEnd('making text');
 
     let plate = makeFittingRect(poleBounds.min, names);
 
