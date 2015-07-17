@@ -6,6 +6,11 @@ if (!('Promise' in window)) {
     require('es6-promise').polyfill();
 }
 
+if (!('Set' in window)) {
+    console.log('es6 collections not present, using a polyfill');
+    require('es6-collections');
+}
+
 const mapbox = (() => new L.TileLayer('https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png', {
     minZoom: 9,
     id: 'inker.mlo91c41',
