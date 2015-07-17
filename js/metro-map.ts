@@ -127,7 +127,7 @@ class MetroMap {
         // svg element won't work because it does not have negative dimensions (top-left station is partially visible)
         let origin = svg.createSVGElement('g');
         origin.id = 'origin';
-        ['paths', 'transfers', 'station-circles', 'station-plate', 'dummy-circles'].forEach(groupId => {
+        ['paths', 'transfers', 'station-circles', 'dummy-circles'].forEach(groupId => {
             let group = svg.createSVGElement('g');
             group.id = groupId;
             origin.appendChild(group);
@@ -145,6 +145,7 @@ class MetroMap {
     }
 
     private showPlate(event: MouseEvent): void {
+        console.time('plate emergence');
         let dummyCircle: SVGElement = <any>event.target;
         const dataset = util.getSVGDataset(dummyCircle);
         //const dataset = dummyCircle.dataset;
@@ -154,8 +155,8 @@ class MetroMap {
         let dummyCircles = dummyCircle.parentNode;
         let container = dummyCircles.parentNode;
         dummyCircle.onmouseout = e => container.removeChild(g);
-        //container.insertBefore(g, dummyCircles);
-        document.getElementById('station-plate').appendChild(g);
+        container.insertBefore(g, dummyCircles);
+        console.timeEnd('plate emergence');
     }
 
     /**
