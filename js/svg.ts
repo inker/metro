@@ -39,7 +39,7 @@ export function makeCubicBezier(controlPoints: L.Point[]): HTMLElement {
     return path;
 }
 
-export function makeRingWithBorders(center: L.Point, radius: number, thickness: number, borderWidth: number): HTMLElement {
+export function makeTransferRing(center: L.Point, radius: number, thickness: number, borderWidth: number): HTMLElement {
     let g = createSVGElement('g');
     g.classList.add('transfer');
     const halfBorder = borderWidth * 0.5;
@@ -116,7 +116,7 @@ export function makePlate(): HTMLElement {
 /**
  * modifies & returns the modified plate
  */
-export function changePlate(circle: HTMLElement): HTMLElement {
+export function modifyPlate(circle: HTMLElement): HTMLElement {
     let plateGroup = document.getElementById('station-plate');
     const c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
     const r = Number(circle.getAttribute('r'));
@@ -139,11 +139,11 @@ export function changePlate(circle: HTMLElement): HTMLElement {
         names.push(util.englishStationNames[ru]);
     }
 
-    changePlateBox(poleEnd, names);
+    modifyPlateBox(poleEnd, names);
     return plateGroup;
 }
 
-function changePlateBox(bottomRight: L.Point, lines: string[]): void {
+function modifyPlateBox(bottomRight: L.Point, lines: string[]): void {
     let rect = document.getElementById('plate-box');
     const spacing = 12;
     const longest = lines.reduce((prev, cur) => prev.length < cur.length ? cur : prev);

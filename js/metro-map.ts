@@ -132,7 +132,8 @@ class MetroMap {
         defs.id = 'defs';
         defs.appendChild(svg.makeDropShadow());
         this.overlay.appendChild(defs);
-        // svg element won't work because it does not have negative dimensions (top-left station is partially visible)
+        // svg element won't work because it does not have negative dimensions
+        // (top-left station is partially visible)
         let origin = svg.createSVGElement('g');
         origin.id = 'origin';
         ['paths', 'transfers', 'station-circles', 'dummy-circles'].forEach(groupId => {
@@ -158,7 +159,7 @@ class MetroMap {
         const dataset = util.getSVGDataset(dummyCircle);
         //const dataset = dummyCircle.dataset;
         let circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
-        let g = svg.changePlate(circle);
+        let g = svg.modifyPlate(circle);
         g.style.display = null;
     }
 
@@ -326,7 +327,7 @@ class MetroMap {
             if (zoom > 11 && circular) {
                 const circumC = util.getCircumcenter(coords);
                 const circumR = circumC.distanceTo(coords[0]);
-                const circumcircle = svg.makeRingWithBorders(circumC, circumR, transferWidth, circleBorder);
+                const circumcircle = svg.makeTransferRing(circumC, circumR, transferWidth, circleBorder);
                 frag['transfers'].appendChild(circumcircle);
             }
         }

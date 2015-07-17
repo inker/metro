@@ -1,6 +1,11 @@
 import MetroMap = require('./metro-map');
 //import MetroMap from './metro-map';
 
+if (!('Promise' in window)) {
+    console.log('promises not present, using a polyfill');
+    require('es6-promise').polyfill();
+}
+
 const mapbox = (() => new L.TileLayer('https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png', {
     minZoom: 9,
     id: 'inker.mlo91c41',
