@@ -127,7 +127,7 @@ class MetroMap {
         // svg element won't work because it does not have negative dimensions (top-left station is partially visible)
         let origin = svg.createSVGElement('g');
         origin.id = 'origin';
-        ['paths', 'transfers', 'station-circles', 'station-plate', 'dummy-circles'].forEach(groupId => {
+        ['paths', 'transfers', 'station-circles', 'dummy-circles'].forEach(groupId => {
             let group = svg.createSVGElement('g');
             group.id = groupId;
             origin.appendChild(group);
@@ -135,14 +135,7 @@ class MetroMap {
         this.overlay.appendChild(origin);
         let stationCircles = document.getElementById('station-circles');
         stationCircles.classList.add('station-circle');
-        let stationPlate = document.getElementById('station-plate');
-        stationPlate.style.display = 'none';
-        stationPlate.innerHTML = 
-            `<line id="pole" class="plate-pole"/>
-            <g>
-                <rect id="plate-box" class="plate-box" filter="url(#shadow)"/>
-                <text id="plate-text" fill="black" class="plate-text"><tspan/><tspan/><tspan/></text>
-            </g>`;
+        origin.insertBefore(svg.makePlate(), stationCircles.nextElementSibling);
     }
 
 
@@ -159,10 +152,6 @@ class MetroMap {
         let circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
         let g = svg.changePlate(circle);
         g.style.display = null;
-        dummyCircle.onmouseout = e => {
-            g.style.display = 'none';
-            dummyCircle.onmouseout = null;
-        };
     }
 
     /**

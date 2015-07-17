@@ -101,7 +101,49 @@ export function makeDropShadow() {
 
 }
 
-function changePlateBox(bottomRight: L.Point, lines: string[]) {
+export function makePlate(): HTMLElement {
+    let stationPlate = createSVGElement('g');
+    stationPlate.id = 'station-plate';
+    stationPlate.style.display = 'none';
+    stationPlate.innerHTML = `<line id="pole" class="plate-pole"/>
+            <g>
+                <rect id="plate-box" class="plate-box" filter="url(#shadow)"/>
+                <text id="plate-text" fill="black" class="plate-text"><tspan/><tspan/><tspan/></text>
+            </g>`;
+    return stationPlate;
+}
+
+/**
+ * modifies & returns the modified plate
+ */
+export function changePlate(circle: HTMLElement): HTMLElement {
+    let plateGroup = document.getElementById('station-plate');
+    const c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
+    const r = Number(circle.getAttribute('r'));
+    const iR = Math.trunc(r);
+
+    let pole = <HTMLElement>plateGroup.children[0];
+    const poleSize = new L.Point(4 + iR, 8 + iR);
+    const poleEnd = c.subtract(poleSize);
+    pole.setAttribute('x1', c.x.toString());
+    pole.setAttribute('y1', c.y.toString());
+    pole.setAttribute('x2', poleEnd.x.toString());
+    pole.setAttribute('y2', poleEnd.y.toString());
+    
+    const dataset = util.getSVGDataset(circle);
+    const ru: string = dataset['ru'];
+    const fi: string = dataset['fi'];
+
+    let names = !fi ? [ru] : (util.getUserLanguage() === 'fi') ? [fi, ru] : [ru, fi];
+    if (ru in util.englishStationNames) {
+        names.push(util.englishStationNames[ru]);
+    }
+
+    changePlateBox(poleEnd, names);
+    return plateGroup;
+}
+
+function changePlateBox(bottomRight: L.Point, lines: string[]): void {
     let rect = document.getElementById('plate-box');
     const spacing = 12;
     const longest = lines.reduce((prev, cur) => prev.length < cur.length ? cur : prev);
@@ -111,7 +153,7 @@ function changePlateBox(bottomRight: L.Point, lines: string[]) {
     const rectTopLeft = bottomRight.subtract(rectSize);
     rect.setAttribute('x', rectTopLeft.x.toString());
     rect.setAttribute('y', rectTopLeft.y.toString());
-    
+
     let text = document.getElementById('plate-text');
     let i = 0;
     for (; i < lines.length; ++i) {
@@ -124,32 +166,5 @@ function changePlateBox(bottomRight: L.Point, lines: string[]) {
     for (; i < text.children.length; ++i) {
         text.children[i].textContent = null;
     }
-    
-}
 
-export function changePlate(circle: HTMLElement): HTMLElement {
-    let plateGroup = document.getElementById('station-plate');
-    let pole = <HTMLElement>plateGroup.children[0];
-    const c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
-    const r = Number(circle.getAttribute('r'));
-    const iR = Math.trunc(r);
-    const poleSize = new L.Point(4 + iR, 8 + iR);
-    const poleBounds = new L.Bounds(c, c.subtract(poleSize));
-
-    pole.setAttribute('x1', poleBounds.min.x.toString());
-    pole.setAttribute('y1', poleBounds.min.y.toString());
-    pole.setAttribute('x2', poleBounds.max.x.toString());
-    pole.setAttribute('y2', poleBounds.max.y.toString());
-    
-    const dataset = util.getSVGDataset(circle);
-    const ru: string = dataset['ru'];
-    const fi: string = dataset['fi'];
-
-    let names = !fi ? [ru] : (util.getUserLanguage() === 'fi') ? [fi, ru] : [ru, fi];
-    if (ru in util.englishStationNames) {
-        names.push(util.englishStationNames[ru]);
-    }
-
-    changePlateBox(poleBounds.min, names);
-    return plateGroup;
 }
