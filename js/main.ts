@@ -1,12 +1,12 @@
 import MetroMap = require('./metro-map');
 //import MetroMap from './metro-map';
 
-if (!('Promise' in window)) {
+if (!('Promise' in window) || !('then' in Promise) || !('catch' in Promise)) {
     console.log('promises not present, using a polyfill');
     require('es6-promise').polyfill();
 }
 
-if (!('Set' in window)) {
+if (!('Set' in window) || !('add' in Set) || !('has' in Set)) {
     console.log('es6 collections not present, using a polyfill');
     require('es6-collections');
 }
