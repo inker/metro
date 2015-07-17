@@ -159,7 +159,10 @@ class MetroMap {
         let circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
         let g = svg.changePlate(circle);
         g.style.display = null;
-        dummyCircle.onmouseout = e => g.style.display = 'none';
+        dummyCircle.onmouseout = e => {
+            g.style.display = 'none';
+            dummyCircle.onmouseout = null;
+        };
     }
 
     /**
