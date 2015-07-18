@@ -52,12 +52,7 @@ export function setSVGDataset(el: Element, dataset: any): void {
     Object.keys(dataset).forEach(key => el.setAttribute('data-' + key, dataset[key]));
 }
 
-export let englishStationNames = {
-    'Centraľnyj voxal': 'Central Raiway Station',
-    'Aeroport': 'Airport'
-};
-
-export function flashingTitle(titles: string[], duration: number) {
+export function flashTitle(titles: string[], duration: number) {
     let i = 0;
     setInterval(() => document.title = titles[++i % titles.length], duration);
 }

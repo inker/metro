@@ -225,13 +225,17 @@ class MetroMap {
             let station = this.graph.stations[stationIndex];
             let circular = util.findCircle(this.graph, station);
             let circumpoints: L.Point[] = [];
-            station.platforms.forEach(platformNum => {
-                const platform = this.graph.platforms[platformNum];
-                const posOnSVG = platformsOnSVG[platformNum];
+            station.platforms.forEach(platformIndex => {
+                const platform = this.graph.platforms[platformIndex];
+                const posOnSVG = platformsOnSVG[platformIndex];
                 
                 if (zoom > 9) {
                     let ci = svg.makeCircle(posOnSVG, circleRadius);
-                    svg.convertToStation(ci, 'p-' + platformNum, platform, circleBorder);
+                    svg.convertToStation(ci, 'p-' + platformIndex, platform, circleBorder);
+                    let englishName = this.graph.hints.englishNames[platform.name];
+                    if (englishName) {
+                        util.setSVGDataset(ci, { en: englishName });
+                    }
                     ci.setAttribute('data-station', stationIndex.toString());
                     
                     let dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
@@ -249,13 +253,13 @@ class MetroMap {
                     let midPts = [posOnSVG, posOnSVG];
                     let lens = [0, 0];
                     let firstSpan = this.graph.spans[platform.spans[0]];
-                    if (firstSpan.source === platformNum) {
+                    if (firstSpan.source === platformIndex) {
                         platform.spans.reverse();
                     }
                     // previous node should come first
                     for (let i = 0; i < 2; ++i) {
                         let span = this.graph.spans[platform.spans[i]];
-                        let neighborNum = (span.source === platformNum) ? span.target : span.source;
+                        let neighborNum = (span.source === platformIndex) ? span.target : span.source;
                         let neighbor = this.graph.platforms[neighborNum];
                         let neighborOnSVG = platformsOnSVG[neighborNum];
                         lens[i] = posOnSVG.distanceTo(neighborOnSVG);
@@ -264,7 +268,7 @@ class MetroMap {
                     let mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
                     let mm = midPts[0].add(mdiff);
                     let diff = posOnSVG.subtract(mm);
-                    whiskers[platformNum] = midPts.map(midPt => midPt.add(diff));
+                    whiskers[platformIndex] = midPts.map(midPt => midPt.add(diff));
                 } else if (platform.spans.length === 3) {
                     let midPts = [posOnSVG, posOnSVG];
                     let lens = [0, 0];
@@ -273,7 +277,7 @@ class MetroMap {
                         prevs: L.Point[] = [];
                     for (let i = 0; i < 3; ++i) {
                         let span = this.graph.spans[platform.spans[i]];
-                        if (span.source === platformNum) {
+                        if (span.source === platformIndex) {
                             let neighbor = this.graph.platforms[span.target];
                             let neighborPos = platformsOnSVG[span.target];
                             nexts.push(neighborPos);
@@ -293,14 +297,14 @@ class MetroMap {
                     const mdiff = midPtNext.subtract(midPtPrev).multiplyBy(distToPrev / (distToPrev + distToNext));
                     const mm = midPtPrev.add(mdiff);
                     const diff = posOnSVG.subtract(mm);
-                    whiskers[platformNum] = [midPtPrev.add(diff), midPtNext.add(diff)];
+                    whiskers[platformIndex] = [midPtPrev.add(diff), midPtNext.add(diff)];
                 } else {
-                    whiskers[platformNum] = [posOnSVG, posOnSVG];
+                    whiskers[platformIndex] = [posOnSVG, posOnSVG];
                 }
                 
                 if (circular && circular.indexOf(platform) > -1) {
                     circumpoints.push(posOnSVG);
-                    platformsInCircles.push(platformNum);
+                    platformsInCircles.push(platformIndex);
                 }
 
             });

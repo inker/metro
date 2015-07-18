@@ -133,11 +133,10 @@ export function modifyPlate(circle: HTMLElement): HTMLElement {
     const dataset = util.getSVGDataset(circle);
     const ru: string = dataset['ru'];
     const fi: string = dataset['fi'];
-
+    const en: string = dataset['en'];
+    
     let names = !fi ? [ru] : (util.getUserLanguage() === 'fi') ? [fi, ru] : [ru, fi];
-    if (ru in util.englishStationNames) {
-        names.push(util.englishStationNames[ru]);
-    }
+    if (en) names.push(en);
 
     modifyPlateBox(poleEnd, names);
     return plateGroup;
