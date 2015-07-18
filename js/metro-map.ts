@@ -42,6 +42,7 @@ class MetroMap {
 
         console.log('map should be created by now');
         this.addOverlay();
+        this.fixFont();
         //this.refillSVG(); not required here
         this.addListeners();
         graphPromise
@@ -77,8 +78,7 @@ class MetroMap {
             this.map.touchZoom.enable();
             //this.overlay.style['-webkit-transition'] = null;
             //this.overlay.style.transition = null;
-            let t3d = util.parseTransform(mapPane.style.transform);
-            this.overlay.style.transform = mapPane.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
+            this.fixFont(mapPane);
         });
         this.map.on('zoomstart', e => {
             this.map.dragging.disable();
@@ -91,6 +91,11 @@ class MetroMap {
             this.overlay.style.opacity = null;
             this.map.dragging.enable();
         });
+    }
+    
+    private fixFont(mapPane: HTMLElement): void {
+        let t3d = util.parseTransform(mapPane.style.transform);
+        this.overlay.style.transform = mapPane.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
     }
 
     private resetView(): void {
