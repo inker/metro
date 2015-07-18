@@ -24,7 +24,7 @@ class MetroMap {
     }
 
     constructor(containerId: string, kml: string, tileLayers: {}) {
-        require('whatwg-fetch');
+        window['fetch'] = require('whatwg-fetch');
         let graphPromise = fetch(kml);
         let hintsPromise = fetch('json/hints.json');
         this.map = new L.Map(containerId, {

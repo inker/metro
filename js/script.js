@@ -90,7 +90,7 @@ var fetch = undefined;
 var MetroMap = (function () {
     function MetroMap(containerId, kml, tileLayers) {
         var _this = this;
-        require('whatwg-fetch');
+        window['fetch'] = require('whatwg-fetch');
         var graphPromise = fetch(kml);
         var hintsPromise = fetch('json/hints.json');
         this.map = new L.Map(containerId, {
