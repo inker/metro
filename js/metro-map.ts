@@ -29,7 +29,7 @@ class MetroMap {
         let hintsPromise = fetch('json/hints.json');
         this.map = new L.Map(containerId, {
             layers: tileLayers[Object.keys(tileLayers)[0]],
-            center: new L.LatLng(60, 30),
+            center: new L.LatLng(59.943556, 30.30452),
             zoom: 11,
             minZoom: 9,
             inertia: false
@@ -47,7 +47,7 @@ class MetroMap {
         graphPromise
             .then(graphText => graphText.json())
             .then(json => this.graph = json)
-            .then(json => this.resetView()) // because the previous assignment returns json
+            .then(json => this.extendBounds()) // because the previous assignment returns json
             .then(() => hintsPromise)
             .then(hintsText => hintsText.json())
             .then(json => this.graph.hints = json)
@@ -96,9 +96,8 @@ class MetroMap {
     private resetView(): void {
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-        //this.graph = JSON.parse(json);
         
-        this.extendBounds();
+        //this.extendBounds();
         this.map.setView(this.bounds.getCenter(), 11, {
             pan: { animate: false },
             zoom: { animate: false }
@@ -346,7 +345,7 @@ class MetroMap {
         }
         
         Object.keys(frag).forEach(i => document.getElementById(i).appendChild(frag[i]));
-
+        //this.resetView();
     }
 }
 
