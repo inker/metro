@@ -2,7 +2,7 @@
 import L = require('leaflet');
 
 const tileLayers = {
-    Maxbox: (() => new L.TileLayer('https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png', {
+    Mapbox: (() => new L.TileLayer('https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png', {
         minZoom: 9,
         id: 'inker.mlo91c41',
         //detectRetina: true,

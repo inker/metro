@@ -27,14 +27,15 @@ class MetroMap {
         let graphPromise = this.fetch(kml);
         let hintsPromise = this.fetch('json/hints.json');
         this.map = new L.Map(containerId, {
-            layers: tileLayers['Mapbox'] || tileLayers[Object.keys(tileLayers).toString()],
+            layers: tileLayers[Object.keys(tileLayers)[0]],
             center: new L.LatLng(60, 30),
             zoom: 11,
             minZoom: 9,
             inertia: false
         }).addControl(new L.Control.Scale({ imperial: false }));
         
-        new addons.LayerControl(this, tileLayers);
+        new addons.LayerControl(tileLayers)
+            .addTo(this.map);
 
         //L.Control['measureControl']().addTo(this.map);
 

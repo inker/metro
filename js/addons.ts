@@ -1,15 +1,19 @@
+import L = require('leaflet');
 import MetroMap = require('./metro-map')
 
 export class LayerControl {
-    constructor(metroMap: MetroMap, tileLayers: any, otherLayers?: any) {
-        let layerControl = L.control['UniForm'](tileLayers, otherLayers || null, {
+    private layerControl: any;
+    constructor(tileLayers: any, otherLayers?: any) {
+        this.layerControl = L.control['UniForm'](tileLayers, otherLayers || null, {
             collapsed: false,
             position: 'topright'
         });
+    }
+    addTo(map: L.Map) {
         // add control widget to map and html dom.
-        layerControl.addTo(metroMap.getMap());
+        this.layerControl.addTo(map);
         // update the control widget to the specific theme.
-        layerControl.renderUniformControl();
+        this.layerControl.renderUniformControl();
     }
 }
 
