@@ -25,8 +25,8 @@ class MetroMap {
 
     constructor(containerId: string, kml: string, tileLayers: {}) {
         let fetch = window['fetch'];
-        let graphPromise = fetch(kml);
-        let hintsPromise = fetch('json/hints.json');
+        let graphPromise = fetch(kml).then(graphText => graphText.json());
+        let hintsPromise = fetch('json/hints.json').then(hintsText => hintsText.json());
         this.map = new L.Map(containerId, {
             layers: tileLayers[Object.keys(tileLayers)[0]],
             center: new L.LatLng(59.943556, 30.30452),
@@ -46,13 +46,11 @@ class MetroMap {
         //this.refillSVG(); not required here
         this.addListeners();
         graphPromise
-            .then(graphText => graphText.json())
-            .then(json => this.graph = json)
-            .then(json => this.extendBounds()) // because the previous assignment returns json
-            .then(() => hintsPromise)
-            .then(hintsText => hintsText.json())
-            .then(json => this.graph.hints = json)
-            .then(json => this.redrawNetwork())
+            .then(graphJson => this.graph = graphJson)
+            .then(graphJson => this.extendBounds()) // because the previous assignment returns json
+            .then(hintsPromise)
+            .then(hintsJson => this.graph.hints = hintsJson)
+            .then(hintsJson => this.redrawNetwork())
             .catch(text => alert(text))
     }
 
