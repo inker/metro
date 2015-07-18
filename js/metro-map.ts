@@ -25,8 +25,14 @@ class MetroMap {
 
     constructor(containerId: string, kml: string, tileLayers: {}) {
         let fetch = window['fetch'];
-        let graphPromise = fetch(kml).then(graphText => graphText.json());
-        let hintsPromise = fetch('json/hints.json').then(hintsText => hintsText.json());
+        let graphPromise = fetch(kml).then(graphText => {
+            console.log('graph json fetched');
+            return graphText.json()
+        });
+        let hintsPromise = fetch('json/hints.json').then(hintsText => {
+            console.log('hints json fetched');
+            return hintsText.json()
+        });
         this.map = new L.Map(containerId, {
             layers: tileLayers[Object.keys(tileLayers)[0]],
             center: new L.LatLng(59.943556, 30.30452),
