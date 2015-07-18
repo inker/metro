@@ -8,7 +8,7 @@ import addons = require('./addons');
 //import * as svg from './svg';
 //import * as util from '../../util';
 //import Plain from './plain-objects';
-let fetch;
+
 class MetroMap {
     private map: L.Map;
     private overlay: HTMLElement;
@@ -24,7 +24,7 @@ class MetroMap {
     }
 
     constructor(containerId: string, kml: string, tileLayers: {}) {
-        window['fetch'] = require('whatwg-fetch');
+        let fetch = window['fetch'];
         let graphPromise = fetch(kml);
         let hintsPromise = fetch('json/hints.json');
         this.map = new L.Map(containerId, {
