@@ -57,6 +57,11 @@ export let englishStationNames = {
     'Aeroport': 'Airport'
 };
 
+export function flashingTitle(titles: string[], duration: number) {
+    let i = 0;
+    setInterval(() => document.title = titles[++i % titles.length], duration);
+}
+
 export function dot(a: L.Point, b: L.Point): number {
     return a.x * b.x + a.y * b.y;
 }

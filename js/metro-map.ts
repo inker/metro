@@ -47,7 +47,7 @@ class MetroMap {
         graphPromise
             .then(graphText => graphText.json())
             .then(json => this.graph = json)
-            .then(json => this.resetView()) // because the precious assignment returns json
+            .then(json => this.resetView()) // because the previous assignment returns json
             .then(() => hintsPromise)
             .then(hintsText => hintsText.json())
             .then(json => this.graph.hints = json)
@@ -92,23 +92,6 @@ class MetroMap {
             this.map.dragging.enable();
         });
     }
-
-    //private fetch(resource: string): Promise<string> {
-    //    return new Promise((resolve, reject) => {
-    //        let xhr = new XMLHttpRequest();
-    //        xhr.onreadystatechange = () => {
-    //            if (xhr.readyState !== 4) return;
-    //            if (xhr.status === 200) {
-    //                resolve(xhr.responseText);
-    //            } else {
-    //                reject(`couldn't fetch ${resource}: ${xhr.status}: ${xhr.statusText}`);
-    //            }
-    //        };
-    //        xhr.open('GET', resource, true);
-    //        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    //        xhr.send();
-    //    });
-    //}
 
     private resetView(): void {
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
@@ -155,9 +138,8 @@ class MetroMap {
     }
 
     private static showPlate(event: MouseEvent): void {
-        let dummyCircle: SVGElement = <any>event.target;
+        const dummyCircle: SVGElement = <any>event.target;
         const dataset = util.getSVGDataset(dummyCircle);
-        //const dataset = dummyCircle.dataset;
         let circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
         let g = svg.modifyPlate(circle);
         g.style.display = null;
@@ -169,7 +151,6 @@ class MetroMap {
      * @param location
      * @returns {Point}
      */
-
     private posOnSVG(SVGBounds: L.Bounds, location: L.LatLngExpression): L.Point {
         const pos = this.map.latLngToContainerPoint(location);
         return pos.subtract(SVGBounds.min);
@@ -238,12 +219,12 @@ class MetroMap {
         const circleBorder = circleRadius * 0.4;
         const transferWidth = lineWidth;
         
-        let platformsInCircles = new Set<number>();
+        let platformsInCircles: number[] = [];
         
         for (let stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
             let station = this.graph.stations[stationIndex];
             let circular = util.findCircle(this.graph, station);
-            let coords: L.Point[] = [];
+            let circumpoints: L.Point[] = [];
             station.platforms.forEach(platformNum => {
                 const platform = this.graph.platforms[platformNum];
                 const posOnSVG = platformsOnSVG[platformNum];
@@ -318,15 +299,15 @@ class MetroMap {
                 }
                 
                 if (circular && circular.indexOf(platform) > -1) {
-                    coords.push(posOnSVG);
-                    platformsInCircles.add(platformNum);
+                    circumpoints.push(posOnSVG);
+                    platformsInCircles.push(platformNum);
                 }
 
             });
             
             if (zoom > 11 && circular) {
-                const circumC = util.getCircumcenter(coords);
-                const circumR = circumC.distanceTo(coords[0]);
+                const circumC = util.getCircumcenter(circumpoints);
+                const circumR = circumC.distanceTo(circumpoints[0]);
                 const circumcircle = svg.makeTransferRing(circumC, circumR, transferWidth, circleBorder);
                 frag['transfers'].appendChild(circumcircle);
             }
@@ -334,7 +315,7 @@ class MetroMap {
         
         if (zoom > 11) {
             this.graph.transfers.forEach(tr => {
-                if (platformsInCircles.has(tr.source) && platformsInCircles.has(tr.target)) return;
+                if (platformsInCircles.indexOf(tr.source) > -1 && platformsInCircles.indexOf(tr.target) > -1) return;
                 const pl1 = this.graph.platforms[tr.source],
                     pl2 = this.graph.platforms[tr.target];
                 const transferPos = [this.posOnSVG(svgBounds, pl1.location), this.posOnSVG(svgBounds, pl2.location)];

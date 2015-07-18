@@ -14,6 +14,11 @@ function addPolyfills () {
         console.log('classlist not present, using a polyfill');
         require('classlist-polyfill');
     }
+    
+    if (!('fetch' in window)) {
+        console.log('fetch not present, using a polyfill');
+    }
+    
 }
 
 export = addPolyfills;
