@@ -48,7 +48,7 @@ class MetroMap {
         graphPromise
             .then(graphJson => this.graph = graphJson)
             .then(graphJson => this.extendBounds()) // because the previous assignment returns json
-            .then(hintsPromise)
+            .then(() => hintsPromise)
             .then(hintsJson => this.graph.hints = hintsJson)
             .then(hintsJson => this.redrawNetwork())
             .catch(text => alert(text))
