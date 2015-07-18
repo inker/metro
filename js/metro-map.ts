@@ -42,7 +42,7 @@ class MetroMap {
 
         console.log('map should be created by now');
         this.addOverlay();
-        this.fixFont();
+        this.fixFont(this.map.getPanes().mapPane);
         //this.refillSVG(); not required here
         this.addListeners();
         graphPromise
