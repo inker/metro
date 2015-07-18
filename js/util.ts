@@ -33,7 +33,7 @@ export function getCircumcenter(positions: L.Point[]): L.Point {
 
 export function getSVGDataset(el: Element): any {
     // for webkit-based browsers
-    if (el['dataset']) {
+    if ('dataset' in el) {
         return el['dataset'];
     }
     // for the rest
