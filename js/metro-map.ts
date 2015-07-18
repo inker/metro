@@ -79,6 +79,7 @@ class MetroMap {
         
         // the secret of correct positioning is the movend transform check for corrent transform
         this.map.on('moveend', e => {
+            console.log('move ended');
             this.map.touchZoom.enable();
             //this.overlay.style['-webkit-transition'] = null;
             //this.overlay.style.transition = null;
@@ -90,6 +91,7 @@ class MetroMap {
             this.overlay.style.opacity = '0.5';
         });
         this.map.on('zoomend', e => {
+            console.log('zoom ended');
             this.redrawNetwork();
             //this.overlay.classList.remove('leaflet-zoom-anim');
             this.overlay.style.opacity = null;
