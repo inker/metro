@@ -86,10 +86,11 @@ var addons = require('./addons');
 //import * as svg from './svg';
 //import * as util from '../../util';
 //import Plain from './plain-objects';
+var fetch = undefined;
 var MetroMap = (function () {
     function MetroMap(containerId, kml, tileLayers) {
         var _this = this;
-        var fetch = require('whatwg-fetch');
+        require('whatwg-fetch');
         var graphPromise = fetch(kml);
         var hintsPromise = fetch('json/hints.json');
         this.map = new L.Map(containerId, {
