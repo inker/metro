@@ -24,8 +24,9 @@ class MetroMap {
     }
 
     constructor(containerId: string, kml: string, tileLayers: {}) {
-        let graphPromise = this.fetch(kml);
-        let hintsPromise = this.fetch('json/hints.json');
+        let fetch = require('whatwg-fetch');
+        let graphPromise = fetch(kml);
+        let hintsPromise = fetch('json/hints.json');
         this.map = new L.Map(containerId, {
             layers: tileLayers[Object.keys(tileLayers)[0]],
             center: new L.LatLng(60, 30),
@@ -44,10 +45,13 @@ class MetroMap {
         //this.refillSVG(); not required here
         this.addListeners();
         graphPromise
-            .then(graphText => this.handleJSON(graphText))
+            .then(graphText => graphText.json())
+            .then(json => this.graph = json)
+            .then(json => this.resetView()) // because the precious assignment returns json
             .then(() => hintsPromise)
-            .then(hintsText => this.appendHintsToGraph(hintsText))
-            .then(() => this.redrawNetwork())
+            .then(hintsText => hintsText.json())
+            .then(json => this.graph.hints = json)
+            .then(json => this.redrawNetwork())
             .catch(text => alert(text))
     }
 
@@ -89,38 +93,33 @@ class MetroMap {
         });
     }
 
-    private fetch(resource: string): Promise<string> {
-        return new Promise((resolve, reject) => {
-            let xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState !== 4) return;
-                if (xhr.status === 200) {
-                    resolve(xhr.responseText);
-                } else {
-                    reject(`couldn't fetch ${resource}: ${xhr.status}: ${xhr.statusText}`);
-                }
-            };
-            xhr.open('GET', resource, true);
-            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-            xhr.send();
-        });
-    }
+    //private fetch(resource: string): Promise<string> {
+    //    return new Promise((resolve, reject) => {
+    //        let xhr = new XMLHttpRequest();
+    //        xhr.onreadystatechange = () => {
+    //            if (xhr.readyState !== 4) return;
+    //            if (xhr.status === 200) {
+    //                resolve(xhr.responseText);
+    //            } else {
+    //                reject(`couldn't fetch ${resource}: ${xhr.status}: ${xhr.statusText}`);
+    //            }
+    //        };
+    //        xhr.open('GET', resource, true);
+    //        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    //        xhr.send();
+    //    });
+    //}
 
-    private handleJSON(json: string): void {
+    private resetView(): void {
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-        this.graph = JSON.parse(json);
+        //this.graph = JSON.parse(json);
         
         this.extendBounds();
         this.map.setView(this.bounds.getCenter(), 11, {
             pan: { animate: false },
             zoom: { animate: false }
         });
-    }
-    
-    private appendHintsToGraph(json: string): void {
-        this.graph.hints = JSON.parse(json);
-        console.log(this.graph.hints);
     }
 
     private refillSVG(): void {

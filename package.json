@@ -12,7 +12,8 @@
     "leaflet": "latest",
     "libxmljs": "latest",
     "morgan": "latest",
-    "serve-favicon": "latest"
+    "serve-favicon": "latest",
+    "whatwg-fetch": "^0.9.0"
   },
   "devDependencies": {
     "babelify": "latest",
