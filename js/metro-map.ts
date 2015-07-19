@@ -25,14 +25,8 @@ class MetroMap {
 
     constructor(containerId: string, kml: string, tileLayers: {}) {
         let fetch = window['fetch'];
-        let graphPromise = fetch(kml).then(graphText => {
-            console.log('graph json fetched');
-            return graphText.json()
-        });
-        let hintsPromise = fetch('json/hints.json').then(hintsText => {
-            console.log('hints json fetched');
-            return hintsText.json()
-        });
+        let graphPromise = fetch(kml).then(graphText => graphText.json());
+        let hintsPromise = fetch('json/hints.json').then(hintsText => hintsText.json());
         this.map = new L.Map(containerId, {
             layers: tileLayers[Object.keys(tileLayers)[0]],
             center: new L.LatLng(59.943556, 30.30452),
@@ -40,17 +34,14 @@ class MetroMap {
             minZoom: 9,
             inertia: false
         }).addControl(new L.Control.Scale({ imperial: false }));
-        
         new addons.LayerControl(tileLayers)
             .addTo(this.map);
-
-        //L.Control['measureControl']().addTo(this.map);
-
+        
         console.log('map should be created by now');
         this.addOverlay();
-        this.fixFont(this.map.getPanes().mapPane);
-        //this.refillSVG(); not required here
+        //this.fixFont(this.map.getPanes().mapPane);
         this.addListeners();
+        console.log(this.map.getSize());
         graphPromise
             .then(graphJson => this.graph = graphJson)
             .then(graphJson => this.extendBounds()) // because the previous assignment returns json
@@ -357,6 +348,8 @@ class MetroMap {
         
         Object.keys(frag).forEach(i => document.getElementById(i).appendChild(frag[i]));
         //this.resetView();
+        // TODO: fix the kludge to make the grey area disappear
+        this.map.invalidateSize(false)
     }
 }
 
