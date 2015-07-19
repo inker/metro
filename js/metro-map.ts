@@ -39,7 +39,6 @@ class MetroMap {
         
         console.log('map should be created by now');
         this.addOverlay();
-        //this.fixFont(this.map.getPanes().mapPane);
         this.addListeners();
         console.log(this.map.getSize());
         graphPromise
@@ -48,6 +47,9 @@ class MetroMap {
             .then(() => hintsPromise)
             .then(hintsJson => this.graph.hints = hintsJson)
             .then(hintsJson => this.redrawNetwork())
+            // TODO: fix the kludge to make the grey area disappear
+            .then(() => this.map.invalidateSize(false))
+            .then(() => this.fixFont(this.map.getPanes().mapPane))
             .catch(text => alert(text))
     }
 
@@ -348,8 +350,7 @@ class MetroMap {
         
         Object.keys(frag).forEach(i => document.getElementById(i).appendChild(frag[i]));
         //this.resetView();
-        // TODO: fix the kludge to make the grey area disappear
-        this.map.invalidateSize(false)
+
     }
 }
 
