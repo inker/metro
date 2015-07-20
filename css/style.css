@@ -126,3 +126,26 @@ path {
 .M10 { stroke: #F371BB; }
 .M11 { stroke: #000000; }
 .M12 { stroke: #84B817; }
+
+.leaflet-control-command-interior, input
+{
+    background-image: url(images/command.png);
+    width: 20px;
+    height: 20px;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    display: block;
+    padding: 3px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    box-shadow: 0 1px 7px rgba(0, 0, 0, 0.65);
+    cursor: auto;
+    text-align: center;
+    background-color: #FFFFFF;
+}
+
+.leaflet-control-command-interior:hover
+{
+    background-color: #F4F4F4;
+}

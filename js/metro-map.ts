@@ -37,6 +37,21 @@ class MetroMap {
         new addons.LayerControl(tileLayers)
             .addTo(this.map);
         
+        //let form: HTMLElement = <any>document.querySelector('form.leaflet-control-layers-list');
+        //let firstChild = form.children[0];
+        //form.innerHTML += `<div class="leaflet-control-layers-separator"></div>`;
+        //let cloned: HTMLElement = <any>firstChild.cloneNode(true);
+        //let els: NodeListOf<HTMLLabelElement> = cloned.getElementsByTagName('label');
+        //let elsParent = els[0].parentElement;
+        //let label: HTMLElement = <any>els[0].cloneNode(true);
+        //label.getElementsByTagName('input')[0].onclick = e => alert('foobarquux!');
+        //let child;
+        //while (child = elsParent.firstChild) {
+        //    elsParent.removeChild(child);
+        //}
+        //elsParent.appendChild(label);
+        //form.appendChild(cloned);
+        
         console.log('map should be created by now');
         this.addOverlay();
         this.addListeners();
@@ -47,10 +62,10 @@ class MetroMap {
             .then(() => hintsPromise)
             .then(hintsJson => this.graph.hints = hintsJson)
             .then(hintsJson => this.redrawNetwork())
-            // TODO: fix the kludge to make the grey area disappear
+            // TODO: fix the kludge making the grey area disappear
             .then(() => this.map.invalidateSize(false))
             .then(() => this.fixFont(this.map.getPanes().mapPane))
-            .catch(text => alert(text))
+            //.catch(text => alert(text))
     }
 
     private addOverlay(): void {
@@ -100,8 +115,7 @@ class MetroMap {
     private resetView(): void {
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-        
-        //this.extendBounds();
+
         this.map.setView(this.bounds.getCenter(), 11, {
             pan: { animate: false },
             zoom: { animate: false }
@@ -206,7 +220,7 @@ class MetroMap {
         
         let stationPlate = document.getElementById('station-plate');
 
-        let whiskers = new Array<L.Point[]>(this.graph.platforms.length);
+        let whiskers = new Array<{}>(this.graph.platforms.length);
 
         const zoom = this.map.getZoom();
         const nw = this.bounds.getNorthWest();
@@ -271,28 +285,62 @@ class MetroMap {
                     let mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
                     let mm = midPts[0].add(mdiff);
                     let diff = posOnSVG.subtract(mm);
-                    whiskers[platformIndex] = midPts.map(midPt => midPt.add(diff));
-                } else if (platform.spans.length === 3) {
-                    let midPts = [posOnSVG, posOnSVG];
-                    let lens = [0, 0];
-
+                    let whisker = {};
+                    whisker[platform.spans[0]] = midPts[0].add(diff);
+                    whisker[platform.spans[1]] = midPts[1].add(diff);
+                    whiskers[platformIndex] = whisker;
+                    //whiskers[platformIndex] = midPts.map(midPt => midPt.add(diff));
+                } else if (platform.spans.length > 2) {
                     let nexts: L.Point[] = [],
                         prevs: L.Point[] = [];
-                    for (let i = 0; i < 3; ++i) {
-                        let span = this.graph.spans[platform.spans[i]];
-                        if (span.source === platformIndex) {
-                            let neighbor = this.graph.platforms[span.target];
-                            let neighborPos = platformsOnSVG[span.target];
-                            nexts.push(neighborPos);
-                        } else {
-                            let neighbor = this.graph.platforms[span.source];
-                            let neighborPos = platformsOnSVG[span.source];
-                            prevs.push(neighborPos);
+                    let nextSpans: number[] = [],
+                        prevSpans: number[] = [];
+                    let dirHints = this.graph.hints.dirHints;
+                    let span = this.graph.spans[platform.spans[0]];
+                    let line = this.graph.routes[span.routes[0]].line;
+                    if (platform.name in dirHints 
+                        && line in dirHints[platform.name] 
+                        //&& Object.keys(dirHints[platform.name]).indexOf('E') < 0
+                    ) {
+                        let platformHints = dirHints[platform.name];
+                        let nextPlatformNames: string[] = [];
+                        Object.keys(platformHints).forEach(key => {
+                            let val = platformHints[key];
+                            if (typeof val === 'string') {
+                                nextPlatformNames.push(val);
+                            } else {
+                                val.forEach(i => nextPlatformNames.push(i));
+                            }
+                        });
+                        for (let i = 0; i < platform.spans.length; ++i) {
+                            let span = this.graph.spans[platform.spans[i]];
+                            let neighborIndex = span.source === platformIndex
+                                ? span.target
+                                : span.source;
+                            let neighbor = this.graph.platforms[neighborIndex];
+                            let neighborPos = platformsOnSVG[neighborIndex];
+                            (nextPlatformNames.indexOf(neighbor.name) > -1 ? nexts : prevs).push(neighborPos);
+                            (nextPlatformNames.indexOf(neighbor.name) > - 1 ? nextSpans : prevSpans).push(platform.spans[i]);
                         }
-                        //(span.source === platformNum ? nextNeighbors : prevNeighbors).push(span);
+                    } else {
+                        for (let i = 0; i < platform.spans.length; ++i) {
+                            let span = this.graph.spans[platform.spans[i]];
+                            if (span.source === platformIndex) {
+                                let neighbor = this.graph.platforms[span.target];
+                                let neighborPos = platformsOnSVG[span.target];
+                                nexts.push(neighborPos);
+                                nextSpans.push(platform.spans[i]);
+                            } else {
+                                let neighbor = this.graph.platforms[span.source];
+                                let neighborPos = platformsOnSVG[span.source];
+                                prevs.push(neighborPos);
+                                prevSpans.push(platform.spans[i]);
+                            }
+                            //(span.source === platformNum ? nextNeighbors : prevNeighbors).push(span);
+                        }
                     }
-                    const prev = (prevs.length === 1) ? prevs[0] : prevs[0].add(prevs[1]).divideBy(2),
-                        next = (nexts.length === 1) ? nexts[0] : nexts[0].add(nexts[1]).divideBy(2);
+                    const prev = (prevs.length === 1) ? prevs[0] : util.getCenter(prevs),
+                        next = (nexts.length === 1) ? nexts[0] : util.getCenter(nexts);
                     const distToPrev = posOnSVG.distanceTo(prev),
                         distToNext = posOnSVG.distanceTo(next);
                     const midPtPrev = posOnSVG.add(prev).divideBy(2),
@@ -300,9 +348,16 @@ class MetroMap {
                     const mdiff = midPtNext.subtract(midPtPrev).multiplyBy(distToPrev / (distToPrev + distToNext));
                     const mm = midPtPrev.add(mdiff);
                     const diff = posOnSVG.subtract(mm);
-                    whiskers[platformIndex] = [midPtPrev.add(diff), midPtNext.add(diff)];
+                    let whisker = {};
+                    prevSpans.forEach(spanIndex => whisker[spanIndex] = midPtPrev.add(diff));
+                    nextSpans.forEach(spanIndex => whisker[spanIndex] = midPtNext.add(diff));
+                    whiskers[platformIndex] = whisker;
+                    //whiskers[platformIndex] = [midPtPrev.add(diff), midPtNext.add(diff)];
                 } else {
-                    whiskers[platformIndex] = [posOnSVG, posOnSVG];
+                    //whiskers[platformIndex] = [posOnSVG, posOnSVG];
+                    let whisker = {};
+                    whisker[platform.spans[0]] = posOnSVG;
+                    whiskers[platformIndex] = whisker;
                 }
                 
                 if (circular && circular.indexOf(platform) > -1) {
@@ -337,7 +392,7 @@ class MetroMap {
                 trgN = span.target;
             const src = this.graph.platforms[srcN],
                 trg = this.graph.platforms[trgN];
-            let bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][1], whiskers[trgN][0], platformsOnSVG[trgN]]);
+            let bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
             let routes = span.routes.map(n => this.graph.routes[n]);
             let matches = routes[0].line.match(/[MEL](\d{1,2})/);
             bezier.style.strokeWidth = lineWidth.toString();

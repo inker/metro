@@ -27,5 +27,5 @@ e. wtf is ingria, why are the stations dubbed in finnish
 f. there's no money for it (whose fault is it?)
 g. i do not agree with the network, where's the station near my home (propose your own)
 h. malfunctioning in IE (get a normal browser ffs)
-i. 
+i. why junctions have single name
  *//**/

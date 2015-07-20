@@ -4,13 +4,13 @@
       "M1": "Semency",
       "M2": "Sennaja ploščaď"
     },
-    "Lahta-centr": {
+    "Bobylka": {
       "M4": "Stadion",
       "M9": "Jachtennaja"
     },
     "Stadion": {
       "M3": "Jachtennaja",
-      "M4": "Lahta-centr"
+      "M4": "Bobylka"
     },
     "Sportivnaja": {
       "M5": "Heslerovskaja",
@@ -35,9 +35,9 @@
     "Malinovka": {
       "M8": "Porochovyje",
       "M10": "Belorusskaja"
-    },
+    }
 
-
+    ,
     "Streľna": {
       "M6": "Kikenka",
       "E": "Sergievo"
@@ -52,6 +52,27 @@
     },
     "Ligovskij kanal": {
       "E": ["Dačnoje", "Predportovaja"]
+    },
+    "Kantemirovskaja": {
+      "M11": "Lanskaja",
+      "E": "Čornaja rečka"
+    },
+    "Čornaja rečka": {
+      "M2": "Komendantskij aerodrom",
+      "E": "Staraja Derevňa"
+    },
+    "Novo-Orlovo": {
+      "M5": "Ulica Kompozitorov",
+      "E": "Šuvalovo"
+    },
+    "Aeroport": {
+      "M11": "Aviagorodok",
+      "E": "Predportovaja"
+    }
+    
+    ,
+    "Beloostrov": {
+        "E": ["Kurort", "Ollila"]
     }
   },
   
@@ -60,8 +81,12 @@
     "Aeroport": "Airport"
   },
   
-  "undergroundSegments": {
-    
+  "elevationSegments": {
+    "M1": [
+      {
+        
+      }
+    ]
   }
     
 }

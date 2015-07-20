@@ -65,6 +65,17 @@ export function angle(v1: L.Point, v2: L.Point): number {
     return dot(v1, v2) / v1.distanceTo(v2);
 }
 
+export function getCenter(pts: L.Point[]): L.Point {
+    if (pts.length === 0) {
+        return new L.Point(0, 0);
+    }
+    let sum = new L.Point(0, 0);
+    for (let i = 0; i < pts.length; ++i) {
+        sum = sum.add(pts[i]);
+    }
+    return sum.divideBy(pts.length);
+}
+
 //export function getSegmentLength(source: L.Point, target: L.Point): number {
 //    const a = target.subtract(source);
 //    return Math.sqrt(a.x * a.x + a.y * a.y);

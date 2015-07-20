@@ -39,6 +39,23 @@ export function makeCubicBezier(controlPoints: L.Point[]): HTMLElement {
     return path;
 }
 
+export function cutCubicBezier(controlPoints: L.Point[], fraction: number): L.Point[] {
+    function red(cps: L.Point[]): L.Point[] {
+        let pts = new Array<L.Point>(cps.length - 1);
+        for (let i = 0; i < pts.length; ++i) {
+            pts[0] = cps[i].add(cps[i + 1].subtract(cps[i]).multiplyBy(fraction));
+        }
+        return pts;
+    }
+    let newArr = new Array(controlPoints.length);
+    let pts = controlPoints.slice(0, controlPoints.length);
+    do {
+        newArr.push(pts[0]);
+        pts = red(pts);
+    } while (pts.length > 0);
+    return newArr;
+}
+
 export function makeTransferRing(center: L.Point, radius: number, thickness: number, borderWidth: number): HTMLElement {
     let g = createSVGElement('g');
     g.classList.add('transfer');
