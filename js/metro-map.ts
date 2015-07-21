@@ -1,6 +1,6 @@
 import L = require('leaflet');
 import svg = require('./svg');
-import util = require('./util');
+import util = require('../util');
 import po = require('../plain-objects');
 import addons = require('./addons');
 import graph = require('../metro-graph');

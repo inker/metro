@@ -1,4 +1,5 @@
 /// <reference path="./typings/tsd.d.ts" />
+'use strict';
 
 //import L = require('leaflet');
 import Yadapter = require('./fetch-adapters/yadapter');
@@ -56,33 +57,6 @@ import MetroGraph = require('./metro-graph');
 //        ) * 6378137;
 //}
 
-//export function findClosest(point: Coordinates, points: Array<Coordinates>): Coordinates {
-//  var dist = Number.MAX_VALUE;
-//  var closest: Coordinates = null;
-//  var newP = new Array<Coordinates>();
-//  if (points.indexOf(point) > -1) {
-//    points.forEach(pt => {
-//      if (pt != point) newP.push(pt);
-//    });
-//  } else {
-//    newP = points;
-//  }
-//  newP.forEach(pt => {
-//    var tempDist = getDistance(point, pt);
-//    if (tempDist < dist) {
-//      closest = pt;
-//      dist = tempDist;
-//    }
-//  });
-//  return closest;
-//}
-
-//export function findClosestObjectInSet<T>(point: Coordinates, objects: Set<T>): T {
-//  var arr = new Array<T>();
-//  objects.forEach(o => arr.push(o));
-//  return findClosestObject(point, arr);
-//}
-
 /** object must contain the 'location' field */
 interface HasLocation extends MetroGraph.Platform {
     location: L.LatLng;
@@ -91,34 +65,24 @@ interface HasLocation extends MetroGraph.Platform {
 }
 
 export function findClosestObject(point: L.LatLng, objects: HasLocation[]): HasLocation {
-    'use strict';
-    let closestDistance = 1000000000;
-    let closest: HasLocation = null;
-    //let closest = objects.reduce((prev, cur) => {
-    //    let tempDist = point.distanceTo(obj['location']);
-    //    return (tempDist < dist) ?
-    //});
-    objects.forEach(obj => {
-        let tempDist = point.distanceTo(obj.location);
-        //let tempDist = getDistance(point, obj['location']);
+    if (objects.length < 1) {
+        throw new Error('an objects array must contain at least 1 object');
+    }
+    let closest = objects[0];
+    let closestDistance = point.distanceTo(closest.location);
+    for (let i = 1; i < objects.length; ++i) {
+        let tempDist = point.distanceTo(objects[i].location);
         if (tempDist < closestDistance) {
-            closest = obj;
+            closest = objects[i];
             closestDistance = tempDist;
         }
-    });
+    }
     return closest;
 }
 
 /** object must contain the 'location' field */
-export function findObjectsInRadius(point: L.LatLng, objects: HasLocation[], radius: number, sortArray: boolean = false): HasLocation[] {
-    'use strict';
+export function findObjectsInRadius(point: L.LatLng, objects: HasLocation[], radius: number, sortArray = false): HasLocation[] {
     let arr = objects.filter(obj => point.distanceTo(obj.location) <= radius);
-    //objects.forEach(obj => {
-    //    //if (getDistance(point, obj['location']) <= radius) {
-    //    if (point.distanceTo(obj.location) <= radius) {
-    //        arr.push(obj);
-    //    }
-    //});
     if (sortArray) {
         arr.sort((a, b) => point.distanceTo(a.location) - point.distanceTo(b.location));
     }
@@ -126,7 +90,6 @@ export function findObjectsInRadius(point: L.LatLng, objects: HasLocation[], rad
 }
 
 export function getCenter(points: L.LatLng[]): L.LatLng {
-    'use strict';
     let cLat = 0, cLon = 0;
     for (var i = 0; i < points.length; ++i) {
         cLat += points[i].lat;

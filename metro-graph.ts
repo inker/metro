@@ -2,7 +2,7 @@
 /// <reference path="./typings/tsd.d.ts" />
 import geo = require('./geo');
 import plain = require('./plain-objects');
-import util = require('./js/util');
+import util = require('./util');
 import po = require('./plain-objects');
 //import L = require('leaflet');
 //import * as geo from './geo';

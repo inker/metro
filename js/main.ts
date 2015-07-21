@@ -1,5 +1,5 @@
 import MetroMap = require('./metro-map');
-import util = require('./util');
+import util = require('../util');
 //import MetroMap from './metro-map';
 
 require('./polyfills')();

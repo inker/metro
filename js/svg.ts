@@ -1,6 +1,6 @@
 import L = require('leaflet');
 import svg = require('./svg');
-import util = require('./util');
+import util = require('../util');
 import po = require('../plain-objects')
 //import L from 'leaflet';
 //import * as svg from './svg';

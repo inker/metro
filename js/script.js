@@ -61,7 +61,7 @@ exports.Measurement = Measurement;
 'use strict';
 
 var MetroMap = require('./metro-map');
-var util = require('./util');
+var util = require('../util');
 //import MetroMap from './metro-map';
 require('./polyfills')();
 var metroMap = new MetroMap('map-container', 'json/graph.json', require('./tilelayers'));
@@ -82,7 +82,7 @@ g. i do not agree with the network, where's the station near my home (propose yo
 h. malfunctioning in IE (get a normal browser ffs)
 i. why junctions have single name
 import MetroMap = require('./metro-map');
-import util = require('./util');
+import util = require('../util');
 //import MetroMap from './metro-map';
 
 require('./polyfills')();
@@ -112,7 +112,7 @@ g. i do not agree with the network, where's the station near my home (propose yo
 h. malfunctioning in IE (get a normal browser ffs)
 i. why junctions have single name
  import MetroMap = require('./metro-map');
-import util = require('./util');
+import util = require('../util');
 //import MetroMap from './metro-map';
 
 require('./polyfills')();
@@ -145,12 +145,12 @@ i. why junctions have single name
 
 
 
-},{"./metro-map":3,"./polyfills":4,"./tilelayers":6,"./util":7}],3:[function(require,module,exports){
+},{"../util":64,"./metro-map":3,"./polyfills":4,"./tilelayers":6}],3:[function(require,module,exports){
 'use strict';
 
 var L = window.L;
 var svg = require('./svg');
-var util = require('./util');
+var util = require('../util');
 var addons = require('./addons');
 //import 'leaflet';
 //import * as svg from './svg';
@@ -545,7 +545,7 @@ module.exports = MetroMap;
 //export default MetroMap;
 
 
-},{"./addons":1,"./svg":5,"./util":7}],4:[function(require,module,exports){
+},{"../util":64,"./addons":1,"./svg":5}],4:[function(require,module,exports){
 /// <reference path="./../typings/tsd.d.ts" />
 'use strict';
 
@@ -569,12 +569,12 @@ function addPolyfills() {
 module.exports = addPolyfills;
 
 
-},{"classlist-polyfill":9,"es6-promise":10,"es6-set/implement":11}],5:[function(require,module,exports){
+},{"classlist-polyfill":8,"es6-promise":9,"es6-set/implement":10}],5:[function(require,module,exports){
 'use strict';
 
 var L = window.L;
 var svg = require('./svg');
-var util = require('./util');
+var util = require('../util');
 //import L from 'leaflet';
 //import * as svg from './svg';
 //import * as util from '../../util';
@@ -754,7 +754,7 @@ function modifyPlateBox(bottomRight, lines) {
 }
 
 
-},{"./svg":5,"./util":7}],6:[function(require,module,exports){
+},{"../util":64,"./svg":5}],6:[function(require,module,exports){
 /// <reference path="./../typings/tsd.d.ts" />
 'use strict';
 
@@ -793,97 +793,6 @@ module.exports = tileLayers;
 
 
 },{}],7:[function(require,module,exports){
-/// <reference path="./../typings/tsd.d.ts" />
-'use strict';
-
-var L = window.L;
-function getUserLanguage() {
-    return (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();
-}
-exports.getUserLanguage = getUserLanguage;
-function parseTransform(val) {
-    var matches = val.match(/translate(3d)?\((-?\d+).*?,\s?(-?\d+).*?(,\s?(-?\d+).*?)?\)/i);
-    return matches ? new L.Point(Number(matches[2]), Number(matches[3])) : new L.Point(0, 0);
-}
-exports.parseTransform = parseTransform;
-function findCircle(graph, station) {
-    if (station.platforms.length !== 3) return null;
-    var platforms = station.platforms.map(function (platformNum) {
-        return graph.platforms[platformNum];
-    });
-    return platforms.every(function (platform) {
-        return platform.transfers.length === 2;
-    }) ? platforms : null;
-}
-exports.findCircle = findCircle;
-function getCircumcenter(positions) {
-    if (positions.length !== 3) {
-        throw new Error('must have 3 vertices');
-    }
-    console.log(positions[1]);
-    var b = positions[1].subtract(positions[0]);
-    var c = positions[2].subtract(positions[0]);
-    var bb = b.x * b.x + b.y * b.y;
-    var cc = c.x * c.x + c.y * c.y;
-    return new L.Point(c.y * bb - b.y * cc, b.x * cc - c.x * bb).divideBy(2.0 * (b.x * c.y - b.y * c.x)).add(positions[0]);
-}
-exports.getCircumcenter = getCircumcenter;
-function getSVGDataset(el) {
-    // for webkit-based browsers
-    if ('dataset' in el) {
-        return el['dataset'];
-    }
-    // for the rest
-    var attrs = el.attributes;
-    var dataset = {};
-    for (var i = 0; i < attrs.length; ++i) {
-        var attr = attrs[i].name;
-        if (attr.startsWith('data-')) {
-            dataset[attr.slice(5)] = el.getAttribute(attr);
-        }
-    }
-    return dataset;
-}
-exports.getSVGDataset = getSVGDataset;
-function setSVGDataset(el, dataset) {
-    Object.keys(dataset).forEach(function (key) {
-        return el.setAttribute('data-' + key, dataset[key]);
-    });
-}
-exports.setSVGDataset = setSVGDataset;
-function flashTitle(titles, duration) {
-    var i = 0;
-    setInterval(function () {
-        return document.title = titles[++i % titles.length];
-    }, duration);
-}
-exports.flashTitle = flashTitle;
-function dot(a, b) {
-    return a.x * b.x + a.y * b.y;
-}
-exports.dot = dot;
-function angle(v1, v2) {
-    return dot(v1, v2) / v1.distanceTo(v2);
-}
-exports.angle = angle;
-function getCenter(pts) {
-    if (pts.length === 0) {
-        return new L.Point(0, 0);
-    }
-    var sum = new L.Point(0, 0);
-    for (var i = 0; i < pts.length; ++i) {
-        sum = sum.add(pts[i]);
-    }
-    return sum.divideBy(pts.length);
-}
-exports.getCenter = getCenter;
-//export function getSegmentLength(source: L.Point, target: L.Point): number {
-//    const a = target.subtract(source);
-//    return Math.sqrt(a.x * a.x + a.y * a.y);
-//}
-
-
-},{}],8:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -975,7 +884,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /*
  * classList.js: Cross-browser full element.classList implementation.
  * 2014-07-23
@@ -1216,7 +1125,7 @@ if ("document" in window.self) {
   }
 }
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function (process,global){
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -2192,7 +2101,7 @@ if ("document" in window.self) {
 
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":8}],11:[function(require,module,exports){
+},{"_process":7}],10:[function(require,module,exports){
 'use strict';
 
 if (!require('./is-implemented')()) {
@@ -2201,7 +2110,7 @@ if (!require('./is-implemented')()) {
 			writable: true });
 }
 
-},{"./is-implemented":12,"./polyfill":64,"es5-ext/global":19}],12:[function(require,module,exports){
+},{"./is-implemented":11,"./polyfill":63,"es5-ext/global":18}],11:[function(require,module,exports){
 'use strict';
 
 module.exports = function () {
@@ -2225,7 +2134,7 @@ module.exports = function () {
 	return true;
 };
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 // Exports true if environment provides native `Set` implementation,
 // whatever that is.
 
@@ -2236,7 +2145,7 @@ module.exports = (function () {
 	return (Object.prototype.toString.call(Set.prototype) === '[object Set]');
 }());
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 
 var setPrototypeOf    = require('es5-ext/object/set-prototype-of')
@@ -2269,7 +2178,7 @@ SetIterator.prototype = Object.create(Iterator.prototype, {
 defineProperty(SetIterator.prototype, toStringTagSymbol,
 	d('c', 'Set Iterator'));
 
-},{"d":16,"es5-ext/object/set-prototype-of":39,"es5-ext/string/#/contains":44,"es6-iterator":51,"es6-symbol":60}],15:[function(require,module,exports){
+},{"d":15,"es5-ext/object/set-prototype-of":38,"es5-ext/string/#/contains":43,"es6-iterator":50,"es6-symbol":59}],14:[function(require,module,exports){
 'use strict';
 
 var copy       = require('es5-ext/object/copy')
@@ -2302,7 +2211,7 @@ module.exports = function (props/*, bindTo*/) {
 	});
 };
 
-},{"es5-ext/object/copy":29,"es5-ext/object/map":37,"es5-ext/object/valid-callable":42,"es5-ext/object/valid-value":43}],16:[function(require,module,exports){
+},{"es5-ext/object/copy":28,"es5-ext/object/map":36,"es5-ext/object/valid-callable":41,"es5-ext/object/valid-value":42}],15:[function(require,module,exports){
 'use strict';
 
 var assign        = require('es5-ext/object/assign')
@@ -2367,7 +2276,7 @@ d.gs = function (dscr, get, set/*, options*/) {
 	return !options ? desc : assign(normalizeOpts(options), desc);
 };
 
-},{"es5-ext/object/assign":26,"es5-ext/object/is-callable":32,"es5-ext/object/normalize-options":38,"es5-ext/string/#/contains":44}],17:[function(require,module,exports){
+},{"es5-ext/object/assign":25,"es5-ext/object/is-callable":31,"es5-ext/object/normalize-options":37,"es5-ext/string/#/contains":43}],16:[function(require,module,exports){
 // Inspired by Google Closure:
 // http://closure-library.googlecode.com/svn/docs/
 // closure_goog_array_array.js.html#goog.array.clear
@@ -2381,7 +2290,7 @@ module.exports = function () {
 	return this;
 };
 
-},{"../../object/valid-value":43}],18:[function(require,module,exports){
+},{"../../object/valid-value":42}],17:[function(require,module,exports){
 'use strict';
 
 var toPosInt = require('../../number/to-pos-integer')
@@ -2412,19 +2321,19 @@ module.exports = function (searchElement/*, fromIndex*/) {
 	return -1;
 };
 
-},{"../../number/to-pos-integer":24,"../../object/valid-value":43}],19:[function(require,module,exports){
+},{"../../number/to-pos-integer":23,"../../object/valid-value":42}],18:[function(require,module,exports){
 'use strict';
 
 module.exports = new Function("return this")();
 
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./is-implemented')()
 	? Math.sign
 	: require('./shim');
 
-},{"./is-implemented":21,"./shim":22}],21:[function(require,module,exports){
+},{"./is-implemented":20,"./shim":21}],20:[function(require,module,exports){
 'use strict';
 
 module.exports = function () {
@@ -2433,7 +2342,7 @@ module.exports = function () {
 	return ((sign(10) === 1) && (sign(-20) === -1));
 };
 
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict';
 
 module.exports = function (value) {
@@ -2442,7 +2351,7 @@ module.exports = function (value) {
 	return (value > 0) ? 1 : -1;
 };
 
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
 
 var sign = require('../math/sign')
@@ -2456,7 +2365,7 @@ module.exports = function (value) {
 	return sign(value) * floor(abs(value));
 };
 
-},{"../math/sign":20}],24:[function(require,module,exports){
+},{"../math/sign":19}],23:[function(require,module,exports){
 'use strict';
 
 var toInteger = require('./to-integer')
@@ -2465,7 +2374,7 @@ var toInteger = require('./to-integer')
 
 module.exports = function (value) { return max(0, toInteger(value)); };
 
-},{"./to-integer":23}],25:[function(require,module,exports){
+},{"./to-integer":22}],24:[function(require,module,exports){
 // Internal method, used by iteration functions.
 // Calls a function for each key-value pair found in object
 // Optionally takes compareFn to iterate object in specific order
@@ -2496,14 +2405,14 @@ module.exports = function (method, defVal) {
 	};
 };
 
-},{"./is-callable":32,"./valid-callable":42,"./valid-value":43}],26:[function(require,module,exports){
+},{"./is-callable":31,"./valid-callable":41,"./valid-value":42}],25:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./is-implemented')()
 	? Object.assign
 	: require('./shim');
 
-},{"./is-implemented":27,"./shim":28}],27:[function(require,module,exports){
+},{"./is-implemented":26,"./shim":27}],26:[function(require,module,exports){
 'use strict';
 
 module.exports = function () {
@@ -2514,7 +2423,7 @@ module.exports = function () {
 	return (obj.foo + obj.bar + obj.trzy) === 'razdwatrzy';
 };
 
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 var keys  = require('../keys')
@@ -2538,7 +2447,7 @@ module.exports = function (dest, src/*, …srcn*/) {
 	return dest;
 };
 
-},{"../keys":34,"../valid-value":43}],29:[function(require,module,exports){
+},{"../keys":33,"../valid-value":42}],28:[function(require,module,exports){
 'use strict';
 
 var assign = require('./assign')
@@ -2550,7 +2459,7 @@ module.exports = function (obj) {
 	return assign({}, obj);
 };
 
-},{"./assign":26,"./valid-value":43}],30:[function(require,module,exports){
+},{"./assign":25,"./valid-value":42}],29:[function(require,module,exports){
 // Workaround for http://code.google.com/p/v8/issues/detail?id=2804
 
 'use strict';
@@ -2588,19 +2497,19 @@ module.exports = (function () {
 	};
 }());
 
-},{"./set-prototype-of/is-implemented":40,"./set-prototype-of/shim":41}],31:[function(require,module,exports){
+},{"./set-prototype-of/is-implemented":39,"./set-prototype-of/shim":40}],30:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./_iterate')('forEach');
 
-},{"./_iterate":25}],32:[function(require,module,exports){
+},{"./_iterate":24}],31:[function(require,module,exports){
 // Deprecated
 
 'use strict';
 
 module.exports = function (obj) { return typeof obj === 'function'; };
 
-},{}],33:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 var map = { function: true, object: true };
@@ -2609,14 +2518,14 @@ module.exports = function (x) {
 	return ((x != null) && map[typeof x]) || false;
 };
 
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./is-implemented')()
 	? Object.keys
 	: require('./shim');
 
-},{"./is-implemented":35,"./shim":36}],35:[function(require,module,exports){
+},{"./is-implemented":34,"./shim":35}],34:[function(require,module,exports){
 'use strict';
 
 module.exports = function () {
@@ -2626,7 +2535,7 @@ module.exports = function () {
 	} catch (e) { return false; }
 };
 
-},{}],36:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 var keys = Object.keys;
@@ -2635,7 +2544,7 @@ module.exports = function (object) {
 	return keys(object == null ? object : Object(object));
 };
 
-},{}],37:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 var callable = require('./valid-callable')
@@ -2652,7 +2561,7 @@ module.exports = function (obj, cb/*, thisArg*/) {
 	return o;
 };
 
-},{"./for-each":31,"./valid-callable":42}],38:[function(require,module,exports){
+},{"./for-each":30,"./valid-callable":41}],37:[function(require,module,exports){
 'use strict';
 
 var forEach = Array.prototype.forEach, create = Object.create;
@@ -2671,14 +2580,14 @@ module.exports = function (options/*, …options*/) {
 	return result;
 };
 
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./is-implemented')()
 	? Object.setPrototypeOf
 	: require('./shim');
 
-},{"./is-implemented":40,"./shim":41}],40:[function(require,module,exports){
+},{"./is-implemented":39,"./shim":40}],39:[function(require,module,exports){
 'use strict';
 
 var create = Object.create, getPrototypeOf = Object.getPrototypeOf
@@ -2691,7 +2600,7 @@ module.exports = function (/*customCreate*/) {
 	return getPrototypeOf(setPrototypeOf(customCreate(null), x)) === x;
 };
 
-},{}],41:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 // Big thanks to @WebReflection for sorting this out
 // https://gist.github.com/WebReflection/5593554
 
@@ -2766,7 +2675,7 @@ module.exports = (function (status) {
 
 require('../create');
 
-},{"../create":30,"../is-object":33,"../valid-value":43}],42:[function(require,module,exports){
+},{"../create":29,"../is-object":32,"../valid-value":42}],41:[function(require,module,exports){
 'use strict';
 
 module.exports = function (fn) {
@@ -2774,7 +2683,7 @@ module.exports = function (fn) {
 	return fn;
 };
 
-},{}],43:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 module.exports = function (value) {
@@ -2782,14 +2691,14 @@ module.exports = function (value) {
 	return value;
 };
 
-},{}],44:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./is-implemented')()
 	? String.prototype.contains
 	: require('./shim');
 
-},{"./is-implemented":45,"./shim":46}],45:[function(require,module,exports){
+},{"./is-implemented":44,"./shim":45}],44:[function(require,module,exports){
 'use strict';
 
 var str = 'razdwatrzy';
@@ -2799,7 +2708,7 @@ module.exports = function () {
 	return ((str.contains('dwa') === true) && (str.contains('foo') === false));
 };
 
-},{}],46:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 'use strict';
 
 var indexOf = String.prototype.indexOf;
@@ -2808,7 +2717,7 @@ module.exports = function (searchString/*, position*/) {
 	return indexOf.call(this, searchString, arguments[1]) > -1;
 };
 
-},{}],47:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 'use strict';
 
 var toString = Object.prototype.toString
@@ -2820,7 +2729,7 @@ module.exports = function (x) {
 		((x instanceof String) || (toString.call(x) === id))) || false;
 };
 
-},{}],48:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 'use strict';
 
 var setPrototypeOf = require('es5-ext/object/set-prototype-of')
@@ -2852,7 +2761,7 @@ ArrayIterator.prototype = Object.create(Iterator.prototype, {
 	toString: d(function () { return '[object Array Iterator]'; })
 });
 
-},{"./":51,"d":16,"es5-ext/object/set-prototype-of":39,"es5-ext/string/#/contains":44}],49:[function(require,module,exports){
+},{"./":50,"d":15,"es5-ext/object/set-prototype-of":38,"es5-ext/string/#/contains":43}],48:[function(require,module,exports){
 'use strict';
 
 var callable = require('es5-ext/object/valid-callable')
@@ -2898,7 +2807,7 @@ module.exports = function (iterable, cb/*, thisArg*/) {
 	}
 };
 
-},{"./get":50,"es5-ext/object/valid-callable":42,"es5-ext/string/is-string":47}],50:[function(require,module,exports){
+},{"./get":49,"es5-ext/object/valid-callable":41,"es5-ext/string/is-string":46}],49:[function(require,module,exports){
 'use strict';
 
 var isString = require('es5-ext/string/is-string')
@@ -2913,7 +2822,7 @@ module.exports = function (obj) {
 	return new ArrayIterator(obj);
 };
 
-},{"./array":48,"./string":58,"./valid-iterable":59,"es5-ext/string/is-string":47,"es6-symbol":53}],51:[function(require,module,exports){
+},{"./array":47,"./string":57,"./valid-iterable":58,"es5-ext/string/is-string":46,"es6-symbol":52}],50:[function(require,module,exports){
 'use strict';
 
 var clear    = require('es5-ext/array/#/clear')
@@ -3005,7 +2914,7 @@ defineProperty(Iterator.prototype, Symbol.iterator, d(function () {
 }));
 defineProperty(Iterator.prototype, Symbol.toStringTag, d('', 'Iterator'));
 
-},{"d":16,"d/auto-bind":15,"es5-ext/array/#/clear":17,"es5-ext/object/assign":26,"es5-ext/object/valid-callable":42,"es5-ext/object/valid-value":43,"es6-symbol":53}],52:[function(require,module,exports){
+},{"d":15,"d/auto-bind":14,"es5-ext/array/#/clear":16,"es5-ext/object/assign":25,"es5-ext/object/valid-callable":41,"es5-ext/object/valid-value":42,"es6-symbol":52}],51:[function(require,module,exports){
 'use strict';
 
 var isString       = require('es5-ext/string/is-string')
@@ -3020,12 +2929,12 @@ module.exports = function (value) {
 	return (typeof value[iteratorSymbol] === 'function');
 };
 
-},{"es5-ext/string/is-string":47,"es6-symbol":53}],53:[function(require,module,exports){
+},{"es5-ext/string/is-string":46,"es6-symbol":52}],52:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./is-implemented')() ? Symbol : require('./polyfill');
 
-},{"./is-implemented":54,"./polyfill":56}],54:[function(require,module,exports){
+},{"./is-implemented":53,"./polyfill":55}],53:[function(require,module,exports){
 'use strict';
 
 module.exports = function () {
@@ -3045,14 +2954,14 @@ module.exports = function () {
 	return true;
 };
 
-},{}],55:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 'use strict';
 
 module.exports = function (x) {
 	return (x && ((typeof x === 'symbol') || (x['@@toStringTag'] === 'Symbol'))) || false;
 };
 
-},{}],56:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 'use strict';
 
 var d              = require('d')
@@ -3131,7 +3040,7 @@ defineProperty(HiddenSymbol.prototype, Symbol.toPrimitive,
 defineProperty(HiddenSymbol.prototype, Symbol.toStringTag,
 	d('c', Symbol.prototype[Symbol.toStringTag]));
 
-},{"./validate-symbol":57,"d":16}],57:[function(require,module,exports){
+},{"./validate-symbol":56,"d":15}],56:[function(require,module,exports){
 'use strict';
 
 var isSymbol = require('./is-symbol');
@@ -3141,7 +3050,7 @@ module.exports = function (value) {
 	return value;
 };
 
-},{"./is-symbol":55}],58:[function(require,module,exports){
+},{"./is-symbol":54}],57:[function(require,module,exports){
 // Thanks @mathiasbynens
 // http://mathiasbynens.be/notes/javascript-unicode#iterating-over-symbols
 
@@ -3180,7 +3089,7 @@ StringIterator.prototype = Object.create(Iterator.prototype, {
 	toString: d(function () { return '[object String Iterator]'; })
 });
 
-},{"./":51,"d":16,"es5-ext/object/set-prototype-of":39}],59:[function(require,module,exports){
+},{"./":50,"d":15,"es5-ext/object/set-prototype-of":38}],58:[function(require,module,exports){
 'use strict';
 
 var isIterable = require('./is-iterable');
@@ -3190,9 +3099,9 @@ module.exports = function (value) {
 	return value;
 };
 
-},{"./is-iterable":52}],60:[function(require,module,exports){
-arguments[4][53][0].apply(exports,arguments)
-},{"./is-implemented":61,"./polyfill":62,"dup":53}],61:[function(require,module,exports){
+},{"./is-iterable":51}],59:[function(require,module,exports){
+arguments[4][52][0].apply(exports,arguments)
+},{"./is-implemented":60,"./polyfill":61,"dup":52}],60:[function(require,module,exports){
 'use strict';
 
 module.exports = function () {
@@ -3213,7 +3122,7 @@ module.exports = function () {
 	return true;
 };
 
-},{}],62:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 'use strict';
 
 var d = require('d')
@@ -3268,7 +3177,7 @@ Object.defineProperty(Symbol.prototype, Symbol.toPrimitive, d('',
 	}));
 Object.defineProperty(Symbol.prototype, Symbol.toStringTag, d('c', 'Symbol'));
 
-},{"d":16}],63:[function(require,module,exports){
+},{"d":15}],62:[function(require,module,exports){
 'use strict';
 
 var d        = require('d')
@@ -3402,7 +3311,7 @@ module.exports = exports = function (o) {
 };
 exports.methods = methods;
 
-},{"d":16,"es5-ext/object/valid-callable":42}],64:[function(require,module,exports){
+},{"d":15,"es5-ext/object/valid-callable":41}],63:[function(require,module,exports){
 'use strict';
 
 var clear          = require('es5-ext/array/#/clear')
@@ -3483,4 +3392,114 @@ ee(Object.defineProperties(SetPoly.prototype, {
 defineProperty(SetPoly.prototype, Symbol.iterator, d(getValues));
 defineProperty(SetPoly.prototype, Symbol.toStringTag, d('c', 'Set'));
 
-},{"./is-native-implemented":13,"./lib/iterator":14,"d":16,"es5-ext/array/#/clear":17,"es5-ext/array/#/e-index-of":18,"es5-ext/object/set-prototype-of":39,"es5-ext/object/valid-callable":42,"es6-iterator/for-of":49,"es6-iterator/valid-iterable":59,"es6-symbol":60,"event-emitter":63}]},{},[2]);
+},{"./is-native-implemented":12,"./lib/iterator":13,"d":15,"es5-ext/array/#/clear":16,"es5-ext/array/#/e-index-of":17,"es5-ext/object/set-prototype-of":38,"es5-ext/object/valid-callable":41,"es6-iterator/for-of":48,"es6-iterator/valid-iterable":58,"es6-symbol":59,"event-emitter":62}],64:[function(require,module,exports){
+/// <reference path="./typings/tsd.d.ts" />
+'use strict';
+var L = window.L;
+function diffByOne(str1, str2) {
+    var diff = 0;
+    if (str1 != '' && str2 != '' && str1.length == str2.length) {
+        for (var i = 0, j = 0; i < str1.length && j < str2.length; ++i, ++j) {
+            if (str1[i] != str2[j]) {
+                ++diff;
+                if (str1[i + 1] == str2[j]) {
+                    ++i;
+                } else if (str1[i] == str2[j + 1]) {
+                    ++j;
+                } else if (str1[i + 1] == str2[j + 1]) {
+                    ++i; //
+                    ++j;
+                }
+            }
+        }
+    }
+    return diff == 1;
+}
+exports.diffByOne = diffByOne;
+function getUserLanguage() {
+    return (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();
+}
+exports.getUserLanguage = getUserLanguage;
+function parseTransform(val) {
+    var matches = val.match(/translate(3d)?\((-?\d+).*?,\s?(-?\d+).*?(,\s?(-?\d+).*?)?\)/i);
+    return matches ? new L.Point(Number(matches[2]), Number(matches[3])) : new L.Point(0, 0);
+}
+exports.parseTransform = parseTransform;
+function findCircle(graph, station) {
+    if (station.platforms.length !== 3) return null;
+    var platforms = station.platforms.map(function (platformNum) {
+        return graph.platforms[platformNum];
+    });
+    return platforms.every(function (platform) {
+        return platform.transfers.length === 2;
+    }) ? platforms : null;
+}
+exports.findCircle = findCircle;
+function getCircumcenter(positions) {
+    if (positions.length !== 3) {
+        throw new Error('must have 3 vertices');
+    }
+    console.log(positions[1]);
+    var b = positions[1].subtract(positions[0]);
+    var c = positions[2].subtract(positions[0]);
+    var bb = b.x * b.x + b.y * b.y;
+    var cc = c.x * c.x + c.y * c.y;
+    return new L.Point(c.y * bb - b.y * cc, b.x * cc - c.x * bb).divideBy(2.0 * (b.x * c.y - b.y * c.x)).add(positions[0]);
+}
+exports.getCircumcenter = getCircumcenter;
+function getSVGDataset(el) {
+    // for webkit-based browsers
+    if ('dataset' in el) {
+        return el['dataset'];
+    }
+    // for the rest
+    var attrs = el.attributes;
+    var dataset = {};
+    for (var i = 0; i < attrs.length; ++i) {
+        var attr = attrs[i].name;
+        if (attr.startsWith('data-')) {
+            dataset[attr.slice(5)] = el.getAttribute(attr);
+        }
+    }
+    return dataset;
+}
+exports.getSVGDataset = getSVGDataset;
+function setSVGDataset(el, dataset) {
+    Object.keys(dataset).forEach(function (key) {
+        return el.setAttribute('data-' + key, dataset[key]);
+    });
+}
+exports.setSVGDataset = setSVGDataset;
+function flashTitle(titles, duration) {
+    var i = 0;
+    setInterval(function () {
+        return document.title = titles[++i % titles.length];
+    }, duration);
+}
+exports.flashTitle = flashTitle;
+function dot(a, b) {
+    return a.x * b.x + a.y * b.y;
+}
+exports.dot = dot;
+function angle(v1, v2) {
+    return dot(v1, v2) / v1.distanceTo(v2);
+}
+exports.angle = angle;
+function getCenter(pts) {
+    if (pts.length === 0) {
+        return new L.Point(0, 0);
+    }
+    var sum = new L.Point(0, 0);
+    for (var i = 0; i < pts.length; ++i) {
+        sum = sum.add(pts[i]);
+    }
+    return sum.divideBy(pts.length);
+}
+exports.getCenter = getCenter;
+//export function getSegmentLength(source: L.Point, target: L.Point): number {
+//    const a = target.subtract(source);
+//    return Math.sqrt(a.x * a.x + a.y * a.y);
+//}
+
+
+},{}]},{},[2]);
