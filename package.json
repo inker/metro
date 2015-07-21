@@ -11,9 +11,9 @@
     "express": "latest",
     "leaflet": "latest",
     "libxmljs": "latest",
-    "morgan": "latest",
+    "request": "latest",
     "serve-favicon": "latest",
-    "whatwg-fetch": "^0.9.0"
+    "whatwg-fetch": "latest"
   },
   "devDependencies": {
     "babelify": "latest",
@@ -21,9 +21,10 @@
     "gulp": "latest",
     "gulp-uglify": "latest",
     "gulp-util": "latest",
+    "literalify": "latest",
     "uglify-js": "latest",
-    "vinyl-source-stream": "latest",
-    "watchify": "latest"
+    "vinyl-buffer": "latest",
+    "vinyl-source-stream": "latest"
   },
   "scripts": {
     "test": "wut"

@@ -99,3 +99,35 @@ export function getCenter(pts: L.Point[]): L.Point {
     return sum.divideBy(pts.length);
 }
 
+export function verifyHints(graph: po.Graph, hints: po.Hints): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const crossPlatform = hints.crossPlatform;
+        Object.keys(crossPlatform).forEach(platformName => {
+            if (graph.platforms.find(el => el.name === platformName) === undefined) {
+                throw new Error('platform ' + platformName + " doesn't exist");
+            }
+            const obj = crossPlatform[platformName];
+            Object.keys(obj).forEach(line => {
+                const val = obj[line];
+                if (typeof val === 'string') {
+                    if (graph.platforms.find(el => el.name === val) === undefined) {
+                        throw new Error('platform ' + val + " doesn't exist");
+                    }
+                } else {
+                    val.forEach(item => {
+                        if (graph.platforms.find(el => el.name === item) === undefined) {
+                            throw new Error('platform ' + item + " doesn't exist");
+                        }
+                    });
+                }
+            });
+        });
+        Object.keys(hints.englishNames).forEach(platformName => {
+            if (graph.platforms.find(el => el.name === platformName) === undefined) {
+                throw new Error('platform ' + platformName + " doesn't exist");
+            }
+        });
+        resolve('hints json seems okay');
+    });
+}
+

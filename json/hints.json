@@ -12,7 +12,7 @@
       "M3": "Jachtennaja",
       "M4": "Bobylka"
     },
-    "Sportivnaja": {
+    "Tučkov most": {
       "M5": "Heslerovskaja",
       "M7": "Puškarskaja"
     },
@@ -35,7 +35,11 @@
     "Malinovka": {
       "M8": "Porochovyje",
       "M10": "Belorusskaja"
+    },
+    "Park Stroitelej": {
+      "M12": "Kinovia"
     }
+
 
     ,
     "Streľna": {
@@ -51,7 +55,7 @@
       "E": ["Volchonskaja", "Sosnovaja Poľana"]
     },
     "Ligovskij kanal": {
-      "E": ["Dačnoje", "Predportovaja"]
+      "E": "Bronevaja"
     },
     "Novo-Orlovo": {
       "M5": "Ulica Kompozitorov",
@@ -65,6 +69,24 @@
     ,
     "Beloostrov": {
         "E": ["Kurort", "Ollila"]
+    },
+    "Jablonovka": {
+      "E": "Centraľnyj voxal"
+    },
+    "Predportovaja": {
+      "E": "Ligovskij kanal"
+    },
+    "Finlandskij voxal": {
+      "E": "Centraľnyj voxal"
+    },
+    "Pargolovo": {
+      "E": "Novo-Orlovo"
+    },
+    "Obuchovo": {
+      "E": "Belevskoje pole"
+    },
+    "Ligovskij kanal": {
+      "E": "Bronevaja"
     }
   },
   

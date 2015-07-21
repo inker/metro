@@ -37,6 +37,12 @@
     },
     "serve-static/serve-static.d.ts": {
       "commit": "1632606f82cfbaf89d4b96b8dccacfaf2a6ae2f3"
+    },
+    "request/request.d.ts": {
+      "commit": "99942cab1446292c79c4328218abd37621505112"
+    },
+    "form-data/form-data.d.ts": {
+      "commit": "99942cab1446292c79c4328218abd37621505112"
     }
   }
 }

@@ -81,7 +81,6 @@ export class Platform {
 
 }
 
-
 export class Station {
     name: string;
     altNames: AltNames;

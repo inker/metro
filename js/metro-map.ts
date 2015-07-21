@@ -60,6 +60,10 @@ class MetroMap {
             .then(() => this.map.invalidateSize(false))
             .then(() => this.fixFontRendering(this.map.getPanes().mapPane))
             .then(() => dataPromise);
+        
+        Promise.all([graphPromise, hintsPromise])
+            .then(results => util.verifyHints(this.graph, this.hints))
+            .then(response => console.log(response));
     }
 
     private addMapListeners(): void {

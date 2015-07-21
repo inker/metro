@@ -9,3 +9,5 @@
 /// <reference path="serve-static/serve-static.d.ts" />
 /// <reference path="x2js/xml2json.d.ts" />
 /// <reference path="xml2js/xml2js.d.ts" />
+/// <reference path="form-data/form-data.d.ts" />
+/// <reference path="request/request.d.ts" />

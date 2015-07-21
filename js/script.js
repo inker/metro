@@ -201,6 +201,11 @@ var MetroMap = (function () {
         }).then(function () {
             return dataPromise;
         });
+        Promise.all([graphPromise, hintsPromise]).then(function (results) {
+            return util.verifyHints(_this.graph, _this.hints);
+        }).then(function (response) {
+            return console.log(response);
+        });
     }
     MetroMap.prototype.getMap = function () {
         return this.map;
@@ -564,6 +569,27 @@ function addPolyfills() {
     }
     if (!('fetch' in window)) {
         console.log('fetch not present, using a polyfill');
+    }
+    if (!Array.prototype.find) {
+        Array.prototype.find = function (predicate) {
+            if (this == null) {
+                throw new TypeError('Array.prototype.find called on null or undefined');
+            }
+            if (typeof predicate !== 'function') {
+                throw new TypeError('predicate must be a function');
+            }
+            var list = Object(this);
+            var length = list.length >>> 0;
+            var thisArg = arguments[1];
+            var value;
+            for (var i = 0; i < length; i++) {
+                value = list[i];
+                if (predicate.call(thisArg, value, i, list)) {
+                    return value;
+                }
+            }
+            return undefined;
+        };
     }
 }
 module.exports = addPolyfills;
@@ -3495,6 +3521,46 @@ function getCenter(pts) {
     return sum.divideBy(pts.length);
 }
 exports.getCenter = getCenter;
+function verifyHints(graph, hints) {
+    return new Promise(function (resolve, reject) {
+        var crossPlatform = hints.crossPlatform;
+        Object.keys(crossPlatform).forEach(function (platformName) {
+            if (graph.platforms.find(function (el) {
+                return el.name === platformName;
+            }) === undefined) {
+                throw new Error('platform ' + platformName + ' doesn\'t exist');
+            }
+            var obj = crossPlatform[platformName];
+            Object.keys(obj).forEach(function (line) {
+                var val = obj[line];
+                if (typeof val === 'string') {
+                    if (graph.platforms.find(function (el) {
+                        return el.name === val;
+                    }) === undefined) {
+                        throw new Error('platform ' + val + ' doesn\'t exist');
+                    }
+                } else {
+                    val.forEach(function (item) {
+                        if (graph.platforms.find(function (el) {
+                            return el.name === item;
+                        }) === undefined) {
+                            throw new Error('platform ' + item + ' doesn\'t exist');
+                        }
+                    });
+                }
+            });
+        });
+        Object.keys(hints.englishNames).forEach(function (platformName) {
+            if (graph.platforms.find(function (el) {
+                return el.name === platformName;
+            }) === undefined) {
+                throw new Error('platform ' + platformName + ' doesn\'t exist');
+            }
+        });
+        resolve('hints json seems okay');
+    });
+}
+exports.verifyHints = verifyHints;
 
 
 },{}]},{},[2]);
