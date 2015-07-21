@@ -7,25 +7,19 @@ import po = require('./plain-objects');
 //import L = require('leaflet');
 //import * as geo from './geo';
 
-//const enum Elevation {
-//    Underground, Surface, Overground
-//}
+export type AltNames = { old?: string };
 
 export class Platform {
     private _name: string; // overrides the parent station's name
-    private _altName: string;
-    private _oldName: string;
+    private _altNames: AltNames;
     private _station: Station;
     private _spans: Span[];
     location: L.LatLng;
-    //elevation: Elevation;
 
-    constructor(location: L.LatLng, name: string = null, altName: string = null, oldName: string = null) {
+    constructor(location: L.LatLng, name: string = null, altNames: AltNames = null) {
         this._name = name;
-        this._altName = altName;
-        this._oldName = oldName;
+        this._altNames = altNames;
         this.location = location;
-        //this.elevation = elevation;
         this._spans = [];
     }
 
@@ -37,20 +31,12 @@ export class Platform {
         this._name = name;
     }
 
-    get altName(): string {
-        return this._altName || this._station.altName;
+    get altNames(): AltNames {
+        return this._altNames || this._station.altNames;
     }
 
-    set altName(name: string) {
-        this._altName = name;
-    }
-
-    get oldName(): string {
-        return this._oldName || this._station.oldName;
-    }
-
-    set oldName(name: string) {
-        this._oldName = name;
+    set altNames(names: AltNames) {
+        this._altNames = names;
     }
 
     get spans(): Span[] {
@@ -62,16 +48,20 @@ export class Platform {
     }
 
     set station(station: Station) {
-        if (station.platforms.indexOf(this) === -1) {
+        if (this._station) {
+            let stationPlatforms = this._station.platforms;
+            stationPlatforms.splice(stationPlatforms.indexOf(this), 1);
+        }
+        if (station.platforms.indexOf(this) < 0) {
             station.platforms.push(this);
         }
         this._station = station;
     }
 
     nextStop(connector: Span): Platform {
-        if (connector.source == this) {
+        if (connector.source === this) {
             return connector.target;
-        } else if (connector.target == this) {
+        } else if (connector.target === this) {
             return connector.source;
         }
         throw new Error("span doesn't belong to the platform");
@@ -91,28 +81,22 @@ export class Platform {
 
 }
 
+
 export class Station {
     name: string;
-    altName: string;
+    altNames: AltNames;
     platforms: Platform[];
-    oldName: string;
     private _loc: L.LatLng;
 
-    constructor(name: string, altName: string = null, platforms: Platform[] = [], oldName: string = null) {
+    constructor(name: string, altNames: AltNames, platforms: Platform[] = []) {
         this.name = name;
-        this.altName = altName;
+        this.altNames = altNames;
         this.platforms = platforms;
-        this.oldName = oldName;
         platforms.forEach(platform => platform.station = this);
     }
 
     get location(): L.LatLng {
-        let avg = new L.Point(0, 0);
-        this.platforms.forEach(platform => {
-            avg.y += platform.location.lat;
-            avg.x += platform.location.lng;
-        });
-        return new L.LatLng(avg.y / this.platforms.length, avg.x / this.platforms.length);
+        return geo.getCenter(this.platforms.map(platform => platform.location));
     }
 
 }
@@ -123,7 +107,7 @@ class Edge {
     bidirectional: boolean;
 
     constructor(source: Platform, target: Platform, bidirectional = true) {
-        if (source == target) throw new Error("source & target cannot be the same platform (" + source.name + ', ' + source.location + ')');
+        if (source === target) throw new Error("source & target cannot be the same platform (" + source.name + ', ' + source.location + ')');
         this.src = source;
         this.trg = target;
         this.bidirectional = bidirectional;
@@ -138,14 +122,24 @@ class Edge {
     }
 
     other(platform: Platform): Platform {
-        if (this.src == platform) return this.trg;
-        else if (this.trg == platform) return this.src;
+        if (this.src === platform) return this.trg;
+        else if (this.trg === platform) return this.src;
         //console.log("span doesn't contain the specified platform");
         return null;
     }
 
-    //replacePlatform(old:Platform, replacement:Platform);
-    //addPlatform(platform:Platform);
+    replacePlatform(old: Platform, replacement: Platform): void {
+        if (this.src === old) this.src = replacement;
+        else if (this.trg === old) this.trg = replacement;
+        else throw new Error("edge doesn't contain the platform to replace");
+    }
+    
+    addPlaform(platform: Platform): void {
+        if (this.source) this.trg = platform;
+        else if (!this.trg) this.trg = platform;
+        else throw new Error("span cannot be triple-end");
+    }
+
 }
 
 export class Span extends Edge {
@@ -157,22 +151,17 @@ export class Span extends Edge {
         target.spans.push(this);
         this.routes = routes;
         this.bidirectional = bidirectional;
-        routes = [];
     }
 
     replacePlatform(old: Platform, replacement: Platform): void {
-        if (this.src == old) this.src = replacement;
-        else if (this.trg == old) this.trg = replacement;
-        else throw new Error("span doesn't contain the platform to replace");
+        super.replacePlatform(old, replacement);
         old.spans.slice(old.spans.indexOf(this), 1);
         replacement.spans.push(this);
     }
 
     addPlatform(platform: Platform): void {
         platform.spans.push(this);
-        if (this.source) this.trg = platform;
-        else if (!this.trg) this.trg = platform;
-        else throw new Error("span cannot be triple-end");
+        super.addPlaform(platform);
     }
 
 }
@@ -180,21 +169,6 @@ export class Span extends Edge {
 export class Transfer extends Edge {
     constructor(source: Platform, target: Platform, bidirectional: boolean = true) {
         super(source, target, bidirectional);
-    }
-
-    replacePlatform(old: Platform, replacement: Platform): void {
-        if (this.src == old) this.src = replacement;
-        if (this.trg == old) this.trg = replacement;
-        else throw new Error("span doesn't contain the platform to replace");
-        //old.spans.delete(this);
-        //replacement.spans.add(this);
-    }
-
-    addPlatform(platform: Platform): void {
-        //platform.spans.add(this);
-        if (this.source) this.trg = platform;
-        else if (!this.trg) this.trg = platform;
-        else throw new Error("span cannot be triple-end");
     }
 }
 
@@ -204,9 +178,11 @@ export class Line {
     name: string;
 
     constructor(type: string, num?: number, name: string = null) {
-        if (type.length != 1) throw new Error("type must be one letter");
+        if (type.length !== 1) throw new Error("type must be one letter");
         this.type = type;
-        if (num && num.toString() != num.toPrecision()) throw new Error('line number ' + num + ' cannot be fractional');
+        if (num && num.toString() !== num.toPrecision()) {
+            throw new Error('line number ' + num + ' cannot be fractional');
+        }
         this.num = num;
         this.name = name;
     }
@@ -233,10 +209,10 @@ export class Route {
 
 
     isParentOf(route: Route): boolean {
-        if (this.line != route.line) return false;
+        if (this.line !== route.line) return false;
         let thisBranchSorted = this.branch.split('').sort().join(''),
             thatBranchSorted = route.branch.split('').sort().join('');
-        return thisBranchSorted != thatBranchSorted && thisBranchSorted.indexOf(thatBranchSorted) > -1;
+        return thisBranchSorted !== thatBranchSorted && thisBranchSorted.indexOf(thatBranchSorted) > -1;
     }
 
 }
@@ -252,8 +228,8 @@ export class MetroGraph {
     constructor(json?: string) {
         if (!json) return;
         let obj: po.Graph = JSON.parse(json);
-        this.platforms = obj.platforms.map(p => new Platform(p.location, p.name, p.altName, p.oldName));
-        this.stations = obj.stations.map(s => new Station(s.name, s.altName, s.platforms.map(i => this.platforms[i]), s.oldName));
+        this.platforms = obj.platforms.map(p => new Platform(p.location, p.name, p.altNames));
+        this.stations = obj.stations.map(s => new Station(s.name, s.altNames, s.platforms.map(i => this.platforms[i])));
         this.lines = Object.keys(obj.lines).map(l => {
             let matches = l.match(/([ML])(\d{1,2})/);
             return matches ? new Line(matches[1], parseInt(matches[2]), obj.lines[l]) : new Line('E');
@@ -267,14 +243,12 @@ export class MetroGraph {
         let obj = {
             platforms: this.platforms.map(platform => ({
                 name: platform.name,
-                altName: platform.altName,
-                oldName: platform.oldName,
+                altNames: platform.altNames,
                 station: this.stations.indexOf(platform.station),
                 location: {
                     lat: platform.location.lat,
                     lng: platform.location.lng
                 },
-                //elevation: platform.elevation,
                 spans: platform.spans.map(span => this.spans.indexOf(span)),
                 transfers: this.transfers.map(transfer => transfer.other(platform))
                     .filter(o => o !== null)
@@ -286,8 +260,7 @@ export class MetroGraph {
             })),
             stations: this.stations.map(station => ({
                 name: station.name,
-                altName: station.altName,
-                oldName: station.oldName,
+                altName: station.altNames,
                 location: {
                     lat: station.location.lat,
                     lng: station.location.lng

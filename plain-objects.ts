@@ -1,11 +1,11 @@
 /// <reference path="./typings/tsd.d.ts" />
 import L = require('leaflet');
+import graph = require('./metro-graph');
 
 declare module Plain {
     type Platform = {
         name: string;
-        altName: string;
-        oldName: string;
+        altNames: graph.AltNames;
         station: number;
         location: L.LatLng;
         elevation: number;
@@ -15,8 +15,7 @@ declare module Plain {
 
     type Station = {
         name: string;
-        altName: string;
-        oldName: string;
+        altNames: graph.AltNames;
         location: L.LatLng;
         platforms: number[];
     };
@@ -40,7 +39,7 @@ declare module Plain {
     type StationOrPlatform = {
         location: L.LatLng;
         name: string;
-        altName: string;
+        altNames: graph.AltNames;
     };
 
     type Graph = {

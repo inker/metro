@@ -594,7 +594,7 @@ function convertToStation(circle, id, data, borderWidth) {
         lat: data.location.lat,
         lng: data.location.lng,
         ru: data.name,
-        fi: data.altName
+        fi: data.altNames['fi']
     });
 }
 exports.convertToStation = convertToStation;
@@ -3396,24 +3396,24 @@ defineProperty(SetPoly.prototype, Symbol.toStringTag, d('c', 'Set'));
 /// <reference path="./typings/tsd.d.ts" />
 'use strict';
 var L = window.L;
-function diffByOne(str1, str2) {
+function diffByOne(a, b) {
     var diff = 0;
-    if (str1 != '' && str2 != '' && str1.length == str2.length) {
-        for (var i = 0, j = 0; i < str1.length && j < str2.length; ++i, ++j) {
-            if (str1[i] != str2[j]) {
+    if (a !== '' && b !== '' && a.length === b.length) {
+        for (var i = 0, j = 0; i < a.length && j < b.length; ++i, ++j) {
+            if (a[i] != b[j]) {
                 ++diff;
-                if (str1[i + 1] == str2[j]) {
+                if (a[i + 1] == b[j]) {
                     ++i;
-                } else if (str1[i] == str2[j + 1]) {
+                } else if (a[i] == b[j + 1]) {
                     ++j;
-                } else if (str1[i + 1] == str2[j + 1]) {
+                } else if (a[i + 1] == b[j + 1]) {
                     ++i; //
                     ++j;
                 }
             }
         }
     }
-    return diff == 1;
+    return diff === 1;
 }
 exports.diffByOne = diffByOne;
 function getUserLanguage() {
@@ -3439,11 +3439,10 @@ function getCircumcenter(positions) {
     if (positions.length !== 3) {
         throw new Error('must have 3 vertices');
     }
-    console.log(positions[1]);
     var b = positions[1].subtract(positions[0]);
     var c = positions[2].subtract(positions[0]);
-    var bb = b.x * b.x + b.y * b.y;
-    var cc = c.x * c.x + c.y * c.y;
+    var bb = dot(b, b);
+    var cc = dot(c, c);
     return new L.Point(c.y * bb - b.y * cc, b.x * cc - c.x * bb).divideBy(2.0 * (b.x * c.y - b.y * c.x)).add(positions[0]);
 }
 exports.getCircumcenter = getCircumcenter;
@@ -3496,10 +3495,6 @@ function getCenter(pts) {
     return sum.divideBy(pts.length);
 }
 exports.getCenter = getCenter;
-//export function getSegmentLength(source: L.Point, target: L.Point): number {
-//    const a = target.subtract(source);
-//    return Math.sqrt(a.x * a.x + a.y * a.y);
-//}
 
 
 },{}]},{},[2]);

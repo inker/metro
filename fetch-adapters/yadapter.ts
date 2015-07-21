@@ -148,7 +148,7 @@ class Yadapter implements IAdapter {
                         return true;
                     }
                 })) {
-                closestStation = new tr.Station(closestPoint.name, closestPoint.description, []);
+                closestStation = new tr.Station(closestPoint.name, { fi: closestPoint.description }, []);
                 graph.stations.push(closestStation);
             }
             let platformsForGraph: tr.Platform[] = [];
@@ -176,7 +176,7 @@ class Yadapter implements IAdapter {
         points.forEach(pt => {
             let platform = new tr.Platform(pt.location);
             graph.platforms.push(platform);
-            graph.stations.push(new tr.Station(pt.name, pt.description, [platform]));
+            graph.stations.push(new tr.Station(pt.name, { fi: pt.description }, [platform]));
         });
 
         const eLine = new tr.Line('E');

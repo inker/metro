@@ -22,7 +22,7 @@ export function convertToStation(circle: HTMLElement, id: string, data: po.Stati
         lat: data.location.lat,
         lng: data.location.lng,
         ru: data.name,
-        fi: data.altName
+        fi: data.altNames['fi']
     });
 }
 
