@@ -252,30 +252,39 @@ class MetroMap {
                 
                 // control points
                 if (platform.spans.length === 2) {
-                    let midPts = [posOnSVG, posOnSVG];
-                    let lens = [0, 0];
-                    let firstSpan = this.graph.spans[platform.spans[0]];
-                    if (firstSpan.source === platformIndex) {
-                        platform.spans.reverse();
+                    let lines = platform.spans.map(i => this.graph.routes[this.graph.spans[i].routes[0]].line);
+                    // TODO: refactor this stuff, unify 2-span & >2-span platforms
+                    if (lines[0] !== lines[1]) {
+                        let whisker = {};
+                        whisker[platform.spans[0]] = posOnSVG;
+                        whisker[platform.spans[1]] = posOnSVG;
+                        whiskers[platformIndex] = whisker;
+                    } else {
+                        let midPts = [posOnSVG, posOnSVG];
+                        let lens = [0, 0];
+                        let firstSpan = this.graph.spans[platform.spans[0]];
+                        if (firstSpan.source === platformIndex) {
+                            platform.spans.reverse();
+                        }
+                        // previous node should come first
+                        for (let i = 0; i < 2; ++i) {
+                            let span = this.graph.spans[platform.spans[i]];
+                            let neighborNum = (span.source === platformIndex) ? span.target : span.source;
+                            let neighbor = this.graph.platforms[neighborNum];
+                            let neighborOnSVG = platformsOnSVG[neighborNum];
+                            lens[i] = posOnSVG.distanceTo(neighborOnSVG);
+                            midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
+                        }
+                        let mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
+                        let mm = midPts[0].add(mdiff);
+                        let diff = posOnSVG.subtract(mm);
+                        let whisker = {};
+                        whisker[platform.spans[0]] = midPts[0].add(diff);
+                        whisker[platform.spans[1]] = midPts[1].add(diff);
+                        whiskers[platformIndex] = whisker;
+                        //whiskers[platformIndex] = midPts.map(midPt => midPt.add(diff));
                     }
-                    // previous node should come first
-                    for (let i = 0; i < 2; ++i) {
-                        let span = this.graph.spans[platform.spans[i]];
-                        let neighborNum = (span.source === platformIndex) ? span.target : span.source;
-                        let neighbor = this.graph.platforms[neighborNum];
-                        let neighborOnSVG = platformsOnSVG[neighborNum];
-                        lens[i] = posOnSVG.distanceTo(neighborOnSVG);
-                        midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
-                    }
-                    let mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
-                    let mm = midPts[0].add(mdiff);
-                    let diff = posOnSVG.subtract(mm);
-                    let whisker = {};
-                    whisker[platform.spans[0]] = midPts[0].add(diff);
-                    whisker[platform.spans[1]] = midPts[1].add(diff);
-                    whiskers[platformIndex] = whisker;
-                    //whiskers[platformIndex] = midPts.map(midPt => midPt.add(diff));
-                } else if (platform.spans.length > 2) {
+                } else if (platform.spans.length > 1) {
                     let nexts: L.Point[] = [],
                         prevs: L.Point[] = [];
                     let nextSpans: number[] = [],

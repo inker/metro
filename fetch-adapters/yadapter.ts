@@ -15,10 +15,7 @@ import request = require('request');
 //import * as geo from '../geo';
 //import * as libxmljs from 'libxmljs';
 //import * as fs from 'fs';
-var L = {
-    LatLng: require('leaflet').LatLng,
-    Point: require('leaflet').Point
-}
+import L = require('leaflet');
 
 // errors in meters
 let transferOverlapError = 20;
@@ -68,27 +65,31 @@ class Yadapter implements IAdapter {
             if (error) throw error;
             if (response.statusCode !== 200) throw new Error('yandex server is not responding');
             console.log('kml successfully obtained');
+            console.time('parsing took');
             let graph = this.kmlToGraph(body);
-            fs.writeFile(destPath, graph.toJSON(), 'utf8', err => {
+            console.timeEnd('parsing took');
+            const json = graph.toJSON();
+            fs.writeFile(destPath, json, 'utf8', err => {
                 if (err) throw err;
                 resolve('graph written');
+                console.time('recreation takes');
+                const mg = new tr.MetroGraph(json);
+                console.timeEnd('recreation takes');
             });
         }));
     }
 
     private kmlToGraph(kml: string): tr.MetroGraph {
         console.log('parsing KML file...');
-        //let parser = new DOMParser();
-        //let xmlDoc = parser.parseFromString(this.kml, 'text/xml');
-        //let folder = utils.x2js(xmlDoc.querySelector('Folder'));
         let graph = new tr.MetroGraph();
-        let doc = libxmljs.parseXmlString(kml.replace(/<\?xml.*?\?>/ig, '')
-                                              .replace(/\s?\w+=".*?"/ig, '')
-                                              .replace(/(?:\r\n|\r|\n)\s*/g, ''));
-        let placemarks = doc.find('/kml/Document/Folder/Placemark'); //
-        //console.log(placemarks.toString());
+        kml = kml.replace(/<\?xml.*?\?>/ig, '') // delete the top xml stuff
+            .replace(/\s?\w+=".*?"/ig, '') // delete the attributes
+            .replace(/(?:\r\n|\r|\n)\s*/g, ''); // delete new line characters
+        let doc = libxmljs.parseXmlString(kml);
+        let placemarks = doc.find('/kml/Document/Folder/Placemark');
+        
         let points = []; // to stations
-        let paths = []; // to lines
+        let paths: YaPath[] = []; // to lines
         let loms: L.LatLng[][] = []; // to interchanges
         placemarks.forEach(placemark => {
             const placemarkName = placemark.get('./name', '').text();
@@ -100,16 +101,14 @@ class Yadapter implements IAdapter {
                 const coords = new L.LatLng(Number(cs[1]), Number(cs[0]));
                 points.push(new YaPoint(coords, placemarkName, placemarkDescription));
             } else if (placemark.find('./LineString').length > 0 || placemark.find('./LinearRing').length > 0) {
-                const pts = placemarkLocation
-                    .split(/\s/)
-                    .map(match => {
-                             const cs = match.split(',');
-                             return new L.LatLng(Number(cs[1]), Number(cs[0]));
-                         });
+                const pts = placemarkLocation.split(/\s/).map(match => {
+                    const cs = match.split(',');
+                    return new L.LatLng(Number(cs[1]), Number(cs[0]));
+                });
                 const firstLetter = placemarkName.charAt(0);
-                if (firstLetter == 'Л' || firstLetter == 'М') {
+                if (firstLetter === 'Л' || firstLetter === 'М') {
                     loms.push(pts);
-                } else if (placemarkName.substr(0, 5) != 'Konec') {
+                } else if (placemarkName.substr(0, 5) !== 'Konec') {
                     paths.push(new YaPath(pts, placemarkName, placemarkDescription));
                 }
             }
@@ -142,7 +141,7 @@ class Yadapter implements IAdapter {
             // find the nearest station out of already added, or create a new one
             let closestStation: tr.Station;
             if (!graph.stations.some(station => {
-                    if (closestPoint.name == station.name
+                    if (closestPoint.name === station.name
                         && closestPoint.location.distanceTo(station.platforms[0].location) < sameJunctionError) {
                         closestStation = station;
                         return true;
@@ -152,12 +151,12 @@ class Yadapter implements IAdapter {
                 graph.stations.push(closestStation);
             }
             let platformsForGraph: tr.Platform[] = [];
-            const firstPlatform = this.getOrMakePlatform(graph.platforms, lom[0], false);
+            const firstPlatform = Yadapter.getOrMakePlatform(graph.platforms, lom[0], false);
             platformsForGraph.push(firstPlatform);
             firstPlatform.station = closestStation;
             let prevPlatform = firstPlatform;
             for (let i = 1; i < lom.length; ++i) {
-                let platform = this.getOrMakePlatform(graph.platforms, lom[i], false);
+                let platform = Yadapter.getOrMakePlatform(graph.platforms, lom[i], false);
                 platform.station = closestStation;
                 graph.transfers.push(new tr.Transfer(prevPlatform, platform));
                 platformsForGraph.push(platform);
@@ -167,7 +166,7 @@ class Yadapter implements IAdapter {
                 graph.transfers.push(new tr.Transfer(prevPlatform, firstPlatform));
             }
             platformsForGraph.forEach(platform => {
-                if (graph.platforms.indexOf(platform) == -1) {
+                if (graph.platforms.indexOf(platform) < 0) {
                     graph.platforms.push(platform);
                 }
             });
@@ -190,13 +189,13 @@ class Yadapter implements IAdapter {
             const type = path.name.charAt(0);
             let branches: string;
             let routes = [];
-            if (type == 'E') {
+            if (type === 'E') {
                 let lineNums = path.name.slice(1).split('').sort();
                 branches = lineNums.join('');
                 lineNums.forEach(lineNum => {
                     let route = new tr.Route(eLine, lineNum);
                     if (!graph.routes.some(rt => {
-                            if (route.id == rt.id) {
+                            if (route.id === rt.id) {
                                 route = rt;
                                 return true;
                             }
@@ -212,7 +211,7 @@ class Yadapter implements IAdapter {
                 branches = matches[2];
                 line = new tr.Line(type, lineNum);
                 if (!graph.lines.some(l => {
-                        if (l.id == line.id) {
+                        if (l.id === line.id) {
                             line = l;
                             return true;
                         }
@@ -221,7 +220,7 @@ class Yadapter implements IAdapter {
                 }
                 routes.push(new tr.Route(line, branches));
                 if (!graph.routes.some(rt => {
-                        if (routes[0].id == rt.id) {
+                        if (routes[0].id === rt.id) {
                             routes[0] = rt;
                             return true;
                         }
@@ -235,7 +234,7 @@ class Yadapter implements IAdapter {
             prevPlatform.spans.forEach(span => {
                 span.routes.forEach(rt => {
                     // compare lines by values!
-                    if (rt.line.id == routes[0].line.id) {
+                    if (rt.line.id === routes[0].line.id) {
                         presentSpan = span;
                         presentBranches += rt.branch;
                     }
@@ -247,11 +246,11 @@ class Yadapter implements IAdapter {
                 // if both are branches of the main line but not equal to each other
                 // if siblings (same parent)
                 if (util.diffByOne(branches, presentBranches)) {
-                    if (presentSpan.target == prevPlatform) {
+                    if (presentSpan.target === prevPlatform) {
                         path.points.reverse();
                         prevPlatform = geo.findClosestObject(path.points[0], graph.platforms);
                     }
-                } else if (presentSpan.source == prevPlatform) {
+                } else if (presentSpan.source === prevPlatform) {
                     path.points.reverse();
                     prevPlatform = geo.findClosestObject(path.points[0], graph.platforms);
                 }
@@ -259,11 +258,11 @@ class Yadapter implements IAdapter {
             for (let i = 1; i < path.points.length; ++i) {
                 const closestPlatforms = geo.findObjectsInRadius(path.points[i], graph.platforms, distanceError, true);
                 if (closestPlatforms.length > 0) {
-                    const platform = (closestPlatforms.length == 1)
+                    const platform = (closestPlatforms.length === 1)
                         ? closestPlatforms[0]
                         : geo.findClosestObject(path.points[i], closestPlatforms);
                     //let platform:tr.Platform = geo.findClosestObject(path.points[i], graph.platforms);
-                    if (platform != prevPlatform/* && geo.getDistance(path.points[i], platform.location) < distanceError*/) {
+                    if (platform !== prevPlatform/* && geo.getDistance(path.points[i], platform.location) < distanceError*/) {
                         graph.spans.push(new tr.Span(prevPlatform, platform, routes));
                         prevPlatform = platform;
                     }
@@ -278,13 +277,13 @@ class Yadapter implements IAdapter {
         return graph;
     }
 
-    getOrMakePlatform(platforms: tr.Platform[], location: L.LatLng, addToGraph: boolean): tr.Platform {
+    static getOrMakePlatform(platforms: tr.Platform[], location: L.LatLng, addToGraph: boolean): tr.Platform {
         const closestPlatforms = geo.findObjectsInRadius(location, platforms, distanceError);
-        if (closestPlatforms.length == 0) {
+        if (closestPlatforms.length === 0) {
             let platform = new tr.Platform(location);
             if (addToGraph) platforms.push(platform);
             return platform;
-        } else if (closestPlatforms.length == 1) {
+        } else if (closestPlatforms.length === 1) {
             return closestPlatforms[0];
         }
         return geo.findClosestObject(location, closestPlatforms);

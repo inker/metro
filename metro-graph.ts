@@ -57,14 +57,13 @@ export class Platform {
         }
         this._station = station;
     }
+    
+    isAdjacentTo(platform: Platform): boolean {
+        return this.nextStops().indexOf(platform) > -1
+    }
 
     nextStop(connector: Span): Platform {
-        if (connector.source === this) {
-            return connector.target;
-        } else if (connector.target === this) {
-            return connector.source;
-        }
-        throw new Error("span doesn't belong to the platform");
+        return connector.other(this);
     }
     
     nextStops(): Platform[] {
@@ -89,7 +88,6 @@ export class Station {
     name: string;
     altNames: AltNames;
     platforms: Platform[];
-    private _loc: L.LatLng;
 
     constructor(name: string, altNames: AltNames, platforms: Platform[] = []) {
         this.name = name;
@@ -110,7 +108,9 @@ class Edge {
     bidirectional: boolean;
 
     constructor(source: Platform, target: Platform, bidirectional = true) {
-        if (source === target) throw new Error("source & target cannot be the same platform (" + source.name + ', ' + source.location + ')');
+        if (source === target) {
+            throw new Error("source & target cannot be the same platform (" + source.name + ', ' + source.location + ')');
+        }
         this.src = source;
         this.trg = target;
         this.bidirectional = bidirectional;
@@ -158,7 +158,7 @@ export class Span extends Edge {
 
     replacePlatform(old: Platform, replacement: Platform): void {
         super.replacePlatform(old, replacement);
-        old.spans.slice(old.spans.indexOf(this), 1);
+        old.spans.splice(old.spans.indexOf(this), 1);
         replacement.spans.push(this);
     }
 
@@ -263,7 +263,7 @@ export class MetroGraph {
             })),
             stations: this.stations.map(station => ({
                 name: station.name,
-                altName: station.altNames,
+                altNames: station.altNames,
                 location: {
                     lat: station.location.lat,
                     lng: station.location.lng

@@ -38,10 +38,7 @@
     },
     "Park Stroitelej": {
       "M12": "Kinovia"
-    }
-
-
-    ,
+    },
     "Streľna": {
       "M6": "Kikenka",
       "E": "Sergievo"
@@ -64,11 +61,9 @@
     "Aeroport": {
       "M11": "Aviagorodok",
       "E": "Predportovaja"
-    }
-    
-    ,
+    },
     "Beloostrov": {
-        "E": ["Kurort", "Ollila"]
+      "E": ["Kurort", "Ollila"]
     },
     "Jablonovka": {
       "E": "Centraľnyj voxal"
@@ -90,20 +85,19 @@
     },
     "5km": {
       "E": "2km"
+    },
+    "Centraľnyj voxal": {
+      "E": ["Finlandskij voxal", "Jablonovka"]
     }
   },
-  
   "englishNames": {
     "Centraľnyj voxal": "Central Raiway Station",
     "Aeroport": "Airport"
   },
-  
   "elevationSegments": {
     "M1": [
       {
-        
       }
     ]
   }
-    
 }

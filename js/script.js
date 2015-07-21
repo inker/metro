@@ -390,28 +390,39 @@ var MetroMap = (function () {
                 }
                 // control points
                 if (platform.spans.length === 2) {
-                    var midPts = [posOnSVG, posOnSVG];
-                    var lens = [0, 0];
-                    var firstSpan = _this.graph.spans[platform.spans[0]];
-                    if (firstSpan.source === platformIndex) {
-                        platform.spans.reverse();
+                    var lines = platform.spans.map(function (i) {
+                        return _this.graph.routes[_this.graph.spans[i].routes[0]].line;
+                    });
+                    // TODO: refactor this stuff, unify 2-span & >2-span platforms
+                    if (lines[0] !== lines[1]) {
+                        var whisker = {};
+                        whisker[platform.spans[0]] = posOnSVG;
+                        whisker[platform.spans[1]] = posOnSVG;
+                        whiskers[platformIndex] = whisker;
+                    } else {
+                        var midPts = [posOnSVG, posOnSVG];
+                        var lens = [0, 0];
+                        var firstSpan = _this.graph.spans[platform.spans[0]];
+                        if (firstSpan.source === platformIndex) {
+                            platform.spans.reverse();
+                        }
+                        for (var i = 0; i < 2; ++i) {
+                            var span = _this.graph.spans[platform.spans[i]];
+                            var neighborNum = span.source === platformIndex ? span.target : span.source;
+                            var neighbor = _this.graph.platforms[neighborNum];
+                            var neighborOnSVG = platformsOnSVG[neighborNum];
+                            lens[i] = posOnSVG.distanceTo(neighborOnSVG);
+                            midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
+                        }
+                        var mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
+                        var mm = midPts[0].add(mdiff);
+                        var diff = posOnSVG.subtract(mm);
+                        var whisker = {};
+                        whisker[platform.spans[0]] = midPts[0].add(diff);
+                        whisker[platform.spans[1]] = midPts[1].add(diff);
+                        whiskers[platformIndex] = whisker;
                     }
-                    for (var i = 0; i < 2; ++i) {
-                        var span = _this.graph.spans[platform.spans[i]];
-                        var neighborNum = span.source === platformIndex ? span.target : span.source;
-                        var neighbor = _this.graph.platforms[neighborNum];
-                        var neighborOnSVG = platformsOnSVG[neighborNum];
-                        lens[i] = posOnSVG.distanceTo(neighborOnSVG);
-                        midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
-                    }
-                    var mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
-                    var mm = midPts[0].add(mdiff);
-                    var diff = posOnSVG.subtract(mm);
-                    var whisker = {};
-                    whisker[platform.spans[0]] = midPts[0].add(diff);
-                    whisker[platform.spans[1]] = midPts[1].add(diff);
-                    whiskers[platformIndex] = whisker;
-                } else if (platform.spans.length > 2) {
+                } else if (platform.spans.length > 1) {
                     (function () {
                         var nexts = [],
                             prevs = [];
