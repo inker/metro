@@ -66,6 +66,10 @@ export class Platform {
         }
         throw new Error("span doesn't belong to the platform");
     }
+    
+    nextStops(): Platform[] {
+        return this._spans.map(span => span.other(this));
+    }
 
     passingRoutes(): Route[] {
         let s = [];
