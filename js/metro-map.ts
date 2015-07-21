@@ -3,6 +3,7 @@ import svg = require('./svg');
 import util = require('./util');
 import po = require('../plain-objects');
 import addons = require('./addons');
+import graph = require('../metro-graph');
 
 //import 'leaflet';
 //import * as svg from './svg';
@@ -14,6 +15,8 @@ class MetroMap {
     private overlay: HTMLElement;
     private graph: po.Graph;
     private bounds: L.LatLngBounds;
+    private hints: po.Hints;
+    private textData: {};
 
     getMap(): L.Map {
         return this.map;
@@ -24,9 +27,17 @@ class MetroMap {
     }
 
     constructor(containerId: string, kml: string, tileLayers: {}) {
-        let fetch = window['fetch'];
-        let graphPromise = fetch(kml).then(graphText => graphText.json());
-        let hintsPromise = fetch('json/hints.json').then(hintsText => hintsText.json());
+        const fetch = window['fetch'];
+        let graphPromise = fetch(kml)
+            .then(graphText => graphText.json())
+            .then(graphJSON => this.graph = graphJSON);
+        let hintsPromise = fetch('json/hints.json')
+            .then(hintsText => hintsText.json())
+            .then(hintsJSON => this.hints = hintsJSON);
+        let dataPromise = fetch('json/data.json')
+            .then(dataText => dataText.json())
+            .then(dataJSON => this.textData = dataJSON);
+        
         this.map = new L.Map(containerId, {
             layers: tileLayers[Object.keys(tileLayers)[0]],
             center: new L.LatLng(59.943556, 30.30452),
@@ -37,46 +48,21 @@ class MetroMap {
         new addons.LayerControl(tileLayers)
             .addTo(this.map);
         
-        //let form: HTMLElement = <any>document.querySelector('form.leaflet-control-layers-list');
-        //let firstChild = form.children[0];
-        //form.innerHTML += `<div class="leaflet-control-layers-separator"></div>`;
-        //let cloned: HTMLElement = <any>firstChild.cloneNode(true);
-        //let els: NodeListOf<HTMLLabelElement> = cloned.getElementsByTagName('label');
-        //let elsParent = els[0].parentElement;
-        //let label: HTMLElement = <any>els[0].cloneNode(true);
-        //label.getElementsByTagName('input')[0].onclick = e => alert('foobarquux!');
-        //let child;
-        //while (child = elsParent.firstChild) {
-        //    elsParent.removeChild(child);
-        //}
-        //elsParent.appendChild(label);
-        //form.appendChild(cloned);
-        
         console.log('map should be created by now');
-        this.addOverlay();
-        this.addListeners();
-        console.log(this.map.getSize());
+        this.overlay = document.getElementById('overlay');
+        this.addMapListeners();
         graphPromise
-            .then(graphJson => this.graph = graphJson)
+            .catch(errText => alert(errText))
             .then(graphJson => this.extendBounds()) // because the previous assignment returns json
             .then(() => hintsPromise)
-            .then(hintsJson => this.graph.hints = hintsJson)
             .then(hintsJson => this.redrawNetwork())
             // TODO: fix the kludge making the grey area disappear
             .then(() => this.map.invalidateSize(false))
-            .then(() => this.fixFont(this.map.getPanes().mapPane))
-            //.catch(text => alert(text))
+            .then(() => this.fixFontRendering(this.map.getPanes().mapPane))
+            .then(() => dataPromise);
     }
 
-    private addOverlay(): void {
-        //this.map.getPanes().mapPane.innerHTML = '<svg id="overlay"></svg>' + this.map.getPanes().mapPane.innerHTML;
-        this.overlay = document.getElementById('overlay');
-        this.overlay.id = 'overlay';
-        this.overlay.style.fill = 'white';
-        this.overlay.style.zIndex = '10';
-    }
-
-    private addListeners(): void {
+    private addMapListeners(): void {
         let mapPane = this.map.getPanes().mapPane;
         this.map.on('movestart', e => this.map.touchZoom.disable());
         this.map.on('move', e => {
@@ -91,7 +77,7 @@ class MetroMap {
             this.map.touchZoom.enable();
             //this.overlay.style['-webkit-transition'] = null;
             //this.overlay.style.transition = null;
-            this.fixFont(mapPane);
+            this.fixFontRendering(mapPane);
         });
         this.map.on('zoomstart', e => {
             this.map.dragging.disable();
@@ -106,23 +92,26 @@ class MetroMap {
             this.map.dragging.enable();
         });
     }
-    
-    private fixFont(mapPane: HTMLElement): void {
+
+    /**
+     * Fixes blurry font due to 'transform3d' CSS property. Changes everything to 'transform' when the map is not moving
+     * @param mapPane
+     */
+    private fixFontRendering(mapPane: HTMLElement): void {
         let t3d = util.parseTransform(mapPane.style.transform);
         this.overlay.style.transform = mapPane.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
     }
 
-    private resetView(): void {
+    private resetMapView(): void {
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-
         this.map.setView(this.bounds.getCenter(), 11, {
             pan: { animate: false },
             zoom: { animate: false }
         });
     }
 
-    private refillSVG(): void {
+    private resetOverlayStructure(): void {
         let child;
         while (child = this.overlay.firstChild) {
             this.overlay.removeChild(child);
@@ -154,14 +143,6 @@ class MetroMap {
         this.graph.platforms.forEach(platform => this.bounds.extend(platform.location));
     }
 
-    private static showPlate(event: MouseEvent): void {
-        const dummyCircle: SVGElement = <any>event.target;
-        const dataset = util.getSVGDataset(dummyCircle);
-        let circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
-        let g = svg.modifyPlate(circle);
-        g.style.display = null;
-    }
-
     /**
      *
      * @param SVGBounds
@@ -173,7 +154,7 @@ class MetroMap {
         return pos.subtract(SVGBounds.min);
     }
 
-    private updatePos(): void {
+    private updateOverlayPositioning(): void {
         const nw = this.bounds.getNorthWest(),
             se = this.bounds.getSouthEast();
         // svg bounds in pixels relative to container
@@ -208,10 +189,10 @@ class MetroMap {
      *  ...
      */
     private redrawNetwork(): void {
-        this.refillSVG();
-        this.updatePos();
+        this.resetOverlayStructure();
+        this.updateOverlayPositioning();
         
-        let frag = {
+        let docFrags = {
             'station-circles': document.createDocumentFragment(),
             'dummy-circles': document.createDocumentFragment(),
             'transfers': document.createDocumentFragment(),
@@ -225,7 +206,7 @@ class MetroMap {
         const zoom = this.map.getZoom();
         const nw = this.bounds.getNorthWest();
         const se = this.bounds.getSouthEast();
-        let svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
+        const svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
         let posTransform = zoom < 12
             ? platform => this.posOnSVG(svgBounds, this.graph.stations[platform.station].location)
             : platform => this.posOnSVG(svgBounds, platform.location);
@@ -249,7 +230,7 @@ class MetroMap {
                 if (zoom > 9) {
                     let ci = svg.makeCircle(posOnSVG, circleRadius);
                     svg.convertToStation(ci, 'p-' + platformIndex, platform, circleBorder);
-                    let englishName = this.graph.hints.englishNames[platform.name];
+                    let englishName = this.hints.englishNames[platform.name];
                     if (englishName) {
                         util.setSVGDataset(ci, { en: englishName });
                     }
@@ -258,11 +239,11 @@ class MetroMap {
                     let dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
                     dummyCircle.classList.add('invisible-circle');
                     dummyCircle.setAttribute('data-platformId', ci.id);
-                    dummyCircle.onmouseover = MetroMap.showPlate;
+                    dummyCircle.onmouseover = svg.showPlate;
                     dummyCircle.onmouseout = e => stationPlate.style.display = 'none';
                     
-                    frag['station-circles'].appendChild(ci);
-                    frag['dummy-circles'].appendChild(dummyCircle);
+                    docFrags['station-circles'].appendChild(ci);
+                    docFrags['dummy-circles'].appendChild(dummyCircle);
                 }
                 
                 // control points
@@ -295,7 +276,7 @@ class MetroMap {
                         prevs: L.Point[] = [];
                     let nextSpans: number[] = [],
                         prevSpans: number[] = [];
-                    let dirHints = this.graph.hints.dirHints;
+                    let dirHints = this.hints.crossPlatform;
                     let span = this.graph.spans[platform.spans[0]];
                     let line = this.graph.routes[span.routes[0]].line;
                     if (platform.name in dirHints 
@@ -314,15 +295,22 @@ class MetroMap {
                         });
                         for (let i = 0; i < platform.spans.length; ++i) {
                             let span = this.graph.spans[platform.spans[i]];
-                            let neighborIndex = span.source === platformIndex
-                                ? span.target
-                                : span.source;
+                            let neighborIndex = span.source === platformIndex ? span.target : span.source;
                             let neighbor = this.graph.platforms[neighborIndex];
                             let neighborPos = platformsOnSVG[neighborIndex];
-                            (nextPlatformNames.indexOf(neighbor.name) > -1 ? nexts : prevs).push(neighborPos);
-                            (nextPlatformNames.indexOf(neighbor.name) > - 1 ? nextSpans : prevSpans).push(platform.spans[i]);
+                            if (nextPlatformNames.indexOf(neighbor.name) > -1) {
+                                nexts.push(neighborPos);
+                                nextSpans.push(platform.spans[i]);
+                            } else {
+                                prevs.push(neighborPos);
+                                prevSpans.push(platform.spans[i]);
+                            }
                         }
                     } else {
+                        console.log('this place is left for compatibility: ');
+                        console.log(span.routes.map(rtIdx => this.graph.routes[rtIdx]));
+                        console.log([span.source, span.target].map(plIdx => this.graph.platforms[plIdx].name));
+                        
                         for (let i = 0; i < platform.spans.length; ++i) {
                             let span = this.graph.spans[platform.spans[i]];
                             if (span.source === platformIndex) {
@@ -368,10 +356,10 @@ class MetroMap {
             });
             
             if (zoom > 11 && circular) {
-                const circumC = util.getCircumcenter(circumpoints);
-                const circumR = circumC.distanceTo(circumpoints[0]);
-                const circumcircle = svg.makeTransferRing(circumC, circumR, transferWidth, circleBorder);
-                frag['transfers'].appendChild(circumcircle);
+                const cCenter = util.getCircumcenter(circumpoints);
+                const cRadius = cCenter.distanceTo(circumpoints[0]);
+                const cCircle = svg.makeTransferRing(cCenter, cRadius, transferWidth, circleBorder);
+                docFrags['transfers'].appendChild(cCircle);
             }
         }
         
@@ -382,7 +370,7 @@ class MetroMap {
                     pl2 = this.graph.platforms[tr.target];
                 const transferPos = [this.posOnSVG(svgBounds, pl1.location), this.posOnSVG(svgBounds, pl2.location)];
                 const transfer = svg.makeTransfer(transferPos[0], transferPos[1], transferWidth, circleBorder);
-                frag['transfers'].appendChild(transfer);
+                docFrags['transfers'].appendChild(transfer);
             });
         }
 
@@ -400,10 +388,10 @@ class MetroMap {
                 bezier.classList.add(matches[0]);
             }
             bezier.classList.add(routes[0].line.charAt(0) + '-line');
-            frag['paths'].appendChild(bezier);
+            docFrags['paths'].appendChild(bezier);
         }
         
-        Object.keys(frag).forEach(i => document.getElementById(i).appendChild(frag[i]));
+        Object.keys(docFrags).forEach(i => document.getElementById(i).appendChild(docFrags[i]));
         //this.resetView();
 
     }

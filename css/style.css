@@ -28,6 +28,7 @@ a {
     height: 100%;
     cursor: default;
     position: absolute;
+    fill: white;
     z-index: 50;
 }
 

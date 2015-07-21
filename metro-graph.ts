@@ -3,12 +3,13 @@
 import geo = require('./geo');
 import plain = require('./plain-objects');
 import util = require('./js/util');
+import po = require('./plain-objects');
 //import L = require('leaflet');
 //import * as geo from './geo';
 
-const enum Elevation {
-    Underground, Surface, Overground
-}
+//const enum Elevation {
+//    Underground, Surface, Overground
+//}
 
 export class Platform {
     private _name: string; // overrides the parent station's name
@@ -17,14 +18,14 @@ export class Platform {
     private _station: Station;
     private _spans: Span[];
     location: L.LatLng;
-    elevation: Elevation;
+    //elevation: Elevation;
 
-    constructor(location: L.LatLng, elevation = Elevation.Underground, name: string = null, altName: string = null, oldName: string = null) {
+    constructor(location: L.LatLng, name: string = null, altName: string = null, oldName: string = null) {
         this._name = name;
         this._altName = altName;
         this._oldName = oldName;
         this.location = location;
-        this.elevation = elevation;
+        //this.elevation = elevation;
         this._spans = [];
     }
 
@@ -247,6 +248,20 @@ export class MetroGraph {
     lines: Line[] = [];
     transfers: Transfer[] = [];
     routes: Route[] = [];
+    
+    constructor(json?: string) {
+        if (!json) return;
+        let obj: po.Graph = JSON.parse(json);
+        this.platforms = obj.platforms.map(p => new Platform(p.location, p.name, p.altName, p.oldName));
+        this.stations = obj.stations.map(s => new Station(s.name, s.altName, s.platforms.map(i => this.platforms[i]), s.oldName));
+        this.lines = Object.keys(obj.lines).map(l => {
+            let matches = l.match(/([ML])(\d{1,2})/);
+            return matches ? new Line(matches[1], parseInt(matches[2]), obj.lines[l]) : new Line('E');
+        });
+        this.routes = obj.routes.map(r => new Route(this.lines.find(l => l.id === r.line), r.branch));
+        this.spans = obj.spans.map(s => new Span(this.platforms[s.source], this.platforms[s.target], s.routes.map(pr => this.routes[pr])));
+        this.transfers = obj.transfers.map(t => new Transfer(this.platforms[t.source], this.platforms[t.target]));
+    }
 
     toJSON(): string {
         let obj = {
@@ -259,7 +274,7 @@ export class MetroGraph {
                     lat: platform.location.lat,
                     lng: platform.location.lng
                 },
-                elevation: platform.elevation,
+                //elevation: platform.elevation,
                 spans: platform.spans.map(span => this.spans.indexOf(span)),
                 transfers: this.transfers.map(transfer => transfer.other(platform))
                     .filter(o => o !== null)
@@ -291,67 +306,8 @@ export class MetroGraph {
             }))
 
         };
-        //this.platforms.forEach(platform => {
-        //    let plObj = {
-        //        name: platform.name,
-        //        altName: platform.altName,
-        //        oldName: platform.oldName,
-        //        station: self.stations.indexOf(platform.station),
-        //        location: {
-        //            lat: platform.location.lat,
-        //            lng: platform.location.lng
-        //        },
-        //        elevation: platform.elevation,
-        //        spans: platform.spans.map(span => self.spans.indexOf(span)),
-        //        transfers: self.transfers.map(transfer => transfer.other(platform))
-        //            .filter(o => o !== null)
-        //            .map(other => self.platforms.indexOf(other))
-        //    };
-        //    //platform.spans.forEach(span => plObj.spans.push(self.spans.indexOf(span)));
-        //    //for (let i = 0; i < this.transfers.length; ++i) {
-        //    //    let other = this.transfers[i].other(platform);
-        //    //    if (other) {
-        //    //        plObj.transfers.push(self.platforms.indexOf(other));
-        //    //    }
-        //    //}
-        //    obj.platforms.push(plObj);
-        //});
-
-        //this.transfers.forEach(transfer => obj.transfers.push({
-        //    source: self.platforms.indexOf(transfer.source),
-        //    target: self.platforms.indexOf(transfer.target)
-        //}));
-
-        //this.stations.forEach(station => {
-        //    let stObj = {
-        //        name: station.name,
-        //        altName: station.altName,
-        //        oldName: station.oldName,
-        //        location: {
-        //            lat: station.location.lat,
-        //            lng: station.location.lng
-        //        },
-        //        platforms: station.platforms.map(platform => self.platforms.indexOf(platform))
-        //    };
-        //    //station.platforms.forEach(platform => stObj.platforms.push(self.platforms.indexOf(platform)));
-        //    obj.stations.push(stObj);
-        //});
-
-        //this.spans.forEach(span => {
-        //    let spObj = {
-        //        source: self.platforms.indexOf(span.source),
-        //        target: self.platforms.indexOf(span.target),
-        //        routes: span.routes.map(route => self.routes.indexOf(route))
-        //    };
-        //    //span.routes.forEach(route => spObj.routes.push(self.routes.indexOf(route)));
-        //    obj.spans.push(spObj);
-        //});
 
         this.lines.forEach(line => obj.lines[line.id] = line.name);
-        //this.routes.forEach(route => obj.routes.push({
-        //    line: route.line.id,
-        //    branch: route.branch
-        //}));
 
         return JSON.stringify(obj);
     }

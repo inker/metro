@@ -12,7 +12,7 @@ server.listen(app.get('port'), function () {
     console.info('server started');
     var url = 'https://maps.yandex.ru/export/usermaps/geSTNBuviAaKSWp8lkQE4G7Oha2K8cUr.kml';
     var adapter = new Adapter(url);
-    adapter.parseFile('./json/graph.json', function () { console.log('file parsed') });
+    adapter.parseFile('./json/graph.json').then(response => console.log(response));
 });
 //var server = app.listen(app.get('port'), function() {
 //  debug('Express server listening on port ' + server.address().port);

@@ -37,7 +37,7 @@ gulp.task('server-transpile-merge-compress', function() {
 //
 //// browserify must be completed before uglify
 //gulp.task('compress', ['merge'], function () {
-//    return gulp.src('./public/js/bundle.js')
+//    return gulp.src(np'./public/js/bundle.js')
 //        .pipe(uglify())
 //        .pipe(gulp.dest('./public/js/'));
 //});

@@ -52,6 +52,12 @@ declare module Plain {
         routes: Plain.Route[];
         hints?: any;
     };
+    
+    type Hints = {
+        crossPlatform: any;
+        englishNames: any;
+        elevationSegments: any;
+    }
 }
 
 //export default Plain;

@@ -162,9 +162,18 @@ var MetroMap = (function () {
         var fetch = window['fetch'];
         var graphPromise = fetch(kml).then(function (graphText) {
             return graphText.json();
+        }).then(function (graphJSON) {
+            return _this.graph = graphJSON;
         });
         var hintsPromise = fetch('json/hints.json').then(function (hintsText) {
             return hintsText.json();
+        }).then(function (hintsJSON) {
+            return _this.hints = hintsJSON;
+        });
+        var dataPromise = fetch('json/data.json').then(function (dataText) {
+            return dataText.json();
+        }).then(function (dataJSON) {
+            return _this.textData = dataJSON;
         });
         this.map = new L.Map(containerId, {
             layers: tileLayers[Object.keys(tileLayers)[0]],
@@ -174,40 +183,24 @@ var MetroMap = (function () {
             inertia: false
         }).addControl(new L.Control.Scale({ imperial: false }));
         new addons.LayerControl(tileLayers).addTo(this.map);
-        //let form: HTMLElement = <any>document.querySelector('form.leaflet-control-layers-list');
-        //let firstChild = form.children[0];
-        //form.innerHTML += `<div class="leaflet-control-layers-separator"></div>`;
-        //let cloned: HTMLElement = <any>firstChild.cloneNode(true);
-        //let els: NodeListOf<HTMLLabelElement> = cloned.getElementsByTagName('label');
-        //let elsParent = els[0].parentElement;
-        //let label: HTMLElement = <any>els[0].cloneNode(true);
-        //label.getElementsByTagName('input')[0].onclick = e => alert('foobarquux!');
-        //let child;
-        //while (child = elsParent.firstChild) {
-        //    elsParent.removeChild(child);
-        //}
-        //elsParent.appendChild(label);
-        //form.appendChild(cloned);
         console.log('map should be created by now');
-        this.addOverlay();
-        this.addListeners();
-        console.log(this.map.getSize());
-        graphPromise.then(function (graphJson) {
-            return _this.graph = graphJson;
+        this.overlay = document.getElementById('overlay');
+        this.addMapListeners();
+        graphPromise['catch'](function (errText) {
+            return alert(errText);
         }).then(function (graphJson) {
             return _this.extendBounds();
         }).then(function () {
             return hintsPromise;
         }).then(function (hintsJson) {
-            return _this.graph.hints = hintsJson;
-        }).then(function (hintsJson) {
             return _this.redrawNetwork();
         }).then(function () {
             return _this.map.invalidateSize(false);
         }).then(function () {
-            return _this.fixFont(_this.map.getPanes().mapPane);
+            return _this.fixFontRendering(_this.map.getPanes().mapPane);
+        }).then(function () {
+            return dataPromise;
         });
-        //.catch(text => alert(text))
     }
     MetroMap.prototype.getMap = function () {
         return this.map;
@@ -215,14 +208,7 @@ var MetroMap = (function () {
     MetroMap.prototype.getOverlay = function () {
         return this.overlay;
     };
-    MetroMap.prototype.addOverlay = function () {
-        //this.map.getPanes().mapPane.innerHTML = '<svg id="overlay"></svg>' + this.map.getPanes().mapPane.innerHTML;
-        this.overlay = document.getElementById('overlay');
-        this.overlay.id = 'overlay';
-        this.overlay.style.fill = 'white';
-        this.overlay.style.zIndex = '10';
-    };
-    MetroMap.prototype.addListeners = function () {
+    MetroMap.prototype.addMapListeners = function () {
         var _this = this;
         var mapPane = this.map.getPanes().mapPane;
         this.map.on('movestart', function (e) {
@@ -239,7 +225,7 @@ var MetroMap = (function () {
             _this.map.touchZoom.enable();
             //this.overlay.style['-webkit-transition'] = null;
             //this.overlay.style.transition = null;
-            _this.fixFont(mapPane);
+            _this.fixFontRendering(mapPane);
         });
         this.map.on('zoomstart', function (e) {
             _this.map.dragging.disable();
@@ -254,11 +240,15 @@ var MetroMap = (function () {
             _this.map.dragging.enable();
         });
     };
-    MetroMap.prototype.fixFont = function (mapPane) {
+    /**
+     * Fixes blurry font due to 'transform3d' CSS property. Changes everything to 'transform' when the map is not moving
+     * @param mapPane
+     */
+    MetroMap.prototype.fixFontRendering = function (mapPane) {
         var t3d = util.parseTransform(mapPane.style.transform);
         this.overlay.style.transform = mapPane.style.transform = 'translate(' + t3d.x + 'px, ' + t3d.y + 'px)';
     };
-    MetroMap.prototype.resetView = function () {
+    MetroMap.prototype.resetMapView = function () {
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
         this.map.setView(this.bounds.getCenter(), 11, {
@@ -266,7 +256,7 @@ var MetroMap = (function () {
             zoom: { animate: false }
         });
     };
-    MetroMap.prototype.refillSVG = function () {
+    MetroMap.prototype.resetOverlayStructure = function () {
         var child = undefined;
         while (child = this.overlay.firstChild) {
             this.overlay.removeChild(child);
@@ -297,13 +287,6 @@ var MetroMap = (function () {
             return _this.bounds.extend(platform.location);
         });
     };
-    MetroMap.showPlate = function (event) {
-        var dummyCircle = event.target;
-        var dataset = util.getSVGDataset(dummyCircle);
-        var circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
-        var g = svg.modifyPlate(circle);
-        g.style.display = null;
-    };
     /**
      *
      * @param SVGBounds
@@ -314,7 +297,7 @@ var MetroMap = (function () {
         var pos = this.map.latLngToContainerPoint(location);
         return pos.subtract(SVGBounds.min);
     };
-    MetroMap.prototype.updatePos = function () {
+    MetroMap.prototype.updateOverlayPositioning = function () {
         var nw = this.bounds.getNorthWest(),
             se = this.bounds.getSouthEast();
         // svg bounds in pixels relative to container
@@ -349,9 +332,9 @@ var MetroMap = (function () {
         var _this2 = this;
 
         var _this = this;
-        this.refillSVG();
-        this.updatePos();
-        var frag = {
+        this.resetOverlayStructure();
+        this.updateOverlayPositioning();
+        var docFrags = {
             'station-circles': document.createDocumentFragment(),
             'dummy-circles': document.createDocumentFragment(),
             'transfers': document.createDocumentFragment(),
@@ -385,7 +368,7 @@ var MetroMap = (function () {
                 if (zoom > 9) {
                     var ci = svg.makeCircle(posOnSVG, circleRadius);
                     svg.convertToStation(ci, 'p-' + platformIndex, platform, circleBorder);
-                    var englishName = _this.graph.hints.englishNames[platform.name];
+                    var englishName = _this.hints.englishNames[platform.name];
                     if (englishName) {
                         util.setSVGDataset(ci, { en: englishName });
                     }
@@ -393,12 +376,12 @@ var MetroMap = (function () {
                     var dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
                     dummyCircle.classList.add('invisible-circle');
                     dummyCircle.setAttribute('data-platformId', ci.id);
-                    dummyCircle.onmouseover = MetroMap.showPlate;
+                    dummyCircle.onmouseover = svg.showPlate;
                     dummyCircle.onmouseout = function (e) {
                         return stationPlate.style.display = 'none';
                     };
-                    frag['station-circles'].appendChild(ci);
-                    frag['dummy-circles'].appendChild(dummyCircle);
+                    docFrags['station-circles'].appendChild(ci);
+                    docFrags['dummy-circles'].appendChild(dummyCircle);
                 }
                 // control points
                 if (platform.spans.length === 2) {
@@ -429,7 +412,7 @@ var MetroMap = (function () {
                             prevs = [];
                         var nextSpans = [],
                             prevSpans = [];
-                        var dirHints = _this.graph.hints.dirHints;
+                        var dirHints = _this.hints.crossPlatform;
                         var span = _this.graph.spans[platform.spans[0]];
                         var line = _this.graph.routes[span.routes[0]].line;
                         if (platform.name in dirHints && line in dirHints[platform.name]) {
@@ -451,11 +434,23 @@ var MetroMap = (function () {
                                     var neighborIndex = _span.source === platformIndex ? _span.target : _span.source;
                                     var neighbor = _this.graph.platforms[neighborIndex];
                                     var neighborPos = platformsOnSVG[neighborIndex];
-                                    (nextPlatformNames.indexOf(neighbor.name) > -1 ? nexts : prevs).push(neighborPos);
-                                    (nextPlatformNames.indexOf(neighbor.name) > -1 ? nextSpans : prevSpans).push(platform.spans[i]);
+                                    if (nextPlatformNames.indexOf(neighbor.name) > -1) {
+                                        nexts.push(neighborPos);
+                                        nextSpans.push(platform.spans[i]);
+                                    } else {
+                                        prevs.push(neighborPos);
+                                        prevSpans.push(platform.spans[i]);
+                                    }
                                 }
                             })();
                         } else {
+                            console.log('this place is left for compatibility: ');
+                            console.log(span.routes.map(function (rtIdx) {
+                                return _this.graph.routes[rtIdx];
+                            }));
+                            console.log([span.source, span.target].map(function (plIdx) {
+                                return _this.graph.platforms[plIdx].name;
+                            }));
                             for (var i = 0; i < platform.spans.length; ++i) {
                                 var _span2 = _this.graph.spans[platform.spans[i]];
                                 if (_span2.source === platformIndex) {
@@ -501,10 +496,10 @@ var MetroMap = (function () {
                 }
             });
             if (zoom > 11 && circular) {
-                var circumC = util.getCircumcenter(circumpoints);
-                var circumR = circumC.distanceTo(circumpoints[0]);
-                var circumcircle = svg.makeTransferRing(circumC, circumR, transferWidth, circleBorder);
-                frag['transfers'].appendChild(circumcircle);
+                var cCenter = util.getCircumcenter(circumpoints);
+                var cRadius = cCenter.distanceTo(circumpoints[0]);
+                var cCircle = svg.makeTransferRing(cCenter, cRadius, transferWidth, circleBorder);
+                docFrags['transfers'].appendChild(cCircle);
             }
         };
 
@@ -518,7 +513,7 @@ var MetroMap = (function () {
                     pl2 = _this.graph.platforms[tr.target];
                 var transferPos = [_this.posOnSVG(svgBounds, pl1.location), _this.posOnSVG(svgBounds, pl2.location)];
                 var transfer = svg.makeTransfer(transferPos[0], transferPos[1], transferWidth, circleBorder);
-                frag['transfers'].appendChild(transfer);
+                docFrags['transfers'].appendChild(transfer);
             });
         }
         for (var i = 0; i < this.graph.spans.length; ++i) {
@@ -537,10 +532,10 @@ var MetroMap = (function () {
                 bezier.classList.add(matches[0]);
             }
             bezier.classList.add(routes[0].line.charAt(0) + '-line');
-            frag['paths'].appendChild(bezier);
+            docFrags['paths'].appendChild(bezier);
         }
-        Object.keys(frag).forEach(function (i) {
-            return document.getElementById(i).appendChild(frag[i]);
+        Object.keys(docFrags).forEach(function (i) {
+            return document.getElementById(i).appendChild(docFrags[i]);
         });
         //this.resetView();
     };
@@ -578,6 +573,7 @@ module.exports = addPolyfills;
 'use strict';
 
 var L = window.L;
+var svg = require('./svg');
 var util = require('./util');
 //import L from 'leaflet';
 //import * as svg from './svg';
@@ -666,6 +662,14 @@ function createSVGElement(tagName) {
     return document.createElementNS('http://www.w3.org/2000/svg', tagName);
 }
 exports.createSVGElement = createSVGElement;
+function showPlate(event) {
+    var dummyCircle = event.target;
+    var dataset = util.getSVGDataset(dummyCircle);
+    var circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
+    var g = svg.modifyPlate(circle);
+    g.style.display = null;
+}
+exports.showPlate = showPlate;
 function makeForeignDiv(topLeft, text) {
     var foreign = createSVGElement('foreignObject');
     //foreign.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
@@ -750,7 +754,7 @@ function modifyPlateBox(bottomRight, lines) {
 }
 
 
-},{"./util":7}],6:[function(require,module,exports){
+},{"./svg":5,"./util":7}],6:[function(require,module,exports){
 /// <reference path="./../typings/tsd.d.ts" />
 'use strict';
 

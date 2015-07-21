@@ -1,6 +1,11 @@
 {
   "faq": [
     {
+      "q": "Что это?",
+      "a": "Моё предложение по плану развития метро Санкт-Петербурга."
+    },
+    
+    {
       "q": "Počemu vśo napisano translitom?",
       "a": "<a href=\"https://vk.com/russkaja_latinica\">Latinica</a> dľa russkogo jazyka mne lično nravitśa boľše, odnako ja ne predlagaju uprazdňať kirillicu, prosto ispoľzovať latinicu, osnovannuju na češkoj grafike vmesto translita i v kačestve alternativy kirillice (kak, naprimer, v Serbii)."
     },

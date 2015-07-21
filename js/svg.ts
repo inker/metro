@@ -47,6 +47,7 @@ export function cutCubicBezier(controlPoints: L.Point[], fraction: number): L.Po
         }
         return pts;
     }
+
     let newArr = new Array(controlPoints.length);
     let pts = controlPoints.slice(0, controlPoints.length);
     do {
@@ -86,6 +87,14 @@ export function makeTransfer(start: L.Point, end: L.Point, thickness: number, bo
 
 export function createSVGElement(tagName: string): HTMLElement {
     return <HTMLElement>document.createElementNS('http://www.w3.org/2000/svg', tagName);
+}
+
+export function showPlate(event: MouseEvent): void {
+    const dummyCircle: SVGElement = <any>event.target;
+    const dataset = util.getSVGDataset(dummyCircle);
+    let circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
+    let g = svg.modifyPlate(circle);
+    g.style.display = null;
 }
 
 function makeForeignDiv(topLeft: L.Point, text: string): SVGElement {
@@ -146,12 +155,12 @@ export function modifyPlate(circle: HTMLElement): HTMLElement {
     pole.setAttribute('y1', c.y.toString());
     pole.setAttribute('x2', poleEnd.x.toString());
     pole.setAttribute('y2', poleEnd.y.toString());
-    
+
     const dataset = util.getSVGDataset(circle);
     const ru: string = dataset['ru'];
     const fi: string = dataset['fi'];
     const en: string = dataset['en'];
-    
+
     let names = !fi ? [ru] : (util.getUserLanguage() === 'fi') ? [fi, ru] : [ru, fi];
     if (en) names.push(en);
 

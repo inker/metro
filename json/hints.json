@@ -1,5 +1,5 @@
 {
-  "dirHints": {
+  "crossPlatform": {
     "Technologičeskij institut": {
       "M1": "Semency",
       "M2": "Sennaja ploščaď"
@@ -52,14 +52,6 @@
     },
     "Ligovskij kanal": {
       "E": ["Dačnoje", "Predportovaja"]
-    },
-    "Kantemirovskaja": {
-      "M11": "Lanskaja",
-      "E": "Čornaja rečka"
-    },
-    "Čornaja rečka": {
-      "M2": "Komendantskij aerodrom",
-      "E": "Staraja Derevňa"
     },
     "Novo-Orlovo": {
       "M5": "Ulica Kompozitorov",
