@@ -409,7 +409,6 @@ var MetroMap = (function () {
                         for (var i = 0; i < 2; ++i) {
                             var span = _this.graph.spans[platform.spans[i]];
                             var neighborNum = span.source === platformIndex ? span.target : span.source;
-                            var neighbor = _this.graph.platforms[neighborNum];
                             var neighborOnSVG = platformsOnSVG[neighborNum];
                             lens[i] = posOnSVG.distanceTo(neighborOnSVG);
                             midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
@@ -422,18 +421,47 @@ var MetroMap = (function () {
                         whisker[platform.spans[1]] = midPts[1].add(diff);
                         whiskers[platformIndex] = whisker;
                     }
-                } else if (platform.spans.length > 1) {
+                } else if (platform.spans.length > 2) {
                     (function () {
-                        var nexts = [],
-                            prevs = [];
-                        var nextSpans = [],
-                            prevSpans = [];
+                        // 0 - prev, 1 - next
+                        var points = [[], []];
+                        var spanIds = [[], []];
                         var dirHints = _this.hints.crossPlatform;
-                        var span = _this.graph.spans[platform.spans[0]];
-                        var line = _this.graph.routes[span.routes[0]].line;
-                        if (platform.name in dirHints && line in dirHints[platform.name]) {
+                        var spans = platform.spans.map(function (i) {
+                            return _this.graph.spans[i];
+                        });
+                        var routes = [];
+                        spans.forEach(function (span) {
+                            return span.routes.forEach(function (i) {
+                                return routes.push(_this.graph.routes[i]);
+                            });
+                        });
+                        var lines = routes.map(function (rt) {
+                            return rt.line;
+                        });
+                        var platformHints = dirHints[platform.name];
+                        var idx = -1;
+                        var contains = false;
+                        if (!platformHints) {
+                            console.log('dir hint doesn\'t exist for platform ' + platform.name);
+                        } else if ('forEach' in platformHints) {
+                            for (idx = 0; idx < platformHints.length; ++idx) {
+                                contains = Object.keys(platformHints[idx]).some(function (key) {
+                                    return lines.indexOf(key) > -1;
+                                });
+                                if (contains) break;
+                            }
+                        } else {
+                            contains = Object.keys(platformHints).some(function (key) {
+                                return lines.indexOf(key) > -1;
+                            });
+                        }
+                        if (platform.name in dirHints && contains) {
                             (function () {
-                                var platformHints = dirHints[platform.name];
+                                // if is an array
+                                if (idx > -1) {
+                                    platformHints = platformHints[idx];
+                                }
                                 var nextPlatformNames = [];
                                 Object.keys(platformHints).forEach(function (key) {
                                     var val = platformHints[key];
@@ -446,62 +474,35 @@ var MetroMap = (function () {
                                     }
                                 });
                                 for (var i = 0; i < platform.spans.length; ++i) {
-                                    var _span = _this.graph.spans[platform.spans[i]];
-                                    var neighborIndex = _span.source === platformIndex ? _span.target : _span.source;
+                                    var span = _this.graph.spans[platform.spans[i]];
+                                    var neighborIndex = span.source === platformIndex ? span.target : span.source;
                                     var neighbor = _this.graph.platforms[neighborIndex];
                                     var neighborPos = platformsOnSVG[neighborIndex];
-                                    if (nextPlatformNames.indexOf(neighbor.name) > -1) {
-                                        nexts.push(neighborPos);
-                                        nextSpans.push(platform.spans[i]);
-                                    } else {
-                                        prevs.push(neighborPos);
-                                        prevSpans.push(platform.spans[i]);
-                                    }
+                                    var dirIdx = nextPlatformNames.indexOf(neighbor.name) > -1 ? 1 : 0;
+                                    points[dirIdx].push(neighborPos);
+                                    spanIds[dirIdx].push(platform.spans[i]);
                                 }
                             })();
-                        } else {
-                            console.log('this place is left for compatibility: ');
-                            console.log(span.routes.map(function (rtIdx) {
-                                return _this.graph.routes[rtIdx];
-                            }));
-                            console.log([span.source, span.target].map(function (plIdx) {
-                                return _this.graph.platforms[plIdx].name;
-                            }));
-                            for (var i = 0; i < platform.spans.length; ++i) {
-                                var _span2 = _this.graph.spans[platform.spans[i]];
-                                if (_span2.source === platformIndex) {
-                                    var neighbor = _this.graph.platforms[_span2.target];
-                                    var neighborPos = platformsOnSVG[_span2.target];
-                                    nexts.push(neighborPos);
-                                    nextSpans.push(platform.spans[i]);
-                                } else {
-                                    var neighbor = _this.graph.platforms[_span2.source];
-                                    var neighborPos = platformsOnSVG[_span2.source];
-                                    prevs.push(neighborPos);
-                                    prevSpans.push(platform.spans[i]);
-                                }
-                            }
                         }
-                        var prev = prevs.length === 1 ? prevs[0] : util.getCenter(prevs),
-                            next = nexts.length === 1 ? nexts[0] : util.getCenter(nexts);
-                        var distToPrev = posOnSVG.distanceTo(prev),
-                            distToNext = posOnSVG.distanceTo(next);
-                        var midPtPrev = posOnSVG.add(prev).divideBy(2),
-                            midPtNext = posOnSVG.add(next).divideBy(2);
-                        var mdiff = midPtNext.subtract(midPtPrev).multiplyBy(distToPrev / (distToPrev + distToNext));
-                        var mm = midPtPrev.add(mdiff);
+                        var midPts = points.map(function (pts) {
+                            return posOnSVG.add(pts.length === 1 ? pts[0] : pts.length === 0 ? posOnSVG : util.getCenter(pts)).divideBy(2);
+                        });
+                        var lens = midPts.map(function (midPt) {
+                            return posOnSVG.distanceTo(midPt);
+                        });
+                        var mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
+                        var mm = midPts[0].add(mdiff);
                         var diff = posOnSVG.subtract(mm);
                         var whisker = {};
-                        prevSpans.forEach(function (spanIndex) {
-                            return whisker[spanIndex] = midPtPrev.add(diff);
+                        spanIds[0].forEach(function (spanIndex) {
+                            return whisker[spanIndex] = midPts[0].add(diff);
                         });
-                        nextSpans.forEach(function (spanIndex) {
-                            return whisker[spanIndex] = midPtNext.add(diff);
+                        spanIds[1].forEach(function (spanIndex) {
+                            return whisker[spanIndex] = midPts[1].add(diff);
                         });
                         whiskers[platformIndex] = whisker;
                     })();
                 } else {
-                    //whiskers[platformIndex] = [posOnSVG, posOnSVG];
                     var whisker = {};
                     whisker[platform.spans[0]] = posOnSVG;
                     whiskers[platformIndex] = whisker;
@@ -536,8 +537,8 @@ var MetroMap = (function () {
             var span = this.graph.spans[i];
             var srcN = span.source,
                 trgN = span.target;
-            var src = this.graph.platforms[srcN],
-                trg = this.graph.platforms[trgN];
+            //const src = this.graph.platforms[srcN],
+            //    trg = this.graph.platforms[trgN];
             var bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
             var routes = span.routes.map(function (n) {
                 return _this.graph.routes[n];
@@ -3533,6 +3534,26 @@ function getCenter(pts) {
 }
 exports.getCenter = getCenter;
 function verifyHints(graph, hints) {
+    function checkPlatformHintObject(obj) {
+        Object.keys(obj).forEach(function (line) {
+            var val = obj[line];
+            if (typeof val === 'string') {
+                if (graph.platforms.find(function (el) {
+                    return el.name === val;
+                }) === undefined) {
+                    throw new Error('platform ' + val + ' doesn\'t exist');
+                }
+            } else {
+                val.forEach(function (item) {
+                    if (graph.platforms.find(function (el) {
+                        return el.name === item;
+                    }) === undefined) {
+                        throw new Error('platform ' + item + ' doesn\'t exist');
+                    }
+                });
+            }
+        });
+    }
     return new Promise(function (resolve, reject) {
         var crossPlatform = hints.crossPlatform;
         Object.keys(crossPlatform).forEach(function (platformName) {
@@ -3542,24 +3563,13 @@ function verifyHints(graph, hints) {
                 throw new Error('platform ' + platformName + ' doesn\'t exist');
             }
             var obj = crossPlatform[platformName];
-            Object.keys(obj).forEach(function (line) {
-                var val = obj[line];
-                if (typeof val === 'string') {
-                    if (graph.platforms.find(function (el) {
-                        return el.name === val;
-                    }) === undefined) {
-                        throw new Error('platform ' + val + ' doesn\'t exist');
-                    }
-                } else {
-                    val.forEach(function (item) {
-                        if (graph.platforms.find(function (el) {
-                            return el.name === item;
-                        }) === undefined) {
-                            throw new Error('platform ' + item + ' doesn\'t exist');
-                        }
-                    });
-                }
-            });
+            if ('forEach' in obj) {
+                obj.forEach(function (o) {
+                    return checkPlatformHintObject;
+                });
+            } else {
+                checkPlatformHintObject(obj);
+            }
         });
         Object.keys(hints.englishNames).forEach(function (platformName) {
             if (graph.platforms.find(function (el) {

@@ -234,7 +234,7 @@ export class MetroGraph {
         this.platforms = obj.platforms.map(p => new Platform(p.location, p.name, p.altNames));
         this.stations = obj.stations.map(s => new Station(s.name, s.altNames, s.platforms.map(i => this.platforms[i])));
         this.lines = Object.keys(obj.lines).map(l => {
-            let matches = l.match(/([ML])(\d{1,2})/);
+            const matches = l.match(/([ML])(\d{1,2})/);
             return matches ? new Line(matches[1], parseInt(matches[2]), obj.lines[l]) : new Line('E');
         });
         this.routes = obj.routes.map(r => new Route(this.lines.find(l => l.id === r.line), r.branch));

@@ -64,6 +64,8 @@ interface HasLocation extends MetroGraph.Platform {
     description?: string
 }
 
+//type HasLocation = {location: L.LatLng;};
+
 export function findClosestObject(point: L.LatLng, objects: HasLocation[]): HasLocation {
     if (objects.length < 1) {
         throw new Error('an objects array must contain at least 1 object');

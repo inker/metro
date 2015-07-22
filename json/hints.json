@@ -16,10 +16,12 @@
       "M5": "Heslerovskaja",
       "M7": "Puškarskaja"
     },
-    "Jablonovka": {
+    "Jablonovka": [{
       "M4": "Ledovyj dvorec",
       "M8": "Ladožskij park"
-    },
+    }, {
+      "E": "Centraľnyj voxal"
+    }],
     "Poľustrovo": {
       "M6": "Park Sacharova",
       "M7": "Ptičij rynok"
@@ -36,9 +38,19 @@
       "M8": "Porochovyje",
       "M10": "Belorusskaja"
     },
+    "Akademgorodok": {
+      "M3": "Pleseckaja",
+      "M11": "Šuvalovskij karjer"
+    },
+    "Avrora": {
+      "M11": "Karpovka",
+      "M12": "Ploščaď Ľva Tolstogo"
+    },
     "Park Stroitelej": {
       "M12": "Kinovia"
     },
+    
+    
     "Streľna": {
       "M6": "Kikenka",
       "E": "Sergievo"
@@ -51,9 +63,6 @@
       "M8": "Jegorovka",
       "E": ["Volchonskaja", "Sosnovaja Poľana"]
     },
-    "Ligovskij kanal": {
-      "E": "Bronevaja"
-    },
     "Novo-Orlovo": {
       "M5": "Ulica Kompozitorov",
       "E": "Šuvalovo"
@@ -62,11 +71,13 @@
       "M11": "Aviagorodok",
       "E": "Predportovaja"
     },
+    
+    
+    "Ligovskij kanal": {
+      "E": "Bronevaja"
+    },
     "Beloostrov": {
       "E": ["Kurort", "Ollila"]
-    },
-    "Jablonovka": {
-      "E": "Centraľnyj voxal"
     },
     "Predportovaja": {
       "E": "Ligovskij kanal"

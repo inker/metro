@@ -100,6 +100,22 @@ export function getCenter(pts: L.Point[]): L.Point {
 }
 
 export function verifyHints(graph: po.Graph, hints: po.Hints): Promise<string> {
+    function checkPlatformHintObject(obj) {
+        Object.keys(obj).forEach(line => {
+            const val = obj[line];
+            if (typeof val === 'string') {
+                if (graph.platforms.find(el => el.name === val) === undefined) {
+                    throw new Error('platform ' + val + " doesn't exist");
+                }
+            } else {
+                val.forEach(item => {
+                    if (graph.platforms.find(el => el.name === item) === undefined) {
+                        throw new Error('platform ' + item + " doesn't exist");
+                    }
+                });
+            }
+        });
+    }
     return new Promise((resolve, reject) => {
         const crossPlatform = hints.crossPlatform;
         Object.keys(crossPlatform).forEach(platformName => {
@@ -107,20 +123,11 @@ export function verifyHints(graph: po.Graph, hints: po.Hints): Promise<string> {
                 throw new Error('platform ' + platformName + " doesn't exist");
             }
             const obj = crossPlatform[platformName];
-            Object.keys(obj).forEach(line => {
-                const val = obj[line];
-                if (typeof val === 'string') {
-                    if (graph.platforms.find(el => el.name === val) === undefined) {
-                        throw new Error('platform ' + val + " doesn't exist");
-                    }
-                } else {
-                    val.forEach(item => {
-                        if (graph.platforms.find(el => el.name === item) === undefined) {
-                            throw new Error('platform ' + item + " doesn't exist");
-                        }
-                    });
-                }
-            });
+            if ('forEach' in obj) {
+                obj.forEach(o => checkPlatformHintObject);
+            } else {
+                checkPlatformHintObject(obj);
+            }
         });
         Object.keys(hints.englishNames).forEach(platformName => {
             if (graph.platforms.find(el => el.name === platformName) === undefined) {

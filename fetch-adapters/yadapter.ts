@@ -273,7 +273,7 @@ class Yadapter implements IAdapter {
         //graph.platforms.forEach(pl =>
         // console.log(pl.location.latitude + ', ' + (pl.station ? pl.name : 'no-station')));
         //graph.stations.forEach(pl => console.log(pl.name + ', ' + pl.altName + ', ' + pl.platforms.length)); //
-        console.log(JSON.stringify(JSON.parse(graph.toJSON()), null, 2));
+        //console.log(JSON.stringify(JSON.parse(graph.toJSON()), null, 2));
         return graph;
     }
 
