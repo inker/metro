@@ -138,3 +138,28 @@ export function verifyHints(graph: po.Graph, hints: po.Hints): Promise<string> {
     });
 }
 
+/**
+ * -2: doesn't contain
+ * -1: is an object
+ * >=0: is an array
+ */
+export function hintContainsLine(graph: po.Graph, dirHints: any, platform: po.Platform) {
+    const spans = platform.spans.map(i => graph.spans[i]);
+    let routes: po.Route[] = [];
+    spans.forEach(span => span.routes.forEach(i => routes.push(graph.routes[i])));
+    const lines = routes.map(rt => rt.line);
+    let platformHints = dirHints[platform.name];
+    let idx = -2;
+    if (!platformHints) {
+        console.log("dir hint doesn't exist for platform " + platform.name);
+    } else if ('forEach' in platformHints) {
+        for (idx = 0; idx < platformHints.length; ++idx) {
+            if (Object.keys(platformHints[idx]).some(key => lines.indexOf(key) > -1)) {
+                break;
+            }
+        }
+    } else if (Object.keys(platformHints).some(key => lines.indexOf(key) > -1)) {
+        idx = -1;
+    }
+    return idx;
+}

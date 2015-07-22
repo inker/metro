@@ -288,28 +288,10 @@ class MetroMap {
                     let spanIds: number[][] = [[], []];
                     
                     const dirHints = this.hints.crossPlatform;
-                    const spans = platform.spans.map(i => this.graph.spans[i]);
-                    let routes: po.Route[] = [];
-                    spans.forEach(span => span.routes.forEach(i => routes.push(this.graph.routes[i])));
-                    const lines = routes.map(rt => rt.line);
-                    let platformHints = dirHints[platform.name];
-                    let idx = -1;
-                    let contains = false;
-                    if (!platformHints) {
-                        console.log("dir hint doesn't exist for platform " + platform.name);
-                    } else if ('forEach' in platformHints) {
-                        for (idx = 0; idx < platformHints.length; ++idx) {
-                            contains = Object.keys(platformHints[idx]).some(key => lines.indexOf(key) > -1);
-                            if (contains) break;
-                        }
-                    } else {
-                        contains = Object.keys(platformHints).some(key => lines.indexOf(key) > -1)
-                    }
-                    if (platform.name in dirHints && contains) {
-                        // if is an array
-                        if (idx > -1) {
-                            platformHints = platformHints[idx];
-                        }
+                    const idx = util.hintContainsLine(this.graph, dirHints, platform);
+                    if (platform.name in dirHints && idx > -2) {
+                        // array or object
+                        const platformHints = idx > -1 ? dirHints[platform.name][idx] : dirHints[platform.name];
                         let nextPlatformNames: string[] = [];
                         Object.keys(platformHints).forEach(key => {
                             const val = platformHints[key];
@@ -320,10 +302,10 @@ class MetroMap {
                             }
                         });
                         for (let i = 0; i < platform.spans.length; ++i) {
-                            let span = this.graph.spans[platform.spans[i]];
-                            let neighborIndex = span.source === platformIndex ? span.target : span.source;
-                            let neighbor = this.graph.platforms[neighborIndex];
-                            let neighborPos = platformsOnSVG[neighborIndex];
+                            const span = this.graph.spans[platform.spans[i]];
+                            const neighborIndex = span.source === platformIndex ? span.target : span.source;
+                            const neighbor = this.graph.platforms[neighborIndex];
+                            const neighborPos = platformsOnSVG[neighborIndex];
                             const dirIdx = nextPlatformNames.indexOf(neighbor.name) > -1 ? 1 : 0;
                             points[dirIdx].push(neighborPos);
                             spanIds[dirIdx].push(platform.spans[i]);
@@ -374,19 +356,32 @@ class MetroMap {
 
         for (let i = 0; i < this.graph.spans.length; ++i) {
             const span = this.graph.spans[i];
-            const srcN = span.source,
-                trgN = span.target;
-            //const src = this.graph.platforms[srcN],
-            //    trg = this.graph.platforms[trgN];
-            let bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
-            let routes = span.routes.map(n => this.graph.routes[n]);
-            let matches = routes[0].line.match(/[MEL](\d{1,2})/);
-            bezier.style.strokeWidth = lineWidth.toString();
-            if (matches) {
-                bezier.classList.add(matches[0]);
+            const srcN = span.source, trgN = span.target;
+            const routes = span.routes.map(n => this.graph.routes[n]);
+            const matches = routes[0].line.match(/([MEL])(\d{0,2})/);
+            if (matches[1] === 'E') {
+                let inner = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
+                let outer: typeof inner = <any>inner.cloneNode(true);
+                outer.style.strokeWidth = lineWidth * 1 + 'px';
+                inner.style.strokeWidth = lineWidth * 0.5 + 'px';
+                let g = svg.createSVGElement('g');
+                g.classList.add('E');
+                g.appendChild(outer);
+                g.appendChild(inner);
+                docFrags['paths'].appendChild(g);
+            } else {
+                let bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
+                bezier.style.strokeWidth = lineWidth.toString();
+                if (matches) {
+                    bezier.classList.add(matches[0]);
+                }
+                bezier.classList.add(matches[1] + '-line');
+                if (matches[1] === 'L') {
+                    bezier.style.strokeWidth = lineWidth * 0.75 + 'px';
+                }
+                docFrags['paths'].appendChild(bezier);
             }
-            bezier.classList.add(routes[0].line.charAt(0) + '-line');
-            docFrags['paths'].appendChild(bezier);
+
         }
         
         Object.keys(docFrags).forEach(i => document.getElementById(i).appendChild(docFrags[i]));

@@ -427,41 +427,11 @@ var MetroMap = (function () {
                         var points = [[], []];
                         var spanIds = [[], []];
                         var dirHints = _this.hints.crossPlatform;
-                        var spans = platform.spans.map(function (i) {
-                            return _this.graph.spans[i];
-                        });
-                        var routes = [];
-                        spans.forEach(function (span) {
-                            return span.routes.forEach(function (i) {
-                                return routes.push(_this.graph.routes[i]);
-                            });
-                        });
-                        var lines = routes.map(function (rt) {
-                            return rt.line;
-                        });
-                        var platformHints = dirHints[platform.name];
-                        var idx = -1;
-                        var contains = false;
-                        if (!platformHints) {
-                            console.log('dir hint doesn\'t exist for platform ' + platform.name);
-                        } else if ('forEach' in platformHints) {
-                            for (idx = 0; idx < platformHints.length; ++idx) {
-                                contains = Object.keys(platformHints[idx]).some(function (key) {
-                                    return lines.indexOf(key) > -1;
-                                });
-                                if (contains) break;
-                            }
-                        } else {
-                            contains = Object.keys(platformHints).some(function (key) {
-                                return lines.indexOf(key) > -1;
-                            });
-                        }
-                        if (platform.name in dirHints && contains) {
+                        var idx = util.hintContainsLine(_this.graph, dirHints, platform);
+                        if (platform.name in dirHints && idx > -2) {
                             (function () {
-                                // if is an array
-                                if (idx > -1) {
-                                    platformHints = platformHints[idx];
-                                }
+                                // array or object
+                                var platformHints = idx > -1 ? dirHints[platform.name][idx] : dirHints[platform.name];
                                 var nextPlatformNames = [];
                                 Object.keys(platformHints).forEach(function (key) {
                                     var val = platformHints[key];
@@ -537,19 +507,32 @@ var MetroMap = (function () {
             var span = this.graph.spans[i];
             var srcN = span.source,
                 trgN = span.target;
-            //const src = this.graph.platforms[srcN],
-            //    trg = this.graph.platforms[trgN];
-            var bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
             var routes = span.routes.map(function (n) {
                 return _this.graph.routes[n];
             });
-            var matches = routes[0].line.match(/[MEL](\d{1,2})/);
-            bezier.style.strokeWidth = lineWidth.toString();
-            if (matches) {
-                bezier.classList.add(matches[0]);
+            var matches = routes[0].line.match(/([MEL])(\d{0,2})/);
+            if (matches[1] === 'E') {
+                var inner = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
+                var outer = inner.cloneNode(true);
+                outer.style.strokeWidth = lineWidth * 1 + 'px';
+                inner.style.strokeWidth = lineWidth * 0.5 + 'px';
+                var g = svg.createSVGElement('g');
+                g.classList.add('E');
+                g.appendChild(outer);
+                g.appendChild(inner);
+                docFrags['paths'].appendChild(g);
+            } else {
+                var bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
+                bezier.style.strokeWidth = lineWidth.toString();
+                if (matches) {
+                    bezier.classList.add(matches[0]);
+                }
+                bezier.classList.add(matches[1] + '-line');
+                if (matches[1] === 'L') {
+                    bezier.style.strokeWidth = lineWidth * 0.75 + 'px';
+                }
+                docFrags['paths'].appendChild(bezier);
             }
-            bezier.classList.add(routes[0].line.charAt(0) + '-line');
-            docFrags['paths'].appendChild(bezier);
         }
         Object.keys(docFrags).forEach(function (i) {
             return document.getElementById(i).appendChild(docFrags[i]);
@@ -3582,6 +3565,44 @@ function verifyHints(graph, hints) {
     });
 }
 exports.verifyHints = verifyHints;
+/**
+ * -2: doesn't contain
+ * -1: is an object
+ * >=0: is an array
+ */
+function hintContainsLine(graph, dirHints, platform) {
+    var spans = platform.spans.map(function (i) {
+        return graph.spans[i];
+    });
+    var routes = [];
+    spans.forEach(function (span) {
+        return span.routes.forEach(function (i) {
+            return routes.push(graph.routes[i]);
+        });
+    });
+    var lines = routes.map(function (rt) {
+        return rt.line;
+    });
+    var platformHints = dirHints[platform.name];
+    var idx = -2;
+    if (!platformHints) {
+        console.log('dir hint doesn\'t exist for platform ' + platform.name);
+    } else if ('forEach' in platformHints) {
+        for (idx = 0; idx < platformHints.length; ++idx) {
+            if (Object.keys(platformHints[idx]).some(function (key) {
+                return lines.indexOf(key) > -1;
+            })) {
+                break;
+            }
+        }
+    } else if (Object.keys(platformHints).some(function (key) {
+        return lines.indexOf(key) > -1;
+    })) {
+        idx = -1;
+    }
+    return idx;
+}
+exports.hintContainsLine = hintContainsLine;
 
 
 },{}]},{},[2]);
