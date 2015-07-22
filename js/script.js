@@ -63,6 +63,11 @@ exports.Measurement = Measurement;
 var MetroMap = require('./metro-map');
 var util = require('../util');
 //import MetroMap from './metro-map';
+if (L.Browser.ie) {
+    alert('Does not work in IE (yet)');
+} else if (L.Browser.mobile) {
+    alert('May work incorrectly in mobile browser');
+}
 require('./polyfills')();
 var metroMap = new MetroMap('map-container', 'json/graph.json', require('./tilelayers'));
 util.flashTitle(['Plan metro Sankt-Peterburga', 'Pietarin metron hankesuunnitelma', 'St Petersburg metro plan proposal'], 3000);
@@ -84,6 +89,12 @@ i. why junctions have single name
 import MetroMap = require('./metro-map');
 import util = require('../util');
 //import MetroMap from './metro-map';
+
+if (L.Browser.ie) {
+    alert("Does not work in IE (yet)");
+} else if (L.Browser.mobile) {
+    alert("May work incorrectly in mobile browser");
+}
 
 require('./polyfills')();
 
@@ -114,6 +125,12 @@ i. why junctions have single name
  import MetroMap = require('./metro-map');
 import util = require('../util');
 //import MetroMap from './metro-map';
+
+if (L.Browser.ie) {
+    alert("Does not work in IE (yet)");
+} else if (L.Browser.mobile) {
+    alert("May work incorrectly in mobile browser");
+}
 
 require('./polyfills')();
 

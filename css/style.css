@@ -128,12 +128,12 @@ path {
 .M11 { stroke: #000000; }
 .M12 { stroke: #84B817; }
 
-.E :nth-child(1) { stroke: #7156A5 }
-.E :nth-child(2) { stroke: #FFFFFF }
+.E :nth-child(1) { stroke: #7156A5; }
+.E :nth-child(2) { stroke: #FFFFFF; }
 
 .leaflet-control-command-interior, input
 {
-    background-image: url(images/command.png);
+    /*background-image: url(images/command.png);*/
     width: 20px;
     height: 20px;
     background-position: 50% 50%;

@@ -2,6 +2,12 @@ import MetroMap = require('./metro-map');
 import util = require('../util');
 //import MetroMap from './metro-map';
 
+if (L.Browser.ie) {
+    alert("Does not work in IE (yet)");
+} else if (L.Browser.mobile) {
+    alert("May work incorrectly in mobile browser");
+}
+
 require('./polyfills')();
 
 let metroMap = new MetroMap('map-container', 'json/graph.json', require('./tilelayers'));
