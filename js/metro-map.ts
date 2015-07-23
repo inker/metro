@@ -234,6 +234,16 @@ class MetroMap {
                 if (zoom > 9) {
                     let ci = svg.makeCircle(posOnSVG, circleRadius);
                     svg.convertToStation(ci, 'p-' + platformIndex, platform, circleBorder);
+                    if (zoom > 11) {
+                        let lines: string[] = [];
+                        platform.spans.forEach(i => this.graph.spans[i].routes.forEach(ri => lines.push(this.graph.routes[ri].line)));
+                        if (lines.length > 0 && lines.every(line => line === lines[0])) {
+                            const matches = lines[0].match(/([MEL])(\d{0,2})/);
+                            if (matches) {
+                                ci.classList.add(matches[1] === 'M' ? matches[0] : matches[1] + '-line');
+                            }
+                        }
+                    }
                     let englishName = this.hints.englishNames[platform.name];
                     if (englishName) {
                         util.setSVGDataset(ci, { en: englishName });
@@ -289,7 +299,7 @@ class MetroMap {
                     
                     const dirHints = this.hints.crossPlatform;
                     const idx = util.hintContainsLine(this.graph, dirHints, platform);
-                    if (platform.name in dirHints && idx > -2) {
+                    if (platform.name in dirHints && idx !== null) {
                         // array or object
                         const platformHints = idx > -1 ? dirHints[platform.name][idx] : dirHints[platform.name];
                         let nextPlatformNames: string[] = [];
@@ -362,8 +372,8 @@ class MetroMap {
             if (matches[1] === 'E') {
                 let inner = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
                 let outer: typeof inner = <any>inner.cloneNode(true);
-                outer.style.strokeWidth = lineWidth * 1 + 'px';
-                inner.style.strokeWidth = lineWidth * 0.5 + 'px';
+                outer.style.strokeWidth = lineWidth + 'px';
+                inner.style.strokeWidth = lineWidth / 2 + 'px';
                 let g = svg.createSVGElement('g');
                 g.classList.add('E');
                 g.appendChild(outer);

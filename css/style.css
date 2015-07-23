@@ -81,9 +81,9 @@ a {
 }
 
 .E-line {
-    stroke: #808080;
+    stroke: rgb(56, 43, 82);
     /*stroke-width: 2;*/
-    stroke-dasharray: 2, 2;
+    /*stroke-dasharray: 2, 2;*/
 }
 
 .E-highlighted {

@@ -390,6 +390,24 @@ var MetroMap = (function () {
                 if (zoom > 9) {
                     var ci = svg.makeCircle(posOnSVG, circleRadius);
                     svg.convertToStation(ci, 'p-' + platformIndex, platform, circleBorder);
+                    if (zoom > 11) {
+                        (function () {
+                            var lines = [];
+                            platform.spans.forEach(function (i) {
+                                return _this.graph.spans[i].routes.forEach(function (ri) {
+                                    return lines.push(_this.graph.routes[ri].line);
+                                });
+                            });
+                            if (lines.length > 0 && lines.every(function (line) {
+                                return line === lines[0];
+                            })) {
+                                var matches = lines[0].match(/([MEL])(\d{0,2})/);
+                                if (matches) {
+                                    ci.classList.add(matches[1] === 'M' ? matches[0] : matches[1] + '-line');
+                                }
+                            }
+                        })();
+                    }
                     var englishName = _this.hints.englishNames[platform.name];
                     if (englishName) {
                         util.setSVGDataset(ci, { en: englishName });
@@ -445,7 +463,7 @@ var MetroMap = (function () {
                         var spanIds = [[], []];
                         var dirHints = _this.hints.crossPlatform;
                         var idx = util.hintContainsLine(_this.graph, dirHints, platform);
-                        if (platform.name in dirHints && idx > -2) {
+                        if (platform.name in dirHints && idx !== null) {
                             (function () {
                                 // array or object
                                 var platformHints = idx > -1 ? dirHints[platform.name][idx] : dirHints[platform.name];
@@ -531,8 +549,8 @@ var MetroMap = (function () {
             if (matches[1] === 'E') {
                 var inner = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
                 var outer = inner.cloneNode(true);
-                outer.style.strokeWidth = lineWidth * 1 + 'px';
-                inner.style.strokeWidth = lineWidth * 0.5 + 'px';
+                outer.style.strokeWidth = lineWidth + 'px';
+                inner.style.strokeWidth = lineWidth / 2 + 'px';
                 var g = svg.createSVGElement('g');
                 g.classList.add('E');
                 g.appendChild(outer);
@@ -3583,7 +3601,7 @@ function verifyHints(graph, hints) {
 }
 exports.verifyHints = verifyHints;
 /**
- * -2: doesn't contain
+ * null: doesn't contain
  * -1: is an object
  * >=0: is an array
  */
@@ -3601,23 +3619,22 @@ function hintContainsLine(graph, dirHints, platform) {
         return rt.line;
     });
     var platformHints = dirHints[platform.name];
-    var idx = -2;
-    if (!platformHints) {
-        console.log('dir hint doesn\'t exist for platform ' + platform.name);
-    } else if ('forEach' in platformHints) {
-        for (idx = 0; idx < platformHints.length; ++idx) {
-            if (Object.keys(platformHints[idx]).some(function (key) {
-                return lines.indexOf(key) > -1;
-            })) {
-                break;
+    if (platformHints) {
+        if ('forEach' in platformHints) {
+            for (var idx = 0; idx < platformHints.length; ++idx) {
+                if (Object.keys(platformHints[idx]).some(function (key) {
+                    return lines.indexOf(key) > -1;
+                })) {
+                    return idx;
+                }
             }
+        } else if (Object.keys(platformHints).some(function (key) {
+            return lines.indexOf(key) > -1;
+        })) {
+            return -1;
         }
-    } else if (Object.keys(platformHints).some(function (key) {
-        return lines.indexOf(key) > -1;
-    })) {
-        idx = -1;
     }
-    return idx;
+    return null;
 }
 exports.hintContainsLine = hintContainsLine;
 
