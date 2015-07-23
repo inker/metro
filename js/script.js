@@ -396,9 +396,12 @@ var MetroMap = (function () {
                         lat: platform.location.lat,
                         lng: platform.location.lng,
                         ru: platform.name,
-                        fi: platform.altNames['fi'],
-                        en: _this.hints.englishNames[platform.name]
+                        fi: platform.altNames['fi']
                     });
+                    var en = _this.hints.englishNames[platform.name];
+                    if (en) {
+                        util.setSVGDataset(ci, { en: en });
+                    }
                     if (zoom > 11) {
                         (function () {
                             var lines = [];

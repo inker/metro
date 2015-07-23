@@ -242,8 +242,11 @@ class MetroMap {
                         lng: platform.location.lng,
                         ru: platform.name,
                         fi: platform.altNames['fi'],
-                        en: this.hints.englishNames[platform.name]
                     });
+                    const en = this.hints.englishNames[platform.name];
+                    if (en) {
+                        util.setSVGDataset(ci, { en: en });
+                    }
                     if (zoom > 11) {
                         let lines: string[] = [];
                         platform.spans.forEach(i => this.graph.spans[i].routes.forEach(ri => lines.push(this.graph.routes[ri].line)));
