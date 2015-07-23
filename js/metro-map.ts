@@ -218,14 +218,16 @@ class MetroMap {
 
         const lineWidth = (zoom - 7) * 0.5;
         const circleRadius = zoom < 12 ? lineWidth * 1.25 : lineWidth;
-        const circleBorder = circleRadius * 0.4;
+        const circleBorder = zoom < 12 ? circleRadius * 0.4 : circleRadius * 0.5;
         const transferWidth = lineWidth;
+        
+        document.getElementById('station-circles').style.strokeWidth = circleBorder + 'px';
         
         let platformsInCircles: number[] = [];
         
         for (let stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
             const station = this.graph.stations[stationIndex];
-            let circular = util.findCircle(this.graph, station);
+            const circular = util.findCircle(this.graph, station);
             let circumpoints: L.Point[] = [];
             station.platforms.forEach(platformIndex => {
                 const platform = this.graph.platforms[platformIndex];
@@ -233,7 +235,15 @@ class MetroMap {
                 
                 if (zoom > 9) {
                     let ci = svg.makeCircle(posOnSVG, circleRadius);
-                    svg.convertToStation(ci, 'p-' + platformIndex, platform, circleBorder);
+                    ci.id = 'p-' + platformIndex;
+                    util.setSVGDataset(ci, {
+                        station: stationIndex,
+                        lat: platform.location.lat,
+                        lng: platform.location.lng,
+                        ru: platform.name,
+                        fi: platform.altNames['fi'],
+                        en: this.hints.englishNames[platform.name]
+                    });
                     if (zoom > 11) {
                         let lines: string[] = [];
                         platform.spans.forEach(i => this.graph.spans[i].routes.forEach(ri => lines.push(this.graph.routes[ri].line)));
@@ -244,11 +254,6 @@ class MetroMap {
                             }
                         }
                     }
-                    let englishName = this.hints.englishNames[platform.name];
-                    if (englishName) {
-                        util.setSVGDataset(ci, { en: englishName });
-                    }
-                    ci.setAttribute('data-station', stationIndex.toString());
                     
                     let dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
                     dummyCircle.classList.add('invisible-circle');

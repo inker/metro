@@ -376,8 +376,9 @@ var MetroMap = (function () {
         var platformsOnSVG = this.graph.platforms.map(posTransform);
         var lineWidth = (zoom - 7) * 0.5;
         var circleRadius = zoom < 12 ? lineWidth * 1.25 : lineWidth;
-        var circleBorder = circleRadius * 0.4;
+        var circleBorder = zoom < 12 ? circleRadius * 0.4 : circleRadius * 0.5;
         var transferWidth = lineWidth;
+        document.getElementById('station-circles').style.strokeWidth = circleBorder + 'px';
         var platformsInCircles = [];
 
         var _loop = function (stationIndex) {
@@ -389,7 +390,15 @@ var MetroMap = (function () {
                 var posOnSVG = platformsOnSVG[platformIndex];
                 if (zoom > 9) {
                     var ci = svg.makeCircle(posOnSVG, circleRadius);
-                    svg.convertToStation(ci, 'p-' + platformIndex, platform, circleBorder);
+                    ci.id = 'p-' + platformIndex;
+                    util.setSVGDataset(ci, {
+                        station: stationIndex,
+                        lat: platform.location.lat,
+                        lng: platform.location.lng,
+                        ru: platform.name,
+                        fi: platform.altNames['fi'],
+                        en: _this.hints.englishNames[platform.name]
+                    });
                     if (zoom > 11) {
                         (function () {
                             var lines = [];
@@ -408,11 +417,6 @@ var MetroMap = (function () {
                             }
                         })();
                     }
-                    var englishName = _this.hints.englishNames[platform.name];
-                    if (englishName) {
-                        util.setSVGDataset(ci, { en: englishName });
-                    }
-                    ci.setAttribute('data-station', stationIndex.toString());
                     var dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
                     dummyCircle.classList.add('invisible-circle');
                     dummyCircle.setAttribute('data-platformId', ci.id);
@@ -642,18 +646,16 @@ function makeCircle(position, radius) {
     return ci;
 }
 exports.makeCircle = makeCircle;
-function convertToStation(circle, id, data, borderWidth) {
-    circle.id = id;
-    //circle.classList.add('station-circle');
-    circle.style.strokeWidth = borderWidth + 'px';
-    util.setSVGDataset(circle, {
-        lat: data.location.lat,
-        lng: data.location.lng,
-        ru: data.name,
-        fi: data.altNames['fi']
-    });
-}
-exports.convertToStation = convertToStation;
+//export function convertToStation(circle: HTMLElement, data: po.StationOrPlatform): void {
+//    circle.id = id;
+//    //circle.classList.add('station-circle');
+//    util.setSVGDataset(circle, {
+//        lat: data.location.lat,
+//        lng: data.location.lng,
+//        ru: data.name,
+//        fi: data.altNames['fi']
+//    });
+//}
 function makeCubicBezier(controlPoints) {
     if (controlPoints.length !== 4) {
         throw new Error('there should be 4 points');
@@ -664,7 +666,6 @@ function makeCubicBezier(controlPoints) {
     });
     s.unshift('M');
     s.splice(2, 0, 'C');
-    //let d = controlPoints.reduce((prev, cp, i) => `${prev}${i === 1 ? ' C ' : ' '}${cp.x},${cp.y}`, 'M');
     path.setAttribute('d', s.join(' '));
     return path;
 }

@@ -14,17 +14,16 @@ export function makeCircle(position: L.Point, radius: number): HTMLElement {
     return ci;
 }
 
-export function convertToStation(circle: HTMLElement, id: string, data: po.StationOrPlatform, borderWidth: number): void {
-    circle.id = id;
-    //circle.classList.add('station-circle');
-    circle.style.strokeWidth = borderWidth + 'px';
-    util.setSVGDataset(circle, {
-        lat: data.location.lat,
-        lng: data.location.lng,
-        ru: data.name,
-        fi: data.altNames['fi']
-    });
-}
+//export function convertToStation(circle: HTMLElement, data: po.StationOrPlatform): void {
+//    circle.id = id;
+//    //circle.classList.add('station-circle');
+//    util.setSVGDataset(circle, {
+//        lat: data.location.lat,
+//        lng: data.location.lng,
+//        ru: data.name,
+//        fi: data.altNames['fi']
+//    });
+//}
 
 export function makeCubicBezier(controlPoints: L.Point[]): HTMLElement {
     if (controlPoints.length !== 4) {
@@ -34,7 +33,6 @@ export function makeCubicBezier(controlPoints: L.Point[]): HTMLElement {
     let s = controlPoints.map(pt => pt.x + ',' + pt.y);
     s.unshift('M');
     s.splice(2, 0, 'C');
-    //let d = controlPoints.reduce((prev, cp, i) => `${prev}${i === 1 ? ' C ' : ' '}${cp.x},${cp.y}`, 'M');
     path.setAttribute('d', s.join(' '));
     return path;
 }
@@ -67,6 +65,7 @@ export function makeTransferRing(center: L.Point, radius: number, thickness: num
         g.appendChild(ring);
     });
     return g;
+    
 }
 
 export function makeTransfer(start: L.Point, end: L.Point, thickness: number, borderWidth: number) {
