@@ -1,3 +1,4 @@
+/// <reference path="./lib.es6.d.ts" />
 /// <reference path="body-parser/body-parser.d.ts" />
 /// <reference path="cookie-parser/cookie-parser.d.ts" />
 /// <reference path="d3/d3.d.ts" />

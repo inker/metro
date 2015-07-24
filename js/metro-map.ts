@@ -17,7 +17,7 @@ class MetroMap {
     private bounds: L.LatLngBounds;
     private hints: po.Hints;
     private textData: {};
-
+    
     getMap(): L.Map {
         return this.map;
     }
@@ -225,10 +225,10 @@ class MetroMap {
         
         let platformsInCircles: number[] = [];
         
-        for (let stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
+        for (var stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
             const station = this.graph.stations[stationIndex];
-            const circular = util.findCircle(this.graph, station);
-            let circumpoints: L.Point[] = [];
+            var circular = util.findCircle(this.graph, station);
+            var circumpoints: L.Point[] = [];
             station.platforms.forEach(platformIndex => {
                 const platform = this.graph.platforms[platformIndex];
                 const posOnSVG = platformsOnSVG[platformIndex];
