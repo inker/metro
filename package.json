@@ -11,6 +11,7 @@
     "express": "latest",
     "leaflet": "latest",
     "libxmljs": "latest",
+    "reflect-metadata": "latest",
     "request": "latest",
     "serve-favicon": "latest",
     "whatwg-fetch": "latest"

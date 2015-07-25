@@ -11,11 +11,11 @@ export function diffByOne(a: string, b: string): boolean {
         for (let i = 0, j = 0; i < a.length && j < b.length; ++i, ++j) {
             if (a[i] != b[j]) {
                 ++diff;
-                if (a[i + 1] == b[j]) {
+                if (a[i + 1] === b[j]) {
                     ++i;
-                } else if (a[i] == b[j + 1]) {
+                } else if (a[i] === b[j + 1]) {
                     ++j;
-                } else if (a[i + 1] == b[j + 1]) {
+                } else if (a[i + 1] === b[j + 1]) {
                     ++i; //
                     ++j;
                 }
@@ -120,7 +120,7 @@ export function verifyHints(graph: po.Graph, hints: po.Hints): Promise<string> {
         const crossPlatform = hints.crossPlatform;
         Object.keys(crossPlatform).forEach(platformName => {
             if (graph.platforms.find(el => el.name === platformName) === undefined) {
-                throw new Error(`platform ${platformName} doesn't exist`);
+                reject(`platform ${platformName} doesn't exist`);
             }
             const obj = crossPlatform[platformName];
             if ('forEach' in obj) {
@@ -131,7 +131,7 @@ export function verifyHints(graph: po.Graph, hints: po.Hints): Promise<string> {
         });
         Object.keys(hints.englishNames).forEach(platformName => {
             if (graph.platforms.find(el => el.name === platformName) === undefined) {
-                throw new Error(`platform ${platformName} doesn't exist`);
+                reject(`platform ${platformName} doesn't exist`);
             }
         });
         resolve('hints json seems okay');

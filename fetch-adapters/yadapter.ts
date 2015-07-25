@@ -10,17 +10,12 @@ import request = require('request');
 //import xml2js = require('xml2js');
 import fs = require('fs');
 import L = require('leaflet');
+import "reflect-metadata";
 import * as tr from '../metro-graph';
 import IAdapter from './geo-to-transport-adapter';
 import * as util from '../util';
 import * as geo from '../geo';
-
-// errors in meters
-let transferOverlapError = 20;
-let distanceError = 50; //
-let sameJunctionError = 1000;
-
-// a kludge to avoid 'L' is undefined
+import {TransferOverlapError, DistanceError, SameJunctionError} from '../decorators';
 
 class YaObject {
     name: string;
@@ -35,7 +30,7 @@ class YaObject {
 class YaPoint extends YaObject {
     location: L.LatLng;
 
-    constructor(location: L.LatLng, name: string, description: string = '') {
+    constructor(location: L.LatLng, name: string, description = "") {
         super(name, description);
         this.location = location;
     }
@@ -44,14 +39,21 @@ class YaPoint extends YaObject {
 class YaPath extends YaObject {
     points: L.LatLng[];
 
-    constructor(points: L.LatLng[], name: string, description: string = '') {
+    constructor(points: L.LatLng[], name: string, description = "") {
         super(name, description);
         this.points = points;
     }
 }
 
+
+@TransferOverlapError(20)
+@DistanceError(50)
+@SameJunctionError(1000)
 class Yadapter implements IAdapter {
     private url: string;
+    private _distanceError: number = Reflect['getOwnMetadata']('DistanceError', this.constructor);
+    private _sameJunctionError: number = Reflect['getOwnMetadata']('SameJunctionError', this.constructor);
+    private _transferOverlapError: number = Reflect['getOwnMetadata']('TransferOverlapError', this.constructor);
 
     constructor(url: string) {
         //if (!/maps\.yandex\.ru/ig.test(url)) throw new Error('incorrect URL provided');
@@ -120,7 +122,7 @@ class Yadapter implements IAdapter {
             // if the end overlaps the beginning, delete it
             let circular = false;
 
-            if (lom[0].distanceTo(lom[lom.length - 1]) < transferOverlapError) {
+            if (lom[0].distanceTo(lom[lom.length - 1]) < this._transferOverlapError) {
                 circular = true;
                 lom.splice(lom.length - 1);
             }
@@ -134,7 +136,7 @@ class Yadapter implements IAdapter {
             let closestStation: tr.Station;
             if (!graph.stations.some(station => {
                     if (closestPoint.name === station.name
-                        && closestPoint.location.distanceTo(station.platforms[0].location) < sameJunctionError) {
+                        && closestPoint.location.distanceTo(station.platforms[0].location) < this._sameJunctionError) {
                         closestStation = station;
                         return true;
                     }
@@ -248,7 +250,7 @@ class Yadapter implements IAdapter {
                 }
             }
             for (let i = 1; i < path.points.length; ++i) {
-                const closestPlatforms = geo.findObjectsInRadius(path.points[i], graph.platforms, distanceError, true);
+                const closestPlatforms = geo.findObjectsInRadius(path.points[i], graph.platforms, this._distanceError, true);
                 if (closestPlatforms.length > 0) {
                     const platform = (closestPlatforms.length === 1)
                         ? closestPlatforms[0]
@@ -270,6 +272,7 @@ class Yadapter implements IAdapter {
     }
 
     static getOrMakePlatform(platforms: tr.Platform[], location: L.LatLng, addToGraph: boolean): tr.Platform {
+        let distanceError = Reflect['getOwnMetadata']('DistanceError', this);
         const closestPlatforms = geo.findObjectsInRadius(location, platforms, distanceError);
         if (closestPlatforms.length === 0) {
             let platform = new tr.Platform(location);

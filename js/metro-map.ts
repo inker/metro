@@ -58,7 +58,8 @@ class MetroMap {
         
         Promise.all([graphPromise, hintsPromise])
             .then(results => util.verifyHints(this.graph, this.hints))
-            .then(response => console.log(response));
+            .then(response => console.log(response))
+            .catch(err => console.error(err));
     }
 
     private addMapListeners(): void {
@@ -67,7 +68,7 @@ class MetroMap {
         this.map.on('move', e => {
             //this.overlay.style['-webkit-transition'] = mapPane.style['-webkit-transition'];
             //this.overlay.style.transition = mapPane.style.transition;
-            this.overlay.style.transform = mapPane.style.transform
+            this.overlay.style.transform = mapPane.style.transform;
         });
         
         // the secret of correct positioning is the movend transform check for corrent transform
@@ -80,10 +81,12 @@ class MetroMap {
         });
         this.map.on('zoomstart', e => {
             this.map.dragging.disable();
+            console.log(e);
             //this.overlay.classList.add('leaflet-zoom-anim');
             this.overlay.style.opacity = '0.5';
         });
         this.map.on('zoomend', e => {
+            console.log(e);
             console.log('zoom ended');
             this.redrawNetwork();
             //this.overlay.classList.remove('leaflet-zoom-anim');

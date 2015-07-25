@@ -5,68 +5,12 @@
 import Yadapter = require('./fetch-adapters/yadapter');
 import MetroGraph = require('./metro-graph');
 
-//export class Coordinates {
-//    private _lat: number;
-//    private _lon: number;
-//
-//    constructor(latitude: number, longitude: number) {
-//        if (latitude > 90 || latitude < -90) throw new Error('latitude (' + latitude + ') cannot exceed the -90 ~ 90 bounds');
-//        if (longitude > 180 || longitude < -180) throw new Error('longitude cannot exceed the -180 ~ 180 bounds');
-//        this._lat = latitude;
-//        this._lon = longitude;
-//    }
-//
-//    get lat(): number {
-//        return this._lat;
-//    }
-//
-//    get lng(): number {
-//        return this._lon;
-//    }
-//
-//    set lat(latitude: number) {
-//        if (latitude > 90 || latitude < -90) throw new Error('latitude cannot exceed the -90 ~ 90 bounds');
-//        this._lat = latitude;
-//    }
-//
-//    set lng(longitude: number) {
-//        if (longitude > 180 || longitude < -180) throw new Error('longitude cannot exceed the -180 ~ 180 bounds');
-//        this._lon = longitude;
-//    }
-//
-//    toString() {
-//        return '{' + this._lat + ', ' + this._lon + '}';
-//    }
-//}
-
-//export class LocationRad {
-//    lat: number;
-//    lng: number;
-//
-//    constructor(coors: L.LatLng) {
-//        this.lat = coors.lat * Math.PI / 180;
-//        this.lng = coors.lng * Math.PI / 180;
-//    }
-//}
-
-//export function getDistance(start: L.LatLng, end: L.LatLng): number {
-//    const p1 = new LocationRad(start), p2 = new LocationRad(end);
-//    return Math.acos(
-//            Math.sin(p1.lat) * Math.sin(p2.lat) +
-//            Math.cos(p1.lat) * Math.cos(p2.lat) * Math.cos(p1.lng - p2.lng)
-//        ) * 6378137;
-//}
-
 /** object must contain the 'location' field */
-interface HasLocation extends MetroGraph.Platform {
+type HasLocation = {
     location: L.LatLng;
-    name: string;
-    description?: string
 }
 
-//type HasLocation = {location: L.LatLng;};
-
-export function findClosestObject(point: L.LatLng, objects: HasLocation[]): HasLocation {
+export function findClosestObject<T extends HasLocation>(point: L.LatLng, objects: T[]): T {
     if (objects.length < 1) {
         throw new Error('an objects array must contain at least 1 object');
     }
@@ -83,7 +27,7 @@ export function findClosestObject(point: L.LatLng, objects: HasLocation[]): HasL
 }
 
 /** object must contain the 'location' field */
-export function findObjectsInRadius(point: L.LatLng, objects: HasLocation[], radius: number, sortArray = false): HasLocation[] {
+export function findObjectsInRadius<T extends HasLocation>(point: L.LatLng, objects: T[], radius: number, sortArray = false): T[] {
     let arr = objects.filter(obj => point.distanceTo(obj.location) <= radius);
     if (sortArray) {
         arr.sort((a, b) => point.distanceTo(a.location) - point.distanceTo(b.location));
