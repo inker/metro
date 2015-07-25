@@ -1,21 +1,19 @@
 'use strict';
 /// <reference path="../typings/tsd.d.ts" />
 
-import tr = require('../metro-graph');
-import IAdapter = require('./geo-to-transport-adapter');
-import util = require('../util');
-import geo = require('../geo');
+//import tr = require('../metro-graph');
+//import IAdapter = require('./geo-to-transport-adapter');
+//import util = require('../util');
+//import geo = require('../geo');
 import libxmljs = require('libxmljs');
+import request = require('request');
 //import xml2js = require('xml2js');
 import fs = require('fs');
-import request = require('request');
-//import * as tr from '../metro-graph';
-//import IAdapter from './geo-to-transport-adapter';
-//import * as util from '../util';
-//import * as geo from '../geo';
-//import * as libxmljs from 'libxmljs';
-//import * as fs from 'fs';
 import L = require('leaflet');
+import * as tr from '../metro-graph';
+import IAdapter from './geo-to-transport-adapter';
+import * as util from '../util';
+import * as geo from '../geo';
 
 // errors in meters
 let transferOverlapError = 20;
@@ -60,7 +58,7 @@ class Yadapter implements IAdapter {
         this.url = url;
     }
 
-    parseFile(destPath: string): Promise<string> {
+    parseFile(): Promise<tr.MetroGraph> {
         return new Promise((resolve, reject) => request(this.url, (error, response, body) => {
             if (error) throw error;
             if (response.statusCode !== 200) throw new Error('yandex server is not responding');
@@ -68,14 +66,8 @@ class Yadapter implements IAdapter {
             console.time('parsing took');
             let graph = this.kmlToGraph(body);
             console.timeEnd('parsing took');
+            resolve(graph);
             const json = graph.toJSON();
-            fs.writeFile(destPath, json, 'utf8', err => {
-                if (err) throw err;
-                resolve('graph written');
-                console.time('recreation takes');
-                const mg = new tr.MetroGraph(json);
-                console.timeEnd('recreation takes');
-            });
         }));
     }
 

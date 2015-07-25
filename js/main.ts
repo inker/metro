@@ -1,5 +1,5 @@
-import MetroMap = require('./metro-map');
-import util = require('../util');
+import MetroMap from './metro-map';
+import * as util from '../util';
 //import MetroMap from './metro-map';
 
 if (L.Browser.ie) {

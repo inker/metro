@@ -1,14 +1,9 @@
 import L = require('leaflet');
-import svg = require('./svg');
-import util = require('../util');
-import po = require('../plain-objects');
-import addons = require('./addons');
-import graph = require('../metro-graph');
-
-//import 'leaflet';
-//import * as svg from './svg';
-//import * as util from '../../util';
-//import Plain from './plain-objects';
+import * as svg from './svg';
+import * as util from '../util';
+import * as po from '../plain-objects';
+import * as addons from './addons';
+import * as graph from '../metro-graph';
 
 class MetroMap {
     private map: L.Map;
@@ -273,10 +268,10 @@ class MetroMap {
                     let lines = platform.spans.map(i => this.graph.routes[this.graph.spans[i].routes[0]].line);
                     // TODO: refactor this stuff, unify 2-span & >2-span platforms
                     if (lines[0] !== lines[1]) {
-                        let whisker = {};
-                        whisker[platform.spans[0]] = posOnSVG;
-                        whisker[platform.spans[1]] = posOnSVG;
-                        whiskers[platformIndex] = whisker;
+                        whiskers[platformIndex] = {
+                            [platform.spans[0]]: posOnSVG,
+                            [platform.spans[1]]: posOnSVG
+                        };
                     } else {
                         let midPts = [posOnSVG, posOnSVG];
                         let lens = [0, 0];
@@ -295,10 +290,10 @@ class MetroMap {
                         const mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
                         const mm = midPts[0].add(mdiff);
                         const diff = posOnSVG.subtract(mm);
-                        let whisker = {};
-                        whisker[platform.spans[0]] = midPts[0].add(diff);
-                        whisker[platform.spans[1]] = midPts[1].add(diff);
-                        whiskers[platformIndex] = whisker;
+                        whiskers[platformIndex] = {
+                            [platform.spans[0]]: midPts[0].add(diff),
+                            [platform.spans[1]]: midPts[1].add(diff)
+                        };
                     }
                 } else if (platform.spans.length > 2) {
                     // 0 - prev, 1 - next
@@ -342,9 +337,9 @@ class MetroMap {
                     spanIds[1].forEach(spanIndex => whisker[spanIndex] = midPts[1].add(diff));
                     whiskers[platformIndex] = whisker;
                 } else {
-                    let whisker = {};
-                    whisker[platform.spans[0]] = posOnSVG;
-                    whiskers[platformIndex] = whisker;
+                    whiskers[platformIndex] = {
+                        [platform.spans[0]]: posOnSVG
+                    };
                 }
                 
                 if (circular && circular.indexOf(platform) > -1) {
@@ -377,18 +372,18 @@ class MetroMap {
             const srcN = span.source, trgN = span.target;
             const routes = span.routes.map(n => this.graph.routes[n]);
             const matches = routes[0].line.match(/([MEL])(\d{0,2})/);
+            let bezier: HTMLElement;
             if (matches[1] === 'E') {
                 let inner = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
                 let outer: typeof inner = <any>inner.cloneNode(true);
                 outer.style.strokeWidth = lineWidth + 'px';
                 inner.style.strokeWidth = lineWidth / 2 + 'px';
-                let g = svg.createSVGElement('g');
-                g.classList.add('E');
-                g.appendChild(outer);
-                g.appendChild(inner);
-                docFrags['paths'].appendChild(g);
+                bezier = svg.createSVGElement('g');
+                bezier.classList.add('E');
+                bezier.appendChild(outer);
+                bezier.appendChild(inner);
             } else {
-                let bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
+                bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
                 bezier.style.strokeWidth = lineWidth.toString();
                 if (matches) {
                     bezier.classList.add(matches[0]);
@@ -397,8 +392,12 @@ class MetroMap {
                 if (matches[1] === 'L') {
                     bezier.style.strokeWidth = lineWidth * 0.75 + 'px';
                 }
-                docFrags['paths'].appendChild(bezier);
             }
+            util.setSVGDataset(bezier, {
+                source: span.source,
+                target: span.target
+            });
+            docFrags['paths'].appendChild(bezier);
 
         }
         
@@ -408,5 +407,5 @@ class MetroMap {
     }
 }
 
-export = MetroMap;
-//export default MetroMap;
+//export = MetroMap;
+export default MetroMap;

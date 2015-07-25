@@ -1,5 +1,5 @@
 import L = require('leaflet');
-import MetroMap = require('./metro-map')
+import MetroMap from './metro-map';
 
 export class LayerControl {
     private layerControl: any;

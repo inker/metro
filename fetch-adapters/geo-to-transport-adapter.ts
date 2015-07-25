@@ -5,5 +5,5 @@ interface GeoToTransportAdapter {
     parseFile(destPath: string, cb?: Function);
 }
 
-export = GeoToTransportAdapter;
+export default GeoToTransportAdapter;
 //export default GeoToTransportAdapter;

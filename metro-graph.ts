@@ -1,11 +1,9 @@
 'use strict';
 /// <reference path="./typings/tsd.d.ts" />
-import geo = require('./geo');
-import plain = require('./plain-objects');
-import util = require('./util');
-import po = require('./plain-objects');
-//import L = require('leaflet');
-//import * as geo from './geo';
+import L = require('leaflet');
+import * as util from './util';
+import * as po from './plain-objects';
+import * as geo from './geo';
 
 export type AltNames = { old?: string };
 
@@ -109,7 +107,7 @@ class Edge {
 
     constructor(source: Platform, target: Platform, bidirectional = true) {
         if (source === target) {
-            throw new Error("source & target cannot be the same platform (" + source.name + ', ' + source.location + ')');
+            throw new Error(`source & target cannot be the same platform (${source.name}, ${source.location})`);
         }
         this.src = source;
         this.trg = target;
@@ -181,10 +179,12 @@ export class Line {
     name: string;
 
     constructor(type: string, num?: number, name: string = null) {
-        if (type.length !== 1) throw new Error("type must be one letter");
+        if (['M', 'E', 'L'].indexOf(type) < 0) {
+            throw new Error("type must be one letter");
+        }
         this.type = type;
         if (num && num.toString() !== num.toPrecision()) {
-            throw new Error('line number ' + num + ' cannot be fractional');
+            throw new Error(`line number ${num} cannot be fractional`);
         }
         this.num = num;
         this.name = name;

@@ -3,7 +3,7 @@
 'use strict';
 
 import L = require('leaflet');
-import po = require('./plain-objects');
+import * as po from './plain-objects';
 
 export function diffByOne(a: string, b: string): boolean {
     let diff = 0;
@@ -105,12 +105,12 @@ export function verifyHints(graph: po.Graph, hints: po.Hints): Promise<string> {
             const val = obj[line];
             if (typeof val === 'string') {
                 if (graph.platforms.find(el => el.name === val) === undefined) {
-                    throw new Error('platform ' + val + " doesn't exist");
+                    throw new Error(`platform ${val} doesn't exist`);
                 }
             } else {
                 val.forEach(item => {
                     if (graph.platforms.find(el => el.name === item) === undefined) {
-                        throw new Error('platform ' + item + " doesn't exist");
+                        throw new Error(`platform ${item} doesn't exist`);
                     }
                 });
             }
@@ -120,7 +120,7 @@ export function verifyHints(graph: po.Graph, hints: po.Hints): Promise<string> {
         const crossPlatform = hints.crossPlatform;
         Object.keys(crossPlatform).forEach(platformName => {
             if (graph.platforms.find(el => el.name === platformName) === undefined) {
-                throw new Error('platform ' + platformName + " doesn't exist");
+                throw new Error(`platform ${platformName} doesn't exist`);
             }
             const obj = crossPlatform[platformName];
             if ('forEach' in obj) {
@@ -131,7 +131,7 @@ export function verifyHints(graph: po.Graph, hints: po.Hints): Promise<string> {
         });
         Object.keys(hints.englishNames).forEach(platformName => {
             if (graph.platforms.find(el => el.name === platformName) === undefined) {
-                throw new Error('platform ' + platformName + " doesn't exist");
+                throw new Error(`platform ${platformName} doesn't exist`);
             }
         });
         resolve('hints json seems okay');

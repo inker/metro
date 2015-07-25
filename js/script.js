@@ -60,7 +60,7 @@ exports.Measurement = Measurement;
 },{}],2:[function(require,module,exports){
 'use strict';
 
-var MetroMap = require('./metro-map');
+var metro_map_1 = require('./metro-map');
 var util = require('../util');
 //import MetroMap from './metro-map';
 if (L.Browser.ie) {
@@ -69,7 +69,7 @@ if (L.Browser.ie) {
     alert('May work incorrectly in mobile browser');
 }
 require('./polyfills')();
-var metroMap = new MetroMap('map-container', 'json/graph.json', require('./tilelayers'));
+var metroMap = new metro_map_1['default']('map-container', 'json/graph.json', require('./tilelayers'));
 util.flashTitle(['Plan metro Sankt-Peterburga', 'Pietarin metron hankesuunnitelma', 'St Petersburg metro plan proposal'], 3000);
 console.log('user: ' + navigator.userLanguage);
 console.log('language: ' + navigator.language);
@@ -86,80 +86,7 @@ f. there's no money for it (whose fault is it?)
 g. i do not agree with the network, where's the station near my home (propose your own)
 h. malfunctioning in IE (get a normal browser ffs)
 i. why junctions have single name
-import MetroMap = require('./metro-map');
-import util = require('../util');
-//import MetroMap from './metro-map';
-
-if (L.Browser.ie) {
-    alert("Does not work in IE (yet)");
-} else if (L.Browser.mobile) {
-    alert("May work incorrectly in mobile browser");
-}
-
-require('./polyfills')();
-
-let metroMap = new MetroMap('map-container', 'json/graph.json', require('./tilelayers'));
-
-util.flashTitle([
-    'Plan metro Sankt-Peterburga',
-    'Pietarin metron hankesuunnitelma',
-    'St Petersburg metro plan proposal'
-], 3000);
-
-console.log('user: ' + navigator.userLanguage);
-console.log('language: ' + navigator.language);
-console.log('browser: ' + navigator.browserLanguage);
-console.log('system: ' + navigator.systemLanguage);
-
-/* TODO:
-1. FAQ with user with the following questions:
-a. why is everything in latinica
-b. why have some stations been renamed
-c. why have new stations been embedded between old ones
-d. st petersburg's climate not suited for overground railway (there are suburban trains... look at helsinki)
-e. wtf is ingria, why are the stations dubbed in finnish
-f. there's no money for it (whose fault is it?)
-g. i do not agree with the network, where's the station near my home (propose your own)
-h. malfunctioning in IE (get a normal browser ffs)
-i. why junctions have single name
- import MetroMap = require('./metro-map');
-import util = require('../util');
-//import MetroMap from './metro-map';
-
-if (L.Browser.ie) {
-    alert("Does not work in IE (yet)");
-} else if (L.Browser.mobile) {
-    alert("May work incorrectly in mobile browser");
-}
-
-require('./polyfills')();
-
-let metroMap = new MetroMap('map-container', 'json/graph.json', require('./tilelayers'));
-
-util.flashTitle([
-    'Plan metro Sankt-Peterburga',
-    'Pietarin metron hankesuunnitelma',
-    'St Petersburg metro plan proposal'
-], 3000);
-
-console.log('user: ' + navigator.userLanguage);
-console.log('language: ' + navigator.language);
-console.log('browser: ' + navigator.browserLanguage);
-console.log('system: ' + navigator.systemLanguage);
-
-/* TODO:
-1. FAQ with user with the following questions:
-a. why is everything in latinica
-b. why have some stations been renamed
-c. why have new stations been embedded between old ones
-d. st petersburg's climate not suited for overground railway (there are suburban trains... look at helsinki)
-e. wtf is ingria, why are the stations dubbed in finnish
-f. there's no money for it (whose fault is it?)
-g. i do not agree with the network, where's the station near my home (propose your own)
-h. malfunctioning in IE (get a normal browser ffs)
-i. why junctions have single name
- */
-
+ */ /**/
 
 
 },{"../util":64,"./metro-map":3,"./polyfills":4,"./tilelayers":6}],3:[function(require,module,exports){
@@ -169,10 +96,6 @@ var L = window.L;
 var svg = require('./svg');
 var util = require('../util');
 var addons = require('./addons');
-//import 'leaflet';
-//import * as svg from './svg';
-//import * as util from '../../util';
-//import Plain from './plain-objects';
 var MetroMap = (function () {
     function MetroMap(containerId, kml, tileLayers) {
         var _this = this;
@@ -207,7 +130,8 @@ var MetroMap = (function () {
             return alert(errText);
         }).then(function (graphJson) {
             return _this.extendBounds();
-        }).then(function () {
+        }) // because the previous assignment returns json
+        .then(function () {
             return hintsPromise;
         }).then(function (hintsJson) {
             return _this.redrawNetwork();
@@ -279,7 +203,7 @@ var MetroMap = (function () {
         });
     };
     MetroMap.prototype.resetOverlayStructure = function () {
-        var child = undefined;
+        var child;
         while (child = this.overlay.firstChild) {
             this.overlay.removeChild(child);
         }
@@ -351,8 +275,6 @@ var MetroMap = (function () {
      *  ...
      */
     MetroMap.prototype.redrawNetwork = function () {
-        var _this2 = this;
-
         var _this = this;
         this.resetOverlayStructure();
         this.updateOverlayPositioning();
@@ -380,10 +302,9 @@ var MetroMap = (function () {
         var transferWidth = lineWidth;
         document.getElementById('station-circles').style.strokeWidth = circleBorder + 'px';
         var platformsInCircles = [];
-
-        var _loop = function (stationIndex) {
-            var station = _this2.graph.stations[stationIndex];
-            var circular = util.findCircle(_this2.graph, station);
+        for (var stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
+            var station = this.graph.stations[stationIndex];
+            var circular = util.findCircle(this.graph, station);
             var circumpoints = [];
             station.platforms.forEach(function (platformIndex) {
                 var platform = _this.graph.platforms[platformIndex];
@@ -403,22 +324,20 @@ var MetroMap = (function () {
                         util.setSVGDataset(ci, { en: en });
                     }
                     if (zoom > 11) {
-                        (function () {
-                            var lines = [];
-                            platform.spans.forEach(function (i) {
-                                return _this.graph.spans[i].routes.forEach(function (ri) {
-                                    return lines.push(_this.graph.routes[ri].line);
-                                });
+                        var lines = [];
+                        platform.spans.forEach(function (i) {
+                            return _this.graph.spans[i].routes.forEach(function (ri) {
+                                return lines.push(_this.graph.routes[ri].line);
                             });
-                            if (lines.length > 0 && lines.every(function (line) {
-                                return line === lines[0];
-                            })) {
-                                var matches = lines[0].match(/([MEL])(\d{0,2})/);
-                                if (matches) {
-                                    ci.classList.add(matches[1] === 'M' ? matches[0] : matches[1] + '-line');
-                                }
+                        });
+                        if (lines.length > 0 && lines.every(function (line) {
+                            return line === lines[0];
+                        })) {
+                            var matches = lines[0].match(/([MEL])(\d{0,2})/);
+                            if (matches) {
+                                ci.classList.add(matches[1] === 'M' ? matches[0] : matches[1] + '-line');
                             }
-                        })();
+                        }
                     }
                     var dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
                     dummyCircle.classList.add('invisible-circle');
@@ -437,10 +356,7 @@ var MetroMap = (function () {
                     });
                     // TODO: refactor this stuff, unify 2-span & >2-span platforms
                     if (lines[0] !== lines[1]) {
-                        var whisker = {};
-                        whisker[platform.spans[0]] = posOnSVG;
-                        whisker[platform.spans[1]] = posOnSVG;
-                        whiskers[platformIndex] = whisker;
+                        whiskers[platformIndex] = (_a = {}, _a[platform.spans[0]] = posOnSVG, _a[platform.spans[1]] = posOnSVG, _a);
                     } else {
                         var midPts = [posOnSVG, posOnSVG];
                         var lens = [0, 0];
@@ -448,6 +364,7 @@ var MetroMap = (function () {
                         if (firstSpan.source === platformIndex) {
                             platform.spans.reverse();
                         }
+                        // previous node should come first
                         for (var i = 0; i < 2; ++i) {
                             var span = _this.graph.spans[platform.spans[i]];
                             var neighborNum = span.source === platformIndex ? span.target : span.source;
@@ -458,71 +375,63 @@ var MetroMap = (function () {
                         var mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
                         var mm = midPts[0].add(mdiff);
                         var diff = posOnSVG.subtract(mm);
-                        var whisker = {};
-                        whisker[platform.spans[0]] = midPts[0].add(diff);
-                        whisker[platform.spans[1]] = midPts[1].add(diff);
-                        whiskers[platformIndex] = whisker;
+                        whiskers[platformIndex] = (_b = {}, _b[platform.spans[0]] = midPts[0].add(diff), _b[platform.spans[1]] = midPts[1].add(diff), _b);
                     }
                 } else if (platform.spans.length > 2) {
-                    (function () {
-                        // 0 - prev, 1 - next
-                        var points = [[], []];
-                        var spanIds = [[], []];
-                        var dirHints = _this.hints.crossPlatform;
-                        var idx = util.hintContainsLine(_this.graph, dirHints, platform);
-                        if (platform.name in dirHints && idx !== null) {
-                            (function () {
-                                // array or object
-                                var platformHints = idx > -1 ? dirHints[platform.name][idx] : dirHints[platform.name];
-                                var nextPlatformNames = [];
-                                Object.keys(platformHints).forEach(function (key) {
-                                    var val = platformHints[key];
-                                    if (typeof val === 'string') {
-                                        nextPlatformNames.push(val);
-                                    } else {
-                                        val.forEach(function (i) {
-                                            return nextPlatformNames.push(i);
-                                        });
-                                    }
+                    // 0 - prev, 1 - next
+                    var points = [[], []];
+                    var spanIds = [[], []];
+                    var dirHints = _this.hints.crossPlatform;
+                    var idx = util.hintContainsLine(_this.graph, dirHints, platform);
+                    if (platform.name in dirHints && idx !== null) {
+                        // array or object
+                        var platformHints = idx > -1 ? dirHints[platform.name][idx] : dirHints[platform.name];
+                        var nextPlatformNames = [];
+                        Object.keys(platformHints).forEach(function (key) {
+                            var val = platformHints[key];
+                            if (typeof val === 'string') {
+                                nextPlatformNames.push(val);
+                            } else {
+                                val.forEach(function (i) {
+                                    return nextPlatformNames.push(i);
                                 });
-                                for (var i = 0; i < platform.spans.length; ++i) {
-                                    var span = _this.graph.spans[platform.spans[i]];
-                                    var neighborIndex = span.source === platformIndex ? span.target : span.source;
-                                    var neighbor = _this.graph.platforms[neighborIndex];
-                                    var neighborPos = platformsOnSVG[neighborIndex];
-                                    var dirIdx = nextPlatformNames.indexOf(neighbor.name) > -1 ? 1 : 0;
-                                    points[dirIdx].push(neighborPos);
-                                    spanIds[dirIdx].push(platform.spans[i]);
-                                }
-                            })();
+                            }
+                        });
+                        for (var i = 0; i < platform.spans.length; ++i) {
+                            var span = _this.graph.spans[platform.spans[i]];
+                            var neighborIndex = span.source === platformIndex ? span.target : span.source;
+                            var neighbor = _this.graph.platforms[neighborIndex];
+                            var neighborPos = platformsOnSVG[neighborIndex];
+                            var dirIdx = nextPlatformNames.indexOf(neighbor.name) > -1 ? 1 : 0;
+                            points[dirIdx].push(neighborPos);
+                            spanIds[dirIdx].push(platform.spans[i]);
                         }
-                        var midPts = points.map(function (pts) {
-                            return posOnSVG.add(pts.length === 1 ? pts[0] : pts.length === 0 ? posOnSVG : util.getCenter(pts)).divideBy(2);
-                        });
-                        var lens = midPts.map(function (midPt) {
-                            return posOnSVG.distanceTo(midPt);
-                        });
-                        var mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
-                        var mm = midPts[0].add(mdiff);
-                        var diff = posOnSVG.subtract(mm);
-                        var whisker = {};
-                        spanIds[0].forEach(function (spanIndex) {
-                            return whisker[spanIndex] = midPts[0].add(diff);
-                        });
-                        spanIds[1].forEach(function (spanIndex) {
-                            return whisker[spanIndex] = midPts[1].add(diff);
-                        });
-                        whiskers[platformIndex] = whisker;
-                    })();
-                } else {
+                    }
+                    var midPts = points.map(function (pts) {
+                        return posOnSVG.add(pts.length === 1 ? pts[0] : pts.length === 0 ? posOnSVG : util.getCenter(pts)).divideBy(2);
+                    });
+                    var lens = midPts.map(function (midPt) {
+                        return posOnSVG.distanceTo(midPt);
+                    });
+                    var mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
+                    var mm = midPts[0].add(mdiff);
+                    var diff = posOnSVG.subtract(mm);
                     var whisker = {};
-                    whisker[platform.spans[0]] = posOnSVG;
+                    spanIds[0].forEach(function (spanIndex) {
+                        return whisker[spanIndex] = midPts[0].add(diff);
+                    });
+                    spanIds[1].forEach(function (spanIndex) {
+                        return whisker[spanIndex] = midPts[1].add(diff);
+                    });
                     whiskers[platformIndex] = whisker;
+                } else {
+                    whiskers[platformIndex] = (_c = {}, _c[platform.spans[0]] = posOnSVG, _c);
                 }
                 if (circular && circular.indexOf(platform) > -1) {
                     circumpoints.push(posOnSVG);
                     platformsInCircles.push(platformIndex);
                 }
+                var _a, _b, _c;
             });
             if (zoom > 11 && circular) {
                 var cCenter = util.getCircumcenter(circumpoints);
@@ -530,10 +439,6 @@ var MetroMap = (function () {
                 var cCircle = svg.makeTransferRing(cCenter, cRadius, transferWidth, circleBorder);
                 docFrags['transfers'].appendChild(cCircle);
             }
-        };
-
-        for (var stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
-            _loop(stationIndex);
         }
         if (zoom > 11) {
             this.graph.transfers.forEach(function (tr) {
@@ -553,18 +458,18 @@ var MetroMap = (function () {
                 return _this.graph.routes[n];
             });
             var matches = routes[0].line.match(/([MEL])(\d{0,2})/);
+            var bezier = void 0;
             if (matches[1] === 'E') {
                 var inner = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
                 var outer = inner.cloneNode(true);
                 outer.style.strokeWidth = lineWidth + 'px';
                 inner.style.strokeWidth = lineWidth / 2 + 'px';
-                var g = svg.createSVGElement('g');
-                g.classList.add('E');
-                g.appendChild(outer);
-                g.appendChild(inner);
-                docFrags['paths'].appendChild(g);
+                bezier = svg.createSVGElement('g');
+                bezier.classList.add('E');
+                bezier.appendChild(outer);
+                bezier.appendChild(inner);
             } else {
-                var bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
+                bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
                 bezier.style.strokeWidth = lineWidth.toString();
                 if (matches) {
                     bezier.classList.add(matches[0]);
@@ -573,8 +478,12 @@ var MetroMap = (function () {
                 if (matches[1] === 'L') {
                     bezier.style.strokeWidth = lineWidth * 0.75 + 'px';
                 }
-                docFrags['paths'].appendChild(bezier);
             }
+            util.setSVGDataset(bezier, {
+                source: span.source,
+                target: span.target
+            });
+            docFrags['paths'].appendChild(bezier);
         }
         Object.keys(docFrags).forEach(function (i) {
             return document.getElementById(i).appendChild(docFrags[i]);
@@ -583,8 +492,7 @@ var MetroMap = (function () {
     };
     return MetroMap;
 })();
-module.exports = MetroMap;
-//export default MetroMap;
+exports['default'] = MetroMap;
 
 
 },{"../util":64,"./addons":1,"./svg":5}],4:[function(require,module,exports){
