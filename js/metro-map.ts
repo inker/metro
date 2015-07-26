@@ -45,6 +45,9 @@ class MetroMap {
         
         console.log('map should be created by now');
         this.overlay = document.getElementById('overlay');
+        let container = this.map.getContainer();
+        container.removeChild(this.overlay);
+        container.appendChild(this.overlay);
         this.addMapListeners();
         graphPromise
             .catch(errText => alert(errText))
@@ -120,14 +123,14 @@ class MetroMap {
         }
         
         let defs = svg.createSVGElement('defs');
-        defs.id = 'defs';
         defs.appendChild(svg.makeDropShadow());
         this.overlay.appendChild(defs);
         // svg element won't work because it does not have negative dimensions
         // (top-left station is partially visible)
         let origin = svg.createSVGElement('g');
         origin.id = 'origin';
-        ['paths', 'transfers', 'station-circles', 'dummy-circles'].forEach(groupId => {
+        // paths-outer, paths-inner, transfers-outer, station-circles, transfers-inner, dummy-circles
+        ['paths-outer', 'paths-inner', 'transfers-outer', 'station-circles', 'transfers-inner', 'dummy-circles'].forEach(groupId => {
             let group = svg.createSVGElement('g');
             group.id = groupId;
             origin.appendChild(group);
@@ -135,7 +138,7 @@ class MetroMap {
         this.overlay.appendChild(origin);
         let stationCircles = document.getElementById('station-circles');
         stationCircles.classList.add('station-circle');
-        origin.insertBefore(svg.makePlate(), stationCircles.nextElementSibling);
+        origin.insertBefore(svg.makePlate(), document.getElementById('dummy-circles'));
     }
 
 
@@ -197,8 +200,10 @@ class MetroMap {
         let docFrags = {
             'station-circles': document.createDocumentFragment(),
             'dummy-circles': document.createDocumentFragment(),
-            'transfers': document.createDocumentFragment(),
-            'paths': document.createDocumentFragment(),
+            'paths-inner': document.createDocumentFragment(),
+            'paths-outer': document.createDocumentFragment(),
+            'transfers-inner': document.createDocumentFragment(),
+            'transfers-outer': document.createDocumentFragment()
         };
         
         let stationPlate = document.getElementById('station-plate');
@@ -355,7 +360,8 @@ class MetroMap {
                 const cCenter = util.getCircumcenter(circumpoints);
                 const cRadius = cCenter.distanceTo(circumpoints[0]);
                 const cCircle = svg.makeTransferRing(cCenter, cRadius, transferWidth, circleBorder);
-                docFrags['transfers'].appendChild(cCircle);
+                docFrags['transfers-outer'].appendChild(cCircle[0]);
+                docFrags['transfers-inner'].appendChild(cCircle[1]);
             }
         }
         
@@ -366,7 +372,8 @@ class MetroMap {
                     pl2 = this.graph.platforms[tr.target];
                 const transferPos = [this.posOnSVG(svgBounds, pl1.location), this.posOnSVG(svgBounds, pl2.location)];
                 const transfer = svg.makeTransfer(transferPos[0], transferPos[1], transferWidth, circleBorder);
-                docFrags['transfers'].appendChild(transfer);
+                docFrags['transfers-outer'].appendChild(transfer[0]);
+                docFrags['transfers-inner'].appendChild(transfer[1]);
             });
         }
 
@@ -381,10 +388,10 @@ class MetroMap {
                 let outer: typeof inner = <any>inner.cloneNode(true);
                 outer.style.strokeWidth = lineWidth + 'px';
                 inner.style.strokeWidth = lineWidth / 2 + 'px';
-                bezier = svg.createSVGElement('g');
-                bezier.classList.add('E');
-                bezier.appendChild(outer);
-                bezier.appendChild(inner);
+                outer.classList.add('E-outer');
+                inner.classList.add('E-inner');
+                docFrags['paths-outer'].appendChild(outer);
+                docFrags['paths-inner'].appendChild(inner);
             } else {
                 bezier = svg.makeCubicBezier([platformsOnSVG[srcN], whiskers[srcN][i], whiskers[trgN][i], platformsOnSVG[trgN]]);
                 bezier.style.strokeWidth = lineWidth.toString();
@@ -395,12 +402,14 @@ class MetroMap {
                 if (matches[1] === 'L') {
                     bezier.style.strokeWidth = lineWidth * 0.75 + 'px';
                 }
+                util.setSVGDataset(bezier, {
+                    source: span.source,
+                    target: span.target
+                });
+                docFrags['paths-outer'].appendChild(bezier);
             }
-            util.setSVGDataset(bezier, {
-                source: span.source,
-                target: span.target
-            });
-            docFrags['paths'].appendChild(bezier);
+            
+            
 
         }
         

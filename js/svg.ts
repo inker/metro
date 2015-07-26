@@ -55,33 +55,30 @@ export function cutCubicBezier(controlPoints: L.Point[], fraction: number): L.Po
     return newArr;
 }
 
-export function makeTransferRing(center: L.Point, radius: number, thickness: number, borderWidth: number): HTMLElement {
-    let g = createSVGElement('g');
-    g.classList.add('transfer');
+export function makeTransferRing(center: L.Point, radius: number, thickness: number, borderWidth: number): HTMLElement[] {
+    const classes = ['transfer-outer', 'transfer-inner'];
     const halfBorder = borderWidth * 0.5;
-    [thickness + halfBorder, thickness - halfBorder].forEach(t => {
+    return [thickness + halfBorder, thickness - halfBorder].map((t, index) => {
         let ring = makeCircle(center, radius);
         ring.style.strokeWidth = t + 'px';
-        g.appendChild(ring);
+        ring.classList.add(classes[index]);
+        return ring;
     });
-    return g;
-    
 }
 
-export function makeTransfer(start: L.Point, end: L.Point, thickness: number, borderWidth: number) {
-    let g = createSVGElement('g');
-    g.classList.add('transfer');
+export function makeTransfer(start: L.Point, end: L.Point, thickness: number, borderWidth: number): HTMLElement[] {
+    const classes = ['transfer-outer', 'transfer-inner'];
     const halfBorder = borderWidth * 0.5;
-    [thickness + halfBorder, thickness - halfBorder].forEach(t => {
+    return [thickness + halfBorder, thickness - halfBorder].map((t, index) => {
         let line = createSVGElement('line');
         line.setAttribute('x1', start.x.toString());
         line.setAttribute('y1', start.y.toString());
         line.setAttribute('x2', end.x.toString());
         line.setAttribute('y2', end.y.toString());
         line.style.strokeWidth = t + 'px';
-        g.appendChild(line);
+        line.classList.add(classes[index]);
+        return line;
     });
-    return g;
 }
 
 export function createSVGElement(tagName: string): HTMLElement {
@@ -179,16 +176,15 @@ function modifyPlateBox(bottomRight: L.Point, lines: string[]): void {
     rect.setAttribute('y', rectTopLeft.y.toString());
 
     let text = document.getElementById('plate-text');
-    let i = 0;
-    for (; i < lines.length; ++i) {
+    for (var i = 0; i < lines.length; ++i) {
         const textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - (i + 1) * spacing));
         let t = <HTMLElement>text.children[i];
         t.setAttribute('x', textTopLeft.x.toString());
         t.setAttribute('y', textTopLeft.y.toString());
         t.textContent = lines[i];
     }
-    for (; i < text.children.length; ++i) {
-        text.children[i].textContent = null;
+    while (i < text.children.length) {
+        text.children[i++].textContent = null;
     }
 
 }

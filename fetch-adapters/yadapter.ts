@@ -10,7 +10,6 @@ import request = require('request');
 //import xml2js = require('xml2js');
 import fs = require('fs');
 import L = require('leaflet');
-import "reflect-metadata";
 import * as tr from '../metro-graph';
 import IAdapter from './geo-to-transport-adapter';
 import * as util from '../util';
@@ -102,7 +101,7 @@ class Yadapter implements IAdapter {
                 const firstLetter = placemarkName.charAt(0);
                 if (firstLetter === 'Л' || firstLetter === 'М') {
                     loms.push(pts);
-                } else if (placemarkName.substr(0, 5) !== 'Konec') {
+                } else if (!placemarkName.startsWith('Konec')) {
                     paths.push(new YaPath(pts, placemarkName, placemarkDescription));
                 }
             }
@@ -184,7 +183,7 @@ class Yadapter implements IAdapter {
             let branches: string;
             let routes = [];
             if (type === 'E') {
-                let lineNums = path.name.slice(1).split('').sort();
+                let lineNums = path.name.split('').slice(1).sort();
                 branches = lineNums.join('');
                 lineNums.forEach(lineNum => {
                     let route = new tr.Route(eLine, lineNum);
@@ -250,7 +249,7 @@ class Yadapter implements IAdapter {
                 }
             }
             for (let i = 1; i < path.points.length; ++i) {
-                const closestPlatforms = geo.findObjectsInRadius(path.points[i], graph.platforms, this._distanceError, true);
+                const closestPlatforms = geo.findObjectsWithinRadius(path.points[i], graph.platforms, this._distanceError, true);
                 if (closestPlatforms.length > 0) {
                     const platform = (closestPlatforms.length === 1)
                         ? closestPlatforms[0]
@@ -273,7 +272,7 @@ class Yadapter implements IAdapter {
 
     static getOrMakePlatform(platforms: tr.Platform[], location: L.LatLng, addToGraph: boolean): tr.Platform {
         let distanceError = Reflect['getOwnMetadata']('DistanceError', this);
-        const closestPlatforms = geo.findObjectsInRadius(location, platforms, distanceError);
+        const closestPlatforms = geo.findObjectsWithinRadius(location, platforms, distanceError);
         if (closestPlatforms.length === 0) {
             let platform = new tr.Platform(location);
             if (addToGraph) platforms.push(platform);

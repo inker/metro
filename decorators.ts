@@ -1,3 +1,8 @@
+'use strict';
+/// <reference path="./typings/tsd.d.ts" />
+
+import "reflect-metadata";
+
 export function TransferOverlapError(value: number) {
     return function (target: Function) {
         Reflect['defineMetadata']('TransferOverlapError', value, target);

@@ -27,9 +27,9 @@ a {
     width: 100%;
     height: 100%;
     cursor: default;
-    position: absolute;
+    position: relative;
     fill: white;
-    z-index: 50;
+    /*z-index: 500;*/
 }
 
 /* map elements */
@@ -51,7 +51,7 @@ a {
     font-weight: bold;
     text-anchor: end;
     text-align: right;
-    -webkit-transform-style: preserve-3d;
+    /*-webkit-transform-style: preserve-3d;*/
     /*stroke-opacity: 1;*/
     opacity: 1;
 }
@@ -104,14 +104,29 @@ path {
 }
 
 /* transfers */
-.transfer {
+/*.transfer {*/
+    /*fill-opacity: 0;*/
+    /*stroke: #404040;*/
+    /*stroke-opacity: 1;*/
+    /*position: absolute;*/
+/*}*/
+/*.transfer :nth-child(2) {*/
+    /*stroke: #FFFFFF;*/
+    /*stroke-opacity: 1;*/
+    /*position: absolute;*/
+/*}*/
+
+.transfer-outer {
     fill-opacity: 0;
     stroke: #404040;
     stroke-opacity: 1;
+    position: absolute;
 }
-.transfer :nth-child(2) {
+.transfer-inner {
+    fill-opacity: 0;
     stroke: #FFFFFF;
     stroke-opacity: 1;
+    position: absolute;
 }
 
 /* lines */
@@ -128,8 +143,10 @@ path {
 .M11 { stroke: #000000; }
 .M12 { stroke: #84B817; }
 
-.E :nth-child(1) { stroke: #7156A5; }
-.E :nth-child(2) { stroke: #FFFFFF; }
+/*.E :nth-child(1) { stroke: #7156A5; }*/
+/*.E :nth-child(2) { stroke: #FFFFFF; }*/
+.E-outer { stroke: #7156A5; }
+.E-inner { stroke: #FFFFFF; }
 
 .leaflet-control-command-interior, input
 {

@@ -27,7 +27,7 @@ export function findClosestObject<T extends HasLocation>(point: L.LatLng, object
 }
 
 /** object must contain the 'location' field */
-export function findObjectsInRadius<T extends HasLocation>(point: L.LatLng, objects: T[], radius: number, sortArray = false): T[] {
+export function findObjectsWithinRadius<T extends HasLocation>(point: L.LatLng, objects: T[], radius: number, sortArray = false): T[] {
     let arr = objects.filter(obj => point.distanceTo(obj.location) <= radius);
     if (sortArray) {
         arr.sort((a, b) => point.distanceTo(a.location) - point.distanceTo(b.location));
