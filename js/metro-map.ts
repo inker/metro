@@ -179,7 +179,7 @@ class MetroMap {
         origin.style.transform = `translate(${originShift.x}px, ${originShift.y}px)`;
         //origin.style.left = originShift.x + 'px';
         //origin.style.top = originShift.y + 'px';
-
+        
         const tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
         this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
         this.overlay.style.height = tripleSvgBoundsSize.y + 'px';
@@ -207,7 +207,6 @@ class MetroMap {
         };
         
         let stationPlate = document.getElementById('station-plate');
-
         let whiskers = new Array<{}>(this.graph.platforms.length);
 
         const zoom = this.map.getZoom();
@@ -273,6 +272,7 @@ class MetroMap {
                 
                 // control points
                 if (platform.spans.length === 2) {
+                    let button = document.createElement('button');
                     let lines = platform.spans.map(i => this.graph.routes[this.graph.spans[i].routes[0]].line);
                     // TODO: refactor this stuff, unify 2-span & >2-span platforms
                     if (lines[0] !== lines[1]) {

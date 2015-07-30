@@ -1,7 +1,7 @@
 /// <reference path="./typings/tsd.d.ts" />
 'use strict';
 
-//import L = require('leaflet');
+import L = require('leaflet');
 import Yadapter = require('./fetch-adapters/yadapter');
 import MetroGraph = require('./metro-graph');
 
