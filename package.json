@@ -5,9 +5,12 @@
   "main": "bin/www",
   "dependencies": {
     "body-parser": "latest",
+    "classlist-polyfill": "latest",
     "cookie-parser": "latest",
     "debug": "latest",
     "ejs": "latest",
+    "es6-promise": "latest",
+    "es6-set": "latest",
     "express": "latest",
     "leaflet": "latest",
     "libxmljs": "latest",
