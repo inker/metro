@@ -4,6 +4,7 @@ import * as util from '../util';
 import * as po from '../plain-objects';
 import * as addons from './addons';
 import * as graph from '../metro-graph';
+import * as geo from '../geo';
 
 class MetroMap {
     private map: L.Map;
@@ -56,6 +57,7 @@ class MetroMap {
             .then(hintsJson => this.redrawNetwork())
             // TODO: fix the kludge making the grey area disappear
             .then(() => this.map.invalidateSize(false))
+            .then(() => this.resetMapView())
             .then(() => this.fixFontRendering(this.map.getPanes().mapPane))
             .then(() => dataPromise);
         
@@ -110,7 +112,7 @@ class MetroMap {
     private resetMapView(): void {
         //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
         //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
-        this.map.setView(this.bounds.getCenter(), 11, {
+        this.map.setView(this.bounds.getCenter(), L.Browser.retina ? 12 : 11, {
             pan: { animate: false },
             zoom: { animate: false }
         });
