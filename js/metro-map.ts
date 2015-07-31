@@ -40,8 +40,8 @@ class MetroMap {
             minZoom: 9,
             inertia: false
         }).addControl(new L.Control.Scale({ imperial: false }));
-        new addons.LayerControl(tileLayers)
-            .addTo(this.map);
+        
+        new addons.LayerControl(tileLayers).addTo(this.map);
         
         console.log('map should be created by now');
         this.overlay = document.getElementById('overlay');
@@ -388,8 +388,8 @@ class MetroMap {
                 let outer: typeof inner = <any>inner.cloneNode(true);
                 outer.style.strokeWidth = lineWidth + 'px';
                 inner.style.strokeWidth = lineWidth / 2 + 'px';
-                outer.classList.add('E-outer');
-                inner.classList.add('E-inner');
+                outer.classList.add('E');
+                inner.classList.add('E');
                 docFrags['paths-outer'].appendChild(outer);
                 docFrags['paths-inner'].appendChild(inner);
             } else {

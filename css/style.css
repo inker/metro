@@ -145,8 +145,8 @@ path {
 
 /*.E :nth-child(1) { stroke: #7156A5; }*/
 /*.E :nth-child(2) { stroke: #FFFFFF; }*/
-.E-outer { stroke: #7156A5; }
-.E-inner { stroke: #FFFFFF; }
+#paths-outer .E { stroke: #7156A5; }
+#paths-inner .E { stroke: #FFFFFF; }
 
 .leaflet-control-command-interior, input
 {

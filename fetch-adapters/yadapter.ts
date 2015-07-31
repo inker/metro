@@ -115,7 +115,6 @@ class Yadapter implements IAdapter {
         /*
          * 1. find the closest placemark to each lom
          * 2. */
-
         let pointsCloned = points.slice(0);
         loms.forEach(lom => {
             // if the end overlaps the beginning, delete it
@@ -130,7 +129,9 @@ class Yadapter implements IAdapter {
             const closestPoint = geo.findClosestObject(center, pointsCloned);
             // no longer needed in points
             const index = points.indexOf(closestPoint);
-            if (index > -1) points.splice(index, 1);
+            if (index > -1) {
+                points.splice(index, 1);
+            }
             // find the nearest station out of already added, or create a new one
             let closestStation: tr.Station;
             if (!graph.stations.some(station => {
