@@ -36,7 +36,7 @@ class MetroMap {
         this.map = new L.Map(containerId, {
             layers: tileLayers[Object.keys(tileLayers)[0]],
             center: new L.LatLng(59.943556, 30.30452),
-            zoom: 11,
+            zoom: L.Browser.retina ? 12 : 11,
             minZoom: 9,
             inertia: false
         }).addControl(new L.Control.Scale({ imperial: false }));
