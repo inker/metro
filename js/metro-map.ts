@@ -226,7 +226,7 @@ class MetroMap {
         let transferWidth = lineWidth;
         
         if (L.Browser.retina) {
-            [lineWidth, circleRadius, circleBorder, transferWidth] = [lineWidth, circleRadius, circleBorder, transferWidth].map(item => item * 2);
+            [lineWidth, circleRadius, circleBorder, transferWidth] = [lineWidth, circleRadius, circleBorder, transferWidth].map(item => item * 1.5);
         }
         
         document.getElementById('station-circles').style.strokeWidth = circleBorder + 'px';
