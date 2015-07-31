@@ -38,8 +38,7 @@ class MetroMap {
             center: new L.LatLng(59.943556, 30.30452),
             zoom: 11,
             minZoom: 9,
-            inertia: false,
-            tileSize: 128
+            inertia: false
         }).addControl(new L.Control.Scale({ imperial: false }));
         
         new addons.LayerControl(tileLayers).addTo(this.map);
@@ -209,7 +208,7 @@ class MetroMap {
         
         let stationPlate = document.getElementById('station-plate');
         let whiskers = new Array<{}>(this.graph.platforms.length);
-
+        
         const zoom = this.map.getZoom();
         const nw = this.bounds.getNorthWest();
         const se = this.bounds.getSouthEast();
@@ -218,11 +217,15 @@ class MetroMap {
             ? platform => this.posOnSVG(svgBounds, this.graph.stations[platform.station].location)
             : platform => this.posOnSVG(svgBounds, platform.location);
         let platformsOnSVG = this.graph.platforms.map(posTransform);
-
-        const lineWidth = (zoom - 7) * 0.5;
-        const circleRadius = zoom < 12 ? lineWidth * 1.25 : lineWidth;
-        const circleBorder = zoom < 12 ? circleRadius * 0.4 : circleRadius * 0.5;
-        const transferWidth = lineWidth;
+        
+        let lineWidth = (zoom - 7) * 0.5;
+        let circleRadius = zoom < 12 ? lineWidth * 1.25 : lineWidth;
+        let circleBorder = zoom < 12 ? circleRadius * 0.4 : circleRadius * 0.5;
+        let transferWidth = lineWidth;
+        
+        if (L.Browser.retina) {
+            [lineWidth, circleRadius, circleBorder, transferWidth] = [lineWidth, circleRadius, circleBorder, transferWidth].map(item => item * 2);
+        }
         
         document.getElementById('station-circles').style.strokeWidth = circleBorder + 'px';
         
