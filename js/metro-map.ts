@@ -38,7 +38,8 @@ class MetroMap {
             center: new L.LatLng(59.943556, 30.30452),
             zoom: 11,
             minZoom: 9,
-            inertia: false
+            inertia: false,
+            tileSize: 128
         }).addControl(new L.Control.Scale({ imperial: false }));
         
         new addons.LayerControl(tileLayers).addTo(this.map);
