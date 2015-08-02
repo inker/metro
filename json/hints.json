@@ -20,7 +20,7 @@
       "M4": "Ledovyj dvorec",
       "M8": "Ladožskij park"
     }, {
-      "E": "Centraľnyj voxal"
+      "E": "Glavnyj voxal"
     }],
     "Poľustrovo": {
       "M6": "Park Sacharova",
@@ -83,7 +83,7 @@
       "E": "Ligovskij kanal"
     },
     "Finlandskij voxal": {
-      "E": "Centraľnyj voxal"
+      "E": "Glavnyj voxal"
     },
     "Pargolovo": {
       "E": "Novo-Orlovo"
@@ -97,12 +97,12 @@
     "5km": {
       "E": "Narvin ručej"
     },
-    "Centraľnyj voxal": {
+    "Glavnyj voxal": {
       "E": ["Finlandskij voxal", "Jablonovka"]
     }
   },
   "englishNames": {
-    "Centraľnyj voxal": "Central Raiway Station",
+    "Glavnyj voxal": "Central Raiway Station",
     "Aeroport": "Airport"
   },
   "elevationSegments": {
