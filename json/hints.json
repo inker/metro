@@ -105,6 +105,15 @@
     "Glavnyj voxal": "Central Raiway Station",
     "Aeroport": "Airport"
   },
+  "oldNames": {
+    "Glavnyj voxal": {
+      "M1": "Ploščaď Vosstania",
+      "M3": "Majakovskaja",
+      "M5": "Znamenskaja"
+    },
+    "Murino": "Devätkino",
+    "Kirišskaja": "Graždanskij prospekt"
+  },
   "elevationSegments": {
     "M1": [
       {

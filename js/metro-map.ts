@@ -269,8 +269,8 @@ class MetroMap {
                     let dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
                     dummyCircle.classList.add('invisible-circle');
                     dummyCircle.setAttribute('data-platformId', ci.id);
-                    dummyCircle.onmouseover = svg.showPlate;
-                    dummyCircle.onmouseout = e => stationPlate.style.display = 'none';
+                    //dummyCircle.onmouseover = svg.showPlate;
+                    //dummyCircle.onmouseout = e => stationPlate.style.display = 'none';
                     
                     docFrags['station-circles'].appendChild(ci);
                     docFrags['dummy-circles'].appendChild(dummyCircle);
@@ -362,6 +362,10 @@ class MetroMap {
                 }
 
             });
+            
+            document.getElementById('dummy-circles').onmouseover = svg.showPlate;
+            document.getElementById('dummy-circles').onmouseout = e => stationPlate.style.display = 'none';
+
             if (zoom > 11 && circular) {
                 const cCenter = util.getCircumcenter(circumpoints);
                 const cRadius = cCenter.distanceTo(circumpoints[0]);
