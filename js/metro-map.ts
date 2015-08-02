@@ -363,8 +363,9 @@ class MetroMap {
 
             });
             
-            document.getElementById('dummy-circles').onmouseover = svg.showPlate;
-            document.getElementById('dummy-circles').onmouseout = e => stationPlate.style.display = 'none';
+            let dummyCircles = document.getElementById('dummy-circles');
+            dummyCircles.onmouseover = svg.showPlate;
+            dummyCircles.onmouseout = e => stationPlate.style.display = 'none';
 
             if (zoom > 11 && circular) {
                 const cCenter = util.getCircumcenter(circumpoints);
