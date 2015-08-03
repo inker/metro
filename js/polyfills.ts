@@ -15,7 +15,7 @@ function addPolyfills () {
         require('classlist-polyfill');
     }
     
-    if (!('fetch' in window)) {
+    if (!window.hasOwnProperty('fetch')) {
         console.log('fetch not present, using a polyfill');
     }
 
@@ -44,4 +44,4 @@ function addPolyfills () {
     
 }
 
-export = addPolyfills;
+export default addPolyfills;

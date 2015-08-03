@@ -8,7 +8,8 @@ if (L.Browser.ie) {
     alert("May work incorrectly in mobile browser");
 }
 
-require('./polyfills')();
+import polyfills from './polyfills';
+polyfills();
 
 let metroMap = new MetroMap('map-container', 'json/graph.json', require('./tilelayers'));
 

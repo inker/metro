@@ -425,7 +425,6 @@ class MetroMap {
         }
         
         Object.keys(docFrags).forEach(i => document.getElementById(i).appendChild(docFrags[i]));
-        //this.resetView();
 
     }
 }
