@@ -19,10 +19,10 @@ gulp.task('watch', function () {
 });
 
 gulp.task('server-transpile-merge-compress', function() {
-    browserify('./bin/server.ts')
-        .transform(babelify)
-        .bundle()
-        .pipe(fs.createWriteStream('./server.js'));
+    //browserify('./bin/server.js')
+    //    .transform(babelify)
+    //    .bundle()
+    //    .pipe(fs.createWriteStream('./server.js'));
 });
 
 //gulp.task('merge', function () {
