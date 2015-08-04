@@ -1,10 +1,6 @@
 import L = require('leaflet');
-import svg = require('./svg');
-import util = require('../util');
-import po = require('../plain-objects')
-//import L from 'leaflet';
-//import * as svg from './svg';
-//import * as util from '../../util';
+import * as po from '../plain-objects';
+import * as util from '../util';
 
 export function makeCircle(position: L.Point, radius: number): HTMLElement {
     let ci = createSVGElement('circle');
@@ -89,7 +85,7 @@ export function showPlate(event: MouseEvent): void {
     const dummyCircle: SVGElement = <any>event.target;
     const dataset = util.getSVGDataset(dummyCircle);
     let circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
-    let g = svg.modifyPlate(circle);
+    let g = modifyPlate(circle);
     g.style.display = null;
 }
 

@@ -19,7 +19,7 @@ gulp.task('watch', function () {
 });
 
 gulp.task('server-transpile-merge-compress', function() {
-    browserify('./bin/www')
+    browserify('./bin/server.ts')
         .transform(babelify)
         .bundle()
         .pipe(fs.createWriteStream('./server.js'));

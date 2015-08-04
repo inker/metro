@@ -2,8 +2,7 @@
 'use strict';
 
 import L = require('leaflet');
-import Yadapter = require('./fetch-adapters/yadapter');
-import MetroGraph = require('./metro-graph');
+import Yadapter from './fetch-adapters/yadapter';
 
 /** object must contain the 'location' field */
 type HasLocation = {

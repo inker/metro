@@ -6,4 +6,3 @@ interface GeoToTransportAdapter {
 }
 
 export default GeoToTransportAdapter;
-//export default GeoToTransportAdapter;

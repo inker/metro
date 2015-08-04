@@ -429,5 +429,4 @@ class MetroMap {
     }
 }
 
-//export = MetroMap;
 export default MetroMap;

@@ -11,12 +11,6 @@
     "express/express.d.ts": {
       "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
     },
-    "xml2js/xml2js.d.ts": {
-      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
-    },
-    "x2js/xml2json.d.ts": {
-      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
-    },
     "libxmljs/libxmljs.d.ts": {
       "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
     },

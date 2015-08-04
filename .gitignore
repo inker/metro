@@ -2,13 +2,13 @@ routes/*.js
 routes/*.js.map
 public/js/.*js
 public/js/.*js.map
+bin/*.js
+bin/*.js.map
 *.js
 *.js.map
 node_modules
 .idea/
 !gulpfile.js
-!bin/www
-!public/js/script.js
 !js/script.js
 
 #################

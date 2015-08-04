@@ -1,15 +1,11 @@
 'use strict';
 /// <reference path="../typings/tsd.d.ts" />
 
-//import tr = require('../metro-graph');
-//import IAdapter = require('./geo-to-transport-adapter');
-//import util = require('../util');
-//import geo = require('../geo');
 import libxmljs = require('libxmljs');
 import request = require('request');
-//import xml2js = require('xml2js');
 import fs = require('fs');
 import L = require('leaflet');
+
 import * as tr from '../metro-graph';
 import IAdapter from './geo-to-transport-adapter';
 import * as util from '../util';
@@ -87,7 +83,7 @@ class Yadapter implements IAdapter {
         placemarks.forEach(placemark => {
             const placemarkName = placemark.get('./name', '').text();
             const desc = placemark.get('./description', '');
-            const placemarkDescription = (desc) ? desc.text() : '';
+            const placemarkDescription = desc ? desc.text() : '';
             const placemarkLocation = placemark.get('.//coordinates', '').text();
             if (placemark.find('./Point').length > 0) {
                 const cs = placemarkLocation.split(',');
@@ -286,5 +282,5 @@ class Yadapter implements IAdapter {
 
 }
 
-export = Yadapter;
-//export default Yadapter;
+//export = Yadapter;
+export default Yadapter;

@@ -3,7 +3,7 @@ import express = require('express');
 import fs = require('fs');
 import path = require('path');
 
-import Adapter = require('../fetch-adapters/yadapter');
+import Adapter from '../fetch-adapters/yadapter';
 import tr = require('../metro-graph');
 
 //import { default as express } from 'express';
@@ -37,4 +37,4 @@ router.get('/updategraph', (req, res, next) => {
 //router.get('/', (req, res, next) => res.render('index', {title: 'Express'}));
 
 //export default router;
-export = router;
+export default router;

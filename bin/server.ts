@@ -1,21 +1,22 @@
-#!/usr/bin/env node
-var debug = require('debug')('MetroGraph');
-var app = require('../app');
-var http = require('http');
-var fs = require('fs');
-var tr = require('../metro-graph');
-var Adapter = require('../fetch-adapters/yadapter');
+'use strict';
+/// <reference path="../typings/tsd.d.ts" />
+import http = require('http');
+import fs = require('fs');
+
+import app from '../app';
+import * as tr from '../metro-graph';
+import Adapter from '../fetch-adapters/yadapter';
 
 app.set('port', process.env.PORT || 3000);
 
-var server = http.createServer(app);
-server.listen(app.get('port'), function () {
-    debug('Express server listening on port ' + server.address().port);
+let server = http.createServer(app);
+server.listen(app.get('port'), () => {
+    console.log('Express server listening on port ' + server.address().port);
     console.info('server started');
-    var url = 'https://maps.yandex.ru/export/usermaps/geSTNBuviAaKSWp8lkQE4G7Oha2K8cUr.kml';
-    var adapter = new Adapter(url);
+    const url = 'https://maps.yandex.ru/export/usermaps/geSTNBuviAaKSWp8lkQE4G7Oha2K8cUr.kml';
+    let adapter = new Adapter(url);
     adapter.parseFile().then(graph => {
-        var json = graph.toJSON();
+        const json = graph.toJSON();
         fs.writeFile('./json/graph.json', json, 'utf8', err => {
             if (err) throw err;
             console.time('recreation takes');

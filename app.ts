@@ -1,5 +1,4 @@
 /// <reference path="./typings/tsd.d.ts" />
-/// <reference path="./references.ts" />
 'use strict';
 
 import express = require('express');
@@ -7,12 +6,7 @@ import path = require('path');
 //import logger = require('morgan');
 import cookieParser = require('cookie-parser');
 import bodyParser = require('body-parser');
-import routes = require('./routes/router');
-//import express from 'express';
-//import * as path from 'path';
-////import * as cookieParser from 'cookie-parser';
-//import bodyParser from 'body-parser';
-//import routes from './routes/router';
+import routes from './routes/router';
 
 var app: express.Express = express();
 
@@ -30,4 +24,4 @@ app.use(express.static(__dirname));
 app.use('/', routes);
 //app.use('/users', users);
 
-module.exports = app;
+export default app;
