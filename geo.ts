@@ -5,11 +5,11 @@ import L = require('leaflet');
 import Yadapter from './fetch-adapters/yadapter';
 
 /** object must contain the 'location' field */
-type HasLocation = {
+type HavingLocation = {
     location: L.LatLng;
 }
 
-export function findClosestObject<T extends HasLocation>(point: L.LatLng, objects: T[]): T {
+export function findClosestObject<T extends HavingLocation>(point: L.LatLng, objects: T[]): T {
     if (objects.length < 1) {
         throw new Error('an objects array must contain at least 1 object');
     }
@@ -26,7 +26,7 @@ export function findClosestObject<T extends HasLocation>(point: L.LatLng, object
 }
 
 /** object must contain the 'location' field */
-export function findObjectsWithinRadius<T extends HasLocation>(point: L.LatLng, objects: T[], radius: number, sortArray = false): T[] {
+export function findObjectsWithinRadius<T extends HavingLocation>(point: L.LatLng, objects: T[], radius: number, sortArray = false): T[] {
     let arr = objects.filter(obj => point.distanceTo(obj.location) <= radius);
     if (sortArray) {
         arr.sort((a, b) => point.distanceTo(a.location) - point.distanceTo(b.location));

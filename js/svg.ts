@@ -10,17 +10,6 @@ export function makeCircle(position: L.Point, radius: number): HTMLElement {
     return ci;
 }
 
-//export function convertToStation(circle: HTMLElement, data: po.StationOrPlatform): void {
-//    circle.id = id;
-//    //circle.classList.add('station-circle');
-//    util.setSVGDataset(circle, {
-//        lat: data.location.lat,
-//        lng: data.location.lng,
-//        ru: data.name,
-//        fi: data.altNames['fi']
-//    });
-//}
-
 export function makeCubicBezier(controlPoints: L.Point[]): HTMLElement {
     if (controlPoints.length !== 4) {
         throw new Error('there should be 4 points');
@@ -152,7 +141,7 @@ export function modifyPlate(circle: HTMLElement): HTMLElement {
     const fi: string = dataset['fi'];
     const en: string = dataset['en'];
 
-    let names = !fi ? [ru] : (util.getUserLanguage() === 'fi') ? [fi, ru] : [ru, fi];
+    let names = !fi ? [ru] : util.getUserLanguage() === 'fi' ? [fi, ru] : [ru, fi];
     if (en) names.push(en);
 
     modifyPlateBox(poleEnd, names);

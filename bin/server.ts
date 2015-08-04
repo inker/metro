@@ -11,10 +11,9 @@ app.set('port', process.env.PORT || 3000);
 
 let server = http.createServer(app);
 server.listen(app.get('port'), () => {
-    console.log('Express server listening on port ' + server.address().port);
+    console.info('Express server listening on port ' + server.address().port);
     console.info('server started');
-    const url = 'https://maps.yandex.ru/export/usermaps/geSTNBuviAaKSWp8lkQE4G7Oha2K8cUr.kml';
-    let adapter = new Adapter(url);
+    let adapter = new Adapter('https://maps.yandex.ru/export/usermaps/geSTNBuviAaKSWp8lkQE4G7Oha2K8cUr.kml');
     adapter.parseFile().then(graph => {
         const json = graph.toJSON();
         fs.writeFile('./json/graph.json', json, 'utf8', err => {

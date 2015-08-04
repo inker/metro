@@ -178,7 +178,7 @@ class Yadapter implements IAdapter {
             // if the path is not a branch
             const type = path.name.charAt(0);
             let branches: string;
-            let routes = [];
+            let routes: tr.Route[] = [];
             if (type === 'E') {
                 let lineNums = path.name.split('').slice(1).sort();
                 branches = lineNums.join('');
