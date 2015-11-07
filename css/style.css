@@ -47,7 +47,7 @@ a {
 .plate-text {
     color: black;
     font-size: 0.9em;
-    font-family: Corbel, Candara, Calibri, Verdana, Arial, sans-serif;
+    font-family: Corbel, Candara, Calibri, "Ubuntu Light", Verdana, Arial, sans-serif;
     font-weight: bold;
     text-anchor: end;
     text-align: right;
