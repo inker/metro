@@ -1,24 +1,25 @@
-var gulp = require('gulp');
-var browserify = require('browserify');
-var source = require('vinyl-source-stream');
-var uglify = require('gulp-uglify');
-var babelify = require('babelify');
-var fs = require('fs');
-var util = require('gulp-util');
-var buffer = require('vinyl-buffer');
-var es         = require('event-stream');
-var literalify = require('literalify');
+const gulp = require('gulp');
+const browserify = require('browserify');
+const source = require('vinyl-source-stream');
+const uglify = require('gulp-uglify');
+const babelify = require('babelify');
+const fs = require('fs');
+const util = require('gulp-util');
+const buffer = require('vinyl-buffer');
+//const es         = require('event-stream');
+const literalify = require('literalify');
+const sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('default', ['server-transpile-merge-compress', 'client-transpile-merge-compress', 'watch']);
 
-gulp.task('watch', function () {
+gulp.task('watch', () => {
     //gulp.start('merge-transpile-compress');
-    var patterns = ['./js/*.js', './util.js', '!./js/script.js'];
-    gulp.watch(patterns, ['client-transpile-merge-compress']);
+    const patterns = ['./js/*.js', './util.js', '!./js/script.js'];
+    gulp.watch(['./js/main.js'], ['client-transpile-merge-compress']);
     //gulp.watch(['./*.js', './*/*.js', '!./public/js/*.js', '!./server.js'], ['server-transpile-merge-compress']);
 });
 
-gulp.task('server-transpile-merge-compress', function() {
+gulp.task('server-transpile-merge-compress', () => {
     //browserify('./bin/server.js')
     //    .transform(babelify)
     //    .bundle()
@@ -42,8 +43,8 @@ gulp.task('server-transpile-merge-compress', function() {
 //        .pipe(gulp.dest('./public/js/'));
 //});
 
-gulp.task('client-transpile-merge-compress', function() {
-    var b = browserify()
+gulp.task('client-transpile-merge-compress', () => {
+    browserify()
         //.external(['leaflet'])
         // add the main file (could be in browserify as a parameter)
         .add('./js/main.js')
@@ -62,8 +63,11 @@ gulp.task('client-transpile-merge-compress', function() {
         // writes to bundle.js
         .pipe(source('script.js'))
         .pipe(buffer())
-        // compress it
-        .pipe(uglify())
+        .pipe(sourcemaps.init())
+
+        //// compress it
+        //.pipe(uglify())
+            .pipe(sourcemaps.write())
         // copy to destination
         .pipe(gulp.dest('./js/'));
     //es.merge(null, [gulp.src('./public/js/leaflet.js'), b]).pipe(gulp.dest('./public/js/'));

@@ -6,7 +6,7 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "node/node.d.ts": {
-      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
+      "commit": "8c4ec896ab619e7cb6572f82423e6e1eece70f5a"
     },
     "express/express.d.ts": {
       "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
@@ -17,13 +17,7 @@
     "body-parser/body-parser.d.ts": {
       "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
     },
-    "cookie-parser/cookie-parser.d.ts": {
-      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
-    },
     "leaflet/leaflet.d.ts": {
-      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
-    },
-    "d3/d3.d.ts": {
       "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
     },
     "mime/mime.d.ts": {

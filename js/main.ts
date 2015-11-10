@@ -11,7 +11,8 @@ if (L.Browser.ie) {
 import polyfills from './polyfills';
 polyfills();
 
-let metroMap = new MetroMap('map-container', 'json/graph.json', require('./tilelayers'));
+import tilelayers from './tilelayers';
+const metroMap = new MetroMap('map-container', 'json/graph.json', tilelayers);
 
 util.flashTitle([
     'Plan metro Sankt-Peterburga',

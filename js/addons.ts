@@ -3,7 +3,7 @@ import MetroMap from './metro-map';
 
 export class LayerControl {
     private layerControl: any;
-    constructor(tileLayers: any, otherLayers = null) {
+    constructor(tileLayers, otherLayers = null) {
         this.layerControl = L.control['UniForm'](tileLayers, otherLayers, {
             collapsed: false,
             position: 'topright'

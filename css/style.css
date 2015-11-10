@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css?family=Open+Sans|Roboto");
-
 html {
     height: 100%;
 }
@@ -21,6 +19,17 @@ a {
 
 .leaflet-control-scale-line {
     opacity: 1;
+}
+
+#edit-map-button {
+    position: absolute;
+    top: 110px;
+    right: 10px;
+    z-index: 100;
+}
+
+#edit-map-button[disabled] {
+    cursor: not-allowed;
 }
 
 #overlay {

@@ -9,20 +9,24 @@ import Adapter from '../fetch-adapters/yadapter';
 
 app.set('port', process.env.PORT || 3000);
 
-let server = http.createServer(app);
-server.listen(app.get('port'), () => {
+const server = http.createServer(app);
+server.listen(app.get('port'), async () => {
     console.info('Express server listening on port ' + server.address().port);
     console.info('server started');
-    let adapter = new Adapter('https://maps.yandex.ru/export/usermaps/geSTNBuviAaKSWp8lkQE4G7Oha2K8cUr.kml');
-    adapter.parseFile().then(graph => {
+    const adapter = new Adapter('https://maps.yandex.ru/export/usermaps/geSTNBuviAaKSWp8lkQE4G7Oha2K8cUr.kml');
+    try {
+        const graph = await adapter.parseFile();
         const json = graph.toJSON();
         fs.writeFile('./json/graph.json', json, 'utf8', err => {
             if (err) throw err;
             console.time('recreation takes');
             const mg = new tr.MetroGraph(json);
             console.timeEnd('recreation takes');
+            return Promise.resolve();
         });
-    }).catch(err => console.error(err));
+    } catch (err) {
+        console.error(err);
+    }
 });
 
 

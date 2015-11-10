@@ -6,9 +6,6 @@
   "dependencies": {
     "body-parser": "latest",
     "classlist-polyfill": "latest",
-    "cookie-parser": "latest",
-    "debug": "latest",
-    "ejs": "latest",
     "es6-promise": "latest",
     "es6-set": "latest",
     "express": "latest",
@@ -16,7 +13,6 @@
     "libxmljs": "latest",
     "reflect-metadata": "latest",
     "request": "latest",
-    "serve-favicon": "latest",
     "whatwg-fetch": "latest"
   },
   "devDependencies": {
@@ -25,6 +21,7 @@
     "gulp": "latest",
     "gulp-uglify": "latest",
     "gulp-util": "latest",
+    "gulp-sourcemaps": "latest",
     "literalify": "latest",
     "uglify-js": "latest",
     "vinyl-buffer": "latest",

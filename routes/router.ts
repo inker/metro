@@ -4,14 +4,7 @@ import fs = require('fs');
 import path = require('path');
 
 import Adapter from '../fetch-adapters/yadapter';
-import tr = require('../metro-graph');
-
-//import { default as express } from 'express';
-//import * as fs from 'fs';
-//import * as path from 'path';
-//import Adapter from '../fetch-adapters/yadapter';
-//import * as tr from '../metro-graph';
-
+import * as tr from '../metro-graph';
 
 var router = express.Router();
 

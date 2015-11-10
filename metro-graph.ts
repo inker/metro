@@ -5,8 +5,8 @@ import * as util from './util';
 import * as po from './plain-objects';
 import * as geo from './geo';
 
-export type AltNames = { old?: string };
-
+export type AltNames = { old?: string } | any;
+    
 export class Platform {
     private _name: string; // overrides the parent station's name
     private _altNames: AltNames;
@@ -69,13 +69,13 @@ export class Platform {
     }
 
     passingRoutes(): Route[] {
-        let s = [];
+        const s = [];
         this._spans.forEach(span => span.routes.forEach(line => s.push(line)));
         return s;
     }
 
     passingLines(): Line[] {
-        let s = [];
+        const s = [];
         this._spans.forEach(span => span.routes.forEach(route => s.push(route.line)));
         return s;
     }
@@ -213,7 +213,7 @@ export class Route {
 
     isParentOf(route: Route): boolean {
         if (this.line !== route.line) return false;
-        let thisBranchSorted = this.branch.split('').sort().join(''),
+        const thisBranchSorted = this.branch.split('').sort().join(''),
             thatBranchSorted = route.branch.split('').sort().join('');
         return thisBranchSorted !== thatBranchSorted && thisBranchSorted.indexOf(thatBranchSorted) > -1;
     }

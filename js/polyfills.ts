@@ -14,10 +14,6 @@ function addPolyfills () {
         console.log('classlist not present, using a polyfill');
         require('classlist-polyfill');
     }
-    
-    if (!window.hasOwnProperty('fetch')) {
-        console.log('fetch not present, using a polyfill');
-    }
 
     if (!Array.prototype.find) {
         Array.prototype.find = function(predicate) {

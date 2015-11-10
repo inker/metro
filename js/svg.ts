@@ -3,34 +3,49 @@ import * as po from '../plain-objects';
 import * as util from '../util';
 
 export function makeCircle(position: L.Point, radius: number): HTMLElement {
-    let ci = createSVGElement('circle');
+    const ci = createSVGElement('circle');
     ci.setAttribute('r', radius.toString());
     ci.setAttribute('cy', position.y.toString());
     ci.setAttribute('cx', position.x.toString());
     return ci;
 }
 
-export function makeCubicBezier(controlPoints: L.Point[]): HTMLElement {
+export function getBezierPath(path: Element) {
+    const matches = path.getAttribute('d').match(/M\s*(.+?),(.+?)\s*C\s*(.+?),(.+?)\s(.+?),(.+?)\s(.+?),(.+?)/);
+    const numbers = matches.slice(1).map(m => Number(m));
+    const ret: L.Point[] = [];
+    for (let i = 0; i < 8; i += 2) {
+        ret.push(new L.Point(numbers[i], numbers[i + 1]));
+    }
+    return ret;
+}
+
+export function setBezierPath(el: Element, controlPoints: L.Point[]) {
     if (controlPoints.length !== 4) {
         throw new Error('there should be 4 points');
     }
-    let path = createSVGElement('path');
-    let s = ['M'].concat(controlPoints.map(pt => `${pt.x},${pt.y}`));
+    const path = createSVGElement('path');
+    const s = ['M'].concat(controlPoints.map(pt => `${pt.x},${pt.y}`));
     s.splice(2, 0, 'C');
-    path.setAttribute('d', s.join(' '));
+    el.setAttribute('d', s.join(' '));
+}
+
+export function makeCubicBezier(controlPoints: L.Point[]): HTMLElement {
+    const path = createSVGElement('path');
+    setBezierPath(path, controlPoints);
     return path;
 }
 
 export function cutCubicBezier(controlPoints: L.Point[], fraction: number): L.Point[] {
     function red(cps: L.Point[]): L.Point[] {
-        let pts = new Array<L.Point>(cps.length - 1);
+        const pts = new Array<L.Point>(cps.length - 1);
         for (let i = 0; i < pts.length; ++i) {
             pts[0] = cps[i].add(cps[i + 1].subtract(cps[i]).multiplyBy(fraction));
         }
         return pts;
     }
 
-    let newArr = new Array(controlPoints.length);
+    const newArr = new Array(controlPoints.length);
     let pts = controlPoints.slice(0, controlPoints.length);
     do {
         newArr.push(pts[0]);
@@ -43,7 +58,7 @@ export function makeTransferRing(center: L.Point, radius: number, thickness: num
     const classes = ['transfer-outer', 'transfer-inner'];
     const halfBorder = borderWidth * 0.5;
     return [thickness + halfBorder, thickness - halfBorder].map((t, index) => {
-        let ring = makeCircle(center, radius);
+        const ring = makeCircle(center, radius);
         ring.style.strokeWidth = t + 'px';
         ring.classList.add(classes[index]);
         return ring;
@@ -54,7 +69,7 @@ export function makeTransfer(start: L.Point, end: L.Point, thickness: number, bo
     const classes = ['transfer-outer', 'transfer-inner'];
     const halfBorder = borderWidth * 0.5;
     return [thickness + halfBorder, thickness - halfBorder].map((t, index) => {
-        let line = createSVGElement('line');
+        const line = createSVGElement('line');
         line.setAttribute('x1', start.x.toString());
         line.setAttribute('y1', start.y.toString());
         line.setAttribute('x2', end.x.toString());
@@ -66,26 +81,18 @@ export function makeTransfer(start: L.Point, end: L.Point, thickness: number, bo
 }
 
 export function createSVGElement(tagName: string): HTMLElement {
-    return <HTMLElement>document.createElementNS('http://www.w3.org/2000/svg', tagName);
-}
-
-export function showPlate(event: MouseEvent): void {
-    const dummyCircle: SVGElement = <any>event.target;
-    const dataset = util.getSVGDataset(dummyCircle);
-    let circle = document.getElementById(dataset['platformId'] || dataset['stationId']);
-    let g = modifyPlate(circle);
-    g.style.display = null;
+    return <any>document.createElementNS('http://www.w3.org/2000/svg', tagName);
 }
 
 function makeForeignDiv(topLeft: L.Point, text: string): SVGElement {
-    let foreign = createSVGElement('foreignObject');
+    const foreign = createSVGElement('foreignObject');
     //foreign.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
     foreign.setAttribute('x', topLeft.x.toString());
     foreign.setAttribute('y', topLeft.y.toString());
     foreign.setAttribute('width', '200');
     foreign.setAttribute('height', '50');
     //let div = <HTMLElement>document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
-    let div = document.createElement('div');
+    const div = document.createElement('div');
     div.innerHTML = text;
     div.classList.add('plate-box');
     div.classList.add('plate-text');
@@ -94,7 +101,7 @@ function makeForeignDiv(topLeft: L.Point, text: string): SVGElement {
 }
 
 export function makeDropShadow() {
-    let filter = createSVGElement('filter');
+    const filter = createSVGElement('filter');
     filter.id = 'shadow';
     filter.setAttribute('width', '200%');
     filter.setAttribute('height', '200%');
@@ -108,7 +115,7 @@ export function makeDropShadow() {
 }
 
 export function makePlate(): HTMLElement {
-    let stationPlate = createSVGElement('g');
+    const stationPlate = createSVGElement('g');
     stationPlate.id = 'station-plate';
     stationPlate.style.display = 'none';
     stationPlate.innerHTML = `<line id="pole" class="plate-pole"/>
@@ -119,29 +126,40 @@ export function makePlate(): HTMLElement {
     return stationPlate;
 }
 
+export function circleByDummy(dummy: HTMLElement): HTMLElement {
+    return document.getElementById('p-' + dummy.id.slice(2));
+}
+
+export function platformByCircle(circle: HTMLElement, graph: po.Graph) {
+    return graph.platforms[parseInt(circle.id.slice(2))];
+}
+
+export function platformByDummy(dummy: HTMLElement, graph: po.Graph) {
+    return graph.platforms[parseInt(dummy.id.slice(2))];
+}
+
 /**
  * modifies & returns the modified plate
  */
-export function modifyPlate(circle: HTMLElement): HTMLElement {
-    let plateGroup = document.getElementById('station-plate');
+export function modifyPlate(circle: Element, graph: po.Graph): HTMLElement {
+    const plateGroup = document.getElementById('station-plate');
     const c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
     const r = Number(circle.getAttribute('r'));
     const iR = Math.trunc(r);
 
-    let pole = <HTMLElement>plateGroup.children[0];
+    const pole = plateGroup.children[0];
     const poleSize = new L.Point(4 + iR, 8 + iR);
     const poleEnd = c.subtract(poleSize);
     pole.setAttribute('x1', c.x.toString());
     pole.setAttribute('y1', c.y.toString());
     pole.setAttribute('x2', poleEnd.x.toString());
     pole.setAttribute('y2', poleEnd.y.toString());
+    const platform = graph.platforms[parseInt(circle.id.slice(2))];
+    let ru = platform.name;
+    let fi = platform.altNames['fi'];
+    let en = platform.altNames['en'];
 
-    const dataset = util.getSVGDataset(circle);
-    const ru: string = dataset['ru'];
-    const fi: string = dataset['fi'];
-    const en: string = dataset['en'];
-
-    let names = !fi ? [ru] : util.getUserLanguage() === 'fi' ? [fi, ru] : [ru, fi];
+    const names = !fi ? [ru] : util.getUserLanguage() === 'fi' ? [fi, ru] : [ru, fi];
     if (en) names.push(en);
 
     modifyPlateBox(poleEnd, names);
@@ -149,7 +167,7 @@ export function modifyPlate(circle: HTMLElement): HTMLElement {
 }
 
 function modifyPlateBox(bottomRight: L.Point, lines: string[]): void {
-    let rect = document.getElementById('plate-box');
+    const rect = document.getElementById('plate-box');
     const spacing = 12;
     const longest = lines.reduce((prev, cur) => prev.length < cur.length ? cur : prev);
     const rectSize = new L.Point(10 + longest.length * 6, 6 + spacing * lines.length);
@@ -159,10 +177,10 @@ function modifyPlateBox(bottomRight: L.Point, lines: string[]): void {
     rect.setAttribute('x', rectTopLeft.x.toString());
     rect.setAttribute('y', rectTopLeft.y.toString());
 
-    let text = document.getElementById('plate-text');
+    const text = document.getElementById('plate-text');
     for (var i = 0; i < lines.length; ++i) {
         const textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - (i + 1) * spacing));
-        let t = <HTMLElement>text.children[i];
+        const t = text.children[i];
         t.setAttribute('x', textTopLeft.x.toString());
         t.setAttribute('y', textTopLeft.y.toString());
         t.textContent = lines[i];

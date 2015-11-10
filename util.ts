@@ -89,14 +89,7 @@ export function angle(v1: L.Point, v2: L.Point): number {
 }
 
 export function getCenter(pts: L.Point[]): L.Point {
-    if (pts.length === 0) {
-        return new L.Point(0, 0);
-    }
-    let sum = new L.Point(0, 0);
-    for (let i = 0; i < pts.length; ++i) {
-        sum = sum.add(pts[i]);
-    }
-    return sum.divideBy(pts.length);
+    return pts.reduce((prev, cur) => prev.add(cur)).divideBy(pts.length);
 }
 
 export function verifyHints(graph: po.Graph, hints: po.Hints): Promise<string> {
@@ -161,4 +154,14 @@ export function hintContainsLine(graph: po.Graph, dirHints: any, platform: po.Pl
         }
     }
     return null;
+}
+
+export function downloadAsFile(title: string, content: string) {
+    const a = document.createElement('a');
+    const blob = new Blob([content], {type: "octet/stream"});
+    const url = window.URL.createObjectURL(blob);
+    a.href = url;
+    a['download'] = title;
+    a.click();
+    window.URL.revokeObjectURL(url);
 }

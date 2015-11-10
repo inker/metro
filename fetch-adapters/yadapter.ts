@@ -51,17 +51,21 @@ class Yadapter implements IAdapter {
     private _transferOverlapError: number = Reflect['getOwnMetadata']('TransferOverlapError', this.constructor);
 
     constructor(url: string) {
-        //if (!/maps\.yandex\.ru/ig.test(url)) throw new Error('incorrect URL provided');
+        if (!/maps\.ya(ndex)?\.ru/ig.test(url)) {
+            throw new Error('incorrect URL provided');
+        }
         this.url = url;
     }
-
+    
     parseFile(): Promise<tr.MetroGraph> {
         return new Promise((resolve, reject) => request(this.url, (error, response, body) => {
-            if (error) throw error;
-            if (response.statusCode !== 200) throw new Error('yandex server is not responding');
+            if (error) reject(error);
+            if (response.statusCode !== 200) {
+                reject(new Error('yandex server is not responding'));
+            }
             console.log('kml successfully obtained');
             console.time('parsing took');
-            let graph = this.kmlToGraph(body);
+            const graph = this.kmlToGraph(body);
             console.timeEnd('parsing took');
             resolve(graph);
             const json = graph.toJSON();
@@ -70,16 +74,16 @@ class Yadapter implements IAdapter {
 
     private kmlToGraph(kml: string): tr.MetroGraph {
         console.log('parsing KML file...');
-        let graph = new tr.MetroGraph();
+        const graph = new tr.MetroGraph();
         kml = kml.replace(/<\?xml.*?\?>/ig, '') // delete the top xml stuff
             .replace(/\s?\w+=".*?"/ig, '') // delete the attributes
             .replace(/(?:\r\n|\r|\n)\s*/g, ''); // delete new line characters
-        let doc = libxmljs.parseXmlString(kml);
-        let placemarks = doc.find('/kml/Document/Folder/Placemark');
+        const doc = libxmljs.parseXmlString(kml);
+        const placemarks = doc.find('/kml/Document/Folder/Placemark');
         
-        let points = []; // to stations
-        let paths: YaPath[] = []; // to lines
-        let loms: L.LatLng[][] = []; // to interchanges
+        const points = []; // to stations
+        const paths: YaPath[] = []; // to lines
+        const loms: L.LatLng[][] = []; // to interchanges
         placemarks.forEach(placemark => {
             const placemarkName = placemark.get('./name', '').text();
             const desc = placemark.get('./description', '');
@@ -111,7 +115,7 @@ class Yadapter implements IAdapter {
         /*
          * 1. find the closest placemark to each lom
          * 2. */
-        let pointsCloned = points.slice(0);
+        const pointsCloned = points.slice(0);
         loms.forEach(lom => {
             // if the end overlaps the beginning, delete it
             let circular = false;
@@ -140,13 +144,13 @@ class Yadapter implements IAdapter {
                 closestStation = new tr.Station(closestPoint.name, { fi: closestPoint.description }, []);
                 graph.stations.push(closestStation);
             }
-            let platformsForGraph: tr.Platform[] = [];
+            const platformsForGraph: tr.Platform[] = [];
             const firstPlatform = Yadapter.getOrMakePlatform(graph.platforms, lom[0], false);
             platformsForGraph.push(firstPlatform);
             firstPlatform.station = closestStation;
             let prevPlatform = firstPlatform;
             for (let i = 1; i < lom.length; ++i) {
-                let platform = Yadapter.getOrMakePlatform(graph.platforms, lom[i], false);
+                const platform = Yadapter.getOrMakePlatform(graph.platforms, lom[i], false);
                 platform.station = closestStation;
                 graph.transfers.push(new tr.Transfer(prevPlatform, platform));
                 platformsForGraph.push(platform);
@@ -163,7 +167,7 @@ class Yadapter implements IAdapter {
         });
         // convert the remaining points
         points.forEach(pt => {
-            let platform = new tr.Platform(pt.location);
+            const platform = new tr.Platform(pt.location);
             graph.platforms.push(platform);
             graph.stations.push(new tr.Station(pt.name, { fi: pt.description }, [platform]));
         });
@@ -178,7 +182,7 @@ class Yadapter implements IAdapter {
             // if the path is not a branch
             const type = path.name.charAt(0);
             let branches: string;
-            let routes: tr.Route[] = [];
+            const routes: tr.Route[] = [];
             if (type === 'E') {
                 let lineNums = path.name.split('').slice(1).sort();
                 branches = lineNums.join('');
@@ -268,10 +272,10 @@ class Yadapter implements IAdapter {
     }
 
     static getOrMakePlatform(platforms: tr.Platform[], location: L.LatLng, addToGraph: boolean): tr.Platform {
-        let distanceError = Reflect['getOwnMetadata']('DistanceError', this);
+        const distanceError = Reflect['getOwnMetadata']('DistanceError', this);
         const closestPlatforms = geo.findObjectsWithinRadius(location, platforms, distanceError);
         if (closestPlatforms.length === 0) {
-            let platform = new tr.Platform(location);
+            const platform = new tr.Platform(location);
             if (addToGraph) platforms.push(platform);
             return platform;
         } else if (closestPlatforms.length === 1) {
