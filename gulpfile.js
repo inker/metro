@@ -65,8 +65,8 @@ gulp.task('client-transpile-merge-compress', () => {
         .pipe(buffer())
         .pipe(sourcemaps.init())
 
-        //// compress it
-        //.pipe(uglify())
+        // compress it
+        .pipe(uglify())
             .pipe(sourcemaps.write())
         // copy to destination
         .pipe(gulp.dest('./js/'));
