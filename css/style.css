@@ -6,7 +6,6 @@ body {
     margin: 0px;
     padding: 0px; /* redundant */
     height: 100%;
-    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
@@ -42,12 +41,12 @@ a {
 }
 
 /* map elements */
-.station-circle {
+#station-circles {
     fill: white;
     stroke: black;
 }
 
-.invisible-circle {
+#dummy-circles {
     opacity: 0;
     stroke: blue;
     stroke-width: 0.5px;
@@ -56,11 +55,10 @@ a {
 .plate-text {
     color: black;
     font-size: 0.9em;
-    font-family: "Corbel Bold", "Candara Bold", "Calibri Bold", Ubuntu, "Gill Sans", sans-serif;
+    font-family: Corbel, Ubuntu, Cambay, sans-serif;
     text-anchor: end;
     text-align: right;
-    /*-webkit-transform-style: preserve-3d;*/
-    /*stroke-opacity: 1;*/
+    font-weight: 700;
     opacity: 1;
 }
 
@@ -78,11 +76,6 @@ a {
     stroke: #404040;
     stroke-width: 1px;
 }
-
-/*.transfer {*/
-    /*stroke: black;*/
-    /*fill-opacity: 0;*/
-/*}*/
 
 .M-line {
     /*stroke-width: 2;*/
@@ -124,13 +117,13 @@ path {
     /*position: absolute;*/
 /*}*/
 
-.transfer-outer {
+#transfers-outer {
     fill-opacity: 0;
     stroke: #404040;
     stroke-opacity: 1;
     position: absolute;
 }
-.transfer-inner {
+#transfers-inner {
     fill-opacity: 0;
     stroke: #FFFFFF;
     stroke-opacity: 1;

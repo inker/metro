@@ -145,7 +145,6 @@ class MetroMap {
         }
         this.overlay.appendChild(origin);
         const stationCircles = document.getElementById('station-circles');
-        stationCircles.classList.add('station-circle');
         origin.insertBefore(svg.makePlate(), document.getElementById('dummy-circles'));
     }
 
@@ -186,16 +185,11 @@ class MetroMap {
                 const spansToChange = new Set<number>(obj.spans);
                 for (let spanIndex of obj.spans) {
                     const span = this.graph.spans[spanIndex];
+                    this.platformsOnSVG[i] = pos;
                     const srcN = span.source, trgN = span.target;
-                    if (obj === this.graph.platforms[srcN]) {
-                        this.platformsOnSVG[srcN] = pos;
-                        this.whiskers[trgN] = this.makeWhiskers(trgN);
-                        this.graph.platforms[trgN].spans.forEach(si => spansToChange.add(si));
-                    } else {
-                        this.platformsOnSVG[trgN] = pos;
-                        this.whiskers[srcN] = this.makeWhiskers(srcN);
-                        this.graph.platforms[srcN].spans.forEach(si => spansToChange.add(si));
-                    }
+                    const neighborIndex = i === srcN ? trgN : srcN;
+                    this.whiskers[neighborIndex] = this.makeWhiskers(neighborIndex);
+                    this.graph.platforms[neighborIndex].spans.forEach(si => spansToChange.add(si));
                 }
                 spansToChange.forEach(spanIndex => {
                     const span = this.graph.spans[spanIndex];
@@ -227,6 +221,7 @@ class MetroMap {
             dummyCircles.onmousedown = evt => {
                 if (evt.button !== 0) return;
                 const platform = svg.platformByDummy(<any>evt.target, this.graph);
+                const initialLocation = platform.location; // TODO: Ctrl+Z
                 this.map.dragging.disable();
                 this.map.on('mousemove', le => platform.location = (<L.LeafletMouseEvent>le).latlng);
                 this.map.once('mouseup', le => this.map.off('mousemove').dragging.enable());
@@ -348,17 +343,6 @@ class MetroMap {
                 if (zoom > 9) {
                     const ci = svg.makeCircle(posOnSVG, circleRadius);
                     ci.id = 'p-' + platformIndex;
-                    //util.setSVGDataset(ci, {
-                    //    station: stationIndex,
-                    //    lat: platform.location.lat,
-                    //    lng: platform.location.lng,
-                    //    ru: platform.name,
-                    //    fi: platform.altNames['fi'],
-                    //});
-                    //const en = this.hints.englishNames[platform.name];
-                    //if (en) {
-                    //    util.setSVGDataset(ci, { en: en });
-                    //}
                     if (zoom > 11) {
                         const lines = new Set<string>();
                         for (let spanIndex of platform.spans) {
@@ -376,10 +360,7 @@ class MetroMap {
                     
                     const dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
                     dummyCircle.id = 'd-' + platformIndex;
-                    dummyCircle.classList.add('invisible-circle');
                     dummyCircle.setAttribute('data-platformId', ci.id);
-                    //dummyCircle.onmouseover = svg.showPlate;
-                    //dummyCircle.onmouseout = e => stationPlate.style.display = 'none';
                     
                     docFrags['station-circles'].appendChild(ci);
                     docFrags['dummy-circles'].appendChild(dummyCircle);
@@ -461,7 +442,7 @@ class MetroMap {
                     if (typeof val === 'string') {
                         nextPlatformNames.push(val);
                     } else {
-                        val.forEach(i => nextPlatformNames.push(i));
+                        nextPlatformNames.push(...val);
                     }
                 }
                 for (let spanIndex of platform.spans) {
@@ -529,14 +510,14 @@ class MetroMap {
         const bezier = svg.makeCubicBezier([this.platformsOnSVG[srcN], this.whiskers[srcN][spanIndex], this.whiskers[trgN][spanIndex], this.platformsOnSVG[trgN]]);
         bezier.id = 'op-' + spanIndex;
         if (matches[1] === 'E') {
+            bezier.classList.add('E');
             const inner: typeof bezier = <any>bezier.cloneNode(true);
             inner.id = 'ip-' + spanIndex;
             bezier.style.strokeWidth = lineWidth + 'px';
             inner.style.strokeWidth = lineWidth / 2+ 'px';
-            bezier.classList.add('E');
             return [bezier, inner];
         } else {
-            bezier.style.strokeWidth = lineWidth.toString();
+            bezier.style.strokeWidth = lineWidth + 'px';
             if (matches) {
                 bezier.classList.add(matches[0]);
             }

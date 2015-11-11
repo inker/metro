@@ -55,12 +55,10 @@ export function cutCubicBezier(controlPoints: L.Point[], fraction: number): L.Po
 }
 
 export function makeTransferRing(center: L.Point, radius: number, thickness: number, borderWidth: number): HTMLElement[] {
-    const classes = ['transfer-outer', 'transfer-inner'];
     const halfBorder = borderWidth * 0.5;
     return [thickness + halfBorder, thickness - halfBorder].map((t, index) => {
         const ring = makeCircle(center, radius);
         ring.style.strokeWidth = t + 'px';
-        ring.classList.add(classes[index]);
         return ring;
     });
 }
@@ -126,15 +124,15 @@ export function makePlate(): HTMLElement {
     return stationPlate;
 }
 
-export function circleByDummy(dummy: HTMLElement): HTMLElement {
+export function circleByDummy(dummy: Element): HTMLElement {
     return document.getElementById('p-' + dummy.id.slice(2));
 }
 
-export function platformByCircle(circle: HTMLElement, graph: po.Graph) {
+export function platformByCircle(circle: Element, graph: po.Graph) {
     return graph.platforms[parseInt(circle.id.slice(2))];
 }
 
-export function platformByDummy(dummy: HTMLElement, graph: po.Graph) {
+export function platformByDummy(dummy: Element, graph: po.Graph) {
     return graph.platforms[parseInt(dummy.id.slice(2))];
 }
 
@@ -154,11 +152,11 @@ export function modifyPlate(circle: Element, graph: po.Graph): HTMLElement {
     pole.setAttribute('y1', c.y.toString());
     pole.setAttribute('x2', poleEnd.x.toString());
     pole.setAttribute('y2', poleEnd.y.toString());
-    const platform = graph.platforms[parseInt(circle.id.slice(2))];
+    const platform = platformByCircle(circle, graph);
     let ru = platform.name;
     let fi = platform.altNames['fi'];
     let en = platform.altNames['en'];
-
+    
     const names = !fi ? [ru] : util.getUserLanguage() === 'fi' ? [fi, ru] : [ru, fi];
     if (en) names.push(en);
 
@@ -185,6 +183,11 @@ function modifyPlateBox(bottomRight: L.Point, lines: string[]): void {
         t.setAttribute('y', textTopLeft.y.toString());
         t.textContent = lines[i];
     }
+    const bbox = (<SVGTextElement><any>text).getBBox();
+    rect.setAttribute('x', (bbox.x - 3).toString());
+    //rect.setAttribute('y', bbox.y.toString());
+    rect.setAttribute('width', (bbox.width + 6).toString());
+    //rect.setAttribute('height', bbox.height.toString());
     while (i < text.children.length) {
         text.children[i++].textContent = null;
     }
