@@ -183,11 +183,14 @@ function modifyPlateBox(bottomRight: L.Point, lines: string[]): void {
         t.setAttribute('y', textTopLeft.y.toString());
         t.textContent = lines[i];
     }
-    const bbox = (<SVGTextElement><any>text).getBBox();
-    rect.setAttribute('x', (bbox.x - 3).toString());
-    //rect.setAttribute('y', bbox.y.toString());
-    rect.setAttribute('width', (bbox.width + 6).toString());
-    //rect.setAttribute('height', bbox.height.toString());
+    try {
+        // sorry, firefox
+        const bbox = (<SVGTextElement><any>text).getBBox();
+        rect.setAttribute('x', (bbox.x - 3).toString());
+        //rect.setAttribute('y', bbox.y.toString());
+        rect.setAttribute('width', (bbox.width + 6).toString());
+        //rect.setAttribute('height', bbox.height.toString());
+    } catch (err) {}
     while (i < text.children.length) {
         text.children[i++].textContent = null;
     }
