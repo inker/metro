@@ -157,52 +157,61 @@ class MetroMap {
     }
     
     private addBindings() {
-        this.graph.platforms.forEach((platform, i) => {
+        const graphPlatforms = this.graph.platforms;
+        for (let i = 0; i < graphPlatforms.length; ++i) {
             const circle = document.getElementById('p-' + i);
             const dummyCircle = document.getElementById('d-' + i);
-            const cached = platform.location; // bring down
-            Object.defineProperty(platform, 'location', {
-                get: () => platform['_location'],
-                set: location => {
-                    platform['_location'] = location;
-                    const locForPos = this.map.getZoom() < 12
-                        ? this.graph.stations[platform.station].location
-                        : location;
-                    const pos = this.map.latLngToContainerPoint(locForPos).subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
-                    circle.setAttribute('cx', pos.x.toString());
-                    circle.setAttribute('cy', pos.y.toString());
-                    dummyCircle.setAttribute('cx', pos.x.toString());
-                    dummyCircle.setAttribute('cy', pos.y.toString());
-                    this.whiskers[i] = this.makeWhiskers(i);
-                    for (let spanIndex of platform.spans) {
-                        const paths = document.querySelectorAll(`[id$="er-${spanIndex}"]`);
-                        const span = this.graph.spans[spanIndex];
-                        const srcN = span.source, trgN = span.target;
-                        if (platform === this.graph.platforms[srcN]) {
-                            this.platformsOnSVG[srcN] = pos;
-                        } else {
-                            this.platformsOnSVG[trgN] = pos;
-                        }
-                        const controlPoints = [this.platformsOnSVG[srcN], this.whiskers[srcN][spanIndex], this.whiskers[trgN][spanIndex], this.platformsOnSVG[trgN]];
-                        for (let pi = 0; pi < paths.length; ++pi) {
-                            svg.setBezierPath(paths[pi], controlPoints);
-                        }
-                        
-                        //TODO: transfers position change on station drag
-                    }
-                }
-            });
-            platform['_location'] = cached;
-        });
+            this.bindPlatformModel(i, circle, dummyCircle);
+        }
     }
     
-    private connectSpanToPlatform(platform: po.Platform, span: po.Span) {
-        Object.defineProperty(platform, 'location', {
-            get: () => platform.location,
+    private bindPlatformModel(platform: po.Platform|number, circle: Element, dummyCircle: Element) {
+        const [i, obj] = typeof platform === 'number' 
+            ? [platform, this.graph.platforms[platform]]
+            : [this.graph.platforms.indexOf(platform), platform];
+        const cached = obj.location;
+        Object.defineProperty(obj, 'location', {
+            get: () => obj['_location'],
             set: location => {
-                
+                obj['_location'] = location;
+                const locForPos = this.map.getZoom() < 12
+                    ? this.graph.stations[obj.station].location
+                    : location;
+                const pos = this.map.latLngToContainerPoint(locForPos).subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
+                circle.setAttribute('cx', pos.x.toString());
+                circle.setAttribute('cy', pos.y.toString());
+                dummyCircle.setAttribute('cx', pos.x.toString());
+                dummyCircle.setAttribute('cy', pos.y.toString());
+                this.whiskers[i] = this.makeWhiskers(i);
+                const spansToChange = new Set<number>(obj.spans);
+                for (let spanIndex of obj.spans) {
+                    const span = this.graph.spans[spanIndex];
+                    const srcN = span.source, trgN = span.target;
+                    if (obj === this.graph.platforms[srcN]) {
+                        this.platformsOnSVG[srcN] = pos;
+                        this.whiskers[trgN] = this.makeWhiskers(trgN);
+                        this.graph.platforms[trgN].spans.forEach(si => spansToChange.add(si));
+                    } else {
+                        this.platformsOnSVG[trgN] = pos;
+                        this.whiskers[srcN] = this.makeWhiskers(srcN);
+                        this.graph.platforms[srcN].spans.forEach(si => spansToChange.add(si));
+                    }
+                }
+                spansToChange.forEach(spanIndex => {
+                    const span = this.graph.spans[spanIndex];
+                    const srcN = span.source, trgN = span.target;
+                    const controlPoints = [this.platformsOnSVG[srcN], this.whiskers[srcN][spanIndex], this.whiskers[trgN][spanIndex], this.platformsOnSVG[trgN]];
+                    svg.setBezierPath(document.getElementById(`op-${spanIndex}`), controlPoints);
+                    const inner = document.getElementById(`ip-${spanIndex}`);
+                    if (inner) svg.setBezierPath(inner, controlPoints);
+                });
+                for (let transferIndex of obj.transfers) {
+                    //const paths = ['o', 'i'].map(c => document.getElementById(`${c}t-${spanIndex}`));
+                    
+                }
             }
         });
+        obj['_location'] = cached;
     }
     
     private editMapClick(e: MouseEvent) {
@@ -217,26 +226,19 @@ class MetroMap {
         if (button.textContent === textState[0]) {
             dummyCircles.onmousedown = evt => {
                 if (evt.button !== 0) return;
-                const circle = svg.circleByDummy(<any>evt.target);
-                const platform = svg.platformByCircle(circle, this.graph);
+                const platform = svg.platformByDummy(<any>evt.target, this.graph);
                 this.map.dragging.disable();
                 this.map.on('mousemove', le => platform.location = (<L.LeafletMouseEvent>le).latlng);
-                this.map.once('mouseup', le => this.map.off('mousemove'));
+                this.map.once('mouseup', le => this.map.off('mousemove').dragging.enable());
             };
             dummyCircles.onclick = evt => {
-                if (evt.button === 3) {
+                if (evt.button === 1) {
                     const platform = svg.platformByDummy(<any>evt.target, this.graph);
-                    let ru = platform.name;
-                    let fi = platform.altNames['fi'];
-                    let en = platform.altNames['en'];
-                    const names = !fi ? [ru] : util.getUserLanguage() === 'fi' ? [fi, ru] : [ru, fi];
-                    if (en) names.push(en);
-                    [ru, fi, en] = prompt('New name', names.join('|')).split('|');
-                    platform.name = ru;
-                    platform.altNames['fi'] = fi;
-                    if (en) {
-                        platform.altNames['en'] = en;
-                    }
+                    const ru = platform.name,
+                        fi = platform.altNames['fi'],
+                        en = platform.altNames['en'];
+                    const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru];
+                    [platform.name, platform.altNames['fi'], platform.altNames['en']] = prompt('New name', names.join('|')).split('|');
                 }
             };
             button.textContent = textState[1];
@@ -525,15 +527,14 @@ class MetroMap {
         const routes = span.routes.map(n => this.graph.routes[n]);
         const matches = routes[0].line.match(/([MEL])(\d{0,2})/);
         const bezier = svg.makeCubicBezier([this.platformsOnSVG[srcN], this.whiskers[srcN][spanIndex], this.whiskers[trgN][spanIndex], this.platformsOnSVG[trgN]]);
-        bezier.id = 'inner-' + spanIndex;
+        bezier.id = 'op-' + spanIndex;
         if (matches[1] === 'E') {
-            const outer: typeof bezier = <any>bezier.cloneNode(true);
-            outer.style.strokeWidth = lineWidth + 'px';
-            bezier.style.strokeWidth = lineWidth / 2 + 'px';
-            outer.classList.add('E');
-            outer.id = 'outer-' + spanIndex;
+            const inner: typeof bezier = <any>bezier.cloneNode(true);
+            inner.id = 'ip-' + spanIndex;
+            bezier.style.strokeWidth = lineWidth + 'px';
+            inner.style.strokeWidth = lineWidth / 2+ 'px';
             bezier.classList.add('E');
-            return [outer, bezier];
+            return [bezier, inner];
         } else {
             bezier.style.strokeWidth = lineWidth.toString();
             if (matches) {
