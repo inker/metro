@@ -122,11 +122,11 @@ export function verifyHints(graph: po.Graph, hints: po.Hints): Promise<string> {
                 checkPlatformHintObject(obj);
             }
         });
-        Object.keys(hints.englishNames).forEach(platformName => {
-            if (graph.platforms.find(el => el.name === platformName) === undefined) {
-                reject(`platform ${platformName} doesn't exist`);
-            }
-        });
+        //Object.keys(hints.englishNames).forEach(platformName => {
+        //    if (graph.platforms.find(el => el.name === platformName) === undefined) {
+        //        reject(`platform ${platformName} doesn't exist`);
+        //    }
+        //});
         resolve('hints json seems okay');
     });
 }

@@ -2,6 +2,10 @@ import L = require('leaflet');
 import * as po from '../plain-objects';
 import * as util from '../util';
 
+export function createSVGElement(tagName: string): HTMLElement {
+    return document.createElementNS('http://www.w3.org/2000/svg', tagName) as any;
+}
+
 export function makeCircle(position: L.Point, radius: number): HTMLElement {
     const ci = createSVGElement('circle');
     ci.setAttribute('r', radius.toString());
@@ -10,15 +14,16 @@ export function makeCircle(position: L.Point, radius: number): HTMLElement {
     return ci;
 }
 
-export function getBezierPath(path: Element) {
-    const matches = path.getAttribute('d').match(/M\s*(.+?),(.+?)\s*C\s*(.+?),(.+?)\s(.+?),(.+?)\s(.+?),(.+?)/);
-    const numbers = matches.slice(1).map(m => Number(m));
-    const ret: L.Point[] = [];
-    for (let i = 0; i < 8; i += 2) {
-        ret.push(new L.Point(numbers[i], numbers[i + 1]));
-    }
-    return ret;
-}
+//export function getBezierPath(path: Element) {
+//    const points: L.Point[] = [],
+//        re = /\b([\d\.])\b.*?,\b*([\d\.])\b/g,
+//        d = path.getAttribute('d');
+//    let m: RegExpExecArray;
+//    while ((m = re.exec(d)) !== null) {
+//        points.push(new L.Point(Number[m[0]], Number(m[1])));
+//    }
+//    return points;
+//}
 
 export function setBezierPath(el: Element, controlPoints: L.Point[]) {
     if (controlPoints.length !== 4) {
@@ -78,26 +83,6 @@ export function makeTransfer(start: L.Point, end: L.Point, thickness: number, bo
     });
 }
 
-export function createSVGElement(tagName: string): HTMLElement {
-    return <any>document.createElementNS('http://www.w3.org/2000/svg', tagName);
-}
-
-function makeForeignDiv(topLeft: L.Point, text: string): SVGElement {
-    const foreign = createSVGElement('foreignObject');
-    //foreign.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
-    foreign.setAttribute('x', topLeft.x.toString());
-    foreign.setAttribute('y', topLeft.y.toString());
-    foreign.setAttribute('width', '200');
-    foreign.setAttribute('height', '50');
-    //let div = <HTMLElement>document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
-    const div = document.createElement('div');
-    div.innerHTML = text;
-    div.classList.add('plate-box');
-    div.classList.add('plate-text');
-    foreign.appendChild(div);
-    return <any>foreign;
-}
-
 export function makeDropShadow() {
     const filter = createSVGElement('filter');
     filter.id = 'shadow';
@@ -109,19 +94,6 @@ export function makeDropShadow() {
         <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
     `;
     return filter;
-
-}
-
-export function makePlate(): HTMLElement {
-    const stationPlate = createSVGElement('g');
-    stationPlate.id = 'station-plate';
-    stationPlate.style.display = 'none';
-    stationPlate.innerHTML = `<line id="pole" class="plate-pole"/>
-            <g>
-                <rect id="plate-box" class="plate-box" filter="url(#shadow)"/>
-                <text id="plate-text" fill="black" class="plate-text"><tspan/><tspan/><tspan/></text>
-            </g>`;
-    return stationPlate;
 }
 
 export function circleByDummy(dummy: Element): HTMLElement {
@@ -136,63 +108,3 @@ export function platformByDummy(dummy: Element, graph: po.Graph) {
     return graph.platforms[parseInt(dummy.id.slice(2))];
 }
 
-/**
- * modifies & returns the modified plate
- */
-export function modifyPlate(circle: Element, graph: po.Graph): HTMLElement {
-    const plateGroup = document.getElementById('station-plate');
-    const c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
-    const r = Number(circle.getAttribute('r'));
-    const iR = Math.trunc(r);
-
-    const pole = plateGroup.children[0];
-    const poleSize = new L.Point(4 + iR, 8 + iR);
-    const poleEnd = c.subtract(poleSize);
-    pole.setAttribute('x1', c.x.toString());
-    pole.setAttribute('y1', c.y.toString());
-    pole.setAttribute('x2', poleEnd.x.toString());
-    pole.setAttribute('y2', poleEnd.y.toString());
-    const platform = platformByCircle(circle, graph);
-    let ru = platform.name;
-    let fi = platform.altNames['fi'];
-    let en = platform.altNames['en'];
-    
-    const names = !fi ? [ru] : util.getUserLanguage() === 'fi' ? [fi, ru] : [ru, fi];
-    if (en) names.push(en);
-
-    modifyPlateBox(poleEnd, names);
-    return plateGroup;
-}
-
-function modifyPlateBox(bottomRight: L.Point, lines: string[]): void {
-    const rect = document.getElementById('plate-box');
-    const spacing = 12;
-    const longest = lines.reduce((prev, cur) => prev.length < cur.length ? cur : prev);
-    const rectSize = new L.Point(10 + longest.length * 6, 6 + spacing * lines.length);
-    rect.setAttribute('width', rectSize.x.toString());
-    rect.setAttribute('height', rectSize.y.toString());
-    const rectTopLeft = bottomRight.subtract(rectSize);
-    rect.setAttribute('x', rectTopLeft.x.toString());
-    rect.setAttribute('y', rectTopLeft.y.toString());
-
-    const text = document.getElementById('plate-text');
-    for (var i = 0; i < lines.length; ++i) {
-        const textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - (i + 1) * spacing));
-        const t = text.children[i];
-        t.setAttribute('x', textTopLeft.x.toString());
-        t.setAttribute('y', textTopLeft.y.toString());
-        t.textContent = lines[i];
-    }
-    try {
-        // sorry, firefox
-        const bbox = (<SVGTextElement><any>text).getBBox();
-        rect.setAttribute('x', (bbox.x - 3).toString());
-        //rect.setAttribute('y', bbox.y.toString());
-        rect.setAttribute('width', (bbox.width + 6).toString());
-        //rect.setAttribute('height', bbox.height.toString());
-    } catch (err) {}
-    while (i < text.children.length) {
-        text.children[i++].textContent = null;
-    }
-
-}

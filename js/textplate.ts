@@ -1,0 +1,128 @@
+/**
+ * Created by vesel on 12/11/2015.
+ */
+
+import * as svg from './svg';
+import * as util from '../util';
+import * as po from '../plain-objects';
+    
+export default class TextPlate {
+    private _element: HTMLElement;
+    private _disabled = false;
+    private graph: po.Graph;
+    
+    constructor(graph: po.Graph) {
+        this.graph = graph;
+        this._element = svg.createSVGElement('g');
+        this._element.id = 'station-plate';
+        this._element.style.display = 'none';
+        this._element.innerHTML = `<line id="pole" class="plate-pole"/>
+            <g>
+                <rect id="plate-box" class="plate-box" filter="url(#shadow)"/>
+                <text id="plate-text" fill="black" class="plate-text"><tspan/><tspan/><tspan/></text>
+            </g>`;
+    }
+    
+    get element() {
+        return this._element;
+    }
+    
+    get disabled() {
+        return this._disabled;
+    }
+    
+    set disabled(val: boolean) {
+        if (val) {
+            this.hide();
+        } else {
+            getSelection().removeAllRanges();
+        }
+        this._disabled = val;
+    }
+    
+    show(circle: Element) {
+        if (this.disabled) return;
+        if (this._element.style.display === 'none') {
+            this.modify(circle);
+            this._element.style.display = null;
+        }
+    }
+    
+    hide() {
+        this._element.style.display = 'none';
+    }
+
+    /**
+     * modifies & returns the modified plate
+     */
+    private modify(circle: Element) {
+        const c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
+        const r = Number(circle.getAttribute('r'));
+        const iR = Math.trunc(r);
+    
+        const pole = this._element.children[0];
+        const poleSize = new L.Point(4 + iR, 8 + iR);
+        const poleEnd = c.subtract(poleSize);
+        pole.setAttribute('x1', c.x.toString());
+        pole.setAttribute('y1', c.y.toString());
+        pole.setAttribute('x2', poleEnd.x.toString());
+        pole.setAttribute('y2', poleEnd.y.toString());
+        const platform = svg.platformByCircle(circle, this.graph);
+        const ru = platform.name;
+        const fi = platform.altNames['fi'];
+        const en = platform.altNames['en'];
+    
+        const names = !fi ? [ru] : util.getUserLanguage() === 'fi' ? [fi, ru] : [ru, fi];
+        if (en) names.push(en);
+    
+        this.modifyBox(poleEnd, names);
+    }
+
+    private modifyBox(bottomRight: L.Point, lines: string[]): void {
+        const rect = (this._element.children[1] as HTMLElement).children[0];
+        const spacing = 12;
+        const longest = lines.reduce((prev, cur) => prev.length < cur.length ? cur : prev);
+        const rectSize = new L.Point(10 + longest.length * 6, 6 + spacing * lines.length);
+        rect.setAttribute('width', rectSize.x.toString());
+        rect.setAttribute('height', rectSize.y.toString());
+        const rectTopLeft = bottomRight.subtract(rectSize);
+        rect.setAttribute('x', rectTopLeft.x.toString());
+        rect.setAttribute('y', rectTopLeft.y.toString());
+
+        const text = document.getElementById('plate-text');
+        for (var i = 0; i < lines.length; ++i) {
+            const textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - (i + 1) * spacing));
+            const t = text.children[i];
+            t.setAttribute('x', textTopLeft.x.toString());
+            t.setAttribute('y', textTopLeft.y.toString());
+            t.textContent = lines[i];
+        }
+        while (i < text.children.length) {
+            text.children[i++].textContent = null;
+        }
+        try {
+            // sorry, firefox
+            const bbox = (text as any as SVGTextElement).getBBox();
+            rect.setAttribute('x', (bbox.x - 3).toString());
+            //rect.setAttribute('y', bbox.y.toString());
+            rect.setAttribute('width', (bbox.width + 6).toString());
+            //rect.setAttribute('height', bbox.height.toString());
+        } catch (err) {}
+    }
+}
+
+//function makeForeignDiv(topLeft: L.Point, text: string): SVGElement {
+//    const foreign = createSVGElement('foreignObject');
+//    //foreign.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
+//    foreign.setAttribute('x', topLeft.x.toString());
+//    foreign.setAttribute('y', topLeft.y.toString());
+//    foreign.setAttribute('width', '200');
+//    foreign.setAttribute('height', '50');
+//    //let div = <HTMLElement>document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+//    const div = document.createElement('div');
+//    div.innerHTML = text;
+//    div.classList.add('plate-box');
+//    div.classList.add('plate-text');
+//    foreign.appendChild(div);
+//    return <any>foreign;
+//}

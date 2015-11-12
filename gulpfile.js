@@ -63,12 +63,14 @@ gulp.task('client-transpile-merge-compress', () => {
         // writes to bundle.js
         .pipe(source('script.js'))
         .pipe(buffer())
-        .pipe(sourcemaps.init())
+        //.pipe(sourcemaps.init())
         // compress it
         .pipe(uglify())
-        .pipe(sourcemaps.write())
+        //.pipe(sourcemaps.write())
+        //.on('error', err => console.error(err))
         // copy to destination
-        .pipe(gulp.dest('./js/'));
+        .pipe(gulp.dest('./js/'))
+       ;
     //es.merge(null, [gulp.src('./public/js/leaflet.js'), b]).pipe(gulp.dest('./public/js/'));
 });
 

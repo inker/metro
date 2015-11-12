@@ -5,6 +5,7 @@ import * as po from '../plain-objects';
 import * as addons from './addons';
 import * as graph from '../metro-graph';
 import * as geo from '../geo';
+import TextPlate from './textplate';
 
 class MetroMap {
     private map: L.Map;
@@ -16,6 +17,8 @@ class MetroMap {
     
     private whiskers = [];
     private platformsOnSVG: L.Point[];
+    
+    private plate: TextPlate;
     
     getMap(): L.Map {
         return this.map;
@@ -31,7 +34,7 @@ class MetroMap {
             .then(graphText => graphText.json())
             .then(graphJSON => this.graph = graphJSON);
         const hintsPromise = fetch('json/hints.json')
-            .then(hintsText => hintsText.json())
+            .then(hintsText => hintsText.json()) 
             .then(hintsJSON => this.hints = hintsJSON);
         const dataPromise = fetch('json/data.json')
             .then(dataText => dataText.json())
@@ -144,8 +147,8 @@ class MetroMap {
             origin.appendChild(group);
         }
         this.overlay.appendChild(origin);
-        const stationCircles = document.getElementById('station-circles');
-        origin.insertBefore(svg.makePlate(), document.getElementById('dummy-circles'));
+        this.plate = new TextPlate(this.graph);
+        origin.insertBefore(this.plate.element, document.getElementById('dummy-circles'));
     }
 
 
@@ -160,34 +163,34 @@ class MetroMap {
         for (let i = 0; i < graphPlatforms.length; ++i) {
             const circle = document.getElementById('p-' + i);
             const dummyCircle = document.getElementById('d-' + i);
-            this.bindPlatformModel(i, circle, dummyCircle);
+            this.bindPlatformModel(i, [circle, dummyCircle]);
         }
     }
     
-    private bindPlatformModel(platform: po.Platform|number, circle: Element, dummyCircle: Element) {
-        const [i, obj] = typeof platform === 'number' 
+    private bindPlatformModel(platform: po.Platform|number, circles: Element[]) {
+        const [idx, obj] = typeof platform === 'number' 
             ? [platform, this.graph.platforms[platform]]
             : [this.graph.platforms.indexOf(platform), platform];
         const cached = obj.location;
         Object.defineProperty(obj, 'location', {
             get: () => obj['_location'],
-            set: location => {
+            set: (location: L.LatLng) => {
                 obj['_location'] = location;
                 const locForPos = this.map.getZoom() < 12
                     ? this.graph.stations[obj.station].location
                     : location;
                 const pos = this.map.latLngToContainerPoint(locForPos).subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
-                circle.setAttribute('cx', pos.x.toString());
-                circle.setAttribute('cy', pos.y.toString());
-                dummyCircle.setAttribute('cx', pos.x.toString());
-                dummyCircle.setAttribute('cy', pos.y.toString());
-                this.whiskers[i] = this.makeWhiskers(i);
+                for (let c of circles) {
+                    c.setAttribute('cx', pos.x.toString());
+                    c.setAttribute('cy', pos.y.toString());
+                }
+                this.whiskers[idx] = this.makeWhiskers(idx);
+                this.platformsOnSVG[idx] = pos;
                 const spansToChange = new Set<number>(obj.spans);
                 for (let spanIndex of obj.spans) {
                     const span = this.graph.spans[spanIndex];
-                    this.platformsOnSVG[i] = pos;
                     const srcN = span.source, trgN = span.target;
-                    const neighborIndex = i === srcN ? trgN : srcN;
+                    const neighborIndex = idx === srcN ? trgN : srcN;
                     this.whiskers[neighborIndex] = this.makeWhiskers(neighborIndex);
                     this.graph.platforms[neighborIndex].spans.forEach(si => spansToChange.add(si));
                 }
@@ -199,36 +202,61 @@ class MetroMap {
                     const inner = document.getElementById(`ip-${spanIndex}`);
                     if (inner) svg.setBezierPath(inner, controlPoints);
                 });
-                for (let transferIndex of obj.transfers) {
-                    //const paths = ['o', 'i'].map(c => document.getElementById(`${c}t-${spanIndex}`));
-                    
-                }
+                this.graph.transfers
+                    .filter(tr => tr.source === idx || tr.target === idx)
+                    .forEach(tr => tr[idx === tr.source ? 'source' : 'target'] = idx);
             }
         });
         obj['_location'] = cached;
     }
     
-    private editMapClick(e: MouseEvent) {
+    private bindTransferModel(transfer: po.Transfer, lines: Element[]) {
+        const cached =  [transfer.source, transfer.target];
+        const props = ['source', 'target'];
+        props.forEach((prop, pi) => {
+            Object.defineProperty(transfer, prop, {
+                get: () => transfer['_' + prop],
+                set: (platformIndex: number) => {
+                    const circle = document.getElementById('p-' + platformIndex);
+                    const n = pi + 1;
+                    for (let line of lines) {
+                        line.setAttribute('x' + n, circle.getAttribute('cx'));
+                        line.setAttribute('y' + n, circle.getAttribute('cy'));
+                    }
+                }
+            });
+            transfer['_' + prop] = cached[pi];
+        });
+    }
+    
+    private editMapClick(event: MouseEvent) {
         // change station name (change -> model (platform))
         // drag station to new location (drag -> model (platform, spans) -> paths, )
         // create new station (create -> model)
         // drag line over the station to bind them
         
-        const button: HTMLButtonElement = <any>e.target;
+        const button: HTMLButtonElement = event.target as any;
         const textState = ['Edit Map', 'Save Map'];
         const dummyCircles = document.getElementById('dummy-circles');
         if (button.textContent === textState[0]) {
-            dummyCircles.onmousedown = evt => {
-                if (evt.button !== 0) return;
-                const platform = svg.platformByDummy(<any>evt.target, this.graph);
-                const initialLocation = platform.location; // TODO: Ctrl+Z
+            dummyCircles.onmousedown = de => {
+                if (de.button !== 0) return;
+                const platform = svg.platformByDummy(de.target as any, this.graph);
+                //const initialLocation = platform.location; // TODO: Ctrl+Z
                 this.map.dragging.disable();
-                this.map.on('mousemove', le => platform.location = (<L.LeafletMouseEvent>le).latlng);
-                this.map.once('mouseup', le => this.map.off('mousemove').dragging.enable());
+                this.map.on('mousemove', le => {
+                    platform.location = (le as L.LeafletMouseEvent).latlng;
+                    this.plate.disabled = true;
+                });
+                this.map.once('mouseup', le => {
+                    this.map.off('mousemove').dragging.enable();
+                    this.plate.disabled = false;
+                    this.plate.show(svg.circleByDummy(le.target as any));
+                });
             };
-            dummyCircles.onclick = evt => {
-                if (evt.button === 1) {
-                    const platform = svg.platformByDummy(<any>evt.target, this.graph);
+            dummyCircles.onclick = de => {
+                if (de.button === 1) {
+                    const platform = svg.platformByDummy(de.target as any, this.graph);
                     const ru = platform.name,
                         fi = platform.altNames['fi'],
                         en = platform.altNames['en'];
@@ -305,14 +333,12 @@ class MetroMap {
             'transfers-outer': document.createDocumentFragment()
         };
         
-        const stationPlate = document.getElementById('station-plate');
-        
         const zoom = this.map.getZoom();
         const nw = this.bounds.getNorthWest();
         const se = this.bounds.getSouthEast();
         const svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
 
-        (<HTMLButtonElement>document.getElementById('edit-map-button')).disabled = zoom < 12;
+        (document.getElementById('edit-map-button') as HTMLButtonElement).disabled = zoom < 12;
 
         const posTransform = zoom < 12
             ? platform => this.posOnSVG(svgBounds, this.graph.stations[platform.station].location)
@@ -332,11 +358,11 @@ class MetroMap {
         
         const platformsInCircles = new Set<number>();
         
-        for (var stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
+        for (let stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
             const station = this.graph.stations[stationIndex];
-            var circular = util.findCircle(this.graph, station);
-            var circumpoints: L.Point[] = [];
-            station.platforms.forEach(platformIndex => {
+            const circular = util.findCircle(this.graph, station);
+            const circumpoints: L.Point[] = [];
+            for (let platformIndex of station.platforms) {
                 const platform = this.graph.platforms[platformIndex];
                 const posOnSVG = this.platformsOnSVG[platformIndex];
                 
@@ -360,7 +386,6 @@ class MetroMap {
                     
                     const dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
                     dummyCircle.id = 'd-' + platformIndex;
-                    dummyCircle.setAttribute('data-platformId', ci.id);
                     
                     docFrags['station-circles'].appendChild(ci);
                     docFrags['dummy-circles'].appendChild(dummyCircle);
@@ -373,35 +398,38 @@ class MetroMap {
                     platformsInCircles.add(platformIndex);
                 }
 
-            });
+            }
             
             const dummyCircles = document.getElementById('dummy-circles');
-            dummyCircles.addEventListener('mouseover', e => {
-                const circle = svg.circleByDummy(<any>e.target);
-                const g = svg.modifyPlate(circle, this.graph);
-                g.style.display = null;
-            });
-            dummyCircles.onmouseout = e => stationPlate.style.display = 'none';
+            dummyCircles.addEventListener('mouseover', e => this.plate.show(svg.circleByDummy(e.target as any)));
+            dummyCircles.addEventListener('mouseout', e => this.plate.hide());
 
             if (zoom > 11 && circular) {
                 const cCenter = util.getCircumcenter(circumpoints);
                 const cRadius = cCenter.distanceTo(circumpoints[0]);
                 const cCircle = svg.makeTransferRing(cCenter, cRadius, transferWidth, circleBorder);
+                // inner/outer transfer circle
+                cCircle[0].id = 'otc-' + stationIndex;
+                cCircle[1].id = 'itc-' + stationIndex;
                 docFrags['transfers-outer'].appendChild(cCircle[0]);
                 docFrags['transfers-inner'].appendChild(cCircle[1]);
             }
         }
         
         if (zoom > 11) {
-            this.graph.transfers.forEach(tr => {
-                if (platformsInCircles.has(tr.source) && platformsInCircles.has(tr.target)) return;
-                const pl1 = this.graph.platforms[tr.source],
-                    pl2 = this.graph.platforms[tr.target],
+            for (let transferIndex = 0; transferIndex < this.graph.transfers.length; ++transferIndex) {
+                const transfer = this.graph.transfers[transferIndex];
+                if (platformsInCircles.has(transfer.source) && platformsInCircles.has(transfer.target)) continue;
+                const pl1 = this.graph.platforms[transfer.source],
+                    pl2 = this.graph.platforms[transfer.target],
                     transferPos = [this.posOnSVG(svgBounds, pl1.location), this.posOnSVG(svgBounds, pl2.location)],
-                    transfer = svg.makeTransfer(transferPos[0], transferPos[1], transferWidth, circleBorder);
-                docFrags['transfers-outer'].appendChild(transfer[0]);
-                docFrags['transfers-inner'].appendChild(transfer[1]);
-            });
+                    lines = svg.makeTransfer(transferPos[0], transferPos[1], transferWidth, circleBorder);
+                lines[0].id = 'otl-' + transferIndex;
+                lines[1].id = 'itl-' + transferIndex;
+                docFrags['transfers-outer'].appendChild(lines[0]);
+                docFrags['transfers-inner'].appendChild(lines[1]);
+                this.bindTransferModel(transfer, lines);
+            }
         }
 
         for (let i = 0; i < this.graph.spans.length; ++i) {
