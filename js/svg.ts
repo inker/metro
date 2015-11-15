@@ -7,23 +7,29 @@ export function createSVGElement(tagName: string): HTMLElement {
 }
 
 export function makeCircle(position: L.Point, radius: number): HTMLElement {
-    const ci = createSVGElement('circle');
-    ci.setAttribute('r', radius.toString());
-    ci.setAttribute('cy', position.y.toString());
-    ci.setAttribute('cx', position.x.toString());
-    return ci;
+    const circle = createSVGElement('circle');
+    circle.setAttribute('r', radius.toString());
+    circle.setAttribute('cy', position.y.toString());
+    circle.setAttribute('cx', position.x.toString());
+    return circle;
 }
 
-//export function getBezierPath(path: Element) {
-//    const points: L.Point[] = [],
-//        re = /\b([\d\.])\b.*?,\b*([\d\.])\b/g,
-//        d = path.getAttribute('d');
-//    let m: RegExpExecArray;
-//    while ((m = re.exec(d)) !== null) {
-//        points.push(new L.Point(Number[m[0]], Number(m[1])));
-//    }
-//    return points;
-//}
+export function makeArc(center: L.Point, start: L.Point, end: L.Point) {
+    const path = createSVGElement('path');
+    setCircularPath(path, center, start, end)
+    return path;
+}
+
+export function getBezierPath(path: Element) {
+    const points: L.Point[] = [],
+        re = /\W([\d\.])\W.*?,\W*([\d\.])\W/g,
+        d = path.getAttribute('d');
+    let m: RegExpExecArray;
+    while ((m = re.exec(d)) !== null) {
+        points.push(new L.Point(Number[m[0]], Number(m[1])));
+    }
+    return points;
+}
 
 export function setBezierPath(el: Element, controlPoints: L.Point[]) {
     if (controlPoints.length !== 4) {
@@ -33,6 +39,23 @@ export function setBezierPath(el: Element, controlPoints: L.Point[]) {
     const s = ['M'].concat(controlPoints.map(pt => `${pt.x},${pt.y}`));
     s.splice(2, 0, 'C');
     el.setAttribute('d', s.join(' '));
+}
+
+export function setCircularPath(el: Element, center: L.Point, start: L.Point, end: L.Point) {
+    const radius = center.distanceTo(start);
+    const u = start.subtract(center),
+        v = end.subtract(center);
+    const large = u.x * v.y - v.x * u.y < 0 ? 1 : 0;
+
+    const startAngle = Math.atan2(start.y - center.y, start.x - center.x);
+    const endAngle = Math.atan2(end.y - center.y, end.x - center.x);
+    const diff = endAngle - startAngle;
+    const sweep = diff <= Math.PI || diff > -Math.PI ? 1 : 0;
+    const d = [
+        'M', start.x, start.y,
+        'A', radius, radius, 0, large, sweep, end.x, end.y
+    ].join(' ');
+    el.setAttribute('d', d);
 }
 
 export function makeCubicBezier(controlPoints: L.Point[]): HTMLElement {
@@ -60,17 +83,26 @@ export function cutCubicBezier(controlPoints: L.Point[], fraction: number): L.Po
 }
 
 export function makeTransferRing(center: L.Point, radius: number, thickness: number, borderWidth: number): HTMLElement[] {
-    const halfBorder = borderWidth * 0.5;
-    return [thickness + halfBorder, thickness - halfBorder].map((t, index) => {
-        const ring = makeCircle(center, radius);
-        ring.style.strokeWidth = t + 'px';
-        return ring;
-    });
+    const halfBorder = borderWidth / 2;
+    const outer = makeCircle(center, radius);
+    const inner: typeof outer = outer.cloneNode(true) as any;
+    outer.style.strokeWidth = thickness + halfBorder + 'px';
+    inner.style.strokeWidth = thickness - halfBorder + 'px';
+    return [outer, inner];
+}
+
+export function makeTransferArc(center: L.Point, start: L.Point, end: L.Point, thickness: number, borderWidth: number) {
+    const halfBorder = borderWidth / 2;
+    const outer = makeArc(center, start, end);
+    const inner: typeof outer = outer.cloneNode(true) as any;
+    outer.style.strokeWidth = thickness + halfBorder + 'px';
+    inner.style.strokeWidth = thickness - halfBorder + 'px';
+    return [outer, inner];
 }
 
 export function makeTransfer(start: L.Point, end: L.Point, thickness: number, borderWidth: number): HTMLElement[] {
     const classes = ['transfer-outer', 'transfer-inner'];
-    const halfBorder = borderWidth * 0.5;
+    const halfBorder = borderWidth / 2;
     return [thickness + halfBorder, thickness - halfBorder].map((t, index) => {
         const line = createSVGElement('line');
         line.setAttribute('x1', start.x.toString());
@@ -102,9 +134,5 @@ export function circleByDummy(dummy: Element): HTMLElement {
 
 export function platformByCircle(circle: Element, graph: po.Graph) {
     return graph.platforms[parseInt(circle.id.slice(2))];
-}
-
-export function platformByDummy(dummy: Element, graph: po.Graph) {
-    return graph.platforms[parseInt(dummy.id.slice(2))];
 }
 

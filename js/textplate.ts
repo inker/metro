@@ -9,6 +9,7 @@ import * as po from '../plain-objects';
 export default class TextPlate {
     private _element: HTMLElement;
     private _disabled = false;
+    private _editable = false;
     private graph: po.Graph;
     
     constructor(graph: po.Graph) {
@@ -38,6 +39,19 @@ export default class TextPlate {
             getSelection().removeAllRanges();
         }
         this._disabled = val;
+    }
+    
+    get editable() {
+        return this._editable
+    }
+    
+    set editable(val: boolean) {
+        const strVal = val ? 'true' : null;
+        const text = (this._element.children[1] as HTMLElement).children[1] as HTMLElement;
+        const textlings = text.children;
+        for (let i = 0; i < textlings.length; ++i) {
+            (textlings[i] as HTMLElement).contentEditable = strVal;
+        }
     }
     
     show(circle: Element) {
@@ -89,7 +103,7 @@ export default class TextPlate {
         rect.setAttribute('x', rectTopLeft.x.toString());
         rect.setAttribute('y', rectTopLeft.y.toString());
 
-        const text = document.getElementById('plate-text');
+        const text = (this._element.children[1] as HTMLElement).children[1] as HTMLElement;
         for (var i = 0; i < lines.length; ++i) {
             const textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - (i + 1) * spacing));
             const t = text.children[i];

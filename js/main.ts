@@ -26,6 +26,12 @@ console.log('browser: ' + navigator.browserLanguage);
 console.log('system: ' + navigator.systemLanguage);
 
 /* TODO:
+animated shortest path between stations
+E-line have terminuses (larger circles?)
+no pole, bigger
+
+*/
+/* TODO:
 1. FAQ with user with the following questions:
 a. why is everything in latinica
 b. why have some stations been renamed

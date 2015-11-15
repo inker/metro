@@ -6,19 +6,18 @@ import L = require('leaflet');
 import * as po from './plain-objects';
 
 export function diffByOne(a: string, b: string): boolean {
+    if (a === '' || b === '' || a.length !== b.length) return false;
     let diff = 0;
-    if (a !== '' && b !== '' && a.length === b.length) {
-        for (let i = 0, j = 0; i < a.length && j < b.length; ++i, ++j) {
-            if (a[i] != b[j]) {
-                ++diff;
-                if (a[i + 1] === b[j]) {
-                    ++i;
-                } else if (a[i] === b[j + 1]) {
-                    ++j;
-                } else if (a[i + 1] === b[j + 1]) {
-                    ++i; //
-                    ++j;
-                }
+    for (let i = 0, j = 0, diff = 0; i < a.length && j < b.length; ++i, ++j) {
+        if (a[i] != b[j]) {
+            if (++diff > 1) return false;
+            if (a[i + 1] === b[j]) {
+                ++i;
+            } else if (a[i] === b[j + 1]) {
+                ++j;
+            } else if (a[i + 1] === b[j + 1]) {
+                ++i; //
+                ++j;
             }
         }
     }
@@ -37,7 +36,7 @@ export function parseTransform(val: string): L.Point {
 
 export function findCircle(graph: po.Graph, station: po.Station): po.Platform[] {
     if (station.platforms.length !== 3) return null;
-    let platforms = station.platforms.map(platformNum => graph.platforms[platformNum]);
+    const platforms = station.platforms.map(platformNum => graph.platforms[platformNum]);
     return platforms.every(platform => platform.transfers.length === 2) ? platforms : null;
 }
 
@@ -61,9 +60,9 @@ export function getSVGDataset(el: Element): any {
     }
     // for the rest
     const attrs = el.attributes;
-    let dataset = {};
+    const dataset = {};
     for (let i = 0; i < attrs.length; ++i) {
-        let attr = attrs[i].name;
+        const attr = attrs[i].name;
         if (attr.startsWith('data-')) {
             dataset[attr.slice(5)] = el.getAttribute(attr);
         }
@@ -72,7 +71,9 @@ export function getSVGDataset(el: Element): any {
 }
 
 export function setSVGDataset(el: Element, dataset: any): void {
-    Object.keys(dataset).forEach(key => el.setAttribute('data-' + key, dataset[key]));
+    for (let key of Object.keys(dataset)) {
+        el.setAttribute('data-' + key, dataset[key]);
+    }
 }
 
 export function flashTitle(titles: string[], duration: number) {
@@ -92,22 +93,25 @@ export function getCenter(pts: L.Point[]): L.Point {
     return pts.reduce((prev, cur) => prev.add(cur)).divideBy(pts.length);
 }
 
+export function polarToCartesian(center: L.Point, radius: number, angle: number) {
+    return new L.Point(center.x + radius * Math.cos(angle), center.y + radius * Math.sin(angle));
+}
+
 export function verifyHints(graph: po.Graph, hints: po.Hints): Promise<string> {
+    function checkExistence(val: string) {
+        if (graph.platforms.find(el => el.name === val) === undefined) {
+            throw new Error(`platform ${val} doesn't exist`);
+        }
+    }
     function checkPlatformHintObject(obj) {
-        Object.keys(obj).forEach(line => {
+        for (let line of Object.keys(obj)) {
             const val = obj[line];
             if (typeof val === 'string') {
-                if (graph.platforms.find(el => el.name === val) === undefined) {
-                    throw new Error(`platform ${val} doesn't exist`);
-                }
+                checkExistence(val);
             } else {
-                val.forEach(item => {
-                    if (graph.platforms.find(el => el.name === item) === undefined) {
-                        throw new Error(`platform ${item} doesn't exist`);
-                    }
-                });
+                val.forEach(checkExistence);
             }
-        });
+        }
     }
     return new Promise((resolve, reject) => {
         const crossPlatform = hints.crossPlatform;
@@ -117,16 +121,11 @@ export function verifyHints(graph: po.Graph, hints: po.Hints): Promise<string> {
             }
             const obj = crossPlatform[platformName];
             if ('forEach' in obj) {
-                obj.forEach(o => checkPlatformHintObject);
+                obj.forEach(checkPlatformHintObject);
             } else {
                 checkPlatformHintObject(obj);
             }
         });
-        //Object.keys(hints.englishNames).forEach(platformName => {
-        //    if (graph.platforms.find(el => el.name === platformName) === undefined) {
-        //        reject(`platform ${platformName} doesn't exist`);
-        //    }
-        //});
         resolve('hints json seems okay');
     });
 }

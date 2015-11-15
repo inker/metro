@@ -78,28 +78,24 @@ class MetroMap {
 
     private addMapListeners(): void {
         const mapPane = this.map.getPanes().mapPane;
-        this.map.on('movestart', e => this.map.touchZoom.disable());
-        this.map.on('move', e => {
+        this.map.on('movestart', e => this.map.touchZoom.disable()
+        ).on('move', e => {
             //this.overlay.style['-webkit-transition'] = mapPane.style['-webkit-transition'];
             //this.overlay.style.transition = mapPane.style.transition;
             this.overlay.style.transform = mapPane.style.transform;
-        });
-        
-        // the secret of correct positioning is the movend transform check for corrent transform
-        this.map.on('moveend', e => {
+        }).on('moveend', e => {
+            // the secret of correct positioning is the movend transform check for corrent transform
             console.log('move ended');
             this.map.touchZoom.enable();
             //this.overlay.style['-webkit-transition'] = null;
             //this.overlay.style.transition = null;
             this.fixFontRendering(mapPane);
-        });
-        this.map.on('zoomstart', e => {
+        }).on('zoomstart', e => {
             this.map.dragging.disable();
             console.log(e);
             //this.overlay.classList.add('leaflet-zoom-anim');
             this.overlay.style.opacity = '0.5';
-        });
-        this.map.on('zoomend', e => {
+        }).on('zoomend', e => {
             console.log(e);
             console.log('zoom ended');
             this.redrawNetwork();
@@ -210,18 +206,67 @@ class MetroMap {
         obj['_location'] = cached;
     }
     
-    private bindTransferModel(transfer: po.Transfer, lines: Element[]) {
+    private bindTransferModel(transfer: po.Transfer, elements: Element[]) {
         const cached =  [transfer.source, transfer.target];
+        const re = [/M\s*(\d+)\s+(\d+)\s*A/, /(\d+)\s+(\d+)\s*$/];
         const props = ['source', 'target'];
         props.forEach((prop, pi) => {
             Object.defineProperty(transfer, prop, {
                 get: () => transfer['_' + prop],
                 set: (platformIndex: number) => {
-                    const circle = document.getElementById('p-' + platformIndex);
-                    const n = pi + 1;
-                    for (let line of lines) {
-                        line.setAttribute('x' + n, circle.getAttribute('cx'));
-                        line.setAttribute('y' + n, circle.getAttribute('cy'));
+                    if (elements[0].tagName === 'line') {
+                        const circle = document.getElementById('p-' + platformIndex);
+                        const n = pi + 1;
+                        const x = circle.getAttribute('cx'),
+                            y = circle.getAttribute('cy');
+                        for (let el of elements) {
+                            el.setAttribute('x' + n, x);
+                            el.setAttribute('y' + n, y);
+                        }
+                    } else if (elements[0].tagName === 'path') {
+                        const transfers: po.Transfer[] = [];
+                        const transferIndices: number[] = [];
+                        for (let i = 0; i < this.graph.transfers.length; ++i) {
+                            const t = this.graph.transfers[i];
+                            if (t.source === transfer.source
+                                || t.target === transfer.target
+                                || t.source === transfer.target
+                                || t.target === transfer.source
+                            ) {
+                                transfers.push(t);
+                                transferIndices.push(i);
+                            }
+                        }
+                        if (transfers.length !== 3) {
+                            const name = this.graph.platforms[transfers[0].source].name;
+                            throw new Error(`circle size is ${transfers.length}: ${name}`);
+                        }
+                        const circular = new Set<number>();
+                        for (let tr of transfers) {
+                            circular.add(tr.source).add(tr.target);
+                        }
+                        if (circular.size !== 3) {
+                            const name = this.graph.platforms[transfers[0].source].name;
+                            throw new Error(`circle size is ${circular.size}: ${name}`);
+                        }
+                        
+                        const circumpoints: L.Point[] = [];
+                        circular.forEach(i => circumpoints.push(this.platformsOnSVG[i]));
+                        
+                        const cCenter = util.getCircumcenter(circumpoints);
+                        const outerArcs = transferIndices.map(i => document.getElementById('ot-' + i));
+                        const innerArcs = transferIndices.map(i => document.getElementById('it-' + i));
+                        for (let i = 0; i < 3; ++i) {
+                            const tr = transfers[i];
+                            const outer = outerArcs[i],
+                                inner = innerArcs[i];
+                            const pos1 = this.platformsOnSVG[tr.source],
+                                pos2 = this.platformsOnSVG[tr.target];
+                            svg.setCircularPath(outer, cCenter, pos1, pos2);
+                            svg.setCircularPath(inner, cCenter, pos1, pos2);
+                        }
+                    } else {
+                        throw new Error('wrong element type for transfer');
                     }
                 }
             });
@@ -240,28 +285,29 @@ class MetroMap {
         const dummyCircles = document.getElementById('dummy-circles');
         if (button.textContent === textState[0]) {
             dummyCircles.onmousedown = de => {
-                if (de.button !== 0) return;
-                const platform = svg.platformByDummy(de.target as any, this.graph);
-                //const initialLocation = platform.location; // TODO: Ctrl+Z
-                this.map.dragging.disable();
-                this.map.on('mousemove', le => {
-                    platform.location = (le as L.LeafletMouseEvent).latlng;
-                    this.plate.disabled = true;
-                });
-                this.map.once('mouseup', le => {
-                    this.map.off('mousemove').dragging.enable();
-                    this.plate.disabled = false;
-                    this.plate.show(svg.circleByDummy(le.target as any));
-                });
-            };
-            dummyCircles.onclick = de => {
-                if (de.button === 1) {
-                    const platform = svg.platformByDummy(de.target as any, this.graph);
+                if (de.button === 0) {
+                    const platform = svg.platformByCircle(de.target as any, this.graph);
+                    //const initialLocation = platform.location; // TODO: Ctrl+Z
+                    this.map.dragging.disable();
+                    this.map.on('mousemove', le => {
+                        platform.location = (le as L.LeafletMouseEvent).latlng;
+                        this.plate.disabled = true;
+                    });
+                    this.map.once('mouseup', le => {
+                        this.map.off('mousemove').dragging.enable();
+                        this.plate.disabled = false;
+                        this.plate.show(svg.circleByDummy((le as L.LeafletMouseEvent).originalEvent.target as any));
+                    });
+                } else if (de.button === 1) {
+                    const platform = svg.platformByCircle(de.target as any, this.graph);
                     const ru = platform.name,
                         fi = platform.altNames['fi'],
                         en = platform.altNames['en'];
+                    this.plate.show(svg.circleByDummy(de.target as any));
                     const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru];
                     [platform.name, platform.altNames['fi'], platform.altNames['en']] = prompt('New name', names.join('|')).split('|');
+                } else {
+                    // open context menu maybe?
                 }
             };
             button.textContent = textState[1];
@@ -357,10 +403,11 @@ class MetroMap {
         document.getElementById('station-circles').style.strokeWidth = circleBorder + 'px';
         
         const platformsInCircles = new Set<number>();
+        const stationCircumCenters = new Map<number, L.Point>();
         
         for (let stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
             const station = this.graph.stations[stationIndex];
-            const circular = util.findCircle(this.graph, station);
+
             const circumpoints: L.Point[] = [];
             for (let platformIndex of station.platforms) {
                 const platform = this.graph.platforms[platformIndex];
@@ -392,51 +439,58 @@ class MetroMap {
                 }
                 
                 this.whiskers[platformIndex] = this.makeWhiskers(platformIndex);
-                
-                if (circular && circular.indexOf(platform) > -1) {
-                    circumpoints.push(posOnSVG);
-                    platformsInCircles.add(platformIndex);
-                }
-
             }
             
             const dummyCircles = document.getElementById('dummy-circles');
             dummyCircles.addEventListener('mouseover', e => this.plate.show(svg.circleByDummy(e.target as any)));
             dummyCircles.addEventListener('mouseout', e => this.plate.hide());
 
-            if (zoom > 11 && circular) {
-                const cCenter = util.getCircumcenter(circumpoints);
-                const cRadius = cCenter.distanceTo(circumpoints[0]);
-                const cCircle = svg.makeTransferRing(cCenter, cRadius, transferWidth, circleBorder);
-                // inner/outer transfer circle
-                cCircle[0].id = 'otc-' + stationIndex;
-                cCircle[1].id = 'itc-' + stationIndex;
-                docFrags['transfers-outer'].appendChild(cCircle[0]);
-                docFrags['transfers-inner'].appendChild(cCircle[1]);
+            const circular = util.findCircle(this.graph, station);
+            for (let platformIndex of station.platforms) {
+                const platform = this.graph.platforms[platformIndex];
+                if (circular && circular.indexOf(platform) > -1) {
+                    circumpoints.push(this.platformsOnSVG[platformIndex]);
+                    platformsInCircles.add(platformIndex);
+                }
             }
+            if (circular && circular.length === 3) {
+                const cCenter = util.getCircumcenter(circumpoints);
+                stationCircumCenters.set(stationIndex, cCenter);
+            }
+
         }
         
         if (zoom > 11) {
             for (let transferIndex = 0; transferIndex < this.graph.transfers.length; ++transferIndex) {
                 const transfer = this.graph.transfers[transferIndex];
-                if (platformsInCircles.has(transfer.source) && platformsInCircles.has(transfer.target)) continue;
-                const pl1 = this.graph.platforms[transfer.source],
-                    pl2 = this.graph.platforms[transfer.target],
-                    transferPos = [this.posOnSVG(svgBounds, pl1.location), this.posOnSVG(svgBounds, pl2.location)],
-                    lines = svg.makeTransfer(transferPos[0], transferPos[1], transferWidth, circleBorder);
-                lines[0].id = 'otl-' + transferIndex;
-                lines[1].id = 'itl-' + transferIndex;
-                docFrags['transfers-outer'].appendChild(lines[0]);
-                docFrags['transfers-inner'].appendChild(lines[1]);
-                this.bindTransferModel(transfer, lines);
+                let paths: Element[];
+                if (platformsInCircles.has(transfer.source) && platformsInCircles.has(transfer.target)) {
+                    const pl1 = this.graph.platforms[transfer.source],
+                        pl2 = this.graph.platforms[transfer.target],
+                        pos1 = this.platformsOnSVG[transfer.source],
+                        pos2 = this.platformsOnSVG[transfer.target];
+                    const center = stationCircumCenters.get(pl1.station);
+                    paths = svg.makeTransferArc(center, pos1, pos2, transferWidth, circleBorder);
+                } else {
+                    const pl1 = this.graph.platforms[transfer.source],
+                        pl2 = this.graph.platforms[transfer.target],
+                        transferPos = [this.posOnSVG(svgBounds, pl1.location), this.posOnSVG(svgBounds, pl2.location)];
+                    paths = svg.makeTransfer(transferPos[0], transferPos[1], transferWidth, circleBorder);
+                }
+                paths[0].id = 'ot-' + transferIndex;
+                paths[1].id = 'it-' + transferIndex;
+                docFrags['transfers-outer'].appendChild(paths[0]);
+                docFrags['transfers-inner'].appendChild(paths[1]);
+                this.bindTransferModel(transfer, paths);
+                
             }
         }
 
         for (let i = 0; i < this.graph.spans.length; ++i) {
-            const paths = this.makePath(i, lineWidth);
-            docFrags['paths-outer'].appendChild(paths[0]);
-            if (paths.length > 1) {
-                docFrags['paths-inner'].appendChild(paths[1]);
+            const [outer, inner] = this.makePath(i, lineWidth);
+            docFrags['paths-outer'].appendChild(outer);
+            if (inner) {
+                docFrags['paths-inner'].appendChild(inner);
             }
         }
         
@@ -534,29 +588,25 @@ class MetroMap {
         const span = this.graph.spans[spanIndex];
         const srcN = span.source, trgN = span.target;
         const routes = span.routes.map(n => this.graph.routes[n]);
-        const matches = routes[0].line.match(/([MEL])(\d{0,2})/);
+        const [lineId, lineType, lineNum] = routes[0].line.match(/([MEL])(\d{0,2})/);
         const bezier = svg.makeCubicBezier([this.platformsOnSVG[srcN], this.whiskers[srcN][spanIndex], this.whiskers[trgN][spanIndex], this.platformsOnSVG[trgN]]);
         bezier.id = 'op-' + spanIndex;
-        if (matches[1] === 'E') {
+        if (lineType === 'E') {
             bezier.classList.add('E');
-            const inner: typeof bezier = <any>bezier.cloneNode(true);
+            const inner: typeof bezier = bezier.cloneNode(true) as any;
             inner.id = 'ip-' + spanIndex;
             bezier.style.strokeWidth = lineWidth + 'px';
             inner.style.strokeWidth = lineWidth / 2+ 'px';
             return [bezier, inner];
         } else {
             bezier.style.strokeWidth = lineWidth + 'px';
-            if (matches) {
-                bezier.classList.add(matches[0]);
+            if (lineId) {
+                bezier.classList.add(lineId);
             }
-            bezier.classList.add(matches[1] + '-line');
-            if (matches[1] === 'L') {
+            bezier.classList.add(lineType + '-line');
+            if (lineType === 'L') {
                 bezier.style.strokeWidth = lineWidth * 0.75 + 'px';
             }
-            //util.setSVGDataset(bezier, {
-            //    source: span.source,
-            //    target: span.target
-            //});
             return [bezier];
         }
     }
