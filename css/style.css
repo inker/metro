@@ -98,41 +98,13 @@ a {
     /*stroke-width: 2;*/
 }
 
-.E-line {
-    stroke: rgb(56, 43, 82);
-    /*stroke-width: 2;*/
-    /*stroke-dasharray: 2, 2;*/
-}
-
-.E-highlighted {
-    stroke: #606060;
-}
-
-.L-line, .L-highlighted {
-    stroke: #00A4A7;
-}
-
 .L-line {
-    /*stroke-width: 1.5;*/
-    stroke-dasharray: 2, 0;
+    stroke: #00A4A7;
 }
 
 path {
     fill-opacity: 0; /* so that no white stuff be visible */
 }
-
-/* transfers */
-/*.transfer {*/
-    /*fill-opacity: 0;*/
-    /*stroke: #404040;*/
-    /*stroke-opacity: 1;*/
-    /*position: absolute;*/
-/*}*/
-/*.transfer :nth-child(2) {*/
-    /*stroke: #FFFFFF;*/
-    /*stroke-opacity: 1;*/
-    /*position: absolute;*/
-/*}*/
 
 #transfers-outer {
     fill-opacity: 0;

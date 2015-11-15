@@ -82,35 +82,27 @@ export function cutCubicBezier(controlPoints: L.Point[], fraction: number): L.Po
     return newArr;
 }
 
-export function makeTransferRing(center: L.Point, radius: number, thickness: number, borderWidth: number): HTMLElement[] {
-    const halfBorder = borderWidth / 2;
+export function makeTransferRing(center: L.Point, radius: number): HTMLElement[] {
     const outer = makeCircle(center, radius);
     const inner: typeof outer = outer.cloneNode(true) as any;
-    outer.style.strokeWidth = thickness + halfBorder + 'px';
-    inner.style.strokeWidth = thickness - halfBorder + 'px';
     return [outer, inner];
 }
 
-export function makeTransferArc(center: L.Point, start: L.Point, end: L.Point, thickness: number, borderWidth: number) {
-    const halfBorder = borderWidth / 2;
+export function makeTransferArc(center: L.Point, start: L.Point, end: L.Point) {
     const outer = makeArc(center, start, end);
     const inner: typeof outer = outer.cloneNode(true) as any;
-    outer.style.strokeWidth = thickness + halfBorder + 'px';
-    inner.style.strokeWidth = thickness - halfBorder + 'px';
     return [outer, inner];
 }
 
-export function makeTransfer(start: L.Point, end: L.Point, thickness: number, borderWidth: number): HTMLElement[] {
+export function makeTransfer(start: L.Point, end: L.Point): HTMLElement[] {
     const classes = ['transfer-outer', 'transfer-inner'];
-    const halfBorder = borderWidth / 2;
-    return [thickness + halfBorder, thickness - halfBorder].map((t, index) => {
+    return classes.map(cls => {
         const line = createSVGElement('line');
         line.setAttribute('x1', start.x.toString());
         line.setAttribute('y1', start.y.toString());
         line.setAttribute('x2', end.x.toString());
         line.setAttribute('y2', end.y.toString());
-        line.style.strokeWidth = t + 'px';
-        line.classList.add(classes[index]);
+        line.classList.add(cls);
         return line;
     });
 }
@@ -127,6 +119,43 @@ export function makeDropShadow() {
     `;
     return filter;
 }
+
+export function setGradientDirection(gradient: Element, vector: L.Point) {
+    const coors = util.vectorToGradCoordinates(vector);
+    gradient.setAttribute('x1', (1 - coors.x) * 50 + '%');
+    gradient.setAttribute('y1', (1 - coors.y) * 50 + '%');
+    gradient.setAttribute('x2', (1 + coors.x) * 50 + '%');
+    gradient.setAttribute('y2', (1 + coors.y) * 50 + '%');
+}
+
+export function makeGradient(vector: L.Point, colors: string[]) {
+    const gradient = createSVGElement('linearGradient');
+    setGradientDirection(gradient, vector);
+    gradient.innerHTML = `<stop offset="25%" style="stop-color:${colors[0]}" />
+      <stop offset="75%" style="stop-color:${colors[1]}" />`;
+    return gradient;
+}
+
+export function removeGradients() {
+    const transfers = document.getElementById('transfers-outer').children;
+    if (transfers) {
+        for (let i = 0; i < transfers.length; ++i) {
+            (transfers[i] as HTMLElement).style.stroke = null;
+        }
+    }
+}
+
+export function addGradients() {
+    const transfers = document.getElementById('transfers-outer').children;
+    if (transfers) {
+        for (let i = 0; i < transfers.length; ++i) {
+            const transfer = transfers[i];
+            (transfer as HTMLElement).style.stroke = `url(#g-${i})`;
+        }
+    }
+}
+
+
 
 export function circleByDummy(dummy: Element): HTMLElement {
     return document.getElementById('p-' + dummy.id.slice(2));

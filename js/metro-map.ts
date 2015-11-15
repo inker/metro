@@ -78,8 +78,13 @@ class MetroMap {
 
     private addMapListeners(): void {
         const mapPane = this.map.getPanes().mapPane;
-        this.map.on('movestart', e => this.map.touchZoom.disable()
-        ).on('move', e => {
+        this.map.on('movestart', e => {
+            console.log('move start');
+            this.map.touchZoom.disable();
+            if (L.Browser.webkit) {
+                svg.removeGradients();
+            }
+        }).on('move', e => {
             //this.overlay.style['-webkit-transition'] = mapPane.style['-webkit-transition'];
             //this.overlay.style.transition = mapPane.style.transition;
             this.overlay.style.transform = mapPane.style.transform;
@@ -89,6 +94,9 @@ class MetroMap {
             this.map.touchZoom.enable();
             //this.overlay.style['-webkit-transition'] = null;
             //this.overlay.style.transition = null;
+            if (L.Browser.webkit) {
+                svg.addGradients();
+            }
             this.fixFontRendering(mapPane);
         }).on('zoomstart', e => {
             this.map.dragging.disable();
@@ -208,7 +216,6 @@ class MetroMap {
     
     private bindTransferModel(transfer: po.Transfer, elements: Element[]) {
         const cached =  [transfer.source, transfer.target];
-        const re = [/M\s*(\d+)\s+(\d+)\s*A/, /(\d+)\s+(\d+)\s*$/];
         const props = ['source', 'target'];
         props.forEach((prop, pi) => {
             Object.defineProperty(transfer, prop, {
@@ -235,11 +242,8 @@ class MetroMap {
                             ) {
                                 transfers.push(t);
                                 transferIndices.push(i);
+                                if (transfers.length === 3) break;
                             }
-                        }
-                        if (transfers.length !== 3) {
-                            const name = this.graph.platforms[transfers[0].source].name;
-                            throw new Error(`circle size is ${transfers.length}: ${name}`);
                         }
                         const circular = new Set<number>();
                         for (let tr of transfers) {
@@ -257,13 +261,15 @@ class MetroMap {
                         const outerArcs = transferIndices.map(i => document.getElementById('ot-' + i));
                         const innerArcs = transferIndices.map(i => document.getElementById('it-' + i));
                         for (let i = 0; i < 3; ++i) {
-                            const tr = transfers[i];
-                            const outer = outerArcs[i],
-                                inner = innerArcs[i];
-                            const pos1 = this.platformsOnSVG[tr.source],
+                            const tr = transfers[i],
+                                outer = outerArcs[i],
+                                inner = innerArcs[i],
+                                pos1 = this.platformsOnSVG[tr.source],
                                 pos2 = this.platformsOnSVG[tr.target];
                             svg.setCircularPath(outer, cCenter, pos1, pos2);
-                            svg.setCircularPath(inner, cCenter, pos1, pos2);
+                            inner.setAttribute('d', outer.getAttribute('d'));
+                            const gradient = document.getElementById(`g-${transferIndices[i]}`);
+                            svg.setGradientDirection(gradient, pos2.subtract(pos1));
                         }
                     } else {
                         throw new Error('wrong element type for transfer');
@@ -394,13 +400,16 @@ class MetroMap {
         let lineWidth = (zoom - 7) * 0.5;
         let circleRadius = zoom < 12 ? lineWidth * 1.25 : lineWidth;
         let circleBorder = zoom < 12 ? circleRadius * 0.4 : circleRadius * 0.6;
-        let transferWidth = lineWidth;
+        let transferWidth = lineWidth * 0.9;
+        let transferBorder = circleBorder * 1.25;
         
         if (L.Browser.retina) {
             [lineWidth, circleRadius, circleBorder, transferWidth] = [lineWidth, circleRadius, circleBorder, transferWidth].map(item => item * 1.5);
         }
         
         document.getElementById('station-circles').style.strokeWidth = circleBorder + 'px';
+        document.getElementById('transfers-outer').style.strokeWidth = transferWidth + transferBorder / 2 + 'px';
+        document.getElementById('transfers-inner').style.strokeWidth = transferWidth - transferBorder / 2 + 'px';
         
         const platformsInCircles = new Set<number>();
         const stationCircumCenters = new Map<number, L.Point>();
@@ -463,22 +472,39 @@ class MetroMap {
         if (zoom > 11) {
             for (let transferIndex = 0; transferIndex < this.graph.transfers.length; ++transferIndex) {
                 const transfer = this.graph.transfers[transferIndex];
-                let paths: Element[];
+                let paths: HTMLElement[];
+                const pl1 = this.graph.platforms[transfer.source],
+                    pl2 = this.graph.platforms[transfer.target];
+                let pos1 = this.platformsOnSVG[transfer.source],
+                    pos2 = this.platformsOnSVG[transfer.target];
                 if (platformsInCircles.has(transfer.source) && platformsInCircles.has(transfer.target)) {
-                    const pl1 = this.graph.platforms[transfer.source],
-                        pl2 = this.graph.platforms[transfer.target],
-                        pos1 = this.platformsOnSVG[transfer.source],
-                        pos2 = this.platformsOnSVG[transfer.target];
                     const center = stationCircumCenters.get(pl1.station);
-                    paths = svg.makeTransferArc(center, pos1, pos2, transferWidth, circleBorder);
+                    paths = svg.makeTransferArc(center, pos1, pos2);
                 } else {
-                    const pl1 = this.graph.platforms[transfer.source],
-                        pl2 = this.graph.platforms[transfer.target],
-                        transferPos = [this.posOnSVG(svgBounds, pl1.location), this.posOnSVG(svgBounds, pl2.location)];
-                    paths = svg.makeTransfer(transferPos[0], transferPos[1], transferWidth, circleBorder);
+                    // gradient disappearing fix (maybe use rectangle?)
+                    if (pos1.x === pos2.x) {
+                        pos2.x += 0.01;
+                    } else if (pos1.y === pos2.y) {
+                        pos2.y += 0.01;
+                    }
+                    paths = svg.makeTransfer(pos1, pos2);
                 }
                 paths[0].id = 'ot-' + transferIndex;
                 paths[1].id = 'it-' + transferIndex;
+                const colors = [pl1, pl2].map(p => {
+                    const span = this.graph.spans[p.spans[0]];
+                    const routes = span.routes.map(n => this.graph.routes[n]);
+                    const [lineId, lineType, lineNum] = routes[0].line.match(/([MEL])(\d{0,2})/);
+                    return util.lineRules[lineType === 'L' ? lineType : lineId];
+                });
+                ///console.log(docFrags['station-circles'][transfer.so]);
+                //const colors = [transfer.source, transfer.target].map(i => getComputedStyle(docFrags['station-circles'].childNodes[i] as Element, null).getPropertyValue('stroke'));
+
+                const gradient = svg.makeGradient(pos2.subtract(pos1), colors);
+                gradient.id = 'g-' + transferIndex;
+                const defs = document.getElementsByTagName('defs')[0];
+                defs.appendChild(gradient);
+                paths[0].style.stroke = `url(#${gradient.id})`;
                 docFrags['transfers-outer'].appendChild(paths[0]);
                 docFrags['transfers-inner'].appendChild(paths[1]);
                 this.bindTransferModel(transfer, paths);

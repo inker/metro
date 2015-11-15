@@ -164,3 +164,28 @@ export function downloadAsFile(title: string, content: string) {
     a.click();
     window.URL.revokeObjectURL(url);
 }
+
+export function vectorToGradCoordinates(vector: L.Point) {
+    const x = Math.abs(vector.x), y = Math.abs(vector.y);
+    return vector.divideBy(x < y ? y : x);
+}
+
+export const lineRules = (() => {
+    const cssRules = (document.styleSheets[2] as CSSStyleSheet).cssRules,
+        lineRules = {};
+    for (let i = 0; i < cssRules.length; ++i) {
+        const rule = cssRules[i];
+        if (rule instanceof CSSStyleRule) {
+            const selector = rule.selectorText;
+            if (selector === '#paths-outer .E') {
+                lineRules['E'] = rule.style.stroke;
+            } else {
+                const matches = selector.match(/\.(M\d+|L)/);
+                if (matches) {
+                    lineRules[matches[1]] = rule.style.stroke;
+                }
+            }
+        }
+    }
+    return lineRules;
+})();
