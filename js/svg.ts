@@ -123,16 +123,16 @@ export function makeDropShadow() {
 export function setGradientDirection(gradient: Element, vector: L.Point) {
     const coors = util.vectorToGradCoordinates(vector);
     gradient.setAttribute('x1', (1 - coors.x) * 50 + '%');
-    gradient.setAttribute('y1', (1 - coors.y) * 50 + '%');
+    gradient.setAttribute('y1', (1 - coors.y) * 50 + '%'); 
     gradient.setAttribute('x2', (1 + coors.x) * 50 + '%');
     gradient.setAttribute('y2', (1 + coors.y) * 50 + '%');
 }
 
-export function makeGradient(vector: L.Point, colors: string[]) {
+export function makeGradient(vector: L.Point, colors: string[], offset = 0) {
     const gradient = createSVGElement('linearGradient');
     setGradientDirection(gradient, vector);
-    gradient.innerHTML = `<stop offset="25%" style="stop-color:${colors[0]}" />
-      <stop offset="75%" style="stop-color:${colors[1]}" />`;
+    gradient.innerHTML = `<stop offset="${offset}" style="stop-color:${colors[0]}" />
+      <stop offset="${1 - offset}" style="stop-color:${colors[1]}" />`;
     return gradient;
 }
 

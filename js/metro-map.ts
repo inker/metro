@@ -410,6 +410,8 @@ class MetroMap {
         document.getElementById('station-circles').style.strokeWidth = circleBorder + 'px';
         document.getElementById('transfers-outer').style.strokeWidth = transferWidth + transferBorder / 2 + 'px';
         document.getElementById('transfers-inner').style.strokeWidth = transferWidth - transferBorder / 2 + 'px';
+        document.getElementById('paths-outer').style.strokeWidth = lineWidth + 'px';
+        document.getElementById('paths-inner').style.strokeWidth = lineWidth / 2 + 'px';
         
         const platformsInCircles = new Set<number>();
         const stationCircumCenters = new Map<number, L.Point>();
@@ -499,8 +501,8 @@ class MetroMap {
                 });
                 ///console.log(docFrags['station-circles'][transfer.so]);
                 //const colors = [transfer.source, transfer.target].map(i => getComputedStyle(docFrags['station-circles'].childNodes[i] as Element, null).getPropertyValue('stroke'));
-
-                const gradient = svg.makeGradient(pos2.subtract(pos1), colors);
+                const circlePortion = (circleRadius + circleBorder / 2) / pos1.distanceTo(pos2); 
+                const gradient = svg.makeGradient(pos2.subtract(pos1), colors, circlePortion);
                 gradient.id = 'g-' + transferIndex;
                 const defs = document.getElementsByTagName('defs')[0];
                 defs.appendChild(gradient);
@@ -513,10 +515,12 @@ class MetroMap {
         }
 
         for (let i = 0; i < this.graph.spans.length; ++i) {
-            const [outer, inner] = this.makePath(i, lineWidth);
+            const [outer, inner] = this.makePath(i);
             docFrags['paths-outer'].appendChild(outer);
             if (inner) {
                 docFrags['paths-inner'].appendChild(inner);
+            } else if (this.graph.routes[this.graph.spans[i].routes[0]].line.startsWith('L')) {
+                outer.style.strokeWidth = lineWidth * 0.75 + 'px';
             }
         }
         
@@ -610,7 +614,7 @@ class MetroMap {
         
     }
     
-    private makePath(spanIndex: number, lineWidth: number) {
+    private makePath(spanIndex: number) {
         const span = this.graph.spans[spanIndex];
         const srcN = span.source, trgN = span.target;
         const routes = span.routes.map(n => this.graph.routes[n]);
@@ -621,18 +625,12 @@ class MetroMap {
             bezier.classList.add('E');
             const inner: typeof bezier = bezier.cloneNode(true) as any;
             inner.id = 'ip-' + spanIndex;
-            bezier.style.strokeWidth = lineWidth + 'px';
-            inner.style.strokeWidth = lineWidth / 2+ 'px';
             return [bezier, inner];
         } else {
-            bezier.style.strokeWidth = lineWidth + 'px';
             if (lineId) {
                 bezier.classList.add(lineId);
             }
             bezier.classList.add(lineType + '-line');
-            if (lineType === 'L') {
-                bezier.style.strokeWidth = lineWidth * 0.75 + 'px';
-            }
             return [bezier];
         }
     }
