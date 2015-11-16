@@ -128,6 +128,11 @@ export function setGradientDirection(gradient: Element, vector: L.Point) {
     gradient.setAttribute('y2', (1 + coors.y) * 50 + '%');
 }
 
+export function setGradientOffset(gradient: HTMLElement, offset: number) {
+    (gradient.children[0] as Element).setAttribute('offset', offset.toString());
+    (gradient.children[1] as Element).setAttribute('offset', (1 - offset).toString());
+}
+
 export function makeGradient(vector: L.Point, colors: string[], offset = 0) {
     const gradient = createSVGElement('linearGradient');
     setGradientDirection(gradient, vector);

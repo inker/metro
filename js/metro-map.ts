@@ -221,15 +221,21 @@ class MetroMap {
             Object.defineProperty(transfer, prop, {
                 get: () => transfer['_' + prop],
                 set: (platformIndex: number) => {
+                    const circle = document.getElementById('p-' + platformIndex);
+                    const circleTotalRadius = Number(circle.getAttribute('r')) / 2 + parseFloat(getComputedStyle(circle).getPropertyValue('stroke-width'));
+                    const pos = this.platformsOnSVG[platformIndex];
                     if (elements[0].tagName === 'line') {
-                        const circle = document.getElementById('p-' + platformIndex);
                         const n = pi + 1;
-                        const x = circle.getAttribute('cx'),
-                            y = circle.getAttribute('cy');
+                        const otherPos = this.platformsOnSVG[transfer[props[1 - pi]]];
                         for (let el of elements) {
-                            el.setAttribute('x' + n, x);
-                            el.setAttribute('y' + n, y);
+                            el.setAttribute('x' + n, pos.x.toString());
+                            el.setAttribute('y' + n, pos.y.toString());
                         }
+                        const gradient = document.getElementById(`g-${this.graph.transfers.indexOf(transfer)}`);
+                        const dir = prop === 'source' ? otherPos.subtract(pos) : pos.subtract(otherPos);
+                        svg.setGradientDirection(gradient, dir);
+                        const circlePortion = circleTotalRadius / pos.distanceTo(otherPos);
+                        svg.setGradientOffset(gradient, circlePortion);
                     } else if (elements[0].tagName === 'path') {
                         const transfers: po.Transfer[] = [];
                         const transferIndices: number[] = [];
@@ -270,6 +276,8 @@ class MetroMap {
                             inner.setAttribute('d', outer.getAttribute('d'));
                             const gradient = document.getElementById(`g-${transferIndices[i]}`);
                             svg.setGradientDirection(gradient, pos2.subtract(pos1));
+                            const circlePortion = circleTotalRadius / pos1.distanceTo(pos2);
+                            svg.setGradientOffset(gradient, circlePortion);
                         }
                     } else {
                         throw new Error('wrong element type for transfer');
