@@ -81,7 +81,8 @@ class MetroMap implements EventTarget {
             // TODO: fix the kludge making the grey area disappear
             .then(() => this.map.invalidateSize(false))
             .then(() => this.resetMapView())
-            .then(() => this.fixFontRendering(this.map.getPanes().mapPane))
+            .then(() => this.map.addLayer(this.fromMarker).addLayer(this.toMarker))
+            .then(() => this.fixFontRendering())
             .then(() => dataPromise)
             .then(() => new MapEditor(this))
             .then(() => new ContextMenu(this));
@@ -90,7 +91,7 @@ class MetroMap implements EventTarget {
             .then(results => util.verifyHints(this.graph, this.hints))
             .then(response => console.log(response))
             .catch(err => console.error(err));
-        this.map.addLayer(this.fromMarker).addLayer(this.toMarker);
+
     }
     
     addEventListener(type: string, listener: EventListener) { }
@@ -130,6 +131,7 @@ class MetroMap implements EventTarget {
         if (!this.fromMarker.getLatLng().equals(zero) && !this.toMarker.getLatLng().equals(zero)) {
             this.visualizeShortestPath(this.fromMarker.getLatLng(), this.toMarker.getLatLng());
         }
+        this.fixFontRendering();
     }
 
     private addMapListeners(): void {
@@ -153,7 +155,8 @@ class MetroMap implements EventTarget {
             if (L.Browser.webkit) {
                 svg.addGradients();
             }
-            this.fixFontRendering(mapPane);
+            this.fixFontRendering();
+            this.overlay.style.transform = mapPane.style.transform;
         }).on('zoomstart', e => {
             this.map.dragging.disable();
             console.log(e);
@@ -174,9 +177,14 @@ class MetroMap implements EventTarget {
      * Fixes blurry font due to 'transform3d' CSS property. Changes everything to 'transform' when the map is not moving
      * @param mapPane
      */
-    private fixFontRendering(mapPane: HTMLElement): void {
-        const t3d = util.parseTransform(mapPane.style.transform);
-        this.overlay.style.transform = mapPane.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
+    private fixFontRendering(): void {
+        const blurringStuff: HTMLElement[] = document.querySelectorAll('img[style*="translate3d"]') as any;
+        console.log(blurringStuff);
+        for (let i = 0; i < blurringStuff.length; ++i) {
+            util.replaceTransform(blurringStuff[i]);
+        }
+        util.replaceTransform(this.map.getPanes().mapPane);
+        //this.overlay.style.transform = mapPane.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
     }
 
     private resetMapView(): void {

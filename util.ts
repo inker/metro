@@ -34,6 +34,11 @@ export function parseTransform(val: string): L.Point {
     return matches ? new L.Point(Number(matches[2]), Number(matches[3])) : new L.Point(0, 0);
 }
 
+export function replaceTransform(el: HTMLElement) {
+    const t3d = parseTransform(el.style.transform);
+    el.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
+}
+
 export function findCircle(graph: po.Graph, station: po.Station): po.Platform[] {
     if (station.platforms.length !== 3) return null;
     const platforms = station.platforms.map(platformNum => graph.platforms[platformNum]);
