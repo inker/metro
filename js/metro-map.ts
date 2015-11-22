@@ -1,4 +1,6 @@
+/// <reference path="../typings/tsd.d.ts" />
 import L = require('leaflet');
+const alertify = require('alertifyjs');
 import * as svg from './svg';
 import * as util from '../util';
 import * as po from '../plain-objects';
@@ -101,6 +103,7 @@ class MetroMap implements EventTarget {
             this.fromMarker.setLatLng([0, 0]);
             this.toMarker.setLatLng([0, 0]);
             this.resetStyle();
+            alertify.dismissAll();
             this.fixFontRendering();
             return;
         }
@@ -176,7 +179,6 @@ class MetroMap implements EventTarget {
 
     /**
      * Fixes blurry font due to 'transform3d' CSS property. Changes everything to 'transform' when the map is not moving
-     * @param mapPane
      */
     private fixFontRendering(): void {
         const blurringStuff: HTMLElement[] = document.querySelectorAll('img[style*="translate3d"]') as any;
@@ -387,8 +389,7 @@ class MetroMap implements EventTarget {
         }
         
         if (zoom > 11) {
-            for (let transferIndex = 0; transferIndex < this.graph.transfers.length; ++transferIndex) {
-                const transfer = this.graph.transfers[transferIndex];
+            this.graph.transfers.forEach((transfer, transferIndex) => {
                 let paths: HTMLElement[];
                 const pl1 = this.graph.platforms[transfer.source],
                     pl2 = this.graph.platforms[transfer.target];
@@ -408,24 +409,26 @@ class MetroMap implements EventTarget {
                 }
                 paths[0].id = 'ot-' + transferIndex;
                 paths[1].id = 'it-' + transferIndex;
-                const colors = [pl1, pl2].map(p => {
-                    const span = this.graph.spans[p.spans[0]];
-                    const routes = span.routes.map(n => this.graph.routes[n]);
-                    const [lineId, lineType, lineNum] = routes[0].line.match(/([MEL])(\d{0,2})/);
-                    return util.lineRules[lineType === 'L' ? lineType : lineId];
-                });
-                ///console.log(docFrags['station-circles'][transfer.so]);
-                //const colors = [transfer.source, transfer.target].map(i => getComputedStyle(docFrags['station-circles'].childNodes[i] as Element, null).getPropertyValue('stroke'));
-                const circlePortion = (circleRadius + circleBorder / 2) / pos1.distanceTo(pos2); 
-                const gradient = svg.makeGradient(pos2.subtract(pos1), colors, circlePortion);
-                gradient.id = 'g-' + transferIndex;
-                const defs = document.getElementsByTagName('defs')[0];
-                defs.appendChild(gradient);
-                paths[0].style.stroke = `url(#${gradient.id})`;
-                docFrags['transfers-outer'].appendChild(paths[0]);
-                docFrags['transfers-inner'].appendChild(paths[1]);
-                bind.transferToModel.call(this, transfer, paths);
-            }
+                util.lineRulesPromise.then(rules => {
+                    const colors = [pl1, pl2].map(p => {
+                        const span = this.graph.spans[p.spans[0]];
+                        const routes = span.routes.map(n => this.graph.routes[n]);
+                        const [lineId, lineType, lineNum] = routes[0].line.match(/([MEL])(\d{0,2})/);
+                        return rules[lineType === 'L' ? lineType : lineId];
+                    });
+                    ///console.log(docFrags['station-circles'][transfer.so]);
+                    //const colors = [transfer.source, transfer.target].map(i => getComputedStyle(docFrags['station-circles'].childNodes[i] as Element, null).getPropertyValue('stroke'));
+                    const circlePortion = (circleRadius + circleBorder / 2) / pos1.distanceTo(pos2);
+                    const gradient = svg.makeGradient(pos2.subtract(pos1), colors, circlePortion);
+                    gradient.id = 'g-' + transferIndex;
+                    const defs = document.getElementsByTagName('defs')[0];
+                    defs.appendChild(gradient);
+                    paths[0].style.stroke = `url(#${gradient.id})`;
+                    docFrags['transfers-outer'].appendChild(paths[0]);
+                    docFrags['transfers-inner'].appendChild(paths[1]);
+                    bind.transferToModel.call(this, transfer, paths);
+                })
+            });
         }
 
         for (let i = 0; i < this.graph.spans.length; ++i) {
@@ -557,7 +560,12 @@ class MetroMap implements EventTarget {
 
     visualizeShortestPath(departure: L.LatLng, arrival: L.LatLng) {
         this.resetStyle();
-        const { platforms, path, time } = this.shortestPath(departure, arrival);
+        alertify.dismissAll();
+        const sp = this.shortestPath(departure, arrival);
+        if (typeof sp === 'number') {
+            return alertify.error(`walk on foot, lazybones!`);
+        }
+        const { platforms, path, time } = sp;
         const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
         const els = document.querySelectorAll(selector) as any as HTMLElement[];
         for (let i = 0; i < els.length; ++i) {
@@ -569,7 +577,7 @@ class MetroMap implements EventTarget {
         const foo = (i: number) => {
             document.getElementById('p-' + platforms[i]).style.opacity = null;
             if (i >= path.length) {
-                return alert('time:\n' + Math.round(time.walkTo / 60) + ' mins on foot\n' + Math.round(time.metro / 60) + ' mins by metro\n' + Math.round(time.walkFrom / 60) + ' mins on foot\nTOTAL: ' + Math.round(time.total / 60) + ' mins');
+                return alertify.message(`time:<br>${Math.round(time.walkTo / 60)} mins on foot<br>${Math.round(time.metro / 60)} mins by metro<br>${Math.round(time.walkFrom / 60)} mins on foot<br>TOTAL: ${Math.round(time.total / 60)} mins`, 10);
             }
             const outerOld: SVGPathElement|SVGLineElement = document.getElementById('o' + path[i]) as any;
             if (outerOld === null) {
@@ -620,7 +628,7 @@ class MetroMap implements EventTarget {
         foo(0);
     }
     
-    private shortestPath(p1: L.LatLng, p2: L.LatLng) {
+    private shortestPath(p1: L.LatLng, p2: L.LatLng): any {
         const objects = this.graph.platforms;
         // time to travel from station to the p1 location
         const dist: number[] = [], timesOnFoot: number[] = [];
@@ -700,8 +708,7 @@ class MetroMap implements EventTarget {
         }
         // if walking on foot is faster, then why take the underground?
         if (onFoot < shortestTime) {
-            alert('walk on foot, lazybag');
-            throw new Error('on foot!');
+            return onFoot;
         }
         const path: string[] = [],
             platformPath = [currentIndex];

@@ -31,6 +31,9 @@
     },
     "form-data/form-data.d.ts": {
       "commit": "99942cab1446292c79c4328218abd37621505112"
+    },
+    "alertify/alertify.d.ts": {
+      "commit": "fa04c80f4a889613b96cb4f283848c61a9f64233"
     }
   }
 }

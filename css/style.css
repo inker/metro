@@ -60,8 +60,13 @@ a {
 }
 
 #contextmenu tr td:hover {
-    
     background-color: #88aaff;
+}
+
+.ajs-message {
+    bottom: 20px;
+    background-color: #ccc;
+    font-family: Segoe, Tahoma, Ubuntu;
 }
 
 #overlay {

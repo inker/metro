@@ -175,25 +175,34 @@ export function vectorToGradCoordinates(vector: L.Point) {
     return vector.divideBy(x < y ? y : x);
 }
 
-export const lineRules = (() => {
-    const cssRules = (document.styleSheets[2] as CSSStyleSheet).cssRules,
-        lineRules = {};
-    for (let i = 0; i < cssRules.length; ++i) {
-        const rule = cssRules[i];
-        if (rule instanceof CSSStyleRule) {
-            const selector = rule.selectorText;
-            if (selector === '#paths-outer .E') {
-                lineRules['E'] = rule.style.stroke;
-            } else {
-                const matches = selector.match(/\.(M\d+|L)/);
-                if (matches) {
-                    lineRules[matches[1]] = rule.style.stroke;
+export const lineRulesPromise = new Promise(resolve => {
+    const url = "css/style.css",
+        link = document.createElement('link');
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.href = url;
+    link.onload = e => {
+        console.log(document.styleSheets.length);
+        const cssRules = (document.styleSheets[document.styleSheets.length] as CSSStyleSheet).cssRules,
+            lineRules = {};
+        for (let i = 0; i < cssRules.length; ++i) {
+            const rule = cssRules[i];
+            if (rule instanceof CSSStyleRule) {
+                const selector = rule.selectorText;
+                if (selector === '#paths-outer .E') {
+                    lineRules['E'] = rule.style.stroke;
+                } else {
+                    const matches = selector.match(/\.(M\d+|L)/);
+                    if (matches) {
+                        lineRules[matches[1]] = rule.style.stroke;
+                    }
                 }
             }
         }
+        resolve(lineRules);
     }
-    return lineRules;
-})();
+    document.head.appendChild(link);
+});
 
 /**
  * 
