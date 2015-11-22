@@ -104,6 +104,7 @@ class MetroMap implements EventTarget {
             return;
         }
         this.handleMenuFromTo(event as any as MouseEvent);
+        this.fixFontRendering();
         return false;
     }
     
@@ -131,7 +132,6 @@ class MetroMap implements EventTarget {
         if (!this.fromMarker.getLatLng().equals(zero) && !this.toMarker.getLatLng().equals(zero)) {
             this.visualizeShortestPath(this.fromMarker.getLatLng(), this.toMarker.getLatLng());
         }
-        this.fixFontRendering();
     }
 
     private addMapListeners(): void {
