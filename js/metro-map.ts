@@ -5,9 +5,13 @@ import * as po from '../plain-objects';
 import * as addons from './addons';
 import * as graph from '../metro-graph';
 import * as geo from '../geo';
+import * as bind from './bind';
+import MapEditor from './mapeditor';
 import TextPlate from './textplate';
+import ContextMenu from './contextmenu';
 
-class MetroMap {
+class MetroMap implements EventTarget {
+    
     private map: L.Map;
     private overlay: HTMLElement;
     private graph: po.Graph;
@@ -20,12 +24,23 @@ class MetroMap {
     
     private plate: TextPlate;
     
+    private fromMarker = new L.Marker([0, 0]);
+    private toMarker = new L.Marker([0, 0]);
+    
     getMap(): L.Map {
         return this.map;
     }
 
     getOverlay(): HTMLElement {
         return this.overlay;
+    }
+    
+    getPlate(): TextPlate {
+        return this.plate;
+    }
+    
+    getGraph(): po.Graph {
+        return this.graph;
     }
 
     constructor(containerId: string, kml: string, tileLayers: {}) {
@@ -68,12 +83,53 @@ class MetroMap {
             .then(() => this.resetMapView())
             .then(() => this.fixFontRendering(this.map.getPanes().mapPane))
             .then(() => dataPromise)
-            .then(() => document.getElementById('edit-map-button').addEventListener('click', this.editMapClick.bind(this)));
+            .then(() => new MapEditor(this))
+            .then(() => new ContextMenu(this));
         
         Promise.all([graphPromise, hintsPromise])
             .then(results => util.verifyHints(this.graph, this.hints))
             .then(response => console.log(response))
             .catch(err => console.error(err));
+        this.map.addLayer(this.fromMarker).addLayer(this.toMarker);
+    }
+    
+    addEventListener(type: string, listener: EventListener) { }
+    
+    dispatchEvent(event: Event): boolean {
+        if (event.type === 'clearroute') {
+            this.fromMarker.setLatLng([0, 0]);
+            this.toMarker.setLatLng([0, 0]);
+            this.resetStyle();
+            return;
+        }
+        this.handleMenuFromTo(event as any as MouseEvent);
+        return false;
+    }
+    
+    removeEventListener(type: string, listener: EventListener) { }
+    
+    private resetStyle() {
+        const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
+        const els = document.querySelectorAll(selector) as any as HTMLElement[];
+        for (let i = 0; i < els.length; ++i) {
+            els[i].style.opacity = null;
+            els[i].removeAttribute('filter');
+        }
+    }
+    
+    private handleMenuFromTo(e: MouseEvent) {
+        const clientPos = new L.Point(e.clientX, e.clientY);
+        const rect = this.map.getContainer().getBoundingClientRect();
+        const containerPos = new L.Point(rect.left, rect.top);
+        const coors = this.map.containerPointToLatLng(clientPos.subtract(containerPos));
+        console.log(coors);
+        const marker = e.type === 'fromclick' ? this.fromMarker : this.toMarker;
+        marker.setLatLng(coors);
+        console.log(this.fromMarker, this.toMarker);
+        const zero = new L.LatLng(0, 0);
+        if (!this.fromMarker.getLatLng().equals(zero) && !this.toMarker.getLatLng().equals(zero)) {
+            this.visualizeShortestPath(this.fromMarker.getLatLng(), this.toMarker.getLatLng());
+        }
     }
 
     private addMapListeners(): void {
@@ -111,6 +167,7 @@ class MetroMap {
             this.overlay.style.opacity = null;
             this.map.dragging.enable();
         });
+
     }
 
     /**
@@ -139,6 +196,7 @@ class MetroMap {
         
         const defs = svg.createSVGElement('defs');
         defs.appendChild(svg.makeDropShadow());
+        defs.appendChild(svg.makeShadowGlow());
         this.overlay.appendChild(defs);
         // svg element won't work because it does not have negative dimensions
         // (top-left station is partially visible)
@@ -167,173 +225,11 @@ class MetroMap {
         for (let i = 0; i < graphPlatforms.length; ++i) {
             const circle = document.getElementById('p-' + i);
             const dummyCircle = document.getElementById('d-' + i);
-            this.bindPlatformModel(i, [circle, dummyCircle]);
+            bind.platformToModel.call(this, i, [circle, dummyCircle]);
         }
     }
     
-    private bindPlatformModel(platform: po.Platform|number, circles: Element[]) {
-        const [idx, obj] = typeof platform === 'number' 
-            ? [platform, this.graph.platforms[platform]]
-            : [this.graph.platforms.indexOf(platform), platform];
-        const cached = obj.location;
-        Object.defineProperty(obj, 'location', {
-            get: () => obj['_location'],
-            set: (location: L.LatLng) => {
-                obj['_location'] = location;
-                const locForPos = this.map.getZoom() < 12
-                    ? this.graph.stations[obj.station].location
-                    : location;
-                const pos = this.map.latLngToContainerPoint(locForPos).subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
-                for (let c of circles) {
-                    c.setAttribute('cx', pos.x.toString());
-                    c.setAttribute('cy', pos.y.toString());
-                }
-                this.whiskers[idx] = this.makeWhiskers(idx);
-                this.platformsOnSVG[idx] = pos;
-                const spansToChange = new Set<number>(obj.spans);
-                for (let spanIndex of obj.spans) {
-                    const span = this.graph.spans[spanIndex];
-                    const srcN = span.source, trgN = span.target;
-                    const neighborIndex = idx === srcN ? trgN : srcN;
-                    this.whiskers[neighborIndex] = this.makeWhiskers(neighborIndex);
-                    this.graph.platforms[neighborIndex].spans.forEach(si => spansToChange.add(si));
-                }
-                spansToChange.forEach(spanIndex => {
-                    const span = this.graph.spans[spanIndex];
-                    const srcN = span.source, trgN = span.target;
-                    const controlPoints = [this.platformsOnSVG[srcN], this.whiskers[srcN][spanIndex], this.whiskers[trgN][spanIndex], this.platformsOnSVG[trgN]];
-                    svg.setBezierPath(document.getElementById(`op-${spanIndex}`), controlPoints);
-                    const inner = document.getElementById(`ip-${spanIndex}`);
-                    if (inner) svg.setBezierPath(inner, controlPoints);
-                });
-                this.graph.transfers
-                    .filter(tr => tr.source === idx || tr.target === idx)
-                    .forEach(tr => tr[idx === tr.source ? 'source' : 'target'] = idx);
-            }
-        });
-        obj['_location'] = cached;
-    }
     
-    private bindTransferModel(transfer: po.Transfer, elements: Element[]) {
-        const cached =  [transfer.source, transfer.target];
-        const props = ['source', 'target'];
-        props.forEach((prop, pi) => {
-            Object.defineProperty(transfer, prop, {
-                get: () => transfer['_' + prop],
-                set: (platformIndex: number) => {
-                    const circle = document.getElementById('p-' + platformIndex);
-                    const circleTotalRadius = Number(circle.getAttribute('r')) / 2 + parseFloat(getComputedStyle(circle).getPropertyValue('stroke-width'));
-                    const pos = this.platformsOnSVG[platformIndex];
-                    if (elements[0].tagName === 'line') {
-                        const n = pi + 1;
-                        const otherPos = this.platformsOnSVG[transfer[props[1 - pi]]];
-                        for (let el of elements) {
-                            el.setAttribute('x' + n, pos.x.toString());
-                            el.setAttribute('y' + n, pos.y.toString());
-                        }
-                        const gradient = document.getElementById(`g-${this.graph.transfers.indexOf(transfer)}`);
-                        const dir = prop === 'source' ? otherPos.subtract(pos) : pos.subtract(otherPos);
-                        svg.setGradientDirection(gradient, dir);
-                        const circlePortion = circleTotalRadius / pos.distanceTo(otherPos);
-                        svg.setGradientOffset(gradient, circlePortion);
-                    } else if (elements[0].tagName === 'path') {
-                        const transfers: po.Transfer[] = [];
-                        const transferIndices: number[] = [];
-                        for (let i = 0; i < this.graph.transfers.length; ++i) {
-                            const t = this.graph.transfers[i];
-                            if (t.source === transfer.source
-                                || t.target === transfer.target
-                                || t.source === transfer.target
-                                || t.target === transfer.source
-                            ) {
-                                transfers.push(t);
-                                transferIndices.push(i);
-                                if (transfers.length === 3) break;
-                            }
-                        }
-                        const circular = new Set<number>();
-                        for (let tr of transfers) {
-                            circular.add(tr.source).add(tr.target);
-                        }
-                        if (circular.size !== 3) {
-                            const name = this.graph.platforms[transfers[0].source].name;
-                            throw new Error(`circle size is ${circular.size}: ${name}`);
-                        }
-                        
-                        const circumpoints: L.Point[] = [];
-                        circular.forEach(i => circumpoints.push(this.platformsOnSVG[i]));
-                        
-                        const cCenter = util.getCircumcenter(circumpoints);
-                        const outerArcs = transferIndices.map(i => document.getElementById('ot-' + i));
-                        const innerArcs = transferIndices.map(i => document.getElementById('it-' + i));
-                        for (let i = 0; i < 3; ++i) {
-                            const tr = transfers[i],
-                                outer = outerArcs[i],
-                                inner = innerArcs[i],
-                                pos1 = this.platformsOnSVG[tr.source],
-                                pos2 = this.platformsOnSVG[tr.target];
-                            svg.setCircularPath(outer, cCenter, pos1, pos2);
-                            inner.setAttribute('d', outer.getAttribute('d'));
-                            const gradient = document.getElementById(`g-${transferIndices[i]}`);
-                            svg.setGradientDirection(gradient, pos2.subtract(pos1));
-                            const circlePortion = circleTotalRadius / pos1.distanceTo(pos2);
-                            svg.setGradientOffset(gradient, circlePortion);
-                        }
-                    } else {
-                        throw new Error('wrong element type for transfer');
-                    }
-                }
-            });
-            transfer['_' + prop] = cached[pi];
-        });
-    }
-    
-    private editMapClick(event: MouseEvent) {
-        // change station name (change -> model (platform))
-        // drag station to new location (drag -> model (platform, spans) -> paths, )
-        // create new station (create -> model)
-        // drag line over the station to bind them
-        
-        const button: HTMLButtonElement = event.target as any;
-        const textState = ['Edit Map', 'Save Map'];
-        const dummyCircles = document.getElementById('dummy-circles');
-        if (button.textContent === textState[0]) {
-            dummyCircles.onmousedown = de => {
-                if (de.button === 0) {
-                    const platform = svg.platformByCircle(de.target as any, this.graph);
-                    //const initialLocation = platform.location; // TODO: Ctrl+Z
-                    this.map.dragging.disable();
-                    this.map.on('mousemove', le => {
-                        platform.location = (le as L.LeafletMouseEvent).latlng;
-                        this.plate.disabled = true;
-                    });
-                    this.map.once('mouseup', le => {
-                        this.map.off('mousemove').dragging.enable();
-                        this.plate.disabled = false;
-                        this.plate.show(svg.circleByDummy((le as L.LeafletMouseEvent).originalEvent.target as any));
-                    });
-                } else if (de.button === 1) {
-                    const platform = svg.platformByCircle(de.target as any, this.graph);
-                    const ru = platform.name,
-                        fi = platform.altNames['fi'],
-                        en = platform.altNames['en'];
-                    this.plate.show(svg.circleByDummy(de.target as any));
-                    const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru];
-                    [platform.name, platform.altNames['fi'], platform.altNames['en']] = prompt('New name', names.join('|')).split('|');
-                } else {
-                    // open context menu maybe?
-                }
-            };
-            button.textContent = textState[1];
-        } else if (button.textContent === textState[1]) {
-            const content = JSON.stringify(this.graph, (key, val) => key.startsWith('_') ? undefined : val);
-            util.downloadAsFile('graph.json', content);
-            dummyCircles.onmousedown = dummyCircles.onclick = null;
-            button.textContent = textState[0];
-        } else {
-            throw new Error('Incorrect button text');
-        }
-    }
 
     /**
      *
@@ -381,6 +277,8 @@ class MetroMap {
      *  ...
      */
     private redrawNetwork(): void {
+        this.fromMarker.setLatLng([0, 0]);
+        this.toMarker.setLatLng([0, 0]);
         this.resetOverlayStructure();
         this.updateOverlayPositioning();
         
@@ -517,8 +415,7 @@ class MetroMap {
                 paths[0].style.stroke = `url(#${gradient.id})`;
                 docFrags['transfers-outer'].appendChild(paths[0]);
                 docFrags['transfers-inner'].appendChild(paths[1]);
-                this.bindTransferModel(transfer, paths);
-                
+                bind.transferToModel.call(this, transfer, paths);
             }
         }
 
@@ -627,7 +524,13 @@ class MetroMap {
         const srcN = span.source, trgN = span.target;
         const routes = span.routes.map(n => this.graph.routes[n]);
         const [lineId, lineType, lineNum] = routes[0].line.match(/([MEL])(\d{0,2})/);
-        const bezier = svg.makeCubicBezier([this.platformsOnSVG[srcN], this.whiskers[srcN][spanIndex], this.whiskers[trgN][spanIndex], this.platformsOnSVG[trgN]]);
+        const controlPoints = [
+            this.platformsOnSVG[srcN],
+            this.whiskers[srcN][spanIndex],
+            this.whiskers[trgN][spanIndex],
+            this.platformsOnSVG[trgN]
+        ];
+        const bezier = svg.makeCubicBezier(controlPoints);
         bezier.id = 'op-' + spanIndex;
         if (lineType === 'E') {
             bezier.classList.add('E');
@@ -641,6 +544,206 @@ class MetroMap {
             bezier.classList.add(lineType + '-line');
             return [bezier];
         }
+    }
+
+    visualizeShortestPath(departure: L.LatLng, arrival: L.LatLng) {
+        this.resetStyle();
+        const { platforms, path, time } = this.shortestPath(departure, arrival);
+        const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
+        const els = document.querySelectorAll(selector) as any as HTMLElement[];
+        for (let i = 0; i < els.length; ++i) {
+            //els[i].style['-webkit-filter'] = 'grayscale(1)';
+            els[i].style.opacity = '0.25';
+        }
+        console.log(path);
+        console.log(platforms.map(p => this.graph.platforms[p].name));
+        const foo = (i: number) => {
+            document.getElementById('p-' + platforms[i]).style.opacity = null;
+            if (i >= path.length) {
+                return alert('time:\n' + Math.round(time.walkTo / 60) + ' mins on foot\n' + Math.round(time.metro / 60) + ' mins by metro\n' + Math.round(time.walkFrom / 60) + ' mins on foot\nTOTAL: ' + Math.round(time.total / 60) + ' mins');
+            }
+            const outerOld: SVGPathElement|SVGLineElement = document.getElementById('o' + path[i]) as any;
+            if (outerOld === null) {
+                return foo(i + 1);
+            }
+            const innerOld: typeof outerOld = document.getElementById('i' + path[i]) as any;
+            const outer: typeof outerOld = outerOld.cloneNode(true) as any;
+            const inner: typeof outer = innerOld === null ? null : innerOld.cloneNode(true) as any;
+            document.getElementById('paths-outer').appendChild(outer);
+            if (inner) document.getElementById('paths-inner').appendChild(inner);
+            const length = outer instanceof SVGLineElement
+                ? L.point(Number(outer.x1), Number(outer.y1)).distanceTo(L.point(Number(outer.x2), Number(outer.y2)))
+                : outer['getTotalLength']();
+
+            const span = this.graph.spans[parseInt(path[i].slice(2))];
+            if (span.source !== platforms[i]) {
+                const points = svg.getBezierPath(outer).reverse();
+                console.log(points);
+                if (points.length === 4) {
+                    svg.setBezierPath(outer, points);
+                    if (inner) svg.setBezierPath(inner, points);
+                }
+            }
+            const duration = length;
+            outer.setAttribute('filter', 'url(#black-glow)');
+            for (let p of (inner === null ? [outer] : [outer, inner])) {
+                p.style.transition = null;
+                p.style.strokeDasharray = length + ' ' + length;
+                p.style.strokeDashoffset = length.toString();
+                p.style.opacity = null;
+                p.getBoundingClientRect();
+                p.style.transition = `stroke-dashoffset ${duration}ms linear`;
+                p.style.strokeDashoffset = '0';
+            }
+            setTimeout(() => {
+                outerOld.style.opacity = null;
+                outerOld.setAttribute('filter', 'url(#black-glow)');
+                document.getElementById('paths-outer').removeChild(outer);
+                if (inner) {
+                    innerOld.style.opacity = null;
+                    innerOld.setAttribute('filter', 'url(#black-glow)');
+                    if (inner) document.getElementById('paths-inner').removeChild(inner);
+                }
+                foo(i + 1);
+            }, duration);
+            console.log(outer);
+        };
+        foo(0);
+    }
+    
+    private shortestPath(p1: L.LatLng, p2: L.LatLng) {
+        const objects = this.graph.platforms;
+        // time to travel from station to the p1 location
+        const dist: number[] = [], timesOnFoot: number[] = [];
+        for (let o of objects) {
+            const distance = L.LatLng.prototype.distanceTo.call(p1, o.location);
+            const time = distance / (1.3 * 1.4);
+            dist.push(time);
+            timesOnFoot.push(L.LatLng.prototype.distanceTo.call(o.location, p2) / (1.3 * 1.4));
+        }
+        // pick the closest one so far
+        let currentIndex = objects.indexOf(geo.findClosestObject(p1, objects));
+        const objectSet = new Set<number>(objects.map((o, i) => i)),
+            prev = objects.map(i => null);
+        // time on foot between locations
+        const onFoot =  L.LatLng.prototype.distanceTo.call(p1, p2) / (1.3 * 1.4);
+        while (objectSet.size > 0) {
+            var minDist = Infinity;
+            objectSet.forEach(i => {
+                if (dist[i] < minDist) {
+                    currentIndex = i;
+                    minDist = dist[i];
+                }
+            });
+            const currentNode = objects[currentIndex];
+            objectSet.delete(currentIndex);
+            //console.log('current:', currentIndex, currentNode.name);
+            const neighborIndices: number[] = [],
+                neighbors: po.Platform[] = [],
+                times: number[] = [];
+            for (let i of currentNode.spans) {
+                const s = this.graph.spans[i];
+                const neighborIndex = currentIndex === s.source ? s.target : s.source;
+                if (!objectSet.has(neighborIndex)) continue;
+                const neighbor = objects[neighborIndex];
+                neighborIndices.push(neighborIndex);
+                neighbors.push(neighbor);
+                const distance = L.LatLng.prototype.distanceTo.call(currentNode.location, neighbor.location);
+                // TODO: lower priority for E-lines
+                const callTime = this.graph.routes[s.routes[0]].line.startsWith('E') ? 90 : 45;
+                times.push(util.timeToTravel(distance, 18, 1.4) + callTime);
+            }
+            // pain in the ass
+            const transferIndices = this.graph.transfers
+                .map((t, i) => i)
+                .filter(t => this.graph.transfers[t].source === currentIndex || this.graph.transfers[t].target === currentIndex);
+            for (let i of transferIndices) {
+                // TODO: make ALL platforms from the junction visible, not just the neighbors
+                // TODO: if transferring to an E-line, wait more
+                const t = this.graph.transfers[i];
+                const neighborIndex = currentIndex === t.source ? t.target : t.source;
+                if (!objectSet.has(neighborIndex)) continue;
+                const neighbor = objects[neighborIndex];
+                neighborIndices.push(neighborIndex);
+                neighbors.push(neighbor);
+                const distance = L.LatLng.prototype.distanceTo.call(currentNode.location, neighbor.location);
+                times.push(distance / (1.3 * 1.4) + 60); // variable time depending on the transfer's length
+            }
+            //console.log('neighbors: ', neighborIndices);
+            for (let i = 0; i < neighborIndices.length; ++i) {
+                const neighborIndex = neighborIndices[i],
+                    alt = dist[currentIndex] + times[i];
+                if (alt < dist[neighborIndex]) {
+                    dist[neighborIndex] = alt;
+                    prev[neighborIndex] = currentIndex;
+                }
+            }
+            const alt = dist[currentIndex] + timesOnFoot[currentIndex];
+        }
+        // find the shortest time & the exit station
+        let shortestTime = Infinity;
+        for (let i = 0; i < dist.length; ++i) {
+            const alt = dist[i] + timesOnFoot[i];
+            if (alt < shortestTime) {
+                shortestTime = alt;
+                currentIndex = i;
+            }
+        }
+        // if walking on foot is faster, then why take the underground?
+        if (onFoot < shortestTime) {
+            alert('walk on foot, lazybag');
+            throw new Error('on foot!');
+        }
+        const path: string[] = [],
+            platformPath = [currentIndex];
+        console.log('making path');
+        console.log(prev);
+        // remove later
+        let euristics = 0;
+        while (true) {
+            const currentNode = objects[currentIndex];
+            console.log('current', currentNode.name);
+            const prevIndex = prev[currentIndex];
+            if (prevIndex === null) break;
+            //console.log('prev', objects[prevIndex].name);
+            let p = '';
+            for (let i of currentNode.spans) {
+                const s = this.graph.spans[i];
+                if (s.source === currentIndex && s.target === prevIndex || s.target === currentIndex && s.source === prevIndex) {
+                    p = 'p-' + i;
+                    break;
+                }
+            }
+            if (p === '') {
+                for (let i = 0; i < this.graph.transfers.length; ++i) {
+                    const t = this.graph.transfers[i];
+                    if (t.source === currentIndex && t.target === prevIndex || t.target === currentIndex && t.source === prevIndex) {
+                        p = 't-' + i;
+                        break;
+                    }
+                }
+            }
+            path.push(p);
+            platformPath.push(prevIndex);
+            if (++euristics > objects.length) throw new Error('overflow!');
+            currentIndex = prevIndex;
+        }
+        console.log('returning');
+        platformPath.reverse();
+        path.reverse();
+        const walkFromTime = timesOnFoot[platformPath[platformPath.length - 1]];
+        const walkToTime = dist[platformPath[0]];
+        const metroTime = shortestTime - walkFromTime - walkToTime;
+        return {
+            platforms: platformPath,
+            path: path,
+            time: {
+                walkTo: walkToTime,
+                metro: metroTime,
+                walkFrom: walkFromTime,
+                total: shortestTime
+            }
+        };
     }
 }
 

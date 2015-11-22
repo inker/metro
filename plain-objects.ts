@@ -3,7 +3,7 @@ import L = require('leaflet');
 import * as graph from './metro-graph';
 
 //declare namespace Plain {
-export type Platform = {
+export interface Platform {
     name: string;
     altNames: graph.AltNames;
     station: number;

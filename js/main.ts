@@ -29,8 +29,8 @@ console.log('system: ' + navigator.systemLanguage);
 animated shortest path between stations
 E-line have terminuses (larger circles?)
 no pole, bigger
-colorful transfers
 circles in 4+ platforms
+resolve colorful transfers perfomance issue
 
 */
 /* TODO:

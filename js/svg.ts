@@ -1,6 +1,7 @@
 import L = require('leaflet');
 import * as po from '../plain-objects';
 import * as util from '../util';
+import * as geo from '../geo'
 
 export function createSVGElement(tagName: string): HTMLElement {
     return document.createElementNS('http://www.w3.org/2000/svg', tagName) as any;
@@ -22,11 +23,11 @@ export function makeArc(center: L.Point, start: L.Point, end: L.Point) {
 
 export function getBezierPath(path: Element) {
     const points: L.Point[] = [],
-        re = /\W([\d\.])\W.*?,\W*([\d\.])\W/g,
+        re = /\D([\d\.]+).*?,.*?([\d\.]+)/g,
         d = path.getAttribute('d');
     let m: RegExpExecArray;
     while ((m = re.exec(d)) !== null) {
-        points.push(new L.Point(Number[m[0]], Number(m[1])));
+        points.push(new L.Point(Number(m[1]), Number(m[2])));
     }
     return points;
 }
@@ -120,6 +121,22 @@ export function makeDropShadow() {
     return filter;
 }
 
+export function makeShadowGlow() {
+    const filter = createSVGElement('filter');
+    filter.id = 'black-glow';
+    filter.innerHTML = `<feColorMatrix type="matrix" values=
+            "0 0 0 0   0
+             0 0 0 0   0
+             0 0 0 0   0
+             0 0 0 0.3 0"/>
+        <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+        <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+        </feMerge>`;
+    return filter;
+}
+
 export function setGradientDirection(gradient: Element, vector: L.Point) {
     const coors = util.vectorToGradCoordinates(vector);
     gradient.setAttribute('x1', (1 - coors.x) * 50 + '%');
@@ -169,4 +186,7 @@ export function circleByDummy(dummy: Element): HTMLElement {
 export function platformByCircle(circle: Element, graph: po.Graph) {
     return graph.platforms[parseInt(circle.id.slice(2))];
 }
+
+
+
 
