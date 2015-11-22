@@ -183,7 +183,7 @@ export const lineRulesPromise = new Promise(resolve => {
     link.href = url;
     link.onload = e => {
         console.log(document.styleSheets.length);
-        const cssRules = (document.styleSheets[document.styleSheets.length] as CSSStyleSheet).cssRules,
+        const cssRules = (document.styleSheets[document.styleSheets.length - 1] as CSSStyleSheet).cssRules,
             lineRules = {};
         for (let i = 0; i < cssRules.length; ++i) {
             const rule = cssRules[i];
@@ -199,6 +199,7 @@ export const lineRulesPromise = new Promise(resolve => {
                 }
             }
         }
+        console.log('resolving');
         resolve(lineRules);
     }
     document.head.appendChild(link);

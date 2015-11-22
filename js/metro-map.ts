@@ -117,8 +117,11 @@ class MetroMap implements EventTarget {
         const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
         const els = document.querySelectorAll(selector) as any as HTMLElement[];
         for (let i = 0; i < els.length; ++i) {
-            els[i].style.opacity = null;
-            els[i].removeAttribute('filter');
+            const el = els[i];
+            el.style.opacity = null;
+            if (el.id.charAt(1) !== 't') {
+                el.removeAttribute('filter');
+            }
         }
     }
     
@@ -388,8 +391,9 @@ class MetroMap implements EventTarget {
 
         }
         
-        if (zoom > 11) {
-            util.lineRulesPromise.then(rules => {
+        
+        const transfersCreatedPromise = util.lineRulesPromise.then(rules => {
+            if (zoom > 11) {
                 for (let transferIndex = 0; transferIndex < this.graph.transfers.length; ++transferIndex) {
                     const transfer = this.graph.transfers[transferIndex];
                     let paths: HTMLElement[];
@@ -429,8 +433,9 @@ class MetroMap implements EventTarget {
                     docFrags['transfers-inner'].appendChild(paths[1]);
                     bind.transferToModel.call(this, transfer, paths);
                 }
-            });
-        }
+            }
+        });
+        
 
         for (let i = 0; i < this.graph.spans.length; ++i) {
             const [outer, inner] = this.makePath(i);
@@ -442,11 +447,12 @@ class MetroMap implements EventTarget {
             }
         }
         
-        for (let i of Object.keys(docFrags)) {
-            document.getElementById(i).appendChild(docFrags[i]);
-        }
-        
-        this.addBindings();
+        transfersCreatedPromise.then(() => {
+            for (let i of Object.keys(docFrags)) {
+                document.getElementById(i).appendChild(docFrags[i]);
+            }
+            this.addBindings();
+        });
     }
     
     private makeWhiskers(platformIndex: number): {} {
