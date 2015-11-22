@@ -4,6 +4,7 @@
   "description": "St Petersburg's future metro",
   "main": "bin/www",
   "dependencies": {
+    "alertifyjs": "latest",
     "body-parser": "latest",
     "classlist-polyfill": "latest",
     "es6-promise": "latest",

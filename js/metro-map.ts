@@ -389,27 +389,28 @@ class MetroMap implements EventTarget {
         }
         
         if (zoom > 11) {
-            this.graph.transfers.forEach((transfer, transferIndex) => {
-                let paths: HTMLElement[];
-                const pl1 = this.graph.platforms[transfer.source],
-                    pl2 = this.graph.platforms[transfer.target];
-                let pos1 = this.platformsOnSVG[transfer.source],
-                    pos2 = this.platformsOnSVG[transfer.target];
-                if (platformsInCircles.has(transfer.source) && platformsInCircles.has(transfer.target)) {
-                    const center = stationCircumCenters.get(pl1.station);
-                    paths = svg.makeTransferArc(center, pos1, pos2);
-                } else {
-                    // gradient disappearing fix (maybe use rectangle?)
-                    if (pos1.x === pos2.x) {
-                        pos2.x += 0.01;
-                    } else if (pos1.y === pos2.y) {
-                        pos2.y += 0.01;
+            util.lineRulesPromise.then(rules => {
+                for (let transferIndex = 0; transferIndex < this.graph.transfers.length; ++transferIndex) {
+                    const transfer = this.graph.transfers[transferIndex];
+                    let paths: HTMLElement[];
+                    const pl1 = this.graph.platforms[transfer.source],
+                        pl2 = this.graph.platforms[transfer.target];
+                    let pos1 = this.platformsOnSVG[transfer.source],
+                        pos2 = this.platformsOnSVG[transfer.target];
+                    if (platformsInCircles.has(transfer.source) && platformsInCircles.has(transfer.target)) {
+                        const center = stationCircumCenters.get(pl1.station);
+                        paths = svg.makeTransferArc(center, pos1, pos2);
+                    } else {
+                        // gradient disappearing fix (maybe use rectangle?)
+                        if (pos1.x === pos2.x) {
+                            pos2.x += 0.01;
+                        } else if (pos1.y === pos2.y) {
+                            pos2.y += 0.01;
+                        }
+                        paths = svg.makeTransfer(pos1, pos2);
                     }
-                    paths = svg.makeTransfer(pos1, pos2);
-                }
-                paths[0].id = 'ot-' + transferIndex;
-                paths[1].id = 'it-' + transferIndex;
-                util.lineRulesPromise.then(rules => {
+                    paths[0].id = 'ot-' + transferIndex;
+                    paths[1].id = 'it-' + transferIndex;
                     const colors = [pl1, pl2].map(p => {
                         const span = this.graph.spans[p.spans[0]];
                         const routes = span.routes.map(n => this.graph.routes[n]);
@@ -427,7 +428,7 @@ class MetroMap implements EventTarget {
                     docFrags['transfers-outer'].appendChild(paths[0]);
                     docFrags['transfers-inner'].appendChild(paths[1]);
                     bind.transferToModel.call(this, transfer, paths);
-                })
+                }
             });
         }
 
