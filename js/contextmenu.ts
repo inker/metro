@@ -2,10 +2,9 @@ import MetroMap from './metro-map';
 import * as util from '../util';
 import * as svg from './svg';
 
-const lang = util.getUserLanguage();
-//const options = lang === 'ru' ? ['Otśuda', 'Śuda', 'Očistiť maršrut']
-//    : lang === 'fi' ? ['Tältä', 'Tänne', 'Tyhjennä reitti']
-//    : ['From here', 'To here', 'Clear route'];
+let lang = util.getUserLanguage();
+if (lang !== 'ru' && lang !== 'fi') lang = 'en';
+
 const options = {
     'fromclick': { ru: 'Otśuda', fi: 'Tältä', en: 'From here' },
     'toclick': { ru: 'Śuda', fi: 'Tänne', en: 'To here' },
