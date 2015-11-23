@@ -1,12 +1,11 @@
 /// <reference path="../typings/tsd.d.ts" />
-import L = require('leaflet');
+import * as L from 'leaflet';
 const alertify = require('alertifyjs');
-import * as svg from './svg';
 import * as util from '../util';
+import * as svg from './svg';
 import * as po from '../plain-objects';
 import * as addons from './addons';
 import * as graph from '../metro-graph';
-import * as geo from '../geo';
 import * as bind from './bind';
 import MapEditor from './mapeditor';
 import TextPlate from './textplate';
@@ -568,7 +567,7 @@ class MetroMap implements EventTarget {
     visualizeShortestPath(departure: L.LatLng, arrival: L.LatLng) {
         this.resetStyle();
         alertify.dismissAll();
-        const sp = this.shortestPath(departure, arrival);
+        const sp = util.shortestPath(this.graph, departure, arrival);
         if (typeof sp === 'number') {
             return alertify.error(`walk on foot, lazybones!`);
         }
@@ -612,9 +611,9 @@ class MetroMap implements EventTarget {
             outer.setAttribute('filter', 'url(#black-glow)');
             for (let p of (inner === null ? [outer] : [outer, inner])) {
                 p.style.transition = null;
+                p.style.opacity = null;
                 p.style.strokeDasharray = length + ' ' + length;
                 p.style.strokeDashoffset = length.toString();
-                p.style.opacity = null;
                 p.getBoundingClientRect();
                 p.style.transition = `stroke-dashoffset ${duration}ms linear`;
                 p.style.strokeDashoffset = '0';
@@ -633,140 +632,6 @@ class MetroMap implements EventTarget {
             console.log(outer);
         };
         foo(0);
-    }
-    
-    private shortestPath(p1: L.LatLng, p2: L.LatLng): any {
-        const objects = this.graph.platforms;
-        // time to travel from station to the p1 location
-        const dist: number[] = [], timesOnFoot: number[] = [];
-        for (let o of objects) {
-            const distance = L.LatLng.prototype.distanceTo.call(p1, o.location);
-            const time = distance / (1.3 * 1.4);
-            dist.push(time);
-            timesOnFoot.push(L.LatLng.prototype.distanceTo.call(o.location, p2) / (1.3 * 1.4));
-        }
-        // pick the closest one so far
-        let currentIndex = objects.indexOf(geo.findClosestObject(p1, objects));
-        const objectSet = new Set<number>(objects.map((o, i) => i)),
-            prev = objects.map(i => null);
-        // time on foot between locations
-        const onFoot =  L.LatLng.prototype.distanceTo.call(p1, p2) / (1.3 * 1.4);
-        while (objectSet.size > 0) {
-            var minDist = Infinity;
-            objectSet.forEach(i => {
-                if (dist[i] < minDist) {
-                    currentIndex = i;
-                    minDist = dist[i];
-                }
-            });
-            const currentNode = objects[currentIndex];
-            objectSet.delete(currentIndex);
-            //console.log('current:', currentIndex, currentNode.name);
-            const neighborIndices: number[] = [],
-                neighbors: po.Platform[] = [],
-                times: number[] = [];
-            for (let i of currentNode.spans) {
-                const s = this.graph.spans[i];
-                const neighborIndex = currentIndex === s.source ? s.target : s.source;
-                if (!objectSet.has(neighborIndex)) continue;
-                const neighbor = objects[neighborIndex];
-                neighborIndices.push(neighborIndex);
-                neighbors.push(neighbor);
-                const distance = L.LatLng.prototype.distanceTo.call(currentNode.location, neighbor.location);
-                // TODO: lower priority for E-lines
-                const callTime = this.graph.routes[s.routes[0]].line.startsWith('E') ? 90 : 45;
-                times.push(util.timeToTravel(distance, 18, 1.4) + callTime);
-            }
-            // pain in the ass
-            const transferIndices = this.graph.transfers
-                .map((t, i) => i)
-                .filter(t => this.graph.transfers[t].source === currentIndex || this.graph.transfers[t].target === currentIndex);
-            for (let i of transferIndices) {
-                // TODO: make ALL platforms from the junction visible, not just the neighbors
-                // TODO: if transferring to an E-line, wait more
-                const t = this.graph.transfers[i];
-                const neighborIndex = currentIndex === t.source ? t.target : t.source;
-                if (!objectSet.has(neighborIndex)) continue;
-                const neighbor = objects[neighborIndex];
-                neighborIndices.push(neighborIndex);
-                neighbors.push(neighbor);
-                const distance = L.LatLng.prototype.distanceTo.call(currentNode.location, neighbor.location);
-                times.push(distance / (1.3 * 1.4) + 60); // variable time depending on the transfer's length
-            }
-            //console.log('neighbors: ', neighborIndices);
-            for (let i = 0; i < neighborIndices.length; ++i) {
-                const neighborIndex = neighborIndices[i],
-                    alt = dist[currentIndex] + times[i];
-                if (alt < dist[neighborIndex]) {
-                    dist[neighborIndex] = alt;
-                    prev[neighborIndex] = currentIndex;
-                }
-            }
-            const alt = dist[currentIndex] + timesOnFoot[currentIndex];
-        }
-        // find the shortest time & the exit station
-        let shortestTime = Infinity;
-        for (let i = 0; i < dist.length; ++i) {
-            const alt = dist[i] + timesOnFoot[i];
-            if (alt < shortestTime) {
-                shortestTime = alt;
-                currentIndex = i;
-            }
-        }
-        // if walking on foot is faster, then why take the underground?
-        if (onFoot < shortestTime) {
-            return onFoot;
-        }
-        const path: string[] = [],
-            platformPath = [currentIndex];
-        console.log('making path');
-        console.log(prev);
-        // remove later
-        let euristics = 0;
-        while (true) {
-            const currentNode = objects[currentIndex];
-            console.log('current', currentNode.name);
-            const prevIndex = prev[currentIndex];
-            if (prevIndex === null) break;
-            //console.log('prev', objects[prevIndex].name);
-            let p = '';
-            for (let i of currentNode.spans) {
-                const s = this.graph.spans[i];
-                if (s.source === currentIndex && s.target === prevIndex || s.target === currentIndex && s.source === prevIndex) {
-                    p = 'p-' + i;
-                    break;
-                }
-            }
-            if (p === '') {
-                for (let i = 0; i < this.graph.transfers.length; ++i) {
-                    const t = this.graph.transfers[i];
-                    if (t.source === currentIndex && t.target === prevIndex || t.target === currentIndex && t.source === prevIndex) {
-                        p = 't-' + i;
-                        break;
-                    }
-                }
-            }
-            path.push(p);
-            platformPath.push(prevIndex);
-            if (++euristics > objects.length) throw new Error('overflow!');
-            currentIndex = prevIndex;
-        }
-        console.log('returning');
-        platformPath.reverse();
-        path.reverse();
-        const walkFromTime = timesOnFoot[platformPath[platformPath.length - 1]];
-        const walkToTime = dist[platformPath[0]];
-        const metroTime = shortestTime - walkFromTime - walkToTime;
-        return {
-            platforms: platformPath,
-            path: path,
-            time: {
-                walkTo: walkToTime,
-                metro: metroTime,
-                walkFrom: walkFromTime,
-                total: shortestTime
-            }
-        };
     }
 }
 
