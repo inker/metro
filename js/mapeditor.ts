@@ -1,5 +1,5 @@
 import MetroMap from './metro-map';
-import * as util from '../util';
+import * as util from './util';
 import * as svg from './svg';
 
 export default class MapEditor {

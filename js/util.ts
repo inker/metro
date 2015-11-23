@@ -1,30 +1,6 @@
-/// <reference path="./typings/tsd.d.ts" />
-
-'use strict';
-
-import L = require('leaflet');
+import * as L from 'leaflet';
 import { findClosestObject } from './geo';
 import * as po from './plain-objects';
-
-export function diffByOne(a: string, b: string): boolean {
-    if (a === '' || b === '' || a.length !== b.length) return false;
-    let diff = 0;
-    for (let i = 0, j = 0, diff = 0; i < a.length && j < b.length; ++i, ++j) {
-        if (a[i] != b[j]) {
-            if (++diff > 1) return false;
-            if (a[i + 1] === b[j]) {
-                ++i;
-            } else if (a[i] === b[j + 1]) {
-                ++j;
-            } else if (a[i + 1] === b[j + 1]) {
-                ++i; //
-                ++j;
-            }
-        }
-    }
-    return diff === 1;
-}
-
 
 export function getUserLanguage(): string {
     return (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();

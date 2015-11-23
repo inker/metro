@@ -1,8 +1,6 @@
-/// <reference path="./typings/tsd.d.ts" />
-import L = require('leaflet');
-import * as graph from './metro-graph';
+import * as L from 'leaflet';
+import * as graph from '../metro-graph';
 
-//declare namespace Plain {
 export interface Platform {
     name: string;
     altNames: graph.AltNames;
@@ -57,7 +55,3 @@ export type Hints = {
     englishNames: any;
     elevationSegments: any;
 }
-//}
-
-//export default Plain;
-//export = Plain;

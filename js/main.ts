@@ -1,6 +1,5 @@
 import MetroMap from './metro-map';
-import * as util from '../util';
-//import MetroMap from './metro-map';
+import * as util from './util';
 
 if (L.Browser.ie) {
     alert("Does not work in IE (yet)");

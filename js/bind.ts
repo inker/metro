@@ -1,7 +1,7 @@
-import L = require('leaflet');
+import * as L from 'leaflet';
 import * as svg from './svg';
-import * as util from '../util';
-import * as po from '../plain-objects';
+import * as util from './util';
+import * as po from './plain-objects';
 
 export function transferToModel(transfer: po.Transfer, elements: Element[]) {
     const cached =  [transfer.source, transfer.target];

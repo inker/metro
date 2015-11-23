@@ -1,10 +1,6 @@
-/**
- * Created by vesel on 12/11/2015.
- */
-
 import * as svg from './svg';
-import * as util from '../util';
-import * as po from '../plain-objects';
+import * as util from './util';
+import * as po from './plain-objects';
     
 export default class TextPlate {
     private _element: HTMLElement;

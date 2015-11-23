@@ -1,6 +1,5 @@
 import MetroMap from './metro-map';
-import * as util from '../util';
-import * as svg from './svg';
+import * as util from './util';
 
 let lang = util.getUserLanguage();
 if (lang !== 'ru' && lang !== 'fi') lang = 'en';

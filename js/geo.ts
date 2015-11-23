@@ -1,8 +1,4 @@
-/// <reference path="./typings/tsd.d.ts" />
-'use strict';
-
-import L = require('leaflet');
-import Yadapter from './fetch-adapters/yadapter';
+import * as L from 'leaflet';
 
 /** object must contain the 'location' field */
 type HavingLocation = {

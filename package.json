@@ -5,15 +5,11 @@
   "main": "bin/www",
   "dependencies": {
     "alertifyjs": "latest",
-    "body-parser": "latest",
     "classlist-polyfill": "latest",
     "es6-promise": "latest",
     "es6-set": "latest",
     "express": "latest",
     "leaflet": "latest",
-    "libxmljs": "latest",
-    "reflect-metadata": "latest",
-    "request": "latest",
     "whatwg-fetch": "latest"
   },
   "devDependencies": {

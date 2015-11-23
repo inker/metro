@@ -1,5 +1,4 @@
-/// <reference path="./../typings/tsd.d.ts" />
-import L = require('leaflet');
+import * as L from 'leaflet';
 
 const tileLayers = {
     Mapbox: new L.TileLayer('https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png', {

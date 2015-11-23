@@ -1,9 +1,9 @@
 'use strict';
 /// <reference path="./typings/tsd.d.ts" />
 import L = require('leaflet');
-import * as util from './util';
-import * as po from './plain-objects';
-import * as geo from './geo';
+import * as util from './js/util';
+import * as po from './js/plain-objects';
+import * as geo from './js/geo';
 
 export type AltNames = { old?: string } | any;
     

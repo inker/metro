@@ -1,5 +1,4 @@
-/// <reference path="./../typings/tsd.d.ts" />
-function addPolyfills () {
+export default function () {
     if (!('Promise' in window) || !('then' in Promise.prototype) || !('catch' in Promise.prototype)) {
         console.log('promises not present, using a polyfill');
         require('es6-promise').polyfill();
@@ -39,5 +38,3 @@ function addPolyfills () {
     }
     
 }
-
-export default addPolyfills;

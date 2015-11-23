@@ -1,9 +1,8 @@
-/// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 const alertify = require('alertifyjs');
-import * as util from '../util';
+import * as util from './util';
 import * as svg from './svg';
-import * as po from '../plain-objects';
+import * as po from './plain-objects';
 import * as addons from './addons';
 import * as graph from '../metro-graph';
 import * as bind from './bind';

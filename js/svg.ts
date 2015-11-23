@@ -1,7 +1,7 @@
-import L = require('leaflet');
-import * as po from '../plain-objects';
-import * as util from '../util';
-import * as geo from '../geo'
+import * as L from 'leaflet';
+import * as po from './plain-objects';
+import * as util from './util';
+import * as geo from './geo';
 
 export function createSVGElement(tagName: string): HTMLElement {
     return document.createElementNS('http://www.w3.org/2000/svg', tagName) as any;
