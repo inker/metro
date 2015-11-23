@@ -45,19 +45,15 @@ gulp.task('server-transpile-merge-compress', () => {
 
 gulp.task('client-transpile-merge-compress', () => {
     browserify()
-        //.external(['leaflet'])
         // add the main file (could be in browserify as a parameter)
-        .add('./js/main.js')
         // transform by babel
-        .transform(babelify)
+        .transform(babelify, {presets: ["es2015"]})
+            .require('./js/main.js', { entry: true})
         // make the bundler believe the <script>'d leaflet is a module without bundling it
-        .transform(literalify.configure({
-            // map module names with global objects
-            'leaflet': 'window.L'
-        }))
-        //.on('prebundle', function(bundle) {
-        //    bundle.external('leaflet');
-        //})
+        //.transform(literalify.configure({
+        //    // map module names with global objects
+        //    'leaflet': 'window.L'
+        //}))
         // build it
         .bundle()
         // writes to bundle.js

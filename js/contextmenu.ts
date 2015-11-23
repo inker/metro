@@ -1,3 +1,4 @@
+import * as L from 'leaflet';
 import MetroMap from './metro-map';
 import * as util from './util';
 
@@ -18,9 +19,12 @@ export default class ContextMenu {
     }
     set state(state: boolean) {
         if (state) return;
-        document.body.removeChild(document.getElementById('contextmenu'));
+        const menuElement = document.getElementById('contextmenu');
+        if (menuElement === null) return;
+        document.body.removeChild(menuElement);
     }
     constructor(metroMap: MetroMap) {
+        console.log('adding context menu');
         this.metroMap = metroMap;
         metroMap.getOverlay().addEventListener('contextmenu', event => {
             event.preventDefault();
@@ -44,13 +48,13 @@ export default class ContextMenu {
                     };
                     metroMap.dispatchEvent(new MouseEvent(cell.getAttribute('data-event'), dict));
                     this.state = false;
-                }
-                
+                };
                 table.id = 'contextmenu';
                 table.style.position = 'absolute';
                 document.body.appendChild(table);
                 this.state = true;
             }
+
             table.style.left = pos.x + 'px';
             table.style.top = pos.y + 'px';
             return false;

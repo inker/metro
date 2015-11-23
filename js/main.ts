@@ -25,7 +25,6 @@ console.log('browser: ' + navigator.browserLanguage);
 console.log('system: ' + navigator.systemLanguage);
 
 /* TODO:
-animated shortest path between stations
 E-line have terminuses (larger circles?)
 no pole, bigger
 circles in 4+ platforms

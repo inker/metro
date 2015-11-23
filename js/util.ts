@@ -35,6 +35,18 @@ export function getCircumcenter(positions: L.Point[]): L.Point {
         .add(positions[0]);
 }
 
+export function resetStyle() {
+    const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
+    const els = document.querySelectorAll(selector);
+    for (let i = 0; i < els.length; ++i) {
+        const el: HTMLElement = els[i] as any;
+        el.style.opacity = null;
+        if (el.id.charAt(1) !== 't') {
+            el.removeAttribute('filter');
+        }
+    }
+}
+
 export function getSVGDataset(el: Element): any {
     // for webkit-based browsers
     if ('dataset' in el) {
@@ -152,15 +164,16 @@ export function vectorToGradCoordinates(vector: L.Point) {
     return vector.divideBy(x < y ? y : x);
 }
 
-export const lineRulesPromise = new Promise(resolve => {
-    const url = "css/style.css",
+export const lineRulesPromise = new Promise<{}>(resolve => {
+    const url = 'css/style.css',
         link = document.createElement('link');
-    link.type = "text/css";
-    link.rel = "stylesheet";
+    link.type = 'text/css';
+    link.rel = 'stylesheet';
     link.href = url;
     link.onload = e => {
-        console.log(document.styleSheets.length);
-        const cssRules = (document.styleSheets[document.styleSheets.length - 1] as CSSStyleSheet).cssRules,
+        //const styleSheet: CSSStyleSheet = [].find.call(document.styleSheets, ss => ss.href.endsWith(url));
+        const styleSheet: CSSStyleSheet = link.sheet as any;
+        const cssRules = styleSheet.cssRules,
             lineRules = {};
         for (let i = 0; i < cssRules.length; ++i) {
             const rule = cssRules[i];
@@ -176,9 +189,8 @@ export const lineRulesPromise = new Promise(resolve => {
                 }
             }
         }
-        console.log('resolving');
         resolve(lineRules);
-    }
+    };
     document.head.appendChild(link);
 });
 

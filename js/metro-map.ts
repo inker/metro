@@ -10,8 +10,9 @@ import MapEditor from './mapeditor';
 import TextPlate from './textplate';
 import ContextMenu from './contextmenu';
 
-class MetroMap implements EventTarget {
-    
+L.Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images';
+
+export default class MetroMap implements EventTarget {
     private map: L.Map;
     private overlay: HTMLElement;
     private graph: po.Graph;
@@ -26,6 +27,8 @@ class MetroMap implements EventTarget {
     
     private fromMarker = new L.Marker([0, 0]);
     private toMarker = new L.Marker([0, 0]);
+    
+    private lineRules: {};
     
     getMap(): L.Map {
         return this.map;
@@ -65,7 +68,7 @@ class MetroMap implements EventTarget {
         console.log(tileLayers[Object.keys(tileLayers)[0]][0]);
         tileLayers[Object.keys(tileLayers)[0]].addTo(this.map);
         
-        new addons.LayerControl(tileLayers).addTo(this.map);
+        //new addons.LayerControl(tileLayers).addTo(this.map);
         
         console.log('map should be created by now');
         this.overlay = document.getElementById('overlay');
@@ -77,11 +80,14 @@ class MetroMap implements EventTarget {
             .catch(errText => alert(errText))
             .then(graphJson => this.extendBounds()) // because the previous assignment returns json
             .then(() => hintsPromise)
-            .then(hintsJson => this.redrawNetwork())
+            .then(hintsJson => util.lineRulesPromise)
+            .then(lineRules => this.lineRules = lineRules)
+            .then(lineRules => this.redrawNetwork())
             // TODO: fix the kludge making the grey area disappear
             .then(() => this.map.invalidateSize(false))
             .then(() => this.resetMapView())
             .then(() => this.map.addLayer(this.fromMarker).addLayer(this.toMarker))
+            //.catch(err => console.error(err))
             .then(() => this.fixFontRendering())
             .then(() => dataPromise)
             .then(() => new MapEditor(this))
@@ -100,7 +106,7 @@ class MetroMap implements EventTarget {
         if (event.type === 'clearroute') {
             this.fromMarker.setLatLng([0, 0]);
             this.toMarker.setLatLng([0, 0]);
-            this.resetStyle();
+            util.resetStyle();
             alertify.dismissAll();
             this.fixFontRendering();
             return;
@@ -110,18 +116,6 @@ class MetroMap implements EventTarget {
     }
     
     removeEventListener(type: string, listener: EventListener) { }
-    
-    private resetStyle() {
-        const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
-        const els = document.querySelectorAll(selector) as any as HTMLElement[];
-        for (let i = 0; i < els.length; ++i) {
-            const el = els[i];
-            el.style.opacity = null;
-            if (el.id.charAt(1) !== 't') {
-                el.removeAttribute('filter');
-            }
-        }
-    }
     
     private handleMenuFromTo(e: MouseEvent) {
         const clientPos = new L.Point(e.clientX, e.clientY);
@@ -240,8 +234,6 @@ class MetroMap implements EventTarget {
             bind.platformToModel.call(this, i, [circle, dummyCircle]);
         }
     }
-    
-    
 
     /**
      *
@@ -288,7 +280,7 @@ class MetroMap implements EventTarget {
      *  12 - lines (2.5px), platforms (2+1px) & transfers (2px)
      *  ...
      */
-    private redrawNetwork(): void {
+    private redrawNetwork() {
         this.fromMarker.setLatLng([0, 0]);
         this.toMarker.setLatLng([0, 0]);
         this.resetOverlayStructure();
@@ -389,52 +381,46 @@ class MetroMap implements EventTarget {
 
         }
         
-        
-        const transfersCreatedPromise = util.lineRulesPromise.then(rules => {
-            if (zoom > 11) {
-                for (let transferIndex = 0; transferIndex < this.graph.transfers.length; ++transferIndex) {
-                    const transfer = this.graph.transfers[transferIndex];
-                    let paths: HTMLElement[];
-                    const pl1 = this.graph.platforms[transfer.source],
-                        pl2 = this.graph.platforms[transfer.target];
-                    let pos1 = this.platformsOnSVG[transfer.source],
-                        pos2 = this.platformsOnSVG[transfer.target];
-                    if (platformsInCircles.has(transfer.source) && platformsInCircles.has(transfer.target)) {
-                        const center = stationCircumCenters.get(pl1.station);
-                        paths = svg.makeTransferArc(center, pos1, pos2);
-                    } else {
-                        // gradient disappearing fix (maybe use rectangle?)
-                        if (pos1.x === pos2.x) {
-                            pos2.x += 0.01;
-                        } else if (pos1.y === pos2.y) {
-                            pos2.y += 0.01;
-                        }
-                        paths = svg.makeTransfer(pos1, pos2);
+        if (zoom > 11) {
+            for (let transferIndex = 0; transferIndex < this.graph.transfers.length; ++transferIndex) {
+                const transfer = this.graph.transfers[transferIndex];
+                let paths: HTMLElement[];
+                const pl1 = this.graph.platforms[transfer.source],
+                    pl2 = this.graph.platforms[transfer.target];
+                const pos1 = this.platformsOnSVG[transfer.source],
+                    pos2 = this.platformsOnSVG[transfer.target];
+                if (platformsInCircles.has(transfer.source) && platformsInCircles.has(transfer.target)) {
+                    const center = stationCircumCenters.get(pl1.station);
+                    paths = svg.makeTransferArc(center, pos1, pos2);
+                } else {
+                    // gradient disappearing fix (maybe use rectangle?)
+                    if (pos1.x === pos2.x) {
+                        pos2.x += 0.01;
+                    } else if (pos1.y === pos2.y) {
+                        pos2.y += 0.01;
                     }
-                    paths[0].id = 'ot-' + transferIndex;
-                    paths[1].id = 'it-' + transferIndex;
-                    const colors = [pl1, pl2].map(p => {
-                        const span = this.graph.spans[p.spans[0]];
-                        const routes = span.routes.map(n => this.graph.routes[n]);
-                        const [lineId, lineType, lineNum] = routes[0].line.match(/([MEL])(\d{0,2})/);
-                        return rules[lineType === 'L' ? lineType : lineId];
-                    });
-                    ///console.log(docFrags['station-circles'][transfer.so]);
-                    //const colors = [transfer.source, transfer.target].map(i => getComputedStyle(docFrags['station-circles'].childNodes[i] as Element, null).getPropertyValue('stroke'));
-                    const circlePortion = (circleRadius + circleBorder / 2) / pos1.distanceTo(pos2);
-                    const gradient = svg.makeGradient(pos2.subtract(pos1), colors, circlePortion);
-                    gradient.id = 'g-' + transferIndex;
-                    const defs = document.getElementsByTagName('defs')[0];
-                    defs.appendChild(gradient);
-                    paths[0].style.stroke = `url(#${gradient.id})`;
-                    docFrags['transfers-outer'].appendChild(paths[0]);
-                    docFrags['transfers-inner'].appendChild(paths[1]);
-                    bind.transferToModel.call(this, transfer, paths);
+                    paths = svg.makeTransfer(pos1, pos2);
                 }
+                paths[0].id = 'ot-' + transferIndex;
+                paths[1].id = 'it-' + transferIndex;
+                const colors = [pl1, pl2].map(p => {
+                    const span = this.graph.spans[p.spans[0]];
+                    const routes = span.routes.map(n => this.graph.routes[n]);
+                    const [lineId, lineType, lineNum] = routes[0].line.match(/([MEL])(\d{0,2})/);
+                    return this.lineRules[lineType === 'L' ? lineType : lineId];
+                });
+                //const colors = [transfer.source, transfer.target].map(i => getComputedStyle(docFrags['station-circles'].childNodes[i] as Element, null).getPropertyValue('stroke'));
+                const circlePortion = (circleRadius + circleBorder / 2) / pos1.distanceTo(pos2);
+                const gradient = svg.makeGradient(pos2.subtract(pos1), colors, circlePortion);
+                gradient.id = 'g-' + transferIndex;
+                const defs = document.getElementsByTagName('defs')[0];
+                defs.appendChild(gradient);
+                paths[0].style.stroke = `url(#${gradient.id})`;
+                docFrags['transfers-outer'].appendChild(paths[0]);
+                docFrags['transfers-inner'].appendChild(paths[1]);
+                bind.transferToModel.call(this, transfer, paths);
             }
-        });
-        
-
+        }
         for (let i = 0; i < this.graph.spans.length; ++i) {
             const [outer, inner] = this.makePath(i);
             docFrags['paths-outer'].appendChild(outer);
@@ -444,13 +430,11 @@ class MetroMap implements EventTarget {
                 outer.style.strokeWidth = lineWidth * 0.75 + 'px';
             }
         }
-        
-        transfersCreatedPromise.then(() => {
-            for (let i of Object.keys(docFrags)) {
-                document.getElementById(i).appendChild(docFrags[i]);
-            }
-            this.addBindings();
-        });
+
+        for (let i of Object.keys(docFrags)) {
+            document.getElementById(i).appendChild(docFrags[i]);
+        }
+        this.addBindings();
     }
     
     private makeWhiskers(platformIndex: number): {} {
@@ -564,7 +548,7 @@ class MetroMap implements EventTarget {
     }
 
     visualizeShortestPath(departure: L.LatLng, arrival: L.LatLng) {
-        this.resetStyle();
+        util.resetStyle();
         alertify.dismissAll();
         const sp = util.shortestPath(this.graph, departure, arrival);
         if (typeof sp === 'number') {
@@ -633,5 +617,3 @@ class MetroMap implements EventTarget {
         foo(0);
     }
 }
-
-export default MetroMap;

@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "babelify": "latest",
+    "babel-preset-es2015": "latest",
     "browserify": "latest",
     "gulp": "latest",
     "gulp-uglify": "latest",
