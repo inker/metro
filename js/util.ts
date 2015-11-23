@@ -164,35 +164,34 @@ export function vectorToGradCoordinates(vector: L.Point) {
     return vector.divideBy(x < y ? y : x);
 }
 
-export const lineRulesPromise = new Promise<{}>(resolve => {
-    const url = 'css/style.css',
-        link = document.createElement('link');
-    link.type = 'text/css';
-    link.rel = 'stylesheet';
-    link.href = url;
-    link.onload = e => {
-        //const styleSheet: CSSStyleSheet = [].find.call(document.styleSheets, ss => ss.href.endsWith(url));
-        const styleSheet: CSSStyleSheet = link.sheet as any;
-        const cssRules = styleSheet.cssRules,
-            lineRules = {};
-        for (let i = 0; i < cssRules.length; ++i) {
-            const rule = cssRules[i];
-            if (rule instanceof CSSStyleRule) {
-                const selector = rule.selectorText;
-                if (selector === '#paths-outer .E') {
-                    lineRules['E'] = rule.style.stroke;
-                } else {
-                    const matches = selector.match(/\.(M\d+|L)/);
-                    if (matches) {
-                        lineRules[matches[1]] = rule.style.stroke;
-                    }
+export const lineRulesPromise = new Promise<CSSStyleSheet>(resolve => {
+    const link: HTMLLinkElement = document.querySelector(`[href$="css/style.css"]`) as any;
+    if (link.sheet && (link.sheet as CSSStyleSheet).cssRules) {
+        console.log('already loaded');
+        resolve(link.sheet as CSSStyleSheet);
+    } else {
+        console.log('waiting to load');
+        link.onload = e => resolve(link.sheet as CSSStyleSheet);
+    }
+}).then(styleSheet => {
+    const cssRules = styleSheet.cssRules,
+        lineRules = {};
+    for (let i = 0; i < cssRules.length; ++i) {
+        const rule = cssRules[i];
+        if (rule instanceof CSSStyleRule) {
+            const selector = rule.selectorText;
+            if (selector === '#paths-outer .E') {
+                lineRules['E'] = rule.style.stroke;
+            } else {
+                const matches = selector.match(/\.(M\d+|L)/);
+                if (matches) {
+                    lineRules[matches[1]] = rule.style.stroke;
                 }
             }
         }
-        resolve(lineRules);
-    };
-    document.head.appendChild(link);
-});
+    }
+    return lineRules;
+})
 
 /**
  * 
