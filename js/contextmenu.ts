@@ -47,23 +47,24 @@ export default class ContextMenu {
                     cell.innerHTML = `${option[lang]}`;
                 });
 
-                table.onclick = e => {
-                    const cell: HTMLTableCellElement = e.target as any;
-                    const dict = {
-                        clientX: event.clientX,
-                        clientY: event.clientY
-                    };
-                    const eventType = cell.getAttribute('data-event');
-                    if (eventType) {
-                        metroMap.dispatchEvent(new MouseEvent(eventType, dict));
-                        this.state = false;
-                    }
-                };
                 table.id = 'contextmenu';
                 table.style.position = 'absolute';
                 document.body.appendChild(table);
                 this.state = true;
             }
+            // defined here so that the marker gets set here (TODO: fix later)
+            table.onclick = e => {
+                const cell: HTMLTableCellElement = e.target as any;
+                const dict = {
+                    clientX: event.clientX,
+                    clientY: event.clientY
+                };
+                const eventType = cell.getAttribute('data-event');
+                if (eventType) {
+                    metroMap.dispatchEvent(new MouseEvent(eventType, dict));
+                    this.state = false;
+                }
+            };
             
             const { width, height } = table.getBoundingClientRect();
             const { clientWidth, clientHeight } = document.documentElement;
