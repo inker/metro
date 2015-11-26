@@ -114,12 +114,18 @@ export function makeDropShadow() {
     filter.setAttribute('width', '200%');
     filter.setAttribute('height', '200%');
     filter.innerHTML = `
-        <feOffset result="offOut" in="SourceAlpha" dx="0" dy="2" />
-        <feGaussianBlur result="blurOut" in="offOut" stdDeviation="2" />
+        <feOffset result="offOut" in="SourceAlpha" dx="0" dy="4" />
+        <feColorMatrix result="matrixOut" in="offOut" type="matrix" values=
+            "0 0 0 0   0
+             0 0 0 0   0
+             0 0 0 0   0
+             0 0 0 0.5 0"/>
+        <feGaussianBlur result="blurOut" in="matrixOut" stdDeviation="2" />
+
         <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
     `;
     return filter;
-}
+} 
 
 export function makeShadowGlow() {
     const filter = createSVGElement('filter');
@@ -162,7 +168,7 @@ export function removeGradients() {
     const transfers = document.getElementById('transfers-outer').children;
     if (transfers) {
         for (let i = 0; i < transfers.length; ++i) {
-            (transfers[i] as HTMLElement).style.stroke = null;
+            (transfers[i] as HTMLElement).style.stroke = '#888888';
         }
     }
 }
@@ -175,6 +181,20 @@ export function addGradients() {
             (transfer as HTMLElement).style.stroke = `url(#g-${i})`;
         }
     }
+}
+
+export function pulsateCircle(circle: HTMLElement, scaleFactor: number, duration: number) {
+    circle.getBoundingClientRect();
+    circle.style.transition = `transform ${duration / 2}ms linear`;
+    circle.style.transform = `translate(${-circle.getAttribute('cx') * (scaleFactor - 1)}px, ${-circle.getAttribute('cy') * (scaleFactor - 1)}px) scale(${scaleFactor}, ${scaleFactor})`;
+    setTimeout(() => {
+        circle.style.transform = `scale(1, 1)`;
+        // just in case the element has not been transformed
+        setTimeout(() => {
+            circle.style.transition = null;
+            circle.style.transform = null;
+        }, duration);
+    }, duration / 2);   
 }
 
 

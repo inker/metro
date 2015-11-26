@@ -6,9 +6,10 @@ let lang = util.getUserLanguage();
 if (lang !== 'ru' && lang !== 'fi') lang = 'en';
 
 const options = {
-    'fromclick': { ru: 'Otśuda', fi: 'Tältä', en: 'From here' },
-    'toclick': { ru: 'Śuda', fi: 'Tänne', en: 'To here' },
-    'clearroute': { ru: 'Očistiť maršrut', fi: 'Tyhjennä reitti', en: 'Clear route' }
+    'fromclick': { icon: 'add location', ru: 'Otśuda', fi: 'Tältä', en: 'From here' },
+    'toclick': { icon: 'directions', ru: 'Śuda', fi: 'Tänne', en: 'To here' },
+    'clearroute': { icon: 'layers clear', ru: 'Očistiť maršrut', fi: 'Tyhjennä reitti', en: 'Clear route' },
+    'showheatmap': { icon: 'blur on', disabled: true, ru: 'Pokazať teplokartu', fi: 'Näytä lämpökartta', en: 'Show heatmap' }
 };
 
 
@@ -37,8 +38,14 @@ export default class ContextMenu {
                 Object.keys(options).forEach((key, i) => {
                     let row: HTMLTableRowElement = table.insertRow(i) as any;
                     let cell = row.insertCell(0);
-                    cell.setAttribute('data-event', key);
-                    cell.textContent = options[key][lang];
+                    if (options[key].disabled) {
+                        cell.setAttribute('disabled', "");
+                    } else {
+                        cell.setAttribute('data-event', key);
+                        
+                    }
+                    const option = options[key];
+                    cell.innerHTML = `${option[lang]}`;
                 });
                 table.onclick = e => {
                     const cell: HTMLTableCellElement = e.target as any;
@@ -46,8 +53,11 @@ export default class ContextMenu {
                         clientX: event.clientX,
                         clientY: event.clientY
                     };
-                    metroMap.dispatchEvent(new MouseEvent(cell.getAttribute('data-event'), dict));
-                    this.state = false;
+                    const eventType = cell.getAttribute('data-event');
+                    if (eventType) {
+                        metroMap.dispatchEvent(new MouseEvent(eventType, dict));
+                        this.state = false;
+                    }
                 };
                 table.id = 'contextmenu';
                 table.style.position = 'absolute';

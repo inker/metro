@@ -13,14 +13,18 @@
     "whatwg-fetch": "latest"
   },
   "devDependencies": {
+    "babel-preset-es2015": "^6.1.18",
     "babelify": "latest",
-    "babel-preset-es2015": "latest",
     "browserify": "latest",
     "gulp": "latest",
-    "gulp-uglify": "latest",
-    "gulp-util": "latest",
+    "gulp-notify": "^2.2.0",
+    "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "latest",
+    "gulp-typescript": "^2.9.2",
+    "gulp-uglify": "^1.5.1",
+    "gulp-util": "latest",
     "literalify": "latest",
+    "tsify": "^0.12.2",
     "uglify-js": "latest",
     "vinyl-buffer": "latest",
     "vinyl-source-stream": "latest"

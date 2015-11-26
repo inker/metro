@@ -6,11 +6,12 @@ import * as po from './plain-objects';
 import * as addons from './addons';
 import * as graph from '../metro-graph';
 import * as bind from './bind';
+import * as geo from './geo';
 import MapEditor from './mapeditor';
 import TextPlate from './textplate';
 import ContextMenu from './contextmenu';
 
-L.Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images';
+L.Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images'; 
 
 export default class MetroMap implements EventTarget {
     private map: L.Map;
@@ -67,7 +68,7 @@ export default class MetroMap implements EventTarget {
         }).addControl(new L.Control.Scale({ imperial: false }));
         console.log(tileLayers[Object.keys(tileLayers)[0]][0]);
         tileLayers[Object.keys(tileLayers)[0]].addTo(this.map);
-        
+        this.map.addLayer(this.fromMarker).addLayer(this.toMarker);
         //new addons.LayerControl(tileLayers).addTo(this.map);
         
         console.log('map should be created by now');
@@ -86,12 +87,11 @@ export default class MetroMap implements EventTarget {
             // TODO: fix the kludge making the grey area disappear
             .then(() => this.map.invalidateSize(false))
             .then(() => this.resetMapView())
-            .then(() => this.map.addLayer(this.fromMarker).addLayer(this.toMarker))
             //.catch(err => console.error(err))
             .then(() => this.fixFontRendering())
-            .then(() => dataPromise)
             .then(() => new MapEditor(this))
-            .then(() => new ContextMenu(this));
+            .then(() => new ContextMenu(this))
+            .then(() => dataPromise);
         
         Promise.all([graphPromise, hintsPromise])
             .then(results => util.verifyHints(this.graph, this.hints))
@@ -110,8 +110,33 @@ export default class MetroMap implements EventTarget {
             alertify.dismissAll();
             this.fixFontRendering();
             return;
+        } else if (event.type === 'showheatmap') {
+            if (this.fromMarker.getLatLng().equals([0, 0])) {
+                // draw time map to the closest station from each point
+                const nw = this.bounds.getNorthWest();
+                const topLeft = this.map.latLngToContainerPoint(nw);
+                const se = this.bounds.getSouthEast();
+                const bottomRight = this.map.latLngToContainerPoint(se);
+                const step = bottomRight.subtract(topLeft).divideBy(200);
+                console.log(se.distanceTo(nw) / 200);
+                console.log('for ' + step);
+                console.time('checking');
+                for (let i = topLeft.x; i < bottomRight.x; i += step.x) {
+                    for (let j = topLeft.y; j < bottomRight.y; j += step.y) {
+                       const c = this.map.containerPointToLatLng(new L.Point(i, j));
+                       //new L.Marker(c).addTo(this.map);
+                       const closest = geo.findClosestObject(c, this.graph.platforms).location;
+                       L.LatLng.prototype.distanceTo.call(closest, c);
+                       //util.shortestPath(this.graph, c, closest);
+                    }
+                }
+                console.timeEnd('checking');
+            } else {
+                // draw time map from the marker
+            }
+        } else {
+            this.handleMenuFromTo(event as any as MouseEvent);
         }
-        this.handleMenuFromTo(event as any as MouseEvent);
         return false;
     }
     
@@ -142,28 +167,46 @@ export default class MetroMap implements EventTarget {
                 svg.removeGradients();
             }
         }).on('move', e => {
-            //this.overlay.style['-webkit-transition'] = mapPane.style['-webkit-transition'];
-            //this.overlay.style.transition = mapPane.style.transition;
+            // using 'move' here instead of 'drag' because on window resize the overlay 
+            // is translated instantly without causing the entire network to be redrawn
             this.overlay.style.transform = mapPane.style.transform;
         }).on('moveend', e => {
-            // the secret of correct positioning is the movend transform check for corrent transform
             console.log('move ended');
             this.map.touchZoom.enable();
-            //this.overlay.style['-webkit-transition'] = null;
-            //this.overlay.style.transition = null;
             if (L.Browser.webkit) {
                 svg.addGradients();
             }
             this.fixFontRendering();
+            // the secret of correct positioning is the movend transform check for corrent transform
             this.overlay.style.transform = mapPane.style.transform;
         }).on('zoomstart', e => {
+            console.log('zoomstart', e.target);
             this.map.dragging.disable();
-            console.log(e);
-            //this.overlay.classList.add('leaflet-zoom-anim');
-            this.overlay.style.opacity = '0.5';
+            console.log(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
+            const coor = e.target['_initialCenter'];
+            console.log(coor);
+            // const pt = this.map.latLngToContainerPoint(coor);
+            // const pos = pt.subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
+            // const svgWidth = new L.Point(parseInt(this.overlay.style.width), parseInt(this.overlay.style.height));
+            // this.overlay.style.transition = null;
+            // console.log('pos', pos);
+            // const ratio = new L.Point((-pos.x / svgWidth.x) * 2, -pos.y / svgWidth.y * 2);
+            // console.log('ratio', ratio);
+            // const origin = document.getElementById('origin');
+            // origin.style.transformOrigin = `${ratio.x * 100}% ${ratio.y * 100}%`;
+            // origin.style.transform = `scale(2, 2) `;
+            // this.overlay.style.opacity = '0.75';
+            // this.overlay.getBoundingClientRect();
+            // this.overlay.style.transitionProperty = 'opacity';
+            // this.overlay.style.transitionTimingFunction = 'ease-out';
+            // this.overlay.style.transitionDuration = '1000ms';
+
+            this.overlay.style.opacity = '0.25';
+
         }).on('zoomend', e => {
             console.log(e);
             console.log('zoom ended');
+            this.overlay.style.transition = null;
             this.redrawNetwork();
             //this.overlay.classList.remove('leaflet-zoom-anim');
             this.overlay.style.opacity = null;
@@ -250,11 +293,13 @@ export default class MetroMap implements EventTarget {
         const nw = this.bounds.getNorthWest(),
             se = this.bounds.getSouthEast();
         // svg bounds in pixels relative to container
+        
         const pixelBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
         const transform = util.parseTransform(this.overlay.style.transform);
-
+        
         const pixelBoundsSize = pixelBounds.getSize();
         const topLeft = pixelBounds.min.subtract(transform).subtract(pixelBoundsSize);
+        console.log(this.map.latLngToContainerPoint(nw));
         this.overlay.style.left = topLeft.x + 'px';
         this.overlay.style.top = topLeft.y + 'px';
         const originShift = pixelBoundsSize;
@@ -299,8 +344,6 @@ export default class MetroMap implements EventTarget {
         const nw = this.bounds.getNorthWest();
         const se = this.bounds.getSouthEast();
         const svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
-
-        (document.getElementById('edit-map-button') as HTMLButtonElement).disabled = zoom < 12;
 
         const posTransform = zoom < 12
             ? platform => this.posOnSVG(svgBounds, this.graph.stations[platform.station].location)
@@ -552,11 +595,11 @@ export default class MetroMap implements EventTarget {
         alertify.dismissAll();
         const sp = util.shortestPath(this.graph, departure, arrival);
         if (typeof sp === 'number') {
-            return alertify.error(`walk on foot, lazybones!`);
+            return alertify.success(util.formatTime(sp) + ' on foot!');
         }
         const { platforms, path, time } = sp;
         const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
-        const els = document.querySelectorAll(selector) as any as HTMLElement[];
+        const els: HTMLElement[] = this.overlay.querySelectorAll(selector) as any;
         for (let i = 0; i < els.length; ++i) {
             //els[i].style['-webkit-filter'] = 'grayscale(1)';
             els[i].style.opacity = '0.25';
@@ -564,9 +607,13 @@ export default class MetroMap implements EventTarget {
         console.log(path);
         console.log(platforms.map(p => this.graph.platforms[p].name));
         const foo = (i: number) => {
-            document.getElementById('p-' + platforms[i]).style.opacity = null;
-            if (i >= path.length) {
-                return alertify.message(`time:<br>${Math.round(time.walkTo / 60)} mins on foot<br>${Math.round(time.metro / 60)} mins by metro<br>${Math.round(time.walkFrom / 60)} mins on foot<br>TOTAL: ${Math.round(time.total / 60)} mins`, 10);
+            const circle = document.getElementById('p-' + platforms[i]);
+            circle.style.opacity = null;
+            if (i < path.length) {
+                svg.pulsateCircle(circle, 1.5, 200);
+            } else {
+                svg.pulsateCircle(circle, 3, 200);
+                return alertify.message(`time:<br>${util.formatTime(time.walkTo)} on foot<br>${util.formatTime(time.metro)} by metro<br>${util.formatTime(time.walkFrom)} on foot<br>TOTAL: ${util.formatTime(time.total)}`, 10);
             }
             const outerOld: SVGPathElement|SVGLineElement = document.getElementById('o' + path[i]) as any;
             if (outerOld === null) {
@@ -595,6 +642,7 @@ export default class MetroMap implements EventTarget {
             for (let p of (inner === null ? [outer] : [outer, inner])) {
                 p.style.transition = null;
                 p.style.opacity = null;
+                //p.setAttribute('filter', 'url(#black-glow)');
                 p.style.strokeDasharray = length + ' ' + length;
                 p.style.strokeDashoffset = length.toString();
                 p.getBoundingClientRect();
@@ -603,11 +651,12 @@ export default class MetroMap implements EventTarget {
             }
             setTimeout(() => {
                 outerOld.style.opacity = null;
-                outerOld.setAttribute('filter', 'url(#black-glow)');
+                if (outer.id.charAt(1) !== 't') {
+                    outerOld.setAttribute('filter', 'url(#black-glow)');
+                }
                 document.getElementById('paths-outer').removeChild(outer);
                 if (inner) {
                     innerOld.style.opacity = null;
-                    innerOld.setAttribute('filter', 'url(#black-glow)');
                     if (inner) document.getElementById('paths-inner').removeChild(inner);
                 }
                 foo(i + 1);

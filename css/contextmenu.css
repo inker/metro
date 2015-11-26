@@ -1,0 +1,27 @@
+#contextmenu {
+    background-color: white;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    font-family: Segoe, Tahoma, Ubuntu, Cambay, Roboto, sans-serif;
+    font-size: 0.7em;
+    border-collapse: collapse;
+   -moz-user-select: none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
+}
+
+#contextmenu tr td {
+    padding: 5px;
+    cursor: default;
+}
+
+#contextmenu tr td[disabled] {
+    color: grey;
+    cursor: not-allowed
+}
+
+#contextmenu tr td:not([disabled]):hover {
+    background-color: #82B1FF;
+    /*color: #ffffff;*/
+}

@@ -1,3 +1,4 @@
+'use strict';
 import MetroMap from './metro-map';
 import * as util from './util';
 

@@ -6,7 +6,14 @@ export default class MapEditor {
     private metroMap: MetroMap;
     constructor(metroMap: MetroMap) {
         this.metroMap = metroMap;
-        document.getElementById('edit-map-button').addEventListener('click', this.editMapClick.bind(this));
+        const button = document.createElement('button');
+        button.id = 'edit-map-button';
+        button.textContent = 'Edit Map';
+        button.classList.add('leaflet-control');
+        button.disabled = metroMap.getMap().getZoom() < 12;
+        button.addEventListener('click', this.editMapClick.bind(this));
+        metroMap.getMap().on('zoomend', e => button.disabled = e.target['_zoom'] < 12);
+        document.querySelector('.leaflet-right.leaflet-top').appendChild(button);
     }
     private editMapClick(event: MouseEvent) {
         // change station name (change -> model (platform))

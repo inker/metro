@@ -1,6 +1,7 @@
 import * as L from 'leaflet';
 import { findClosestObject } from './geo';
 import * as po from './plain-objects';
+import LatLng = L.LatLng;
 
 export function getUserLanguage(): string {
     return (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();
@@ -165,7 +166,7 @@ export function vectorToGradCoordinates(vector: L.Point) {
 }
 
 export const lineRulesPromise = new Promise<CSSStyleSheet>(resolve => {
-    const link: HTMLLinkElement = document.querySelector(`[href$="css/style.css"]`) as any;
+    const link: HTMLLinkElement = document.querySelector(`[href$="css/scheme.css"]`) as any;
     if (link.sheet && (link.sheet as CSSStyleSheet).cssRules) {
         console.log('already loaded');
         resolve(link.sheet as CSSStyleSheet);
@@ -191,7 +192,7 @@ export const lineRulesPromise = new Promise<CSSStyleSheet>(resolve => {
         }
     }
     return lineRules;
-})
+});
 
 /**
  * 
@@ -207,21 +208,30 @@ export function timeToTravel(distance: number, maxSpeed: number, acceleration: n
 }
 
 export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): any {
+    const walkingSpeed = 1.4,
+        walkingWithObstacles = 1,
+        maxTrainSpeed = 18,
+        trainAcceleration = 1.4,
+        metroStopTime = 45,
+        eLineStopTime = 90,
+        metroWaitingTime = 180,
+        eLineWaitingTime = 300;
+    const distanceBetweenPoints = (a: L.LatLng, b: L.LatLng) => L.LatLng.prototype.distanceTo.call(a, b) as number;
     const objects = graph.platforms;
     // time to travel from station to the p1 location
     const dist: number[] = [], timesOnFoot: number[] = [];
     for (let o of objects) {
-        const distance = L.LatLng.prototype.distanceTo.call(p1, o.location);
-        const time = distance / (1.3 * 1.4);
+        const distance = distanceBetweenPoints(p1, o.location);
+        const time = distance / walkingWithObstacles;
         dist.push(time);
-        timesOnFoot.push(L.LatLng.prototype.distanceTo.call(o.location, p2) / (1.3 * 1.4));
+        timesOnFoot.push(distanceBetweenPoints(o.location, p2) / walkingWithObstacles);
     }
     // pick the closest one so far
     let currentIndex = objects.indexOf(findClosestObject(p1, objects));
     const objectSet = new Set<number>(objects.map((o, i) => i)),
-        prev = objects.map(i => null);
+        prev: number[] = objects.map(i => null);
     // time on foot between locations
-    const onFoot =  L.LatLng.prototype.distanceTo.call(p1, p2) / (1.3 * 1.4);
+    const onFoot =  distanceBetweenPoints(p1, p2) / walkingWithObstacles;
     while (objectSet.size > 0) {
         var minDist = Infinity;
         objectSet.forEach(i => {
@@ -233,42 +243,58 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): any {
         const currentNode = objects[currentIndex];
         objectSet.delete(currentIndex);
         //console.log('current:', currentIndex, currentNode.name);
+        // getting his previous
+        const prevIndex = prev[currentIndex];
+        const previous = objects[prevIndex];
+        const prevSpan = graph.spans.find(s => s.source === currentIndex && s.target === prevIndex || s.source === prevIndex && s.target === currentIndex);
+        
         const neighborIndices: number[] = [],
-            neighbors: po.Platform[] = [],
             times: number[] = [];
         for (let i of currentNode.spans) {
             const s = graph.spans[i];
             const neighborIndex = currentIndex === s.source ? s.target : s.source;
             if (!objectSet.has(neighborIndex)) continue;
-            const neighbor = objects[neighborIndex];
             neighborIndices.push(neighborIndex);
-            neighbors.push(neighbor);
-            const distance = L.LatLng.prototype.distanceTo.call(currentNode.location, neighbor.location);
+            const neighbor = objects[neighborIndex];
+            const distance = distanceBetweenPoints(currentNode.location, neighbor.location);
+            let lineChangePenalty = 0;
+            if (prevSpan && graph.routes[prevSpan.routes[0]] !== graph.routes[s.routes[0]]) {
+                // doesn't seem to work
+                //lineChangePenalty = metroWaitingTime;
+            }
             // TODO: lower priority for E-lines
-            const callTime = graph.routes[s.routes[0]].line.startsWith('E') ? 90 : 45;
-            times.push(timeToTravel(distance, 18, 1.4) + callTime);
+            const callTime = graph.routes[s.routes[0]].line.startsWith('E') ? eLineStopTime : metroStopTime;
+            const travelTime = timeToTravel(distance, maxTrainSpeed, trainAcceleration);
+            times.push(travelTime + callTime + lineChangePenalty);
+        }
+            // TODO: if transferring to an E-line, wait more
+            // TODO: penalty for changing lines (cross-platform)
+        for (let neighborIndex of graph.stations[currentNode.station].platforms) {
+            if (!objectSet.has(neighborIndex)) continue;
+            neighborIndices.push(neighborIndex);
+            const neighbor = objects[neighborIndex];
+            const distance = distanceBetweenPoints(currentNode.location, neighbor.location);
+            times.push(distance / walkingWithObstacles / 1.5 + metroWaitingTime); // variable time depending on the transfer's length
         }
         // pain in the ass
-        const transferIndices = graph.transfers
-            .map((t, i) => i)
-            .filter(t => graph.transfers[t].source === currentIndex || graph.transfers[t].target === currentIndex);
-        for (let i of transferIndices) {
-            // TODO: make ALL platforms from the junction visible, not just the neighbors
-            // TODO: if transferring to an E-line, wait more
-            const t = graph.transfers[i];
-            const neighborIndex = currentIndex === t.source ? t.target : t.source;
-            if (!objectSet.has(neighborIndex)) continue;
-            const neighbor = objects[neighborIndex];
-            neighborIndices.push(neighborIndex);
-            neighbors.push(neighbor);
-            const distance = L.LatLng.prototype.distanceTo.call(currentNode.location, neighbor.location);
-            times.push(distance / (1.3 * 1.4) + 60); // variable time depending on the transfer's length
-        }
-        //console.log('neighbors: ', neighborIndices);
+        // const transferIndices = graph.transfers
+        //     .map((t, i) => i)
+        //     .filter(t => graph.transfers[t].source === currentIndex || graph.transfers[t].target === currentIndex);
+        // for (let i of transferIndices) {
+        //     const t = graph.transfers[i];
+        //     const neighborIndex = currentIndex === t.source ? t.target : t.source;
+        //     if (!objectSet.has(neighborIndex)) continue;
+        //     const neighbor = objects[neighborIndex];
+        //     neighborIndices.push(neighborIndex);
+        //     const distance = distanceBetweenPoints(currentNode.location, neighbor.location);
+        //     times.push(distance / walkingWithObstacles / 1.5 + 90); // variable time depending on the transfer's length
+        // }
         for (let i = 0; i < neighborIndices.length; ++i) {
             const neighborIndex = neighborIndices[i],
                 alt = dist[currentIndex] + times[i];
             if (alt < dist[neighborIndex]) {
+                // for debugging
+                //objects[neighborIndex].altNames['fi'] = alt.toString();
                 dist[neighborIndex] = alt;
                 prev[neighborIndex] = currentIndex;
             }
@@ -290,13 +316,11 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): any {
     }
     const path: string[] = [],
         platformPath = [currentIndex];
-    console.log('making path');
-    console.log(prev);
     // remove later
     let euristics = 0;
     while (true) {
         const currentNode = objects[currentIndex];
-        console.log('current', currentNode.name);
+        //console.log('current', currentNode.name);
         const prevIndex = prev[currentIndex];
         if (prevIndex === null) break;
         //console.log('prev', objects[prevIndex].name);
@@ -322,7 +346,6 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): any {
         if (++euristics > objects.length) throw new Error('overflow!');
         currentIndex = prevIndex;
     }
-    console.log('returning');
     platformPath.reverse();
     path.reverse();
     const walkFromTime = timesOnFoot[platformPath[platformPath.length - 1]];
@@ -338,4 +361,21 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): any {
             total: shortestTime
         }
     };
+}
+
+function inflect(value: number, str: string) {
+    return value === 0 ? '' : `${value} ${value > 1 ? str + 's' : str}`;
+}
+
+export function formatTime(time: number) {
+    if (time < 60) {
+        return Math.round(time) + ' seconds';
+    }
+    if (time < 3570) {
+        const mins = Math.round(time / 60);
+        return inflect(mins, 'min');
+    }
+    const hours = Math.floor(time / 3600);
+    const mins = Math.floor((time - hours * 3600) / 60);
+    return `${inflect(hours, 'hour')} ${inflect(mins, 'min')}`;
 }

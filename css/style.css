@@ -1,20 +1,3 @@
-/* latin-ext */
-@font-face {
-    font-family: 'Cambay';
-    font-style: normal;
-    font-weight: 700;
-    src: local('Cambay Bold'), local('Cambay-Bold'), url(https://fonts.gstatic.com/s/cambay/v1/w6Ot8WDiDorG2p0IFjdYFhJtnKITppOI_IvcXXDNrsc.woff2) format('woff2');
-    unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-    font-family: 'Cambay';
-    font-style: normal;
-    font-weight: 700;
-    src: local('Cambay Bold'), local('Cambay-Bold'), url(https://fonts.gstatic.com/s/cambay/v1/9M3kjQTQkUz1UH-8XJ4q-FtXRa8TVwTICgirnJhmVJw.woff2) format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-}
-
 html {
     height: 100%;
 }
@@ -38,29 +21,14 @@ a {
 }
 
 #edit-map-button {
-    position: absolute;
+    /*position: absolute;
     top: 110px;
     right: 10px;
-    z-index: 100;
+    z-index: 100;*/
 }
 
 #edit-map-button[disabled] {
     cursor: not-allowed;
-}
-
-#contextmenu {
-    background-color: white;
-    font-family: Segoe, Tahoma, Ubuntu, Cambay, sans-serif;
-    font-size: 0.7em;
-    border: #aaa 1px solid;
-}
-
-#contextmenu tr td {
-    padding: 5px;
-}
-
-#contextmenu tr td:hover {
-    background-color: #88aaff;
 }
 
 .ajs-message {
@@ -78,17 +46,6 @@ a {
     /*z-index: 500;*/
 }
 
-/* map elements */
-#station-circles {
-    fill: white;
-    stroke: black;
-}
-
-#dummy-circles {
-    opacity: 0;
-    stroke: blue;
-    stroke-width: 0.5px;
-}
 
 .plate-text {
     color: black;
@@ -98,6 +55,7 @@ a {
     text-align: right;
     /*font-weight: bold;*/
     opacity: 1;
+    -webkit-filter: blur(3px);
 }
 
 .plate-box {
@@ -113,71 +71,4 @@ a {
 .plate-pole {
     stroke: #404040;
     stroke-width: 1px;
-}
-
-.M-line {
-    /*stroke-width: 2;*/
-}
-
-.L-line {
-    stroke: #00A4A7;
-}
-
-path {
-    fill-opacity: 0; /* so that no white stuff be visible */
-}
-
-#transfers-outer {
-    fill-opacity: 0;
-    stroke: #404040;
-    stroke-opacity: 1;
-    position: absolute;
-}
-#transfers-inner {
-    fill-opacity: 0;
-    stroke: #FFFFFF;
-    stroke-opacity: 1;
-    position: absolute;
-}
-
-/* lines */
-.M1 { stroke: #E32017; }
-.M2 { stroke: #003688; }
-.M3 { stroke: #00782A; }
-.M4 { stroke: #EE7C0E; }
-.M5 { stroke: #9B0056; }
-.M6 { stroke: #B36305; }
-.M7 { stroke: #FFD300; }
-.M8 { stroke: #0098D4; }
-.M9 { stroke: #A0A5A9; }
-.M10 { stroke: #F371BB; }
-.M11 { stroke: #000000; }
-.M12 { stroke: #84B817; }
-
-/*.E :nth-child(1) { stroke: #7156A5; }*/
-/*.E :nth-child(2) { stroke: #FFFFFF; }*/
-#paths-outer .E { stroke: #7156A5; }
-#paths-inner .E { stroke: #FFFFFF; }
-
-.leaflet-control-command-interior, input
-{
-    /*background-image: url(images/command.png);*/
-    width: 20px;
-    height: 20px;
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    display: block;
-    padding: 3px;
-    border-radius: 4px;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    box-shadow: 0 1px 7px rgba(0, 0, 0, 0.65);
-    cursor: auto;
-    text-align: center;
-    background-color: #FFFFFF;
-}
-
-.leaflet-control-command-interior:hover
-{
-    background-color: #F4F4F4;
 }
