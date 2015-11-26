@@ -3,12 +3,13 @@
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
     font-family: Segoe, Tahoma, Ubuntu, Cambay, Roboto, sans-serif;
     font-size: 0.7em;
+    margin-top: 1px; /* so that the first element is not automatically selected */
     border-collapse: collapse;
-   -moz-user-select: none;
-   -khtml-user-select: none;
-   -webkit-user-select: none;
-   -ms-user-select: none;
-   user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 #contextmenu tr td {

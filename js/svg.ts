@@ -186,9 +186,11 @@ export function addGradients() {
 export function pulsateCircle(circle: HTMLElement, scaleFactor: number, duration: number) {
     circle.getBoundingClientRect();
     circle.style.transition = `transform ${duration / 2}ms linear`;
-    circle.style.transform = `translate(${-circle.getAttribute('cx') * (scaleFactor - 1)}px, ${-circle.getAttribute('cy') * (scaleFactor - 1)}px) scale(${scaleFactor}, ${scaleFactor})`;
+    // circle.style.transform = `translate3d(${-circle.getAttribute('cx') * (scaleFactor - 1)}px, ${-circle.getAttribute('cy') * (scaleFactor - 1)}px, 0) scale3d(${scaleFactor}, ${scaleFactor}, 1)`;
+    circle.style.transform = `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${-circle.getAttribute('cx') * (scaleFactor - 1)}, ${-circle.getAttribute('cy') * (scaleFactor - 1)})`;
     setTimeout(() => {
-        circle.style.transform = `scale(1, 1)`;
+        //circle.style.transform = `scale3d(1, 1, 1)`;
+        circle.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
         // just in case the element has not been transformed
         setTimeout(() => {
             circle.style.transition = null;

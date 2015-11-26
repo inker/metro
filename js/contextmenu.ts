@@ -29,7 +29,6 @@ export default class ContextMenu {
         this.metroMap = metroMap;
         metroMap.getOverlay().addEventListener('contextmenu', event => {
             event.preventDefault();
-            const pos = new L.Point(event.clientX, event.clientY);
             let table: HTMLTableElement;
             if (this.state) {
                 table = document.getElementById('contextmenu') as any;
@@ -47,6 +46,7 @@ export default class ContextMenu {
                     const option = options[key];
                     cell.innerHTML = `${option[lang]}`;
                 });
+
                 table.onclick = e => {
                     const cell: HTMLTableCellElement = e.target as any;
                     const dict = {
@@ -64,9 +64,12 @@ export default class ContextMenu {
                 document.body.appendChild(table);
                 this.state = true;
             }
-
-            table.style.left = pos.x + 'px';
-            table.style.top = pos.y + 'px';
+            
+            const { width, height } = table.getBoundingClientRect();
+            const { clientWidth, clientHeight } = document.documentElement;
+            const { clientX, clientY } = event;
+            table.style.top = `${clientY + height > clientHeight ? clientY - height : clientY}px`;
+            table.style.left = `${clientX + width > clientWidth ? clientWidth - width : clientX}px`;
             return false;
         });
         metroMap.getOverlay().addEventListener('click', evt => {
