@@ -42,6 +42,17 @@ export function setBezierPath(el: Element, controlPoints: L.Point[]) {
     el.setAttribute('d', s.join(' '));
 }
 
+export function getCircularPath(path: Element) {
+    const points: number[] = [],
+        re = /\D([\d\.]+)/g,
+        d = path.getAttribute('d');
+    let m: RegExpExecArray;
+    while ((m = re.exec(d)) !== null) {
+        points.push(Number(m[1]));
+    }
+    return points;
+}
+
 export function setCircularPath(el: Element, center: L.Point, start: L.Point, end: L.Point) {
     const radius = center.distanceTo(start);
     const u = start.subtract(center),

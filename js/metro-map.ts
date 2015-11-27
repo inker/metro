@@ -624,27 +624,19 @@ export default class MetroMap implements EventTarget {
             const inner: typeof outer = innerOld === null ? null : innerOld.cloneNode(true) as any;
             document.getElementById('paths-outer').appendChild(outer);
             if (inner) document.getElementById('paths-inner').appendChild(inner);
-            const length = outer instanceof SVGLineElement
+            const length: number = outer instanceof SVGLineElement
                 ? L.point(Number(outer.x1), Number(outer.y1)).distanceTo(L.point(Number(outer.x2), Number(outer.y2)))
                 : outer['getTotalLength']();
-
+            
             const span = this.graph.spans[parseInt(path[i].slice(2))];
-            if (span.source !== platforms[i]) {
-                const points = svg.getBezierPath(outer).reverse();
-                console.log(points);
-                if (points.length === 4) {
-                    svg.setBezierPath(outer, points);
-                    if (inner) svg.setBezierPath(inner, points);
-                }
-            }
+            const initialOffset = span.source === platforms[i] ? length : -length;
             const duration = length;
-            outer.setAttribute('filter', 'url(#black-glow)');
+            outer.style.filter = 'url(#black-glow)';
             for (let p of (inner === null ? [outer] : [outer, inner])) {
                 p.style.transition = null;
                 p.style.opacity = null;
-                //p.setAttribute('filter', 'url(#black-glow)');
                 p.style.strokeDasharray = length + ' ' + length;
-                p.style.strokeDashoffset = length.toString();
+                p.style.strokeDashoffset = initialOffset.toString();
                 p.getBoundingClientRect();
                 p.style.transition = `stroke-dashoffset ${duration}ms linear`;
                 p.style.strokeDashoffset = '0';
@@ -652,7 +644,12 @@ export default class MetroMap implements EventTarget {
             setTimeout(() => {
                 outerOld.style.opacity = null;
                 if (outer.id.charAt(1) !== 't') {
-                    outerOld.setAttribute('filter', 'url(#black-glow)');
+                    // fixing disappearing lines
+                    const box = outer.getBoundingClientRect();
+                    const strokeWidth = parseFloat(getComputedStyle(outerOld).strokeWidth);
+                    if (box.height >= strokeWidth && box.width >= strokeWidth) {
+                        outerOld.style.filter = 'url(#black-glow)';
+                    }
                 }
                 document.getElementById('paths-outer').removeChild(outer);
                 if (inner) {

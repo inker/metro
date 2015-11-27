@@ -43,7 +43,7 @@ export function resetStyle() {
         const el: HTMLElement = els[i] as any;
         el.style.opacity = null;
         if (el.id.charAt(1) !== 't') {
-            el.removeAttribute('filter');
+            el.style.filter = null;
         }
     }
 }
