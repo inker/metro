@@ -13,7 +13,6 @@ const sourcemaps = require('gulp-sourcemaps');
 const ts = require('gulp-typescript');
 const tsify = require('tsify');
 const notify = require("gulp-notify");
-const rename = require('gulp-rename');
 
 const workflow = {
     // for webstorm with built-in typescript compiler enabled
@@ -24,16 +23,16 @@ const workflow = {
     'naive': ['bundle-after-ts', 'watch-ts']
 };
 
-gulp.task('default', workflow['naive']);
+gulp.task('default', workflow['webstorm']);
 
 gulp.task('watch-ts', () => {
-    gulp.watch(['js/*.ts', '!js/*.js'], ['bundle-after-ts']);
+    gulp.watch(['src/*.ts', '!src/*.js'], ['bundle-after-ts']);
 });
 
 const tsProject = ts.createProject('tsconfig.json');
 gulp.task('compile-typescript', () => {
     console.log('compiling typescript');
-    return gulp.src('js/*.ts', { base: "./" }).pipe(ts({
+    return gulp.src('src/*.ts', { base: "./" }).pipe(ts({
         "target": "ES6",
         "sourceMap": true,
         "watch": true,
@@ -52,7 +51,7 @@ gulp.task('bundle-after-ts', ['compile-typescript'], () => {
     return browserify()
 
         .transform(babelify, {presets: ["es2015"]})
-                .add('./js/main.js')
+                .add('./src/main.js')
         .bundle()
         .pipe(source('script.js'))
         .pipe(buffer())
@@ -63,13 +62,13 @@ gulp.task('bundle-after-ts', ['compile-typescript'], () => {
 });
 
 gulp.task('watch-js', () => {
-    const patterns = ['./js/*.js', './util.js', '!./js/script.js'];
-    gulp.watch(['./js/main.js'], ['js-es5-merge-compress']);
+    const patterns = ['./src/*.js', './util.js'];
+    gulp.watch(['./src/main.js'], ['js-es5-merge-compress']);
     //gulp.watch(['./*.js', './*/*.js', '!./public/js/*.js', '!./server.js'], ['server-transpile-merge-compress']);
 });
 
 gulp.task('watch-ts-for-all-way', () => {
-    gulp.watch(['js/*.ts'], ['ts-transpile-merge-compress']);
+    gulp.watch(['src/*.ts'], ['ts-transpile-merge-compress']);
 });
 
 gulp.task('ts-transpile-merge-compress', () => {
@@ -79,7 +78,7 @@ gulp.task('ts-transpile-merge-compress', () => {
         .plugin(tsify, {target: 'es6'})
 
          .transform(babelify, {presets: ["es2015"], extensions: ['.js', '.json']})
-         .add('./js/main.js')
+         .add('./src/main.js')
          .bundle()
         // //.on('error', error => console.error(error.toString()))
          .pipe(source('script.js'))
@@ -93,7 +92,7 @@ gulp.task('js-es5-merge-compress', () => {
         // add the main file (could be in browserify as a parameter)
         // transform by babel
         .transform(babelify, {presets: ["es2015"]})
-        .add('./js/main.js')
+        .add('./src/main.js')
         // make the bundler believe the <script>'d leaflet is a module without bundling it
         //.transform(literalify.configure({
         //    // map module names with global objects

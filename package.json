@@ -1,6 +1,6 @@
 {
   "name": "MetroGraph",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "St Petersburg's future metro",
   "main": "bin/www",
   "dependencies": {
@@ -9,22 +9,20 @@
     "es6-promise": "latest",
     "es6-set": "latest",
     "express": "latest",
-    "leaflet": "latest",
-    "whatwg-fetch": "latest"
+    "leaflet": "latest"
   },
   "devDependencies": {
-    "babel-preset-es2015": "^6.1.18",
+    "babel-preset-es2015": "latest",
     "babelify": "latest",
     "browserify": "latest",
     "gulp": "latest",
-    "gulp-notify": "^2.2.0",
-    "gulp-rename": "^1.2.2",
+    "gulp-notify": "latest",
     "gulp-sourcemaps": "latest",
-    "gulp-typescript": "^2.9.2",
-    "gulp-uglify": "^1.5.1",
+    "gulp-typescript": "latest",
+    "gulp-uglify": "latest",
     "gulp-util": "latest",
     "literalify": "latest",
-    "tsify": "^0.12.2",
+    "tsify": "latest",
     "uglify-js": "latest",
     "vinyl-buffer": "latest",
     "vinyl-source-stream": "latest"

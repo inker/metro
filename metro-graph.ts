@@ -1,7 +1,7 @@
 import * as L from 'leaflet';
-import * as util from './js/util';
-import * as po from './js/plain-objects';
-import * as geo from './js/geo';
+import * as util from './src/util';
+import * as po from './src/plain-objects';
+import * as geo from './src/geo';
 
 export type AltNames = { old?: string } | any;
     

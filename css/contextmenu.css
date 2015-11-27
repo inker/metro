@@ -19,7 +19,7 @@
 
 #contextmenu tr td[disabled] {
     color: grey;
-    cursor: not-allowed
+    /*cursor: not-allowed*/
 }
 
 #contextmenu tr td:not([disabled]):hover {

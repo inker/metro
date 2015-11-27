@@ -207,7 +207,12 @@ export function timeToTravel(distance: number, maxSpeed: number, acceleration: n
         : Math.sqrt(distance / acceleration) * 2;
 }
 
-export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): any {
+type ShortestPathObject = {
+    platforms?: number[];
+    path?: string[];
+    time: { walkTo: number, metro?: number, walkFrom?: number, total?: number };
+}
+export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): ShortestPathObject {
     const walkingSpeed = 1.4,
         walkingWithObstacles = 1,
         maxTrainSpeed = 18,
@@ -312,7 +317,7 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): any {
     }
     // if walking on foot is faster, then why take the underground?
     if (onFoot < shortestTime) {
-        return onFoot;
+        return { time: { walkTo: onFoot }};
     }
     const path: string[] = [],
         platformPath = [currentIndex];
@@ -341,7 +346,13 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): any {
                 }
             }
         }
-        path.push(p);
+        if (p === '') {
+            const { transfers, midPlatforms } = transferChain(graph, prevIndex, currentIndex);
+            path.push(...transfers.reverse().map(i => 't-' + i));
+            platformPath.push(...midPlatforms);
+        } else {
+            path.push(p);
+        }
         platformPath.push(prevIndex);
         if (++euristics > objects.length) throw new Error('overflow!');
         currentIndex = prevIndex;
@@ -361,6 +372,65 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): any {
             total: shortestTime
         }
     };
+}
+
+function transferChain(graph: po.Graph, p1i: number, p2i: number) {
+    const p1 = graph.platforms[p1i],
+        p2 = graph.platforms[p2i];
+    if (p1.station !== p2.station) {
+        throw new Error(`platforms (${p1.name} & ${p2.name} must be on the same station`);
+    }
+    const distanceBetweenPoints = (a: L.LatLng, b: L.LatLng) => L.LatLng.prototype.distanceTo.call(a, b) as number;
+    const station = graph.stations[p1.station];
+    const platforms = station.platforms;
+    const platformSet = new Set<number>(platforms);
+    const dist: number[] = [],
+        prev: number[] = [];
+    for (let i of platforms) {
+        dist[i] = Infinity;
+        prev[i] = null;
+    }
+    dist[p1i] = 0;
+    let currentIndex = p1i;
+    while (platformSet.size > 0) {
+        var minDist = Infinity;
+        platformSet.forEach(i => {
+            if (dist[i] < minDist) {
+                currentIndex = i;
+                minDist = dist[i];
+            }
+        });
+        platformSet.delete(currentIndex);
+        const platform = graph.platforms[currentIndex];
+        const neighborIndices = platform.transfers;
+        for (let neighborIndex of neighborIndices) {
+            if (!platformSet.has(neighborIndex)) continue;
+            const distance = distanceBetweenPoints(platform.location, graph.platforms[neighborIndex].location),
+                alt = dist[currentIndex] + distance;
+            if (alt < dist[neighborIndex]) {
+                dist[neighborIndex] = alt;
+                prev[neighborIndex] = currentIndex;
+            }
+        }
+    }
+    const transfers: number[] = [];
+    const midPlatforms: number[] = [];
+    currentIndex = p2i;
+    let overflow = 200;
+    while (true) {
+        const prevIndex = prev[currentIndex];
+        if (prevIndex === null) break;
+        const transferIndex = graph.transfers.findIndex(t => t.source === currentIndex && t.target === prevIndex || t.source === prevIndex && t.target === currentIndex);
+        transfers.push(transferIndex);
+        currentIndex = prevIndex;
+        midPlatforms.push(currentIndex);
+        if (--overflow === 0) throw new Error('overflow');
+    }
+    midPlatforms.pop();
+    return {
+        transfers: transfers.reverse(),
+        midPlatforms: midPlatforms.reverse()
+    }
 }
 
 function inflect(value: number, str: string) {

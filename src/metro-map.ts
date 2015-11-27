@@ -593,11 +593,10 @@ export default class MetroMap implements EventTarget {
     visualizeShortestRoute(departure: L.LatLng, arrival: L.LatLng) {
         util.resetStyle();
         alertify.dismissAll();
-        const sp = util.shortestPath(this.graph, departure, arrival);
-        if (typeof sp === 'number') {
-            return alertify.success(util.formatTime(sp) + ' on foot!');
+        const { platforms, path, time } = util.shortestPath(this.graph, departure, arrival);
+        if (path === undefined) {
+            return alertify.success(util.formatTime(time.walkTo) + ' on foot!');
         }
-        const { platforms, path, time } = sp;
         const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
         const els: HTMLElement[] = this.overlay.querySelectorAll(selector) as any;
         for (let i = 0; i < els.length; ++i) {
@@ -606,7 +605,7 @@ export default class MetroMap implements EventTarget {
         }
         console.log(path);
         console.log(platforms.map(p => this.graph.platforms[p].name));
-        svg.visualizeRoute(this.graph, platforms, path, time).then(() => {
+        svg.animateRoute(this.graph, platforms, path, time).then(() => {
             alertify.message(`time:<br>${util.formatTime(time.walkTo)} on foot<br>${util.formatTime(time.metro)} by metro<br>${util.formatTime(time.walkFrom)} on foot<br>TOTAL: ${util.formatTime(time.total)}`, 10);
         });
     }
