@@ -153,7 +153,7 @@ export default class MetroMap implements EventTarget {
         console.log(this.fromMarker, this.toMarker);
         const zero = new L.LatLng(0, 0);
         if (!this.fromMarker.getLatLng().equals(zero) && !this.toMarker.getLatLng().equals(zero)) {
-            this.visualizeShortestPath(this.fromMarker.getLatLng(), this.toMarker.getLatLng());
+            this.visualizeShortestRoute(this.fromMarker.getLatLng(), this.toMarker.getLatLng());
         }
         this.fixFontRendering();
     }
@@ -590,7 +590,7 @@ export default class MetroMap implements EventTarget {
         }
     }
 
-    visualizeShortestPath(departure: L.LatLng, arrival: L.LatLng) {
+    visualizeShortestRoute(departure: L.LatLng, arrival: L.LatLng) {
         util.resetStyle();
         alertify.dismissAll();
         const sp = util.shortestPath(this.graph, departure, arrival);
@@ -606,60 +606,8 @@ export default class MetroMap implements EventTarget {
         }
         console.log(path);
         console.log(platforms.map(p => this.graph.platforms[p].name));
-        const foo = (i: number) => {
-            const circle = document.getElementById('p-' + platforms[i]);
-            circle.style.opacity = null;
-            if (i < path.length) {
-                svg.pulsateCircle(circle, 1.5, 200);
-            } else {
-                svg.pulsateCircle(circle, 3, 200);
-                return alertify.message(`time:<br>${util.formatTime(time.walkTo)} on foot<br>${util.formatTime(time.metro)} by metro<br>${util.formatTime(time.walkFrom)} on foot<br>TOTAL: ${util.formatTime(time.total)}`, 10);
-            }
-            const outerOld: SVGPathElement|SVGLineElement = document.getElementById('o' + path[i]) as any;
-            if (outerOld === null) {
-                return foo(i + 1);
-            }
-            const innerOld: typeof outerOld = document.getElementById('i' + path[i]) as any;
-            const outer: typeof outerOld = outerOld.cloneNode(true) as any;
-            const inner: typeof outer = innerOld === null ? null : innerOld.cloneNode(true) as any;
-            document.getElementById('paths-outer').appendChild(outer);
-            if (inner) document.getElementById('paths-inner').appendChild(inner);
-            const length: number = outer instanceof SVGLineElement
-                ? L.point(Number(outer.x1), Number(outer.y1)).distanceTo(L.point(Number(outer.x2), Number(outer.y2)))
-                : outer['getTotalLength']();
-            
-            const span = this.graph.spans[parseInt(path[i].slice(2))];
-            const initialOffset = span.source === platforms[i] ? length : -length;
-            const duration = length;
-            outer.style.filter = 'url(#black-glow)';
-            for (let p of (inner === null ? [outer] : [outer, inner])) {
-                p.style.transition = null;
-                p.style.opacity = null;
-                p.style.strokeDasharray = length + ' ' + length;
-                p.style.strokeDashoffset = initialOffset.toString();
-                p.getBoundingClientRect();
-                p.style.transition = `stroke-dashoffset ${duration}ms linear`;
-                p.style.strokeDashoffset = '0';
-            }
-            setTimeout(() => {
-                outerOld.style.opacity = null;
-                if (outer.id.charAt(1) !== 't') {
-                    // fixing disappearing lines
-                    const box = outer.getBoundingClientRect();
-                    const strokeWidth = parseFloat(getComputedStyle(outerOld).strokeWidth);
-                    if (box.height >= strokeWidth && box.width >= strokeWidth) {
-                        outerOld.style.filter = 'url(#black-glow)';
-                    }
-                }
-                document.getElementById('paths-outer').removeChild(outer);
-                if (inner) {
-                    innerOld.style.opacity = null;
-                    if (inner) document.getElementById('paths-inner').removeChild(inner);
-                }
-                foo(i + 1);
-            }, duration);
-            console.log(outer);
-        };
-        foo(0);
+        svg.visualizeRoute(this.graph, platforms, path, time).then(() => {
+            alertify.message(`time:<br>${util.formatTime(time.walkTo)} on foot<br>${util.formatTime(time.metro)} by metro<br>${util.formatTime(time.walkFrom)} on foot<br>TOTAL: ${util.formatTime(time.total)}`, 10);
+        });
     }
 }

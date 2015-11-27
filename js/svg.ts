@@ -194,6 +194,67 @@ export function addGradients() {
     }
 }
 
+export function visualizeRoute(graph: po.Graph, platforms: number[], path: string[], time: any) {
+    return new Promise(resolve => {
+        const foo = (i: number) => {
+            const circle = document.getElementById('p-' + platforms[i]);
+            circle.style.opacity = null;
+            if (i < path.length) {
+                pulsateCircle(circle, 1.5, 200);
+            } else {
+                pulsateCircle(circle, 3, 200);
+                return resolve();
+            }
+            const outerOld: SVGPathElement|SVGLineElement = document.getElementById('o' + path[i]) as any;
+            if (outerOld === null) {
+                return foo(i + 1);
+            }
+            const innerOld: typeof outerOld = document.getElementById('i' + path[i]) as any;
+            const outer: typeof outerOld = outerOld.cloneNode(true) as any;
+            const inner: typeof outer = innerOld === null ? null : innerOld.cloneNode(true) as any;
+            document.getElementById('paths-outer').appendChild(outer);
+            if (inner) document.getElementById('paths-inner').appendChild(inner);
+            const length: number = outer instanceof SVGLineElement
+                ? L.point(Number(outer.x1), Number(outer.y1)).distanceTo(L.point(Number(outer.x2), Number(outer.y2)))
+                : outer['getTotalLength']();
+            
+            const parts = path[i].split('-');
+            const edge: po.Transfer|po.Span = graph[parts[0] === 'p' ? 'spans' : 'transfers'][parseInt(parts[1])];
+            const initialOffset = edge.source === platforms[i] ? length : -length;
+            const duration = length;
+            outer.style.filter = 'url(#black-glow)';
+            for (let p of (inner === null ? [outer] : [outer, inner])) {
+                p.style.transition = null;
+                p.style.opacity = null;
+                p.style.strokeDasharray = length + ' ' + length;
+                p.style.strokeDashoffset = initialOffset.toString();
+                p.getBoundingClientRect();
+                p.style.transition = `stroke-dashoffset ${duration}ms linear`;
+                p.style.strokeDashoffset = '0';
+            }
+            setTimeout(() => {
+                outerOld.style.opacity = null;
+                if (outer.id.charAt(1) !== 't') {
+                    // fixing disappearing lines
+                    const box = outer.getBoundingClientRect();
+                    const strokeWidth = parseFloat(getComputedStyle(outerOld).strokeWidth);
+                    if (box.height >= strokeWidth && box.width >= strokeWidth) {
+                        outerOld.style.filter = 'url(#black-glow)';
+                    }
+                }
+                document.getElementById('paths-outer').removeChild(outer);
+                if (inner) {
+                    innerOld.style.opacity = null;
+                    if (inner) document.getElementById('paths-inner').removeChild(inner);
+                }
+                foo(i + 1);
+            }, duration);
+            console.log(outer);
+        };
+        foo(0);
+    });
+}
+
 export function pulsateCircle(circle: HTMLElement, scaleFactor: number, duration: number) {
     circle.getBoundingClientRect();
     circle.style.transition = `transform ${duration / 2}ms linear`;
