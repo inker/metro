@@ -1,5 +1,7 @@
+path {
+    fill-opacity: 0; /* so that no white stuff be visible */
+}
 
-/* map elements */
 #station-circles {
     fill: white;
     stroke: black;
@@ -11,24 +13,13 @@
     stroke-width: 0.5px;
 }
 
-.M-line {
-    /*stroke-width: 2;*/
-}
-
-.L-line {
-    stroke: #00A4A7;
-}
-
-path {
-    fill-opacity: 0; /* so that no white stuff be visible */
-}
-
 #transfers-outer {
     fill-opacity: 0;
     stroke: #404040;
     stroke-opacity: 1;
     position: absolute;
 }
+
 #transfers-inner {
     fill-opacity: 0;
     stroke: #FFFFFF;
@@ -36,7 +27,11 @@ path {
     position: absolute;
 }
 
-/* lines */
+.M-line {
+    /*stroke-width: 2;*/
+}
+
+
 .M1 { stroke: #E32017; }
 .M2 { stroke: #003688; }
 .M3 { stroke: #00782A; }
@@ -49,8 +44,25 @@ path {
 .M10 { stroke: #F371BB; }
 .M11 { stroke: #000000; }
 .M12 { stroke: #84B817; }
-
-/*.E :nth-child(1) { stroke: #7156A5; }*/
-/*.E :nth-child(2) { stroke: #FFFFFF; }*/
+.L { stroke: #00A4A7; }
 #paths-outer .E { stroke: #7156A5; }
 #paths-inner .E { stroke: #FFFFFF; }
+
+/* material colors */
+/*
+.M1 { stroke: #F44336; }
+.M2 { stroke: #3F51B5; }
+.M3 { stroke: #4CAF50; }
+.M4 { stroke: #FF9800; }
+.M5 { stroke: #9C27B0; }
+.M6 { stroke: #795548; }
+.M7 { stroke: #FFEB3B; }
+.M8 { stroke: #9E9E9E; }
+.M9 { stroke: #03A9F4; }
+.M10 { stroke: #E91E63; }
+.M11 { stroke: #000000; }
+.M12 { stroke: #8BC34A; }
+.L { stroke: #009688; }
+#paths-outer .E { stroke: #607D8B; }
+#paths-inner .E { stroke: #607D8B; }
+*/

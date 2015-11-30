@@ -20,13 +20,6 @@ a {
     opacity: 1;
 }
 
-#edit-map-button {
-    /*position: absolute;
-    top: 110px;
-    right: 10px;
-    z-index: 100;*/
-}
-
 #edit-map-button[disabled] {
     cursor: not-allowed;
 }

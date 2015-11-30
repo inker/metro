@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "ES6",
-        "sourceMap": true,
+        "sourceMap": false,
         "watch": true,
         "experimentalDecorators": true,
         "experimentalAsyncFunctions": true,
