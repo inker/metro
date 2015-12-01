@@ -111,7 +111,7 @@ gulp.task('js-es5-merge-compress', () => {
         //.on('error', err => console.error(err))
         // copy to destination
         .pipe(gulp.dest('./js/'))
-        .pipe(notify("Bundling complete!"));
+        //.pipe(notify("Bundling complete!"));
        ;
     //es.merge(null, [gulp.src('./public/js/leaflet.js'), b]).pipe(gulp.dest('./public/js/'));
 });

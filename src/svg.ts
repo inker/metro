@@ -215,7 +215,7 @@ export function animateRoute(graph: po.Graph, platforms: number[], path: string[
             document.getElementById('paths-outer').appendChild(outer);
             if (inner) document.getElementById('paths-inner').appendChild(inner);
             const length: number = outer instanceof SVGLineElement
-                ? L.point(Number(outer.x1), Number(outer.y1)).distanceTo(L.point(Number(outer.x2), Number(outer.y2)))
+                ? L.point(Number(outer.getAttribute('x1')), Number(outer.getAttribute('y1'))).distanceTo(L.point(Number(outer.getAttribute('x2')), Number(outer.getAttribute('y2'))))
                 : outer['getTotalLength']();
             
             const parts = path[i].split('-');

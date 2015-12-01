@@ -18,6 +18,7 @@ export function replaceTransform(el: HTMLElement) {
 }
 
 export function findCircle(graph: po.Graph, station: po.Station): po.Platform[] {
+    // TODO: if n=3, leave as it is; if n=4, metro has priority
     if (station.platforms.length !== 3) return null;
     const platforms = station.platforms.map(platformNum => graph.platforms[platformNum]);
     return platforms.every(platform => platform.transfers.length === 2) ? platforms : null;
@@ -132,7 +133,7 @@ export function verifyHints(graph: po.Graph, hints: po.Hints): Promise<string> {
  */
 export function hintContainsLine(graph: po.Graph, dirHints: any, platform: po.Platform): number {
     const spans = platform.spans.map(i => graph.spans[i]);
-    let routes: po.Route[] = [];
+    const routes: po.Route[] = [];
     spans.forEach(span => span.routes.forEach(i => routes.push(graph.routes[i])));
     const lines = routes.map(rt => rt.line);
     let platformHints = dirHints[platform.name];

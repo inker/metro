@@ -14,7 +14,12 @@
   "devDependencies": {
     "babel-preset-es2015": "latest",
     "babelify": "latest",
-    "browserify": "latest",
+    "browserify": {
+     
+    },
+    "browserify-shim": {
+
+    },
     "gulp": "latest",
     "gulp-notify": "latest",
     "gulp-sourcemaps": "latest",

@@ -355,9 +355,9 @@ export default class MetroMap implements EventTarget {
         let circleBorder = zoom < 12 ? circleRadius * 0.4 : circleRadius * 0.6;
         let transferWidth = lineWidth * 0.9;
         let transferBorder = circleBorder * 1.25;
-        
         if (L.Browser.retina) {
-            [lineWidth, circleRadius, circleBorder, transferWidth] = [lineWidth, circleRadius, circleBorder, transferWidth].map(item => item * 1.5);
+            const arr = [lineWidth, circleRadius, circleBorder, transferWidth];
+            [lineWidth, circleRadius, circleBorder, transferWidth] = arr.map(item => item * 1.5);
         }
         
         document.getElementById('station-circles').style.strokeWidth = circleBorder + 'px';
@@ -390,8 +390,16 @@ export default class MetroMap implements EventTarget {
                         if (lines.size === 1) {
                             const matches = lines.values().next().value.match(/([MEL])(\d{0,2})/);
                             if (matches) {
-                                ci.classList.add(matches[1] === 'M' ? matches[0] : matches[1] + '-line');
+                                ci.classList.add(matches[1] === 'M' ? matches[0] : matches[1]);
                             }
+                        } else if (lines.size === 2) {
+                            //const vals = lines.values();
+                            //const [line1 , lineType1, lineNum1 ] = vals.next().value.match(/([MEL])(\d{0,2})/);
+                            //const [line2 , lineType2, lineNum2 ] = vals.next().value.match(/([MEL])(\d{0,2})/);
+                            //const cl1 = lineType1 === 'M' ? line1 : lineType1,
+                            //    cl2 = lineType2 === 'M' ? line2 : lineType2;
+                            //const toGrey = ()
+                            //if (this.lineRules[cl1])
                         }
                     }
                     
@@ -585,7 +593,7 @@ export default class MetroMap implements EventTarget {
             if (lineId) {
                 bezier.classList.add(lineId);
             }
-            bezier.classList.add(lineType + '-line');
+            bezier.classList.add(lineType);
             return [bezier];
         }
     }

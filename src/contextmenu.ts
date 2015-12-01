@@ -73,7 +73,7 @@ export default class ContextMenu {
             table.style.left = `${clientX + width > clientWidth ? clientWidth - width : clientX}px`;
             return false;
         });
-        metroMap.getOverlay().addEventListener('click', evt => {
+        metroMap.getOverlay().addEventListener('mousedown', evt => {
             if (evt.button !== 2) {
                 this.state = false;
             } 

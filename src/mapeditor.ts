@@ -10,9 +10,7 @@ export default class MapEditor {
         button.id = 'edit-map-button';
         button.textContent = 'Edit Map';
         button.classList.add('leaflet-control');
-        button.disabled = metroMap.getMap().getZoom() < 12;
         button.addEventListener('click', this.editMapClick.bind(this));
-        metroMap.getMap().on('zoomend', e => button.disabled = e.target['_zoom'] < 12);
         document.querySelector('.leaflet-right.leaflet-top').appendChild(button);
     }
     private editMapClick(event: MouseEvent) {
@@ -26,6 +24,9 @@ export default class MapEditor {
         const button: HTMLButtonElement = event.target as any;
         const textState = ['Edit Map', 'Save Map'];
         const dummyCircles = document.getElementById('dummy-circles');
+        if (map.getZoom() < 12) {
+            map.setZoom(12);
+        }
         if (button.textContent === textState[0]) {
             dummyCircles.onmousedown = de => {
                 if (de.button === 0) {
