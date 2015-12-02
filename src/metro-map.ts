@@ -48,7 +48,7 @@ export default class MetroMap implements EventTarget {
     }
 
     constructor(containerId: string, kml: string, tileLayers: {}) {
-        const fetch = window['fetch'];
+        const fetch: (url: string, options?: {}) => Promise<any> = window['fetch'];
         const graphPromise = fetch(kml)
             .then(graphText => graphText.json())
             .then(graphJSON => this.graph = graphJSON);
@@ -160,6 +160,7 @@ export default class MetroMap implements EventTarget {
 
     private addMapListeners(): void {
         const mapPane = this.map.getPanes().mapPane;
+        let currentZoom = this.map.getZoom();
         this.map.on('movestart', e => {
             console.log('move start');
             this.map.touchZoom.disable();
@@ -182,27 +183,20 @@ export default class MetroMap implements EventTarget {
         }).on('zoomstart', e => {
             console.log('zoomstart', e.target);
             this.map.dragging.disable();
-            console.log(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
-            const coor = e.target['_initialCenter'];
-            console.log(coor);
-            // const pt = this.map.latLngToContainerPoint(coor);
-            // const pos = pt.subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
-            // const svgWidth = new L.Point(parseInt(this.overlay.style.width), parseInt(this.overlay.style.height));
-            // this.overlay.style.transition = null;
-            // console.log('pos', pos);
-            // const ratio = new L.Point((-pos.x / svgWidth.x) * 2, -pos.y / svgWidth.y * 2);
-            // console.log('ratio', ratio);
-            // const origin = document.getElementById('origin');
-            // origin.style.transformOrigin = `${ratio.x * 100}% ${ratio.y * 100}%`;
-            // origin.style.transform = `scale(2, 2) `;
-            // this.overlay.style.opacity = '0.75';
-            // this.overlay.getBoundingClientRect();
-            // this.overlay.style.transitionProperty = 'opacity';
-            // this.overlay.style.transitionTimingFunction = 'ease-out';
-            // this.overlay.style.transitionDuration = '1000ms';
-
-            this.overlay.style.opacity = '0.25';
-
+            setTimeout(() => {
+                const toZoom: number = e.target['_animateToZoom'];
+                const scaleFactor = 2 ** (toZoom - currentZoom);
+                const box = this.overlay.getBoundingClientRect();
+                const client: L.Point = e.target['scrollWheelZoom']['_lastMousePos'];
+                const clickOffset = new L.Point(client.x - box.left, client.y - box.top);
+                const ratio = new L.Point(clickOffset.x / box.width, clickOffset.y / box.height);
+                this.overlay.style.transform = '';
+                this.overlay.style.left = box.left.toString();
+                this.overlay.style.top = box.top.toString();
+                this.overlay.style.transformOrigin = `${ratio.x * 100}% ${ratio.y * 100}%`;
+                this.overlay.style.transform = `scale(${scaleFactor}, ${scaleFactor})`;
+            }, 0);
+            this.overlay.style.opacity = '0.5';
         }).on('zoomend', e => {
             console.log(e);
             console.log('zoom ended');
@@ -211,6 +205,7 @@ export default class MetroMap implements EventTarget {
             //this.overlay.classList.remove('leaflet-zoom-anim');
             this.overlay.style.opacity = null;
             this.map.dragging.enable();
+            currentZoom = this.map.getZoom();
         });
 
     }

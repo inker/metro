@@ -23,7 +23,7 @@ const workflow = {
     'naive': ['bundle-after-ts', 'watch-ts']
 };
 
-gulp.task('default', workflow['webstorm']);
+gulp.task('default', workflow['other']);
 
 gulp.task('watch-ts', () => {
     gulp.watch(['src/*.ts', '!src/*.js'], ['bundle-after-ts']);
@@ -33,11 +33,13 @@ const tsProject = ts.createProject('tsconfig.json');
 gulp.task('compile-typescript', () => {
     console.log('compiling typescript');
     return gulp.src('src/*.ts', { base: "./" }).pipe(ts({
-        "target": "ES6",
+        //"target": "es6",
+        "target": "es5",
+        "module": "commonjs",
         "sourceMap": true,
         "watch": true,
-        "experimentalDecorators": true,
-        "experimentalAsyncFunctions": true,
+        //"experimentalDecorators": true,
+        //"experimentalAsyncFunctions": true,
         "noLib": true,
         "isolatedModules": true
     })).js.pipe(gulp.dest('.'));
@@ -50,7 +52,7 @@ gulp.task('compile-typescript', () => {
 gulp.task('bundle-after-ts', ['compile-typescript'], () => {
     return browserify()
 
-        .transform(babelify, {presets: ["es2015"]})
+        //.transform(babelify, {presets: ["es2015"]})
                 .add('./src/main.js')
         .bundle()
         .pipe(source('script.js'))
@@ -74,17 +76,19 @@ gulp.task('watch-ts-for-all-way', () => {
 gulp.task('ts-transpile-merge-compress', () => {
     browserify()
         .add('typings/tsd.d.ts')
-        // .add('js/main.ts')
-        .plugin(tsify, {target: 'es6'})
+         .add('src/main.ts')
+        .plugin(tsify, {target: 'es5'})
 
-         .transform(babelify, {presets: ["es2015"], extensions: ['.js', '.json']})
-         .add('./src/main.js')
+         //.transform(babelify, {presets: ["es2015"], extensions: ['.js', '.json']})
+         //.add('src/main.js')
          .bundle()
-        // //.on('error', error => console.error(error.toString()))
+         .on('error', error => console.error(error.toString()))
          .pipe(source('script.js'))
          .pipe(buffer())
          .pipe(uglify())
-         .pipe(gulp.dest('./js/'));
+         .pipe(gulp.dest('./js/'))
+         .pipe(notify("Bundling complete!"))
+         ;
 });
 
 gulp.task('js-es5-merge-compress', () => {

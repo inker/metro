@@ -250,7 +250,7 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Short
         objectSet.delete(currentIndex);
         //console.log('current:', currentIndex, currentNode.name);
         // getting his previous
-        const prevIndex = prev[currentIndex];
+        var prevIndex = prev[currentIndex];
         const previous = objects[prevIndex];
         const prevSpan = graph.spans.find(s => s.source === currentIndex && s.target === prevIndex || s.source === prevIndex && s.target === currentIndex);
         
@@ -419,7 +419,7 @@ function transferChain(graph: po.Graph, p1i: number, p2i: number) {
     currentIndex = p2i;
     let overflow = 200;
     while (true) {
-        const prevIndex = prev[currentIndex];
+        var prevIndex = prev[currentIndex];
         if (prevIndex === null) break;
         const transferIndex = graph.transfers.findIndex(t => t.source === currentIndex && t.target === prevIndex || t.source === prevIndex && t.target === currentIndex);
         transfers.push(transferIndex);
