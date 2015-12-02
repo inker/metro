@@ -160,7 +160,6 @@ export default class MetroMap implements EventTarget {
 
     private addMapListeners(): void {
         const mapPane = this.map.getPanes().mapPane;
-        let currentZoom = this.map.getZoom();
         this.map.on('movestart', e => {
             console.log('move start');
             this.map.touchZoom.disable();
@@ -183,6 +182,7 @@ export default class MetroMap implements EventTarget {
         }).on('zoomstart', e => {
             console.log('zoomstart', e.target);
             this.map.dragging.disable();
+            const currentZoom: number = e.target['_zoom'];
             setTimeout(() => {
                 const toZoom: number = e.target['_animateToZoom'];
                 const scaleFactor = 2 ** (toZoom - currentZoom);
@@ -205,7 +205,6 @@ export default class MetroMap implements EventTarget {
             //this.overlay.classList.remove('leaflet-zoom-anim');
             this.overlay.style.opacity = null;
             this.map.dragging.enable();
-            currentZoom = this.map.getZoom();
         });
 
     }
