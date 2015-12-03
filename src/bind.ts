@@ -112,9 +112,13 @@ export function platformToModel(platform: po.Platform|number, circles: Element[]
                 const inner = document.getElementById(`ip-${spanIndex}`);
                 if (inner) svg.setBezierPath(inner, controlPoints);
             });
-            this.graph.transfers
-                .filter(tr => tr.source === idx || tr.target === idx)
-                .forEach(tr => tr[idx === tr.source ? 'source' : 'target'] = idx);
+            for (let tr of this.graph.transfers) {
+                if (tr.source === idx) {
+                    tr.source = idx;
+                } else if (tr.target === idx) {
+                    tr.target = idx;
+                }
+            }
         }
     });
     obj['_location'] = cached;

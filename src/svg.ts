@@ -194,7 +194,7 @@ export function addGradients() {
     }
 }
 
-export function animateRoute(graph: po.Graph, platforms: number[], path: string[], time: any) {
+export function animateRoute(graph: po.Graph, platforms: number[], path: string[]) {
     return new Promise(resolve => {
         const foo = (i: number) => {
             const circle = document.getElementById('p-' + platforms[i]);
