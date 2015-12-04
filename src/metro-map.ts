@@ -29,7 +29,13 @@ export default class MetroMap implements EventTarget {
     private fromMarker = new L.Marker([0, 0]);
     private toMarker = new L.Marker([0, 0]);
 
+    private _contextMenu: ContextMenu;
+
     private lineRules: {};
+    
+    get contextMenu() {
+        return this._contextMenu;
+    }
 
     getMap(): L.Map {
         return this.map;
@@ -90,7 +96,12 @@ export default class MetroMap implements EventTarget {
         //.catch(err => console.error(err))
             .then(() => this.fixFontRendering())
             .then(() => new MapEditor(this))
-            .then(() => new ContextMenu(this))
+            .then(() => this._contextMenu = new ContextMenu(this, new window['Map']([
+                ['fromclick', { icon: 'add location', lang: { ru: 'Otśuda', fi: 'Tältä', en: 'From here' } }],
+                ['toclick', { icon: 'directions', lang: { ru: 'Śuda', fi: 'Tänne', en: 'To here' } }],
+                ['clearroute', { icon: 'layers clear', lang: { ru: 'Očistiť maršrut', fi: 'Tyhjennä reitti', en: 'Clear route' } }],
+                ['showheatmap', { icon: 'blur on', disabled: true, lang: { ru: 'Pokazať teplokartu', fi: 'Näytä lämpökartta', en: 'Show heatmap' } }]
+            ])))
             .then(() => dataPromise);
 
         Promise.all([graphPromise, hintsPromise])
@@ -103,41 +114,57 @@ export default class MetroMap implements EventTarget {
     addEventListener(type: string, listener: EventListener) { }
 
     dispatchEvent(event: Event): boolean {
-        if (event.type === 'clearroute') {
-            this.fromMarker.setLatLng([0, 0]);
-            this.toMarker.setLatLng([0, 0]);
-            util.resetStyle();
-            alertify.dismissAll();
-            this.fixFontRendering();
-            return;
-        } else if (event.type === 'showheatmap') {
-            if (this.fromMarker.getLatLng().equals([0, 0])) {
-                // draw time map to the closest station from each point
-                const nw = this.bounds.getNorthWest();
-                const topLeft = this.map.latLngToContainerPoint(nw);
-                const se = this.bounds.getSouthEast();
-                const bottomRight = this.map.latLngToContainerPoint(se);
-                const step = bottomRight.subtract(topLeft).divideBy(200);
-                console.log(se.distanceTo(nw) / 200);
-                console.log('for ' + step);
-                console.time('checking');
-                for (let i = topLeft.x; i < bottomRight.x; i += step.x) {
-                    for (let j = topLeft.y; j < bottomRight.y; j += step.y) {
-                        const c = this.map.containerPointToLatLng(new L.Point(i, j));
-                        //new L.Marker(c).addTo(this.map);
-                        const closest = geo.findClosestObject(c, this.graph.platforms).location;
-                        L.LatLng.prototype.distanceTo.call(closest, c);
-                        //util.shortestPath(this.graph, c, closest);
+        console.log('event target as seen from dispatcher', event.target);
+        console.log(event);
+        switch (event.type) {
+            case 'clearroute':
+                this.fromMarker.setLatLng([0, 0]);
+                this.toMarker.setLatLng([0, 0]);
+                util.resetStyle();
+                alertify.dismissAll();
+                this.fixFontRendering();
+                break;
+            case 'showheatmap':
+                if (this.fromMarker.getLatLng().equals([0, 0])) {
+                    // draw time map to the closest station from each point
+                    const nw = this.bounds.getNorthWest();
+                    const topLeft = this.map.latLngToContainerPoint(nw);
+                    const se = this.bounds.getSouthEast();
+                    const bottomRight = this.map.latLngToContainerPoint(se);
+                    const step = bottomRight.subtract(topLeft).divideBy(200);
+                    console.log(se.distanceTo(nw) / 200);
+                    console.log('for ' + step);
+                    console.time('checking');
+                    for (let i = topLeft.x; i < bottomRight.x; i += step.x) {
+                        for (let j = topLeft.y; j < bottomRight.y; j += step.y) {
+                            const c = this.map.containerPointToLatLng(new L.Point(i, j));
+                            //new L.Marker(c).addTo(this.map);
+                            const closest = geo.findClosestObject(c, this.graph.platforms).location;
+                            L.LatLng.prototype.distanceTo.call(closest, c);
+                            //util.shortestPath(this.graph, c, closest);
+                        }
                     }
+                    console.timeEnd('checking');
+                } else {
+                    // draw time map from the marker
                 }
-                console.timeEnd('checking');
-            } else {
-                // draw time map from the marker
-            }
-        } else {
-            this.handleMenuFromTo(event as any as MouseEvent);
+                break;
+            case 'platformrename':
+                const me = event as MouseEvent;
+                const platform = svg.platformByCircle(me.relatedTarget as any, this.graph);
+                const ru = platform.name, {fi, en} = platform.altNames;
+                this.plate.show(svg.circleByDummy(me.relatedTarget as any));
+                const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru];
+                alertify.prompt('New name', names.join('|'), (okevt, val) => {
+                    [platform.name, platform.altNames['fi'], platform.altNames['en']] = val.split('|');
+                    alertify.success(`${names.join('|')} renamed to ${val}`);
+                }, () => alertify.warning('Name change cancelled'));
+                break;
+            default:
+                this.handleMenuFromTo(event as MouseEvent);
+                return false;
+
         }
-        return false;
     }
 
     removeEventListener(type: string, listener: EventListener) { }
@@ -190,7 +217,11 @@ export default class MetroMap implements EventTarget {
                 const toZoom: number = e.target['_animateToZoom'];
                 const scaleFactor = 2 ** (toZoom - fromZoom);
                 const box = this.overlay.getBoundingClientRect();
-                const client: L.Point = e.target['scrollWheelZoom']['_lastMousePos'];
+                let client: L.Point = e.target['scrollWheelZoom']['_lastMousePos'];
+                if (!client) {
+                    const el = document.documentElement;
+                    client = new L.Point(el.clientWidth / 2, el.clientHeight / 2);
+                }
                 const clickOffset = new L.Point(client.x - box.left, client.y - box.top);
                 const ratio = new L.Point(clickOffset.x / box.width, clickOffset.y / box.height);
                 this.overlay.style.transform = '';

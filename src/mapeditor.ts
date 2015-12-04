@@ -4,8 +4,25 @@ import * as svg from './svg';
 
 export default class MapEditor {
     private metroMap: MetroMap;
-    private editMode = false;
+
     private button: HTMLButtonElement;
+
+    private _editMode: boolean;
+
+    get editMode() {
+        return this._editMode;
+    }
+
+    set editMode(val: boolean) {
+        if (val) {
+            this.button.textContent = 'Save Map';
+            this.button.onclick = this.saveMapClick.bind(this);
+        } else {
+            this.button.textContent = 'Edit Mode';
+            this.button.onclick = this.editMapClick.bind(this);
+        }
+    }
+
     constructor(metroMap: MetroMap) {
         this.metroMap = metroMap;
         this.button = document.createElement('button');
@@ -14,6 +31,7 @@ export default class MapEditor {
         this.button.classList.add('leaflet-control');
         this.button.onclick = this.editMapClick.bind(this);
         document.querySelector('.leaflet-right.leaflet-top').appendChild(this.button);
+        this.editMode = false;
         this.metroMap.getMap().on('zoomend', e => {
             if (this.editMode) {
                 this.addMapListeners();
@@ -27,22 +45,17 @@ export default class MapEditor {
             map.setZoom(12);
         }
         this.addMapListeners();
-        this.button.textContent = 'Save Map';
-        this.button.onclick = this.saveMapClick.bind(this);
-        this.editMode = true;
     }
-    
+
     private saveMapClick(event: MouseEvent) {
         const graph = this.metroMap.getGraph();
         const content = JSON.stringify(graph, (key, val) => key.startsWith('_') ? undefined : val);
         util.downloadAsFile('graph.json', content);
         const dummyCircles = document.getElementById('dummy-circles');
         dummyCircles.onmousedown = dummyCircles.onclick = null;
-        this.button.textContent = 'Edit Map';
-        this.button.onclick = this.editMapClick.bind(this);
         this.editMode = false;
     }
-    
+
     private addMapListeners() {
         // change station name (change -> model (platform))
         // drag station to new location (drag -> model (platform, spans) -> paths, )
@@ -52,6 +65,10 @@ export default class MapEditor {
         const plate = this.metroMap.getPlate();
         const graph = this.metroMap.getGraph();
         const dummyCircles = document.getElementById('dummy-circles');
+
+        const menu = this.metroMap.contextMenu;
+        menu.items
+            .set('platformadd', { lang: { ru: 'Novaja stancia', fi: 'Uusi asema', en: 'New station' } });
 
         dummyCircles.onmousedown = de => {
             if (de.button === 0) {
@@ -68,15 +85,14 @@ export default class MapEditor {
                     plate.show(svg.circleByDummy((le as L.LeafletMouseEvent).originalEvent.target as any));
                 });
             } else if (de.button === 1) {
-                const platform = svg.platformByCircle(de.target as any, graph);
-                const ru = platform.name,
-                    fi = platform.altNames['fi'],
-                    en = platform.altNames['en'];
-                plate.show(svg.circleByDummy(de.target as any));
-                const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru];
-                [platform.name, platform.altNames['fi'], platform.altNames['en']] = prompt('New name', names.join('|')).split('|');
+                //
             } else {
-                // open context menu maybe?
+                console.log('circle right-clicked');
+                const el = de.target as Element;
+                if (el.hasAttribute('cy')) {
+                    // come up with a better solution
+                    menu.addExtraItems(el, new Map().set('platformrename', { lang: { ru: 'Pereimenovať', en: 'Rename' } }));
+                }
             }
         };
     }
