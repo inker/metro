@@ -3,17 +3,17 @@ import * as util from './util';
 import * as po from './plain-objects';
     
 export default class TextPlate {
-    private _element: HTMLElement;
+    private _element: SVGGElement;
     private _disabled = false;
     private _editable = false;
     private graph: po.Graph;
     
     constructor(graph: po.Graph) {
         this.graph = graph;
-        this._element = svg.createSVGElement('g');
+        this._element = svg.createSVGElement('g') as any;
         this._element.id = 'station-plate';
         this._element.style.display = 'none';
-        this._element.innerHTML = `<line id="pole" class="plate-pole"/>
+        (this._element as any).innerHTML = `<line id="pole" class="plate-pole"/>
             <g>
                 <rect id="plate-box" class="plate-box" filter="url(#shadow)"/>
                 <text id="plate-text" fill="black" class="plate-text"><tspan/><tspan/><tspan/></text>
@@ -43,14 +43,14 @@ export default class TextPlate {
     
     set editable(val: boolean) {
         const strVal = val ? 'true' : null;
-        const text = (this._element.children[1] as HTMLElement).children[1] as HTMLElement;
+        const text = (this._element.childNodes[1] as HTMLElement).children[1] as HTMLElement;
         const textlings = text.children;
         for (let i = 0; i < textlings.length; ++i) {
             (textlings[i] as HTMLElement).contentEditable = strVal;
         }
     }
     
-    show(circle: Element) {
+    show(circle: SVGCircleElement) {
         if (this.disabled) return;
         if (this._element.style.display === 'none') {
             this.modify(circle);
@@ -62,15 +62,12 @@ export default class TextPlate {
         this._element.style.display = 'none';
     }
 
-    /**
-     * modifies & returns the modified plate
-     */
-    private modify(circle: Element) {
+    private modify(circle: SVGCircleElement) {
         const c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
         const r = Number(circle.getAttribute('r'));
         const iR = Math.trunc(r);
     
-        const pole = this._element.children[0];
+        const pole = this._element.firstElementChild;
         const poleSize = new L.Point(4 + iR, 8 + iR);
         const poleEnd = c.subtract(poleSize);
         pole.setAttribute('x1', c.x.toString());
@@ -89,7 +86,7 @@ export default class TextPlate {
     }
 
     private modifyBox(bottomRight: L.Point, lines: string[]): void {
-        const rect = (this._element.children[1] as HTMLElement).children[0];
+        const rect: SVGRectElement = this._element['children'][1].children[0];
         const spacing = 12;
         const longest = lines.reduce((prev, cur) => prev.length < cur.length ? cur : prev);
         const rectSize = new L.Point(10 + longest.length * 6, 6 + spacing * lines.length);
@@ -99,16 +96,17 @@ export default class TextPlate {
         rect.setAttribute('x', rectTopLeft.x.toString());
         rect.setAttribute('y', rectTopLeft.y.toString());
 
-        const text = (this._element.children[1] as HTMLElement).children[1] as HTMLElement;
+        const text: SVGTextElement = this._element['children'][1].children[1];
+        const textChildren: SVGElement[] = text['children'];
         for (var i = 0; i < lines.length; ++i) {
             const textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - (i + 1) * spacing));
-            const t = text.children[i];
+            const t = textChildren[i];
             t.setAttribute('x', textTopLeft.x.toString());
             t.setAttribute('y', textTopLeft.y.toString());
             t.textContent = lines[i];
         }
-        while (i < text.children.length) {
-            text.children[i++].textContent = null;
+        while (i < textChildren.length) {
+            textChildren[i++].textContent = null;
         }
         try {
             // sorry, firefox

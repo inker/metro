@@ -10,7 +10,7 @@ export function transferToModel(transfer: po.Transfer, elements: Element[]) {
         Object.defineProperty(transfer, prop, {
             get: () => transfer['_' + prop],
             set: (platformIndex: number) => {
-                const circle = document.getElementById('p-' + platformIndex);
+                const circle: SVGCircleElement = document.getElementById('p-' + platformIndex) as any;
                 const circleTotalRadius = Number(circle.getAttribute('r')) / 2 + parseFloat(getComputedStyle(circle).strokeWidth);
                 const pos = this.platformsOnSVG[platformIndex];
                 if (elements[0].tagName === 'line') {
@@ -20,11 +20,11 @@ export function transferToModel(transfer: po.Transfer, elements: Element[]) {
                         el.setAttribute('x' + n, pos.x.toString());
                         el.setAttribute('y' + n, pos.y.toString());
                     }
-                    const gradient = document.getElementById(`g-${this.graph.transfers.indexOf(transfer)}`);
+                    const gradient: SVGLinearGradientElement = document.getElementById(`g-${this.graph.transfers.indexOf(transfer)}`) as any;
                     const dir = prop === 'source' ? otherPos.subtract(pos) : pos.subtract(otherPos);
-                    svg.setGradientDirection(gradient, dir);
+                    svg.Gradients.setDirection(gradient, dir);
                     const circlePortion = circleTotalRadius / pos.distanceTo(otherPos);
-                    svg.setGradientOffset(gradient, circlePortion);
+                    svg.Gradients.setOffset(gradient, circlePortion);
                 } else if (elements[0].tagName === 'path') {
                     const transfers: po.Transfer[] = [];
                     const transferIndices: number[] = [];
@@ -64,9 +64,9 @@ export function transferToModel(transfer: po.Transfer, elements: Element[]) {
                         svg.setCircularPath(outer, cCenter, pos1, pos2);
                         inner.setAttribute('d', outer.getAttribute('d'));
                         const gradient = document.getElementById(`g-${transferIndices[i]}`);
-                        svg.setGradientDirection(gradient, pos2.subtract(pos1));
+                        svg.Gradients.setDirection(gradient, pos2.subtract(pos1));
                         const circlePortion = circleTotalRadius / pos1.distanceTo(pos2);
-                        svg.setGradientOffset(gradient, circlePortion);
+                        svg.Gradients.setOffset(gradient, circlePortion);
                     }
                 } else {
                     throw new Error('wrong element type for transfer');

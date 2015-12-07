@@ -1,18 +1,15 @@
 import * as L from 'leaflet';
 
-/** object must contain the 'location' field */
-type HavingLocation = {
-    location: L.LatLng;
-}
+interface Locatable { location: L.LatLng };
 
-export function findClosestObject<T extends HavingLocation>(point: L.LatLng, objects: T[]): T {
+export function findClosestObject<T extends Locatable>(point: L.LatLng, objects: T[]): T {
     if (objects.length < 1) {
         throw new Error('an objects array must contain at least 1 object');
     }
     let closest = objects[0];
     let closestDistance = point.distanceTo(closest.location);
     for (let i = 1; i < objects.length; ++i) {
-        let tempDist = point.distanceTo(objects[i].location);
+        const tempDist = point.distanceTo(objects[i].location);
         if (tempDist < closestDistance) {
             closest = objects[i];
             closestDistance = tempDist;
@@ -22,7 +19,7 @@ export function findClosestObject<T extends HavingLocation>(point: L.LatLng, obj
 }
 
 /** object must contain the 'location' field */
-export function findObjectsWithinRadius<T extends HavingLocation>(point: L.LatLng, objects: T[], radius: number, sortArray = false): T[] {
+export function findObjectsWithinRadius<T extends Locatable>(point: L.LatLng, objects: T[], radius: number, sortArray = false): T[] {
     const arr = objects.filter(obj => point.distanceTo(obj.location) <= radius);
     if (sortArray) {
         arr.sort((a, b) => point.distanceTo(a.location) - point.distanceTo(b.location));
@@ -31,10 +28,11 @@ export function findObjectsWithinRadius<T extends HavingLocation>(point: L.LatLn
 }
 
 export function getCenter(points: L.LatLng[]): L.LatLng {
+    const nPoints = points.length;
     let cLat = 0, cLon = 0;
-    for (let i = 0; i < points.length; ++i) {
+    for (let i = 0; i < nPoints; ++i) {
         cLat += points[i].lat;
         cLon += points[i].lng;
     }
-    return new L.LatLng(cLat / points.length, cLon / points.length);
+    return new L.LatLng(cLat / nPoints, cLon / nPoints);
 }

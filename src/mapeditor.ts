@@ -17,10 +17,14 @@ export default class MapEditor {
         if (val) {
             this.button.textContent = 'Save Map';
             this.button.onclick = this.saveMapClick.bind(this);
+            const dummyCircles = document.getElementById('dummy-circles');
+            dummyCircles.onmousedown = dummyCircles.onclick = null;
+            this.metroMap.contextMenu.items.delete('platformadd');
         } else {
             this.button.textContent = 'Edit Mode';
             this.button.onclick = this.editMapClick.bind(this);
         }
+        this._editMode = val;
     }
 
     constructor(metroMap: MetroMap) {
@@ -51,12 +55,10 @@ export default class MapEditor {
         const graph = this.metroMap.getGraph();
         const content = JSON.stringify(graph, (key, val) => key.startsWith('_') ? undefined : val);
         util.downloadAsFile('graph.json', content);
-        const dummyCircles = document.getElementById('dummy-circles');
-        dummyCircles.onmousedown = dummyCircles.onclick = null;
-        this.editMode = false;
     }
 
     private addMapListeners() {
+        console.log('adding');
         // change station name (change -> model (platform))
         // drag station to new location (drag -> model (platform, spans) -> paths, )
         // create new station (create -> model)
@@ -88,10 +90,11 @@ export default class MapEditor {
                 //
             } else {
                 console.log('circle right-clicked');
-                const el = de.target as Element;
+                const el = de.target as HTMLElement;
                 if (el.hasAttribute('cy')) {
                     // come up with a better solution
-                    menu.addExtraItems(el, new Map().set('platformrename', { lang: { ru: 'Pereimenovať', en: 'Rename' } }));
+                    const item = new Map().set('platformrename', { lang: { ru: 'Pereimenovať', fi: 'Nimeä uudelleen', en: 'Rename' } });
+                    menu.extraItems.set(el, item);
                 }
             }
         };

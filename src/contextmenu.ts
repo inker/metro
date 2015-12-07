@@ -13,6 +13,9 @@ export default class ContextMenu {
     get items() {
         return this._items;
     }
+    get extraItems() {
+        return this._extraItems;
+    }
     get state() {
         return document.getElementById('contextmenu') !== null;
     }
@@ -63,6 +66,7 @@ export default class ContextMenu {
             if (target === event.target) {
                 map.forEach(fillCell);
             }
+            this._extraItems.delete(target);
         });
         // defined here so that the marker gets set here (TODO: fix later)
         table.onclick = e => {
@@ -87,8 +91,5 @@ export default class ContextMenu {
         console.log('context menu!');
     }
 
-    addExtraItems(target: EventTarget, items: Map<string, Item>) {
-        this._extraItems.set(target, items);
-    }
 
 }

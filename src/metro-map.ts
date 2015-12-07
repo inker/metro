@@ -32,7 +32,7 @@ export default class MetroMap implements EventTarget {
     private _contextMenu: ContextMenu;
 
     private lineRules: {};
-    
+
     get contextMenu() {
         return this._contextMenu;
     }
@@ -152,13 +152,26 @@ export default class MetroMap implements EventTarget {
             case 'platformrename':
                 const me = event as MouseEvent;
                 const platform = svg.platformByCircle(me.relatedTarget as any, this.graph);
-                const ru = platform.name, {fi, en} = platform.altNames;
                 this.plate.show(svg.circleByDummy(me.relatedTarget as any));
-                const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru];
-                alertify.prompt('New name', names.join('|'), (okevt, val) => {
-                    [platform.name, platform.altNames['fi'], platform.altNames['en']] = val.split('|');
-                    alertify.success(`${names.join('|')} renamed to ${val}`);
-                }, () => alertify.warning('Name change cancelled'));
+                util.platformRenameDialog(this.graph, platform);
+                break;
+            case 'platformadd':
+                this.map.once('click', e => {
+                    const platform: po.Platform = {
+                        name: 'New Station',
+                        altNames: {},
+                        station: null,
+                        spans: [],
+                        transfers: [],
+                        elevation: 0,
+                        location: (e as L.LeafletMouseEvent).latlng
+                    };
+                    this.graph.platforms.push(platform);
+                    const circle = svg.makeCircle(new L.Point(0, 0), 5);
+                    const dummy = svg.makeCircle(new L.Point(0, 0), 10);
+                    bind.platformToModel(platform, [circle, dummy]);
+                });
+                this.map.getPanes().mapPane.click();
                 break;
             default:
                 this.handleMenuFromTo(event as MouseEvent);
@@ -191,7 +204,7 @@ export default class MetroMap implements EventTarget {
             console.log('move start');
             this.map.touchZoom.disable();
             if (L.Browser.webkit) {
-                svg.removeGradients();
+                svg.Gradients.removeAll();
             }
         }).on('move', e => {
             // using 'move' here instead of 'drag' because on window resize the overlay 
@@ -201,7 +214,7 @@ export default class MetroMap implements EventTarget {
             console.log('move ended');
             this.map.touchZoom.enable();
             if (L.Browser.webkit) {
-                svg.addGradients();
+                svg.Gradients.addAll();
             }
             this.fixFontRendering();
             // the secret of correct positioning is the movend transform check for corrent transform
@@ -268,15 +281,22 @@ export default class MetroMap implements EventTarget {
         }
 
         const defs = svg.createSVGElement('defs');
-        defs.appendChild(svg.makeDropShadow());
-        defs.appendChild(svg.makeShadowGlow());
+        defs.appendChild(svg.Shadows.makeDrop());
+        defs.appendChild(svg.Shadows.makeGlow());
         this.overlay.appendChild(defs);
         // svg element won't work because it does not have negative dimensions
         // (top-left station is partially visible)
         const origin = svg.createSVGElement('g');
         origin.id = 'origin';
-        // paths-outer, paths-inner, transfers-outer, station-circles, transfers-inner, dummy-circles
-        for (let groupId of ['paths-outer', 'paths-inner', 'transfers-outer', 'station-circles', 'transfers-inner', 'dummy-circles']) {
+        const groupIds = [
+            'paths-outer',
+            'paths-inner',
+            'transfers-outer',
+            'station-circles',
+            'transfers-inner',
+            'dummy-circles'
+        ];
+        for (let groupId of groupIds) {
             const group = svg.createSVGElement('g');
             group.id = groupId;
             origin.appendChild(group);
@@ -381,7 +401,7 @@ export default class MetroMap implements EventTarget {
         let transferBorder = circleBorder * 1.25;
         if (L.Browser.retina) {
             const arr = [lineWidth, circleRadius, circleBorder, transferWidth];
-            [lineWidth, circleRadius, circleBorder, transferWidth] = arr.map(item => item * 1.5);
+            [lineWidth, circleRadius, circleBorder, transferWidth, transferBorder] = arr.map(item => item * 1.5);
         }
 
         document.getElementById('station-circles').style.strokeWidth = circleBorder + 'px';
@@ -459,7 +479,7 @@ export default class MetroMap implements EventTarget {
         if (zoom > 11) {
             for (let transferIndex = 0; transferIndex < this.graph.transfers.length; ++transferIndex) {
                 const transfer = this.graph.transfers[transferIndex];
-                let paths: HTMLElement[];
+                let paths: (SVGPathElement|SVGLineElement)[];
                 const pl1 = this.graph.platforms[transfer.source],
                     pl2 = this.graph.platforms[transfer.target];
                 const pos1 = this.platformsOnSVG[transfer.source],
@@ -486,7 +506,7 @@ export default class MetroMap implements EventTarget {
                 });
                 //const colors = [transfer.source, transfer.target].map(i => getComputedStyle(docFrags['station-circles'].childNodes[i] as Element, null).getPropertyValue('stroke'));
                 const circlePortion = (circleRadius + circleBorder / 2) / pos1.distanceTo(pos2);
-                const gradient = svg.makeGradient(pos2.subtract(pos1), colors, circlePortion);
+                const gradient = svg.Gradients.make(pos2.subtract(pos1), colors, circlePortion);
                 gradient.id = 'g-' + transferIndex;
                 const defs = document.getElementsByTagName('defs')[0];
                 defs.appendChild(gradient);

@@ -1,6 +1,8 @@
 import * as L from 'leaflet';
 import { findClosestObject } from './geo';
 import * as po from './plain-objects';
+import * as svg from './svg';
+const alertify = require('alertifyjs');
 import LatLng = L.LatLng;
 
 export function getUserLanguage(): string {
@@ -153,7 +155,7 @@ export function hintContainsLine(graph: po.Graph, dirHints: any, platform: po.Pl
 
 export function downloadAsFile(title: string, content: string) {
     const a = document.createElement('a');
-    const blob = new Blob([content], {type: "octet/stream"});
+    const blob = new Blob([content], { type: "octet/stream" });
     const url = window.URL.createObjectURL(blob);
     a.href = url;
     a['download'] = title;
@@ -237,7 +239,7 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Short
     const objectSet = new Set<number>(objects.map((o, i) => i)),
         prev: number[] = objects.map(i => null);
     // time on foot between locations
-    const onFoot =  distanceBetweenPoints(p1, p2) / walkingWithObstacles;
+    const onFoot = distanceBetweenPoints(p1, p2) / walkingWithObstacles;
     while (objectSet.size > 0) {
         var minDist = Infinity;
         objectSet.forEach(i => {
@@ -253,7 +255,7 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Short
         var prevIndex = prev[currentIndex];
         const previous = objects[prevIndex];
         const prevSpan = graph.spans.find(s => s.source === currentIndex && s.target === prevIndex || s.source === prevIndex && s.target === currentIndex);
-        
+
         const neighborIndices: number[] = [],
             times: number[] = [];
         for (let i of currentNode.spans) {
@@ -273,8 +275,8 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Short
             const travelTime = timeToTravel(distance, maxTrainSpeed, trainAcceleration);
             times.push(travelTime + callTime + lineChangePenalty);
         }
-            // TODO: if transferring to an E-line, wait more
-            // TODO: penalty for changing lines (cross-platform)
+        // TODO: if transferring to an E-line, wait more
+        // TODO: penalty for changing lines (cross-platform)
         for (let neighborIndex of graph.stations[currentNode.station].platforms) {
             if (!objectSet.has(neighborIndex)) continue;
             neighborIndices.push(neighborIndex);
@@ -318,7 +320,7 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Short
     }
     // if walking on foot is faster, then why take the underground?
     if (onFoot < shortestTime) {
-        return { time: { walkTo: onFoot }};
+        return { time: { walkTo: onFoot } };
     }
     const path: string[] = [],
         platformPath = [currentIndex];
@@ -448,5 +450,31 @@ export function formatTime(time: number) {
     }
     const hours = Math.floor(time / 3600);
     const mins = Math.floor((time - hours * 3600) / 60);
-    return `${inflect(hours, 'hour')} ${inflect(mins, 'min')}`;
+    return `${inflect(hours, 'hour') } ${inflect(mins, 'min') }`;
+}
+
+export function platformRenameDialog(graph: po.Graph, platform: po.Platform) {
+    const ru = platform.name, {fi, en} = platform.altNames;
+
+    const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru];
+    const nameString = names.join('|');
+    alertify.prompt('New name', nameString, (okevt, val: string) => {
+        const newNames = val.split('|');
+        [platform.name, platform.altNames['fi'], platform.altNames['en']] = newNames;
+        if (val === nameString) {
+            return alertify.warning('Name was not changed');
+        }
+        alertify.success(`${ru} (${names.slice(1).join(', ') }) renamed to ${newNames[0]} (${newNames.slice(1).join(', ') })`);
+        const station = graph.stations[platform.station];
+        if (station.platforms.length < 2) return;
+        alertify.confirm('Rename the entire station?', () => {
+            for (let i of station.platforms) {
+                const p = graph.platforms[i];
+                [p.name, p.altNames['fi'], p.altNames['en']] = newNames;
+            }
+            [station.name, station.altNames['fi'], station.altNames['en']] = newNames;
+            alertify.success(`The entire station was renamed to ${val}`);
+        });
+
+    }, () => alertify.warning('Name change cancelled'));
 }
