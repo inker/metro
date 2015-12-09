@@ -15,9 +15,9 @@ export function makeCircle(position: L.Point, radius: number): SVGCircleElement 
     return circle as any;
 }
 
-export function makeArc(center: L.Point, start: L.Point, end: L.Point): SVGPathElement {
+export function makeArc(start: L.Point, end: L.Point, third: L.Point): SVGPathElement {
     const path = createSVGElement('path') as SVGPathElement;
-    setCircularPath(path, center, start, end)
+    setCircularPath(path, start, end, third);
     return path as any;
 }
 
@@ -53,16 +53,23 @@ export function getCircularPath(path: Element) {
     return points;
 }
 
-export function setCircularPath(el: Element, center: L.Point, start: L.Point, end: L.Point) {
-    const radius = center.distanceTo(start);
+export function setCircularPath(el: Element, start: L.Point, end: L.Point, third: L.Point) {
+    const center = util.getCircumcenter([start, end, third]);
+
+    const startAngle = Math.atan2(start.y - center.y, start.x - center.x),
+        endAngle = Math.atan2(end.y - center.y, end.x - center.x),
+        thirdAngle = Math.atan2(third.y - center.y, third.x - center.x);
+    const diff = endAngle - startAngle;
+    let large = diff <= Math.PI || diff > -Math.PI ? 0 : 1;
     const u = start.subtract(center),
         v = end.subtract(center);
-    const large = u.x * v.y - v.x * u.y < 0 ? 1 : 0;
-
-    const startAngle = Math.atan2(start.y - center.y, start.x - center.x);
-    const endAngle = Math.atan2(end.y - center.y, end.x - center.x);
-    const diff = endAngle - startAngle;
-    const sweep = diff <= Math.PI || diff > -Math.PI ? 1 : 0;
+    let sweep = u.x * v.y - v.x * u.y < 0 ? 0 : 1;
+    const dot = util.dot(third.subtract(start), third.subtract(end));
+    if (dot < 0) {
+        sweep = 1 - sweep;
+        large = 1 - large;
+    }
+    const radius = center.distanceTo(start);
     const d = [
         'M', start.x, start.y,
         'A', radius, radius, 0, large, sweep, end.x, end.y
@@ -82,8 +89,8 @@ export function makeTransferRing(center: L.Point, radius: number) {
     return [outer, inner];
 }
 
-export function makeTransferArc(center: L.Point, start: L.Point, end: L.Point) {
-    const outer = makeArc(center, start, end);
+export function makeTransferArc(start: L.Point, end: L.Point, third: L.Point) {
+    const outer = makeArc(start, end, third);
     const inner: typeof outer = outer.cloneNode(true) as any;
     return [outer, inner];
 }
@@ -189,21 +196,21 @@ export namespace Gradients {
     }
 }
 
-export function animateRoute(graph: po.Graph, platforms: number[], path: string[]) {
+export function animateRoute(graph: po.Graph, platforms: number[], edges: string[]) {
     return new Promise(resolve => (function animateSpan(i: number) {
         const circle: SVGCircleElement = document.getElementById('p-' + platforms[i]) as any;
         circle.style.opacity = null;
-        if (i < path.length) {
+        if (i < edges.length) {
             pulsateCircle(circle, 1.5, 200);
         } else {
             pulsateCircle(circle, 3, 200);
             return resolve();
         }
-        const outerOld: SVGPathElement | SVGLineElement = document.getElementById('o' + path[i]) as any;
+        const outerOld: SVGPathElement | SVGLineElement = document.getElementById('o' + edges[i]) as any;
         if (outerOld === null) {
             return animateSpan(i + 1);
         }
-        const innerOld: typeof outerOld = document.getElementById('i' + path[i]) as any;
+        const innerOld: typeof outerOld = document.getElementById('i' + edges[i]) as any;
         const outer: typeof outerOld = outerOld.cloneNode(true) as any;
         const inner: typeof outer = innerOld === null ? null : innerOld.cloneNode(true) as any;
         document.getElementById('paths-outer').appendChild(outer);
@@ -212,7 +219,7 @@ export function animateRoute(graph: po.Graph, platforms: number[], path: string[
             ? L.point(Number(outer.getAttribute('x1')), Number(outer.getAttribute('y1'))).distanceTo(L.point(Number(outer.getAttribute('x2')), Number(outer.getAttribute('y2'))))
             : outer['getTotalLength']();
 
-        const parts = path[i].split('-');
+        const parts = edges[i].split('-');
         const edge: po.Transfer | po.Span = graph[parts[0] === 'p' ? 'spans' : 'transfers'][parseInt(parts[1])];
         const initialOffset = edge.source === platforms[i] ? length : -length;
         const duration = length;

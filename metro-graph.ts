@@ -3,7 +3,14 @@ import * as util from './src/util';
 import * as po from './src/plain-objects';
 import * as geo from './src/geo';
 
-export type AltNames = { old?: string } | any;
+export type AltNames = { 
+    old?: string;
+    fi?: string;
+    en?: string;
+    se?: string;
+    ee?: string;
+    de?: string;
+ };
     
 export class Platform {
     private _name: string; // overrides the parent station's name

@@ -79,8 +79,8 @@ export function flashTitle(titles: string[], duration: number) {
     setInterval(() => document.title = titles[++i % titles.length], duration);
 }
 
-export function dot(a: L.Point, b: L.Point): number {
-    return a.x * b.x + a.y * b.y;
+export function dot(v1: L.Point, v2: L.Point): number {
+    return v1.x * v2.x + v1.y * v2.y;
 }
 
 export function angle(v1: L.Point, v2: L.Point): number {
@@ -178,10 +178,10 @@ export const lineRulesPromise = new Promise<CSSStyleSheet>(resolve => {
         link.onload = e => resolve(link.sheet as CSSStyleSheet);
     }
 }).then(styleSheet => {
-    const cssRules = styleSheet.cssRules,
+    const rules = styleSheet.cssRules,
         lineRules = {};
-    for (let i = 0; i < cssRules.length; ++i) {
-        const rule = cssRules[i];
+    for (let i = 0; i < rules.length; ++i) {
+        const rule = rules[i];
         if (rule instanceof CSSStyleRule) {
             const selector = rule.selectorText;
             if (selector === '#paths-outer .E') {
@@ -212,7 +212,7 @@ export function timeToTravel(distance: number, maxSpeed: number, acceleration: n
 
 type ShortestPathObject = {
     platforms?: number[];
-    path?: string[];
+    edges?: string[];
     time: { walkTo: number, metro?: number, walkFrom?: number, total?: number };
 }
 export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): ShortestPathObject {
@@ -350,7 +350,7 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Short
             }
         }
         if (p === '') {
-            const { transfers, midPlatforms } = transferChain(graph, prevIndex, currentIndex);
+            const { transfers, midPlatforms } = shortestTransfer(graph, prevIndex, currentIndex);
             path.push(...transfers.reverse().map(i => 't-' + i));
             platformPath.push(...midPlatforms);
         } else {
@@ -367,7 +367,7 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Short
     const metroTime = shortestTime - walkFromTime - walkToTime;
     return {
         platforms: platformPath,
-        path: path,
+        edges: path,
         time: {
             walkTo: walkToTime,
             metro: metroTime,
@@ -377,7 +377,7 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Short
     };
 }
 
-function transferChain(graph: po.Graph, p1i: number, p2i: number) {
+function shortestTransfer(graph: po.Graph, p1i: number, p2i: number) {
     const p1 = graph.platforms[p1i],
         p2 = graph.platforms[p2i];
     if (p1.station !== p2.station) {
@@ -419,7 +419,6 @@ function transferChain(graph: po.Graph, p1i: number, p2i: number) {
     const transfers: number[] = [];
     const midPlatforms: number[] = [];
     currentIndex = p2i;
-    let overflow = 200;
     while (true) {
         var prevIndex = prev[currentIndex];
         if (prevIndex === null) break;
@@ -427,7 +426,6 @@ function transferChain(graph: po.Graph, p1i: number, p2i: number) {
         transfers.push(transferIndex);
         currentIndex = prevIndex;
         midPlatforms.push(currentIndex);
-        if (--overflow === 0) throw new Error('overflow');
     }
     midPlatforms.pop();
     return {
@@ -464,7 +462,9 @@ export function platformRenameDialog(graph: po.Graph, platform: po.Platform) {
         if (val === nameString) {
             return alertify.warning('Name was not changed');
         }
-        alertify.success(`${ru} (${names.slice(1).join(', ') }) renamed to ${newNames[0]} (${newNames.slice(1).join(', ') })`);
+        const oldNamesStr = names.slice(1).join(', '), 
+            newNamesStr = newNames.slice(1).join(', ');
+        alertify.success(`${ru} (${oldNamesStr}) renamed to ${newNames[0]} (${newNamesStr})`);
         const station = graph.stations[platform.station];
         if (station.platforms.length < 2) return;
         alertify.confirm('Rename the entire station?', () => {

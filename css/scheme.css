@@ -44,6 +44,7 @@ path {
 .M10 { stroke: #F371BB; }
 .M11 { stroke: #000000; }
 .M12 { stroke: #84B817; }
+.E { stroke:  #7156A5; }
 .L { stroke: #00A4A7; }
 #paths-outer .E { stroke: #7156A5; }
 #paths-inner .E { stroke: #FFFFFF; }
@@ -64,5 +65,5 @@ path {
 .M12 { stroke: #8BC34A; }
 .L { stroke: #009688; }
 #paths-outer .E { stroke: #607D8B; }
-#paths-inner .E { stroke: #607D8B; }
+#paths-inner .E { stroke: #FFFFFF; }
 */

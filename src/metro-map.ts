@@ -82,6 +82,12 @@ export default class MetroMap implements EventTarget {
         const container = this.map.getContainer();
         container.removeChild(this.overlay);
         container.appendChild(this.overlay);
+
+        const defs = svg.createSVGElement('defs');
+        defs.appendChild(svg.Shadows.makeDrop());
+        defs.appendChild(svg.Shadows.makeGlow());
+        this.overlay.appendChild(defs);
+
         this.addMapListeners();
         graphPromise
             .catch(errText => alert(errText))
@@ -275,18 +281,16 @@ export default class MetroMap implements EventTarget {
     }
 
     private resetOverlayStructure(): void {
-        let child;
-        while (child = this.overlay.firstChild) {
-            this.overlay.removeChild(child);
-        }
 
-        const defs = svg.createSVGElement('defs');
-        defs.appendChild(svg.Shadows.makeDrop());
-        defs.appendChild(svg.Shadows.makeGlow());
-        this.overlay.appendChild(defs);
+        const origin = document.getElementById('origin') || svg.createSVGElement('g');
+        let child;
+        while (child = origin.firstChild) {
+            origin.removeChild(child);
+        }        
+
         // svg element won't work because it does not have negative dimensions
         // (top-left station is partially visible)
-        const origin = svg.createSVGElement('g');
+
         origin.id = 'origin';
         const groupIds = [
             'paths-outer',
@@ -403,15 +407,19 @@ export default class MetroMap implements EventTarget {
             const arr = [lineWidth, circleRadius, circleBorder, transferWidth];
             [lineWidth, circleRadius, circleBorder, transferWidth, transferBorder] = arr.map(item => item * 1.5);
         }
-
-        document.getElementById('station-circles').style.strokeWidth = circleBorder + 'px';
-        document.getElementById('transfers-outer').style.strokeWidth = transferWidth + transferBorder / 2 + 'px';
-        document.getElementById('transfers-inner').style.strokeWidth = transferWidth - transferBorder / 2 + 'px';
-        document.getElementById('paths-outer').style.strokeWidth = lineWidth + 'px';
-        document.getElementById('paths-inner').style.strokeWidth = lineWidth / 2 + 'px';
+        const strokeWidths = {
+            'station-circles': circleBorder,
+            'transfers-outer': transferWidth + transferBorder / 2,
+            'transfers-inner': transferWidth - transferBorder / 2,
+            'paths-outer': lineWidth,
+            'paths-inner': lineWidth / 2
+        };
+        for (let id of Object.keys(strokeWidths)) {
+            document.getElementById(id).style.strokeWidth = strokeWidths[id] + 'px';
+        }
 
         const platformsInCircles = new Set<number>();
-        const stationCircumCenters = new Map<number, L.Point>();
+        const stationCircumpoints = new Map<number, po.Platform[]>();
 
         for (let stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
             const station = this.graph.stations[stationIndex];
@@ -471,7 +479,7 @@ export default class MetroMap implements EventTarget {
             }
             if (circular && circular.length === 3) {
                 const cCenter = util.getCircumcenter(circumpoints);
-                stationCircumCenters.set(stationIndex, cCenter);
+                stationCircumpoints.set(stationIndex, circular);
             }
 
         }
@@ -479,14 +487,16 @@ export default class MetroMap implements EventTarget {
         if (zoom > 11) {
             for (let transferIndex = 0; transferIndex < this.graph.transfers.length; ++transferIndex) {
                 const transfer = this.graph.transfers[transferIndex];
-                let paths: (SVGPathElement|SVGLineElement)[];
-                const pl1 = this.graph.platforms[transfer.source],
+                let paths: (SVGPathElement | SVGLineElement)[];
+                var pl1 = this.graph.platforms[transfer.source],
                     pl2 = this.graph.platforms[transfer.target];
                 const pos1 = this.platformsOnSVG[transfer.source],
                     pos2 = this.platformsOnSVG[transfer.target];
                 if (platformsInCircles.has(transfer.source) && platformsInCircles.has(transfer.target)) {
-                    const center = stationCircumCenters.get(pl1.station);
-                    paths = svg.makeTransferArc(center, pos1, pos2);
+                    //const center = stationCircumpoints.get(pl1.station);
+                    const triplet = stationCircumpoints.get(pl1.station);
+                    const third = triplet.find(p => p !== pl1 && p !== pl2);
+                    paths = svg.makeTransferArc(pos1, pos2, this.platformsOnSVG[this.graph.platforms.indexOf(third)]);
                 } else {
                     // gradient disappearing fix (maybe use rectangle?)
                     if (pos1.x === pos2.x) {
@@ -498,7 +508,7 @@ export default class MetroMap implements EventTarget {
                 }
                 paths[0].id = 'ot-' + transferIndex;
                 paths[1].id = 'it-' + transferIndex;
-                const colors = [pl1, pl2].map(p => {
+                const gradientColors = [pl1, pl2].map(p => {
                     const span = this.graph.spans[p.spans[0]];
                     const routes = span.routes.map(n => this.graph.routes[n]);
                     const [lineId, lineType, lineNum] = routes[0].line.match(/([MEL])(\d{0,2})/);
@@ -506,10 +516,16 @@ export default class MetroMap implements EventTarget {
                 });
                 //const colors = [transfer.source, transfer.target].map(i => getComputedStyle(docFrags['station-circles'].childNodes[i] as Element, null).getPropertyValue('stroke'));
                 const circlePortion = (circleRadius + circleBorder / 2) / pos1.distanceTo(pos2);
-                const gradient = svg.Gradients.make(pos2.subtract(pos1), colors, circlePortion);
-                gradient.id = 'g-' + transferIndex;
-                const defs = document.getElementsByTagName('defs')[0];
-                defs.appendChild(gradient);
+                let gradient: SVGLinearGradientElement = document.getElementById('g-' + transferIndex) as any;
+                if (gradient === null) {
+                    gradient = svg.Gradients.make(pos2.subtract(pos1), gradientColors, circlePortion);
+                    gradient.id = 'g-' + transferIndex;
+                    this.overlay.querySelector('defs').appendChild(gradient);
+                } else {
+                    svg.Gradients.setDirection(gradient, pos2.subtract(pos1));
+                    svg.Gradients.setOffset(gradient, circlePortion);
+                }
+
                 paths[0].style.stroke = `url(#${gradient.id})`;
                 docFrags['transfers-outer'].appendChild(paths[0]);
                 docFrags['transfers-inner'].appendChild(paths[1]);
@@ -645,8 +661,8 @@ export default class MetroMap implements EventTarget {
     visualizeShortestRoute(departure: L.LatLng, arrival: L.LatLng) {
         util.resetStyle();
         alertify.dismissAll();
-        const { platforms, path, time } = util.shortestPath(this.graph, departure, arrival);
-        if (path === undefined) {
+        const { platforms, edges, time } = util.shortestPath(this.graph, departure, arrival);
+        if (edges === undefined) {
             return alertify.success(util.formatTime(time.walkTo) + ' on foot!');
         }
         const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
@@ -655,9 +671,9 @@ export default class MetroMap implements EventTarget {
             //els[i].style['-webkit-filter'] = 'grayscale(1)';
             els[i].style.opacity = '0.25';
         }
-        console.log(path);
+        console.log(edges);
         console.log(platforms.map(p => this.graph.platforms[p].name));
-        svg.animateRoute(this.graph, platforms, path).then(() => {
+        svg.animateRoute(this.graph, platforms, edges).then(() => {
             alertify.message(`time:<br>${util.formatTime(time.walkTo) } on foot<br>${util.formatTime(time.metro) } by metro<br>${util.formatTime(time.walkFrom) } on foot<br>TOTAL: ${util.formatTime(time.total) }`, 10);
         });
     }

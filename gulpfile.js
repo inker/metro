@@ -84,8 +84,8 @@ gulp.task('ts-transpile-merge-compress', () => {
          .bundle()
          .on('error', error => console.error(error.toString()))
          .pipe(source('script.js'))
-         .pipe(buffer())
-         .pipe(uglify())
+          .pipe(buffer())
+          .pipe(uglify())
          .pipe(gulp.dest('./js/'))
          .pipe(notify("Bundling complete!"))
          ;
@@ -119,3 +119,8 @@ gulp.task('js-es5-merge-compress', () => {
        ;
     //es.merge(null, [gulp.src('./public/js/leaflet.js'), b]).pipe(gulp.dest('./public/js/'));
 });
+
+gulp.task('compress', () => gulp.src('js/script.js')
+    .pipe(uglify())
+    .pipe(gulp.dest('js/'))
+    .pipe('compressed'));

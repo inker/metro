@@ -58,10 +58,11 @@ export function transferToModel(transfer: po.Transfer, elements: Element[]) {
                     for (let i = 0; i < 3; ++i) {
                         const tr = transfers[i],
                             outer = outerArcs[i],
-                            inner = innerArcs[i],
-                            pos1 = this.platformsOnSVG[tr.source],
+                            inner = innerArcs[i];
+                        var pos1 = this.platformsOnSVG[tr.source],
                             pos2 = this.platformsOnSVG[tr.target];
-                        svg.setCircularPath(outer, cCenter, pos1, pos2);
+                        const thirdPos = circumpoints.find(pos => pos !== pos1 && pos !== pos2);
+                        svg.setCircularPath(outer, pos1, pos2, thirdPos);
                         inner.setAttribute('d', outer.getAttribute('d'));
                         const gradient = document.getElementById(`g-${transferIndices[i]}`);
                         svg.Gradients.setDirection(gradient, pos2.subtract(pos1));
