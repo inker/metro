@@ -25,7 +25,6 @@ export default class FAQ {
 		const closeSpan = document.createElement('div');
 		closeSpan.classList.add('cross-ball');
 		closeSpan.textContent = 'x';
-		closeSpan.style.cursor = 'pointer';
 		closeSpan.addEventListener('click', this.hideFAQ.bind(this));
 
 		this.card.appendChild(closeSpan);
