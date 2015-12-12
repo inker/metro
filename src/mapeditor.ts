@@ -93,7 +93,9 @@ export default class MapEditor {
                 const el = de.target as HTMLElement;
                 if (el.hasAttribute('cy')) {
                     // come up with a better solution
-                    const item = new Map().set('platformrename', { lang: { ru: 'Pereimenovať', fi: 'Nimeä uudelleen', en: 'Rename' } });
+                    const item = new Map()
+                        .set('platformrename', { lang: { ru: 'Pereimenovať', fi: 'Nimeä uudelleen', en: 'Rename' } })
+                        .set('platformdelete', { lang: { ru: 'Udaliť', fi: 'Poista', en: 'Delete' } });
                     menu.extraItems.set(el, item);
                 }
             }

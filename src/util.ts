@@ -21,9 +21,43 @@ export function replaceTransform(el: HTMLElement) {
 
 export function findCircle(graph: po.Graph, station: po.Station): po.Platform[] {
     // TODO: if n=3, leave as it is; if n=4, metro has priority
-    if (station.platforms.length !== 3) return null;
-    const platforms = station.platforms.map(platformNum => graph.platforms[platformNum]);
-    return platforms.every(platform => platform.transfers.length === 2) ? platforms : null;
+    if (station.platforms.length > 4) return null;
+    let stationPlatforms = station.platforms.map(platformNum => graph.platforms[platformNum]);;
+    if (station.platforms.length === 4) {
+        stationPlatforms = stationPlatforms.filter(p => !graph.routes[graph.spans[p.spans[0]].routes[0]].line.startsWith('E'));
+    }
+    if (stationPlatforms.length !== 3) return null;
+    for (let i = 0; i < stationPlatforms.length - 1; ++i) {
+        const neighbors = stationPlatforms[i].transfers.map(p => graph.platforms[p]);
+        for (let j = i + 1; j < stationPlatforms.length; ++j) {
+            if (neighbors.indexOf(stationPlatforms[j]) < 0) {
+                return null;
+            }
+        }
+    }
+    return stationPlatforms;
+}
+
+export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {
+    const clientPos = new L.Point(event.clientX, event.clientY);
+    const rect = map.getContainer().getBoundingClientRect();
+    const containerPos = new L.Point(rect.left, rect.top);
+    const coors = map.containerPointToLatLng(clientPos.subtract(containerPos));
+    return coors;
+}
+
+export function once(el: EventTarget, eventType: string, listener: (e: KeyboardEvent) => any) {
+    const handler: typeof listener = e => {
+        el.removeEventListener(eventType, handler);
+        listener(e);
+    }
+    el.addEventListener(eventType, handler);
+}
+
+export function onceEscapePress(handler: (ev: KeyboardEvent) => any) {
+    once(window, 'keydown', e => {
+        if (e.keyCode === 27) handler(e);
+    });
 }
 
 export function getCircumcenter(positions: L.Point[]): L.Point {
@@ -111,7 +145,7 @@ export function verifyHints(graph: po.Graph, hints: po.Hints): Promise<string> {
             }
         }
     }
-    return new Promise((resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
         const crossPlatform = hints.crossPlatform;
         Object.keys(crossPlatform).forEach(platformName => {
             if (graph.platforms.find(el => el.name === platformName) === undefined) {
@@ -138,7 +172,7 @@ export function hintContainsLine(graph: po.Graph, dirHints: any, platform: po.Pl
     const routes: po.Route[] = [];
     spans.forEach(span => span.routes.forEach(i => routes.push(graph.routes[i])));
     const lines = routes.map(rt => rt.line);
-    let platformHints = dirHints[platform.name];
+    const platformHints = dirHints[platform.name];
     if (platformHints) {
         if ('forEach' in platformHints) {
             for (let idx = 0; idx < platformHints.length; ++idx) {
@@ -282,7 +316,7 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Short
             neighborIndices.push(neighborIndex);
             const neighbor = objects[neighborIndex];
             const distance = distanceBetweenPoints(currentNode.location, neighbor.location);
-            times.push(distance / walkingWithObstacles / 1.5 + metroWaitingTime); // variable time depending on the transfer's length
+            times.push(distance / walkingSpeed + metroWaitingTime); // variable time depending on the transfer's length
         }
         // pain in the ass
         // const transferIndices = graph.transfers
@@ -462,7 +496,7 @@ export function platformRenameDialog(graph: po.Graph, platform: po.Platform) {
         if (val === nameString) {
             return alertify.warning('Name was not changed');
         }
-        const oldNamesStr = names.slice(1).join(', '), 
+        const oldNamesStr = names.slice(1).join(', '),
             newNamesStr = newNames.slice(1).join(', ');
         alertify.success(`${ru} (${oldNamesStr}) renamed to ${newNames[0]} (${newNamesStr})`);
         const station = graph.stations[platform.station];

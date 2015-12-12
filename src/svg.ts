@@ -15,6 +15,15 @@ export function makeCircle(position: L.Point, radius: number): SVGCircleElement 
     return circle as any;
 }
 
+export function makeLine(start: L.Point, end: L.Point): SVGLineElement {
+    const line = createSVGElement('line') as SVGLineElement;
+    line.setAttribute('x1', start.x.toString());
+    line.setAttribute('y1', start.y.toString());
+    line.setAttribute('x2', end.x.toString());
+    line.setAttribute('y2', end.y.toString());
+    return line;
+}
+
 export function makeArc(start: L.Point, end: L.Point, third: L.Point): SVGPathElement {
     const path = createSVGElement('path') as SVGPathElement;
     setCircularPath(path, start, end, third);
@@ -190,9 +199,8 @@ export namespace Gradients {
     }
 
     export function setOffset(gradient: Element, offset: number) {
-        const gradientChildren: Element[] = gradient['children'];
-        gradientChildren[0].setAttribute('offset', offset.toString());
-        gradientChildren[1].setAttribute('offset', (1 - offset).toString());
+        gradient.firstElementChild.setAttribute('offset', offset.toString());
+        gradient.lastElementChild.setAttribute('offset', (1 - offset).toString());
     }
 }
 
@@ -224,14 +232,15 @@ export function animateRoute(graph: po.Graph, platforms: number[], edges: string
         const initialOffset = edge.source === platforms[i] ? length : -length;
         const duration = length;
         outer.style.filter = 'url(#black-glow)';
-        for (let p of (inner === null ? [outer] : [outer, inner])) {
-            p.style.transition = null;
-            p.style.opacity = null;
-            p.style.strokeDasharray = length + ' ' + length;
-            p.style.strokeDashoffset = initialOffset.toString();
-            p.getBoundingClientRect();
-            p.style.transition = `stroke-dashoffset ${duration}ms linear`;
-            p.style.strokeDashoffset = '0';
+        for (let path of (inner === null ? [outer] : [outer, inner])) {
+            const pathStyle = path.style;
+            pathStyle.transition = null;
+            pathStyle.opacity = null;
+            pathStyle.strokeDasharray = length + ' ' + length;
+            pathStyle.strokeDashoffset = initialOffset.toString();
+            path.getBoundingClientRect();
+            pathStyle.transition = `stroke-dashoffset ${duration}ms linear`;
+            pathStyle.strokeDashoffset = '0';
         }
         outer.addEventListener('transitionend', e => {
             outerOld.style.opacity = null;
@@ -251,7 +260,7 @@ export function animateRoute(graph: po.Graph, platforms: number[], edges: string
             animateSpan(i + 1);
         });
         console.log(outer);
-    })(0))
+    })(0));
 }
 
 export function pulsateCircle(circle: SVGCircleElement, scaleFactor: number, duration: number) {

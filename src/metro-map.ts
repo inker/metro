@@ -3,11 +3,11 @@ const alertify = require('alertifyjs');
 import * as util from './util';
 import * as svg from './svg';
 import * as po from './plain-objects';
-import * as addons from './addons';
 import * as graph from '../metro-graph';
 import * as bind from './bind';
 import * as geo from './geo';
 import MapEditor from './mapeditor';
+import FAQ from './faq';
 import TextPlate from './textplate';
 import ContextMenu from './contextmenu';
 
@@ -61,9 +61,9 @@ export default class MetroMap implements EventTarget {
         const hintsPromise = fetch('json/hints.json')
             .then(hintsText => hintsText.json())
             .then(hintsJSON => this.hints = hintsJSON);
-        const dataPromise = fetch('json/data.json')
-            .then(dataText => dataText.json())
-            .then(dataJSON => this.textData = dataJSON);
+        const contextMenuPromise = fetch('json/contextmenudata.json')
+            .then(data => data.json())
+            .catch(er => console.error(er))
 
         this.map = new L.Map(containerId, {
             //layers: tileLayers[Object.keys(tileLayers)[0]],
@@ -94,26 +94,26 @@ export default class MetroMap implements EventTarget {
             .then(graphJson => this.extendBounds()) // because the previous assignment returns json
             .then(() => hintsPromise)
             .then(hintsJson => util.lineRulesPromise)
-            .then(lineRules => this.lineRules = lineRules)
-            .then(lineRules => this.redrawNetwork())
-        // TODO: fix the kludge making the grey area disappear
-            .then(() => this.map.invalidateSize(false))
-            .then(() => this.resetMapView())
-        //.catch(err => console.error(err))
-            .then(() => this.fixFontRendering())
-            .then(() => new MapEditor(this))
-            .then(() => this._contextMenu = new ContextMenu(this, new window['Map']([
-                ['fromclick', { icon: 'add location', lang: { ru: 'Otśuda', fi: 'Tältä', en: 'From here' } }],
-                ['toclick', { icon: 'directions', lang: { ru: 'Śuda', fi: 'Tänne', en: 'To here' } }],
-                ['clearroute', { icon: 'layers clear', lang: { ru: 'Očistiť maršrut', fi: 'Tyhjennä reitti', en: 'Clear route' } }],
-                ['showheatmap', { icon: 'blur on', disabled: true, lang: { ru: 'Pokazať teplokartu', fi: 'Näytä lämpökartta', en: 'Show heatmap' } }]
-            ])))
-            .then(() => dataPromise);
+            .then(lineRules => {
+                this.lineRules = lineRules;
+                this.redrawNetwork();
+                // TODO: fix the kludge making the grey area disappear
+                this.map.invalidateSize(false);
+                this.resetMapView();
+                this.fixFontRendering();
+                new MapEditor(this);
+                new FAQ(this, 'json/data.json');
+                return contextMenuPromise;
+            })
+            .then(contextMenuData => this._contextMenu = new ContextMenu(this, new window['Map'](contextMenuData)))
+            .catch(er => console.error(er));
 
         Promise.all([graphPromise, hintsPromise])
             .then(results => util.verifyHints(this.graph, this.hints))
             .then(response => console.log(response))
             .catch(err => console.error(err));
+
+
 
     }
 
@@ -155,12 +155,76 @@ export default class MetroMap implements EventTarget {
                     // draw time map from the marker
                 }
                 break;
-            case 'platformrename':
+            case 'measuredistance': {
+                const me = event as MouseEvent;
+                const coors = util.mouseToLatLng(this.map, me);
+                const origin = document.getElementById('origin');
+                let ptGroup = document.getElementById('measure-circles');
+                let lineGroup = document.getElementById('measure-lines');
+                if (ptGroup !== null) {
+                    origin.removeChild(ptGroup);
+                    origin.removeChild(lineGroup);
+                }
+                ptGroup = svg.createSVGElement('g') as any;
+                ptGroup.id = 'measure-circles';
+                lineGroup = svg.createSVGElement('g') as any;
+                lineGroup.id = 'measure-lines';
+
+                origin.appendChild(ptGroup);
+                origin.appendChild(lineGroup);
+                let prevCoors = coors;
+                const pts: L.LatLng[] = [];
+                this.map.on('click', (e: L.LeafletMouseEvent) => {
+                    if (e.originalEvent.button !== 0) return;
+                    const pos = this.map.latLngToContainerPoint(e.latlng).subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
+                    const circle = svg.makeCircle(pos, 3);
+                    circle.classList.add('measure-circle');
+                    const el = { lang: { ru: 'Udaliť izmerenia', en: 'Delete measurements' } };
+                    this._contextMenu.extraItems.set(circle, new Map().set('deletemeasurements', el));
+                    ptGroup.appendChild(circle);
+                    const prevPos = this.map.latLngToContainerPoint(prevCoors).subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
+                    const line = svg.makeLine(prevPos, pos);
+                    line.classList.add('measure-line');
+                    lineGroup.appendChild(line);
+                    pts.push(e.latlng);
+                    if (pts.length > 1) {
+                        let distance = 0;
+                        for (let i = 1; i < pts.length; ++i) {
+                            distance += pts[i - 1].distanceTo(pts[i]);
+                        }
+                        alertify.dismissAll();
+                        alertify.message(Math.round(distance) + 'm');
+                    }
+                    prevCoors = e.latlng;
+                });
+                this.map.fire('click', { latlng: coors, originalEvent: { button: 0 } });
+                util.onceEscapePress(e => this.dispatchEvent(new MouseEvent('deletemeasurements')));
+                break;
+            }
+            case 'deletemeasurements': {
+                const origin = document.getElementById('origin');
+                for (let id of ['measure-circles', 'measure-lines']) {
+                    origin.removeChild(document.getElementById(id));
+                }
+                this.map.off('click');
+                break;
+            }
+            case 'platformrename': {
                 const me = event as MouseEvent;
                 const platform = svg.platformByCircle(me.relatedTarget as any, this.graph);
                 this.plate.show(svg.circleByDummy(me.relatedTarget as any));
                 util.platformRenameDialog(this.graph, platform);
                 break;
+            }
+            case 'platformdelete': {
+                const me = event as MouseEvent;
+                const platform = svg.platformByCircle(me.relatedTarget as any, this.graph);
+                const spans = platform.spans;
+                //TODO: somehow delete node
+                // find spans that belong to the same line
+                // find 
+                break;
+            }
             case 'platformadd':
                 this.map.once('click', e => {
                     const platform: po.Platform = {
@@ -189,11 +253,7 @@ export default class MetroMap implements EventTarget {
     removeEventListener(type: string, listener: EventListener) { }
 
     private handleMenuFromTo(e: MouseEvent) {
-        const clientPos = new L.Point(e.clientX, e.clientY);
-        const rect = this.map.getContainer().getBoundingClientRect();
-        const containerPos = new L.Point(rect.left, rect.top);
-        const coors = this.map.containerPointToLatLng(clientPos.subtract(containerPos));
-        console.log(coors);
+        const coors = util.mouseToLatLng(this.map, e);
         const marker = e.type === 'fromclick' ? this.fromMarker : this.toMarker;
         marker.setLatLng(coors);
         console.log(this.fromMarker, this.toMarker);
@@ -201,6 +261,7 @@ export default class MetroMap implements EventTarget {
         if (!this.fromMarker.getLatLng().equals(zero) && !this.toMarker.getLatLng().equals(zero)) {
             this.visualizeShortestRoute(this.fromMarker.getLatLng(), this.toMarker.getLatLng());
         }
+        util.onceEscapePress(e => this.dispatchEvent(new MouseEvent('clearroute')));
         this.fixFontRendering();
     }
 
@@ -478,7 +539,6 @@ export default class MetroMap implements EventTarget {
                 }
             }
             if (circular && circular.length === 3) {
-                const cCenter = util.getCircumcenter(circumpoints);
                 stationCircumpoints.set(stationIndex, circular);
             }
 
