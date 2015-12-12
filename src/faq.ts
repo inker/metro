@@ -41,8 +41,10 @@ export default class FAQ {
 	showFAQ(event: MouseEvent) {
 		this.card.style.display = 'inline';
 		this.card.style.transform = 'scale(0.1)';
+		this.card.style.opacity = '0';
 		this.card.getBoundingClientRect();
 		this.card.style.transform = null;
+		this.card.style.opacity = null;
 		this.button.disabled = true;
 		this.map.once('mousedown', e => this.hideFAQ((e as L.LeafletMouseEvent).originalEvent));
 	}
@@ -50,6 +52,7 @@ export default class FAQ {
 	hideFAQ(event: MouseEvent) {
 		this.card.getBoundingClientRect();
 		this.card.style.transform = 'scale(0.1)';
+		this.card.style.opacity = '0';
 		setTimeout(() => this.card.style.display = 'none', 200);
 		this.button.disabled = false;
 	}

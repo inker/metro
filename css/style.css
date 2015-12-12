@@ -119,7 +119,8 @@ button:disabled {
     box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
     font-family: Roboto, Calibri, sans-serif;
     overflow-y: scroll;
-    transition: transform 200ms linear;
+    transition-property: transform opacity;
+    transition-duration:  200ms;
     border-color: black;
 }
 
