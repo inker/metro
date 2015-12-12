@@ -14,14 +14,16 @@ export default class MapEditor {
     }
 
     set editMode(val: boolean) {
+        const lang = util.getUserLanguage();
+        const [editMap, saveMap] = lang === 'ru' ? ['Redaktirovať kartu', 'Sochraniť kartu'] : ['Edit map', 'Save map'];
         if (val) {
-            this.button.textContent = 'Save Map';
+            this.button.textContent = saveMap;
             this.button.onclick = this.saveMapClick.bind(this);
             const dummyCircles = document.getElementById('dummy-circles');
             dummyCircles.onmousedown = dummyCircles.onclick = null;
             this.metroMap.contextMenu.items.delete('platformadd');
         } else {
-            this.button.textContent = 'Edit Mode';
+            this.button.textContent = editMap;
             this.button.onclick = this.editMapClick.bind(this);
         }
         this._editMode = val;
