@@ -302,7 +302,6 @@ export default class MetroMap implements EventTarget {
                 const clickOffset = new L.Point(client.x - box.left, client.y - box.top);
                 const ratio = new L.Point(clickOffset.x / box.width, clickOffset.y / box.height);
                 const overlayStyle = this.overlay.style;
-                overlayStyle.transform = '';
                 overlayStyle.left = '0';
                 overlayStyle.top = '0';
                 overlayStyle.transformOrigin = `${ratio.x * 100}% ${ratio.y * 100}%`;
