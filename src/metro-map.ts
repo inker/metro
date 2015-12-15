@@ -105,16 +105,13 @@ export default class MetroMap implements EventTarget {
                 new FAQ(this, 'json/data.json');
                 return contextMenuPromise;
             })
-            .then(contextMenuData => this._contextMenu = new ContextMenu(this, new window['Map'](contextMenuData)))
+            .then(contextMenuData => this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData)))
             .catch(er => console.error(er));
 
         Promise.all([graphPromise, hintsPromise])
             .then(results => util.verifyHints(this.graph, this.hints))
             .then(response => console.log(response))
             .catch(err => console.error(err));
-
-
-
     }
 
     addEventListener(type: string, listener: EventListener) { }
