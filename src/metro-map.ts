@@ -289,9 +289,6 @@ export default class MetroMap implements EventTarget {
         }).on('zoomstart', e => {
             console.log('zoomstart', e.target);
             this.map.dragging.disable();
-            if (!L.Browser.webkit) {
-                return this.overlay.style.opacity = '0.25';
-            }
             const fromZoom: number = e.target['_zoom'];
             setTimeout(() => {
                 const toZoom: number = e.target['_animateToZoom'];
@@ -304,11 +301,13 @@ export default class MetroMap implements EventTarget {
                 }
                 const clickOffset = new L.Point(client.x - box.left, client.y - box.top);
                 const ratio = new L.Point(clickOffset.x / box.width, clickOffset.y / box.height);
-                this.overlay.style.transform = '';
-                this.overlay.style.left = box.left.toString();
-                this.overlay.style.top = box.top.toString();
-                this.overlay.style.transformOrigin = `${ratio.x * 100}% ${ratio.y * 100}%`;
-                this.overlay.style.transform = `scale(${scaleFactor})`;
+                const overlayStyle = this.overlay.style;
+                overlayStyle.transform = '';
+                overlayStyle.left = '0';
+                overlayStyle.top = '0';
+                overlayStyle.transformOrigin = `${ratio.x * 100}% ${ratio.y * 100}%`;
+                overlayStyle.transform = `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${box.left}, ${box.top})`;
+                // overlayStyle.transform = `translate3d(${box.left}px, ${box.top}px, 0) scale(${scaleFactor})`;
             }, 0);
             this.overlay.style.opacity = '0.5';
         }).on('zoomend', e => {
