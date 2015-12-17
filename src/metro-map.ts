@@ -179,7 +179,8 @@ export default class MetroMap implements EventTarget {
                     const el = { lang: { ru: 'Udaliť izmerenia', en: 'Delete measurements' } };
                     this._contextMenu.extraItems.set(circle, new Map().set('deletemeasurements', el));
                     ptGroup.appendChild(circle);
-                    const prevPos = this.map.latLngToContainerPoint(prevCoors).subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
+                    const prevPos = this.map.latLngToContainerPoint(prevCoors)
+                        .subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
                     const line = svg.makeLine(prevPos, pos);
                     line.classList.add('measure-line');
                     lineGroup.appendChild(line);

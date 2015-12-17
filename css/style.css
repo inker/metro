@@ -52,7 +52,8 @@ a:hover {
     text-align: right;
     /*font-weight: bold;*/
     opacity: 1;
-    -webkit-filter: blur(3px);
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .plate-box {
