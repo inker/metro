@@ -252,21 +252,27 @@ type ShortestPathObject = {
 export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): ShortestPathObject {
     const walkingSpeed = 1.4,
         walkingWithObstacles = 1,
-        maxTrainSpeed = 18,
-        trainAcceleration = 1.4,
-        metroStopTime = 45,
-        eLineStopTime = 90,
+        maxTrainSpeed = 20,
+        trainAcceleration = 0.7,
+        metroStopTime = 30,
+        eLineStopTime = 60,
         metroWaitingTime = 180,
         eLineWaitingTime = 300;
     const distanceBetweenPoints = (a: L.LatLng, b: L.LatLng) => L.LatLng.prototype.distanceTo.call(a, b) as number;
     const objects = graph.platforms;
     // time to travel from station to the p1 location
-    const dist: number[] = [], timesOnFoot: number[] = [];
+    const dist: number[] = [],
+        timesOnFoot: number[] = [];
     for (let o of objects) {
-        const distance = distanceBetweenPoints(p1, o.location);
-        const time = distance / walkingWithObstacles;
-        dist.push(time);
-        timesOnFoot.push(distanceBetweenPoints(o.location, p2) / walkingWithObstacles);
+        const hasE = o.spans.map(i => graph.spans[i].routes[0])
+            .map(i => graph.routes[i].line)
+            .some(l => l.startsWith('E'));
+        let distance = distanceBetweenPoints(p1, o.location),
+            time = distance / walkingWithObstacles
+        dist.push(time + (hasE ? eLineWaitingTime : metroWaitingTime));
+        distance = distanceBetweenPoints(o.location, p2);
+        time = distance / walkingWithObstacles;
+        timesOnFoot.push(time);
     }
     // pick the closest one so far
     let currentIndex = objects.indexOf(findClosestObject(p1, objects));
@@ -315,28 +321,17 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Short
             if (!objectSet.has(neighborIndex)) continue;
             neighborIndices.push(neighborIndex);
             const neighbor = objects[neighborIndex];
+            const hasE = neighbor.spans.map(i => graph.spans[i].routes[0])
+                .map(i => graph.routes[i].line)
+                .some(l => l.startsWith('E'));
             const distance = distanceBetweenPoints(currentNode.location, neighbor.location);
-            times.push(distance / walkingSpeed + metroWaitingTime); // variable time depending on the transfer's length
+            times.push(distance / walkingSpeed + (hasE ? eLineWaitingTime : metroWaitingTime));
         }
-        // pain in the ass
-        // const transferIndices = graph.transfers
-        //     .map((t, i) => i)
-        //     .filter(t => graph.transfers[t].source === currentIndex || graph.transfers[t].target === currentIndex);
-        // for (let i of transferIndices) {
-        //     const t = graph.transfers[i];
-        //     const neighborIndex = currentIndex === t.source ? t.target : t.source;
-        //     if (!objectSet.has(neighborIndex)) continue;
-        //     const neighbor = objects[neighborIndex];
-        //     neighborIndices.push(neighborIndex);
-        //     const distance = distanceBetweenPoints(currentNode.location, neighbor.location);
-        //     times.push(distance / walkingWithObstacles / 1.5 + 90); // variable time depending on the transfer's length
-        // }
+
         for (let i = 0; i < neighborIndices.length; ++i) {
             const neighborIndex = neighborIndices[i],
                 alt = dist[currentIndex] + times[i];
             if (alt < dist[neighborIndex]) {
-                // for debugging
-                //objects[neighborIndex].altNames['fi'] = alt.toString();
                 dist[neighborIndex] = alt;
                 prev[neighborIndex] = currentIndex;
             }
@@ -359,8 +354,7 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Short
     const path: string[] = [],
         platformPath = [currentIndex];
     // remove later
-    let euristics = 0;
-    while (true) {
+    for (;;) {
         const currentNode = objects[currentIndex];
         //console.log('current', currentNode.name);
         const prevIndex = prev[currentIndex];
@@ -391,7 +385,6 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Short
             path.push(p);
         }
         platformPath.push(prevIndex);
-        if (++euristics > objects.length) throw new Error('overflow!');
         currentIndex = prevIndex;
     }
     platformPath.reverse();
@@ -453,7 +446,7 @@ function shortestTransfer(graph: po.Graph, p1i: number, p2i: number) {
     const transfers: number[] = [];
     const midPlatforms: number[] = [];
     currentIndex = p2i;
-    while (true) {
+    for (;;) {
         var prevIndex = prev[currentIndex];
         if (prevIndex === null) break;
         const transferIndex = graph.transfers.findIndex(t => t.source === currentIndex && t.target === prevIndex || t.source === prevIndex && t.target === currentIndex);

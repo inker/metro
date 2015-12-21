@@ -31,12 +31,13 @@ export default class MapEditor {
 
     constructor(metroMap: MetroMap) {
         this.metroMap = metroMap;
-        this.button = document.createElement('button');
-        this.button.id = 'edit-map-button';
-        this.button.textContent = 'Edit Map';
-        this.button.classList.add('leaflet-control');
-        this.button.onclick = this.editMapClick.bind(this);
-        document.querySelector('.leaflet-right.leaflet-top').appendChild(this.button);
+        const btn = document.createElement('button');
+        btn.id = 'edit-map-button';
+        btn.textContent = 'Edit Map';
+        btn.classList.add('leaflet-control');
+        btn.onclick = this.editMapClick.bind(this);
+        document.querySelector('.leaflet-right.leaflet-top').appendChild(btn);
+        this.button = btn;
         this.editMode = false;
         this.metroMap.getMap().on('zoomend', e => {
             if (this.editMode) {
@@ -71,8 +72,7 @@ export default class MapEditor {
         const dummyCircles = document.getElementById('dummy-circles');
 
         const menu = this.metroMap.contextMenu;
-        menu.items
-            .set('platformadd', { lang: { ru: 'Novaja stancia', fi: 'Uusi asema', en: 'New station' } });
+        menu.items.set('platformadd', { lang: { ru: 'Novaja stancia', fi: 'Uusi asema', en: 'New station' } });
 
         dummyCircles.onmousedown = de => {
             if (de.button === 0) {

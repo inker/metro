@@ -1,3 +1,4 @@
+/// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 const alertify = require('alertifyjs');
 import * as util from './util';
@@ -549,7 +550,6 @@ export default class MetroMap implements EventTarget {
                 const pos1 = this.platformsOnSVG[transfer.source],
                     pos2 = this.platformsOnSVG[transfer.target];
                 if (platformsInCircles.has(transfer.source) && platformsInCircles.has(transfer.target)) {
-                    //const center = stationCircumpoints.get(pl1.station);
                     const triplet = stationCircumpoints.get(pl1.station);
                     const third = triplet.find(p => p !== pl1 && p !== pl2);
                     paths = svg.makeTransferArc(pos1, pos2, this.platformsOnSVG[this.graph.platforms.indexOf(third)]);
