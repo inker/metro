@@ -8,15 +8,12 @@
     "classlist-polyfill": "latest",
     "es6-promise": "latest",
     "es6-set": "latest",
-    "express": "latest",
     "leaflet": "latest"
   },
   "devDependencies": {
     "babel-preset-es2015": "latest",
     "babelify": "latest",
-    "browserify": {
-     
-    },
+    "browserify": "latest",
     "browserify-shim": {
 
     },

@@ -104,6 +104,17 @@ export default class MetroMap implements EventTarget {
                 this.fixFontRendering();
                 new MapEditor(this);
                 new FAQ(this, 'json/data.json');
+                // const metroPoints = this.graph.platforms.filter(p => this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('M')).map(p => p.location);
+                // const foo = (points, pt) => points.reduce((prev, cur) => prev + pt.distanceTo(cur), 0);
+                // const metroMean = util.geoMean(metroPoints, foo);
+                // for (let i = 5000; i < 20000; i += 5000) {
+                //     L.circle(metroMean, i - 250, { weight: 1 }).addTo(this.map);
+                //     L.circle(metroMean, i + 250, { weight: 1 }).addTo(this.map);
+                // }
+                // const ePoints = this.graph.platforms.filter(p => this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('E')).map(p => p.location);
+                // const eMean = this.graph.platforms.find(p => p.name === 'Glavnyj voxal' && this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('E')).location;
+                // L.circle(eMean, 30000).addTo(this.map);
+                // L.circle(eMean, 45000).addTo(this.map);
                 return contextMenuPromise;
             })
             .then(contextMenuData => this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData)))
@@ -400,14 +411,15 @@ export default class MetroMap implements EventTarget {
             se = this.bounds.getSouthEast();
         // svg bounds in pixels relative to container
         
+        const overlayStyle = this.overlay.style;
         const pixelBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
-        const transform = util.parseTransform(this.overlay.style.transform);
+        const transform = util.parseTransform(overlayStyle.transform);
 
         const pixelBoundsSize = pixelBounds.getSize();
         const topLeft = pixelBounds.min.subtract(transform).subtract(pixelBoundsSize);
         console.log(this.map.latLngToContainerPoint(nw));
-        this.overlay.style.left = topLeft.x + 'px';
-        this.overlay.style.top = topLeft.y + 'px';
+        overlayStyle.left = topLeft.x + 'px';
+        overlayStyle.top = topLeft.y + 'px';
         const originShift = pixelBoundsSize;
         const origin = document.getElementById('origin');
         //TODO: test which one is faster
@@ -419,8 +431,8 @@ export default class MetroMap implements EventTarget {
         //origin.style.top = originShift.y + 'px';
         
         const tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
-        this.overlay.style.width = tripleSvgBoundsSize.x + 'px';
-        this.overlay.style.height = tripleSvgBoundsSize.y + 'px';
+        overlayStyle.width = tripleSvgBoundsSize.x + 'px';
+        overlayStyle.height = tripleSvgBoundsSize.y + 'px';
     }
 
     /**
@@ -502,7 +514,16 @@ export default class MetroMap implements EventTarget {
                             if (matches) {
                                 ci.classList.add(matches[1] === 'M' ? matches[0] : matches[1]);
                             }
-                        } else if (lines.size === 2) {
+                        } else {
+                            var rgbs = [];
+                            lines.forEach(l => {
+                                const matches = l.match(/([MEL])(\d{0,2})/);
+                                if (!matches) return;
+                                rgbs.push(this.lineRules[matches[1] === 'M' ? matches[0] : matches[1]]);
+                            });
+                            ci.style.stroke = util.meanColor(rgbs);
+                        }
+                        //else if (lines.size === 2) {
                             //const vals = lines.values();
                             //const [line1 , lineType1, lineNum1 ] = vals.next().value.match(/([MEL])(\d{0,2})/);
                             //const [line2 , lineType2, lineNum2 ] = vals.next().value.match(/([MEL])(\d{0,2})/);
@@ -510,7 +531,7 @@ export default class MetroMap implements EventTarget {
                             //    cl2 = lineType2 === 'M' ? line2 : lineType2;
                             //const toGrey = ()
                             //if (this.lineRules[cl1])
-                        }
+                        //}
                     }
 
                     const dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
@@ -730,7 +751,7 @@ export default class MetroMap implements EventTarget {
         console.log(edges);
         console.log(platforms.map(p => this.graph.platforms[p].name));
         svg.animateRoute(this.graph, platforms, edges).then(() => {
-            alertify.message(`time:<br>${util.formatTime(time.walkTo) } on foot<br>${util.formatTime(time.metro) } by metro<br>${util.formatTime(time.walkFrom) } on foot<br>TOTAL: ${util.formatTime(time.total) }`, 10);
+            alertify.message(`time:<br>${util.formatTime(time.walkTo)} on foot<br>${util.formatTime(time.metro)} by metro<br>${util.formatTime(time.walkFrom)} on foot<br>TOTAL: ${util.formatTime(time.total)}`, 10);
         });
     }
 }

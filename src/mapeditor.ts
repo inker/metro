@@ -79,14 +79,14 @@ export default class MapEditor {
                 const platform = svg.platformByCircle(de.target as any, graph);
                 //const initialLocation = platform.location; // TODO: Ctrl+Z
                 map.dragging.disable();
-                map.on('mousemove', le => {
-                    platform.location = (le as L.LeafletMouseEvent).latlng;
+                map.on('mousemove', (le: L.LeafletMouseEvent) => {
+                    platform.location = le.latlng;
                     plate.disabled = true;
                 });
-                map.once('mouseup', le => {
+                map.once('mouseup', (le: L.LeafletMouseEvent) => {
                     map.off('mousemove').dragging.enable();
                     plate.disabled = false;
-                    plate.show(svg.circleByDummy((le as L.LeafletMouseEvent).originalEvent.target as any));
+                    plate.show(svg.circleByDummy(le.originalEvent.target as any));
                 });
             } else if (de.button === 1) {
                 //

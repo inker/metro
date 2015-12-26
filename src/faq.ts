@@ -13,12 +13,13 @@ export default class FAQ {
 		    .catch(err => console.error(err))
 			.then(data => data.json());
 		this.map = map.getMap();
-		this.button = document.createElement('button');
-		this.button.id = 'faq-button';
-        this.button.textContent = 'FAQ';
-        this.button.classList.add('leaflet-control');
-        this.button.onclick = this.showFAQ.bind(this);
-		document.querySelector('.leaflet-right.leaflet-top').appendChild(this.button);
+		const btn = document.createElement('button');
+		btn.id = 'faq-button';
+        btn.textContent = 'FAQ';
+        btn.classList.add('leaflet-control');
+        btn.onclick = this.showFAQ.bind(this);
+		document.querySelector('.leaflet-right.leaflet-top').appendChild(btn);
+        this.button = btn;
 		this.card = document.createElement('div');
 		this.card.id = 'faq-card';
 		document.body.appendChild(this.card);

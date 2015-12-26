@@ -6,34 +6,10 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "node/node.d.ts": {
-      "commit": "fa04c80f4a889613b96cb4f283848c61a9f64233"
-    },
-    "express/express.d.ts": {
-      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
-    },
-    "libxmljs/libxmljs.d.ts": {
-      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
-    },
-    "body-parser/body-parser.d.ts": {
-      "commit": "d73cbcb405788eb85cc4a4167b963ef4dd630cdc"
+      "commit": "40c60850ad6c8175a62d5ab48c4e016ea5b3dffe"
     },
     "leaflet/leaflet.d.ts": {
-      "commit": "5a8fc5ee71701431e4fdbb80c506e3c13f85a9ff"
-    },
-    "mime/mime.d.ts": {
-      "commit": "1632606f82cfbaf89d4b96b8dccacfaf2a6ae2f3"
-    },
-    "serve-static/serve-static.d.ts": {
-      "commit": "1632606f82cfbaf89d4b96b8dccacfaf2a6ae2f3"
-    },
-    "request/request.d.ts": {
-      "commit": "99942cab1446292c79c4328218abd37621505112"
-    },
-    "form-data/form-data.d.ts": {
-      "commit": "99942cab1446292c79c4328218abd37621505112"
-    },
-    "alertify/alertify.d.ts": {
-      "commit": "fa04c80f4a889613b96cb4f283848c61a9f64233"
+      "commit": "40c60850ad6c8175a62d5ab48c4e016ea5b3dffe"
     }
   }
 }

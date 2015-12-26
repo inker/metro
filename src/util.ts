@@ -1,9 +1,10 @@
+/// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 import { findClosestObject } from './geo';
 import * as po from './plain-objects';
 import * as svg from './svg';
 const alertify = require('alertifyjs');
-import LatLng = L.LatLng;
+
 
 export function getUserLanguage(): string {
     return (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();
@@ -354,7 +355,7 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Short
     const path: string[] = [],
         platformPath = [currentIndex];
     // remove later
-    for (;;) {
+    for (; ;) {
         const currentNode = objects[currentIndex];
         //console.log('current', currentNode.name);
         const prevIndex = prev[currentIndex];
@@ -446,7 +447,7 @@ function shortestTransfer(graph: po.Graph, p1i: number, p2i: number) {
     const transfers: number[] = [];
     const midPlatforms: number[] = [];
     currentIndex = p2i;
-    for (;;) {
+    for (; ;) {
         var prevIndex = prev[currentIndex];
         if (prevIndex === null) break;
         const transferIndex = graph.transfers.findIndex(t => t.source === currentIndex && t.target === prevIndex || t.source === prevIndex && t.target === currentIndex);
@@ -459,6 +460,15 @@ function shortestTransfer(graph: po.Graph, p1i: number, p2i: number) {
         transfers: transfers.reverse(),
         midPlatforms: midPlatforms.reverse()
     }
+}
+
+export function meanColor(rgb: string[]): string {
+    var re = /rgb\s*\((\d+),\s*(\d+),\s*(\d+)\s*\)/,
+        n = rgb.length;
+    var [r, g, b] = rgb
+        .reduce((prev, cur) => cur.match(re).splice(1).map((it, i) => prev[i] + parseInt(it)), [0, 0, 0])
+        .map(i => Math.floor(i / n));
+    return `rgb(${r}, ${g}, ${b})`;
 }
 
 function inflect(value: number, str: string) {
@@ -475,7 +485,7 @@ export function formatTime(time: number) {
     }
     const hours = Math.floor(time / 3600);
     const mins = Math.floor((time - hours * 3600) / 60);
-    return `${inflect(hours, 'hour') } ${inflect(mins, 'min') }`;
+    return `${inflect(hours, 'hour')} ${inflect(mins, 'min')}`;
 }
 
 export function platformRenameDialog(graph: po.Graph, platform: po.Platform) {
@@ -504,4 +514,25 @@ export function platformRenameDialog(graph: po.Graph, platform: po.Platform) {
         });
 
     }, () => alertify.warning('Name change cancelled'));
+}
+
+import * as geo from './geo';
+export function geoMean(points: L.LatLng[], lossFunction: (pts: L.LatLng[], cur: L.LatLng) => number): L.LatLng {
+    let avg = geo.getCenter(points);
+    let step = 1;
+    let totalDistance = Infinity;
+    for (; step > 0.00000001; step *= 0.5) {
+        for (let i = -5 * step; i <= 5 * step; i += step) {
+            for (let j = -5 * step; j <= 5 * step; j += step) {
+                var pt = new L.LatLng(avg.lat + i, avg.lng + j);
+                const total = lossFunction(points, pt);
+                if (total < totalDistance) {
+                    avg = pt;
+                    totalDistance = total;
+                }
+            }
+        }
+
+    }
+    return avg;
 }
