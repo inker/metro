@@ -20,5 +20,25 @@
     "Delete": {
         "ru": "Udaliť",
         "fi": "Poista"
+    },
+    "Clear route": {
+        "ru": "Očistiť maršrut",
+        "fi": "Tyhjennä reitti"
+    },
+    "Measure distance": {
+        "ru": "Pomeriť rasstojanie",
+        "fi": "Mittaa etäisyys"
+    },
+    "Show heatmap": {
+        "ru": "Pokazať teplokartu",
+        "fi": "Näytä lämpökartta"
+    },
+    "Route from here": {
+        "ru": "Maršrut otśuda",
+        "fi": "Reitti tältä"
+    },
+    "Route to here": {
+        "ru": "Maršrut śuda",
+        "fi": "Reitti tänne"
     }
 }
