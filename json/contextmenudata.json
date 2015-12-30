@@ -1,57 +1,36 @@
 [
-	[
-		"fromclick",
-		{
-			"icon": "add location",
-			"lang": {
-				"ru": "Maršrut otśuda",
-				"fi": "Reitti tältä",
-				"en": "Route from here"
-			}
-		}
-	],
-	[
-		"toclick",
-		{
-			"icon": "directions",
-			"lang": {
-				"ru": "Maršrut śuda",
-				"fi": "Reitti tänne",
-				"en": "Route to here"
-			}
-		}
-	],
-	[
-		"clearroute",
-		{
-			"icon": "layers clear",
-			"lang": {
-				"ru": "Očistiť maršrut",
-				"fi": "Tyhjennä reitti",
-				"en": "Clear route"
-			}
-		}
-	],
-	[
-		"measuredistance",
-		{
-			"lang": {
-				"ru": "Pomeriť rasstojanie",
-				"fi": "Mittaa etäisyys",
-				"en": "Measure distance"
-			}
-		}
-	],
-	[
-		"showheatmap",
-		{
-			"icon": "blur on",
-			"disabled": true,
-			"lang": {
-				"ru": "Pokazať teplokartu",
-				"fi": "Näytä lämpökartta",
-				"en": "Show heatmap"
-			}
-		}
-	]
+    [
+        "fromclick",
+        {
+            "icon": "add location",
+            "text": "Route from here"
+        }
+    ],
+    [
+        "toclick",
+        {
+            "icon": "directions",
+            "text": "Route to here"
+        }
+    ],
+    [
+        "clearroute",
+        {
+            "icon": "layers clear",
+            "text": "Clear route"
+        }
+    ],
+    [
+        "measuredistance",
+        {
+            "text": "Measure distance"
+        }
+    ],
+    [
+        "showheatmap",
+        {
+            "icon": "blur on",
+            "text": "Show heatmap"
+        }
+    ]
 ]

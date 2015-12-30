@@ -2,6 +2,8 @@ import MetroMap from './metro-map';
 import * as util from './util';
 import * as svg from './svg';
 
+let lang;
+
 export default class MapEditor {
     private metroMap: MetroMap;
 
@@ -14,23 +16,23 @@ export default class MapEditor {
     }
 
     set editMode(val: boolean) {
-        const lang = util.getUserLanguage();
-        const [editMap, saveMap] = lang === 'ru' ? ['Redaktirovať kartu', 'Sochraniť kartu'] : ['Edit map', 'Save map'];
+        const userLang = util.getUserLanguage();
         if (val) {
-            this.button.textContent = saveMap;
+            this.button.textContent = util.translate('Save map', userLang, lang);;
             this.button.onclick = this.saveMapClick.bind(this);
             const dummyCircles = document.getElementById('dummy-circles');
             dummyCircles.onmousedown = dummyCircles.onclick = null;
             this.metroMap.contextMenu.items.delete('platformadd');
         } else {
-            this.button.textContent = editMap;
+            this.button.textContent = util.translate('Edit map', userLang, lang);
             this.button.onclick = this.editMapClick.bind(this);
         }
         this._editMode = val;
     }
 
-    constructor(metroMap: MetroMap) {
+    constructor(metroMap: MetroMap, language: any) {
         this.metroMap = metroMap;
+        lang = language;
         const btn = document.createElement('button');
         btn.id = 'edit-map-button';
         btn.textContent = 'Edit Map';
@@ -72,7 +74,7 @@ export default class MapEditor {
         const dummyCircles = document.getElementById('dummy-circles');
 
         const menu = this.metroMap.contextMenu;
-        menu.items.set('platformadd', { lang: { ru: 'Novaja stancia', fi: 'Uusi asema', en: 'New station' } });
+        menu.items.set('platformadd', { text: 'New station' });
 
         dummyCircles.onmousedown = de => {
             if (de.button === 0) {
@@ -96,8 +98,8 @@ export default class MapEditor {
                 if (el.hasAttribute('cy')) {
                     // come up with a better solution
                     const item = new Map()
-                        .set('platformrename', { lang: { ru: 'Pereimenovať', fi: 'Nimeä uudelleen', en: 'Rename' } })
-                        .set('platformdelete', { lang: { ru: 'Udaliť', fi: 'Poista', en: 'Delete' } });
+                        .set('platformrename', { text: "Rename" })
+                        .set('platformdelete', { text: "Delete" });
                     menu.extraItems.set(el, item);
                 }
             }

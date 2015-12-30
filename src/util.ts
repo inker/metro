@@ -3,8 +3,8 @@ import * as L from 'leaflet';
 import { findClosestObject } from './geo';
 import * as po from './plain-objects';
 import * as svg from './svg';
+import * as res from './res';
 const alertify = require('alertifyjs');
-
 
 export function getUserLanguage(): string {
     return (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();
@@ -202,35 +202,6 @@ export function vectorToGradCoordinates(vector: L.Point) {
     const x = Math.abs(vector.x), y = Math.abs(vector.y);
     return vector.divideBy(x < y ? y : x);
 }
-
-export const lineRulesPromise = new Promise<CSSStyleSheet>(resolve => {
-    const link: HTMLLinkElement = document.querySelector(`[href$="css/scheme.css"]`) as any;
-    if (link.sheet && (link.sheet as CSSStyleSheet).cssRules) {
-        console.log('already loaded');
-        resolve(link.sheet as CSSStyleSheet);
-    } else {
-        console.log('waiting to load');
-        link.onload = e => resolve(link.sheet as CSSStyleSheet);
-    }
-}).then(styleSheet => {
-    const rules = styleSheet.cssRules,
-        lineRules = {};
-    for (let i = 0; i < rules.length; ++i) {
-        const rule = rules[i];
-        if (rule instanceof CSSStyleRule) {
-            const selector = rule.selectorText;
-            if (selector === '#paths-outer .E') {
-                lineRules['E'] = rule.style.stroke;
-            } else {
-                const matches = selector.match(/\.(M\d+|L)/);
-                if (matches) {
-                    lineRules[matches[1]] = rule.style.stroke;
-                }
-            }
-        }
-    }
-    return lineRules;
-});
 
 /**
  * 
@@ -535,4 +506,8 @@ export function geoMean(points: L.LatLng[], lossFunction: (pts: L.LatLng[], cur:
 
     }
     return avg;
+}
+
+export function translate(text: string, language: string, dictionary: {}) {
+    return (language === 'en' || !(text in dictionary) || !(language in dictionary[text])) ? text : dictionary[text][language];
 }

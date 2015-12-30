@@ -1,6 +1,7 @@
 /// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 const alertify = require('alertifyjs');
+import * as res from './res';
 import * as util from './util';
 import * as svg from './svg';
 import * as po from './plain-objects';
@@ -32,6 +33,7 @@ export default class MetroMap implements EventTarget {
 
     private _contextMenu: ContextMenu;
 
+    private lang: {};
     private lineRules: {};
 
     get contextMenu() {
@@ -54,17 +56,18 @@ export default class MetroMap implements EventTarget {
         return this.graph;
     }
 
-    constructor(containerId: string, kml: string, tileLayers: {}) {
-        const fetch: (url: string, options?: {}) => Promise<any> = window['fetch'];
-        const graphPromise = fetch(kml)
-            .then(graphText => graphText.json())
+    constructor(containerId: string, kml: string, tileLayers: {}, language: {}) {
+        const graphPromise: Promise<po.Graph> = fetch(kml)
+            .then(data => data.json())
             .then(graphJSON => this.graph = graphJSON);
         const hintsPromise = fetch('json/hints.json')
-            .then(hintsText => hintsText.json())
+            .then(data => data.json())
             .then(hintsJSON => this.hints = hintsJSON);
         const contextMenuPromise = fetch('json/contextmenudata.json')
             .then(data => data.json())
+            .then(obj => { console.log(obj); return obj; })
             .catch(er => console.error(er))
+        
 
         this.map = new L.Map(containerId, {
             //layers: tileLayers[Object.keys(tileLayers)[0]],
@@ -94,7 +97,7 @@ export default class MetroMap implements EventTarget {
             .catch(errText => alert(errText))
             .then(graphJson => this.extendBounds()) // because the previous assignment returns json
             .then(() => hintsPromise)
-            .then(hintsJson => util.lineRulesPromise)
+            .then(hintsJson => res.lineRulesPromise)
             .then(lineRules => {
                 this.lineRules = lineRules;
                 this.redrawNetwork();
@@ -102,8 +105,9 @@ export default class MetroMap implements EventTarget {
                 this.map.invalidateSize(false);
                 this.resetMapView();
                 this.fixFontRendering();
-                new MapEditor(this);
-                new FAQ(this, 'json/data.json');
+                this.lang = language;
+                new MapEditor(this, language);
+                new FAQ(this, 'json/data.json', language);
                 // const metroPoints = this.graph.platforms.filter(p => this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('M')).map(p => p.location);
                 // const foo = (points, pt) => points.reduce((prev, cur) => prev + pt.distanceTo(cur), 0);
                 // const metroMean = util.geoMean(metroPoints, foo);
@@ -117,7 +121,7 @@ export default class MetroMap implements EventTarget {
                 // L.circle(eMean, 45000).addTo(this.map);
                 return contextMenuPromise;
             })
-            .then(contextMenuData => this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData)))
+            .then(contextMenuData => this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData), language))
             .catch(er => console.error(er));
 
         Promise.all([graphPromise, hintsPromise])
@@ -165,8 +169,7 @@ export default class MetroMap implements EventTarget {
                 }
                 break;
             case 'measuredistance': {
-                const me = event as MouseEvent;
-                const coors = util.mouseToLatLng(this.map, me);
+                const coors = util.mouseToLatLng(this.map, event as MouseEvent);
                 const origin = document.getElementById('origin');
                 let ptGroup = document.getElementById('measure-circles');
                 let lineGroup = document.getElementById('measure-lines');
@@ -236,22 +239,29 @@ export default class MetroMap implements EventTarget {
                 break;
             }
             case 'platformadd':
-                this.map.once('click', e => {
-                    const platform: po.Platform = {
-                        name: 'New Station',
-                        altNames: {},
-                        station: null,
-                        spans: [],
-                        transfers: [],
-                        elevation: 0,
-                        location: (e as L.LeafletMouseEvent).latlng
-                    };
-                    this.graph.platforms.push(platform);
-                    const circle = svg.makeCircle(new L.Point(0, 0), 5);
-                    const dummy = svg.makeCircle(new L.Point(0, 0), 10);
-                    bind.platformToModel(platform, [circle, dummy]);
-                });
-                this.map.getPanes().mapPane.click();
+                const coor = util.mouseToLatLng(this.map, event as MouseEvent);
+                const pos = this.map.latLngToContainerPoint(coor)
+                    .subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
+                const stationCircles = document.getElementById('station-circles'),
+                    dummyCircles = document.getElementById('dummy-circles');
+                const circle = svg.makeCircle(pos, parseFloat(stationCircles.firstElementChild.getAttribute('r'))),         dummy = svg.makeCircle(pos, parseFloat(dummyCircles.firstElementChild.getAttribute('r')));
+
+                const id = this.graph.platforms.length;
+                circle.id = 'p-' + id;
+                dummy.id = 'd-' + id;
+                stationCircles.appendChild(circle);
+                dummyCircles.appendChild(dummy);
+                const platform: po.Platform = {
+                    name: 'New Station',
+                    altNames: {},
+                    station: null,
+                    spans: [],
+                    transfers: [],
+                    elevation: 0,
+                    location: coor
+                };
+                this.graph.platforms.push(platform);
+                bind.platformToModel.call(this, platform, [circle, dummy])
                 break;
             default:
                 this.handleMenuFromTo(event as MouseEvent);
@@ -524,16 +534,15 @@ export default class MetroMap implements EventTarget {
                             ci.style.stroke = util.meanColor(rgbs);
                         }
                         //else if (lines.size === 2) {
-                            //const vals = lines.values();
-                            //const [line1 , lineType1, lineNum1 ] = vals.next().value.match(/([MEL])(\d{0,2})/);
-                            //const [line2 , lineType2, lineNum2 ] = vals.next().value.match(/([MEL])(\d{0,2})/);
-                            //const cl1 = lineType1 === 'M' ? line1 : lineType1,
-                            //    cl2 = lineType2 === 'M' ? line2 : lineType2;
-                            //const toGrey = ()
-                            //if (this.lineRules[cl1])
+                        //const vals = lines.values();
+                        //const [line1 , lineType1, lineNum1 ] = vals.next().value.match(/([MEL])(\d{0,2})/);
+                        //const [line2 , lineType2, lineNum2 ] = vals.next().value.match(/([MEL])(\d{0,2})/);
+                        //const cl1 = lineType1 === 'M' ? line1 : lineType1,
+                        //    cl2 = lineType2 === 'M' ? line2 : lineType2;
+                        //const toGrey = ()
+                        //if (this.lineRules[cl1])
                         //}
                     }
-
                     const dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
                     dummyCircle.id = 'd-' + platformIndex;
 

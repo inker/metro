@@ -1,6 +1,7 @@
 'use strict';
 import MetroMap from './metro-map';
 import * as util from './util';
+import * as res from './res';
 
 if (L.Browser.ie) {
     alert("Does not work in IE (yet)");
@@ -12,13 +13,13 @@ import polyfills from './polyfills';
 polyfills();
 
 import tilelayers from './tilelayers';
-const metroMap = new MetroMap('map-container', 'json/graph.json', tilelayers);
 
-util.flashTitle([
-    'Plan metro Sankt-Peterburga',
-    'Pietarin metron hankesuunnitelma',
-    'St Petersburg metro plan proposal'
-], 3000);
+res.dictionaryPromise.then(dict => {
+    const metroMap = new MetroMap('map-container', 'json/graph.json', tilelayers, dict);
+    const title = 'St Petersburg metro plan proposal';
+    const a = dict[title];
+    util.flashTitle(Object.keys(a).map(key => a[key]).concat([title]), 3000);
+});
 
 console.log('user: ' + navigator.userLanguage);
 console.log('language: ' + navigator.language);

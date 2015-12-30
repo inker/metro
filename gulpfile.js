@@ -77,7 +77,7 @@ gulp.task('ts-transpile-merge-compress', () => {
     browserify()
         .add('typings/tsd.d.ts')
          .add('src/main.ts')
-        .plugin(tsify, {target: 'es5', module: 'commonjs'})
+        .plugin(tsify, {target: 'es5', module: 'commonjs', noLib: true})
 
          //.transform(babelify, {presets: ["es2015"], extensions: ['.js', '.json']})
          //.add('src/main.js')
