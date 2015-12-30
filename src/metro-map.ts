@@ -33,7 +33,7 @@ export default class MetroMap implements EventTarget {
 
     private _contextMenu: ContextMenu;
 
-    private lang: {};
+    private dict: {};
     private lineRules: {};
 
     get contextMenu() {
@@ -105,7 +105,7 @@ export default class MetroMap implements EventTarget {
                 this.map.invalidateSize(false);
                 this.resetMapView();
                 this.fixFontRendering();
-                this.lang = language;
+                this.dict = language;
                 new MapEditor(this, language);
                 new FAQ(this, 'json/data.json', language);
                 // const metroPoints = this.graph.platforms.filter(p => this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('M')).map(p => p.location);
@@ -252,7 +252,7 @@ export default class MetroMap implements EventTarget {
                 stationCircles.appendChild(circle);
                 dummyCircles.appendChild(dummy);
                 const platform: po.Platform = {
-                    name: 'New Station',
+                    name: util.translate('New station', util.getUserLanguage(), this.dict),
                     altNames: {},
                     station: null,
                     spans: [],
