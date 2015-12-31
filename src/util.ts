@@ -2,8 +2,6 @@
 import * as L from 'leaflet';
 import { findClosestObject } from './geo';
 import * as po from './plain-objects';
-import * as svg from './svg';
-import * as res from './res';
 const alertify = require('alertifyjs');
 
 export const userLanguage = (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();

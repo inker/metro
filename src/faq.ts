@@ -1,6 +1,5 @@
-import * as L from 'leaflet';
 import MetroMap from './metro-map';
-import * as util from './util';
+import { once } from './util';
 
 type FAQData = {faq: { q: string, a: string }[]};
 
@@ -55,7 +54,7 @@ export default class FAQ {
 		this.card.getBoundingClientRect();
 		this.card.style.transform = 'scale(0.1)';
 		this.card.style.opacity = '0';
-		util.once(this.card, 'transitionend', e => this.card.style.display = null);
+		once(this.card, 'transitionend', e => this.card.style.display = null);
 		this.button.disabled = false;
 	}
 }

@@ -1,12 +1,11 @@
 /// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 const alertify = require('alertifyjs');
-import * as res from './res';
+import { lineRulesPromise } from './res';
 import * as util from './util';
 const tr = (text: string) => util.translate(text);
 import * as svg from './svg';
 import * as po from './plain-objects';
-import * as graph from '../metro-graph';
 import * as bind from './bind';
 import * as geo from './geo';
 import MapEditor from './mapeditor';
@@ -96,7 +95,7 @@ export default class MetroMap implements EventTarget {
             .catch(errText => alert(errText))
             .then(graphJson => this.extendBounds()) // because the previous assignment returns json
             .then(() => hintsPromise)
-            .then(hintsJson => res.lineRulesPromise)
+            .then(hintsJson => lineRulesPromise)
             .then(lineRules => {
                 this.lineRules = lineRules;
                 this.redrawNetwork();
@@ -747,8 +746,9 @@ export default class MetroMap implements EventTarget {
         alertify.dismissAll();
         const { platforms, edges, time } = util.shortestPath(this.graph, departure, arrival);
         const onFoot = tr('on foot');
+        const walkTo = util.formatTime(time.walkTo);
         if (edges === undefined) {
-            return alertify.success(`${util.formatTime(time.walkTo)} ${onFoot}!`);
+            return alertify.success(`${walkTo} ${onFoot}!`);
         }
         const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
         const els: HTMLElement[] = this.overlay.querySelectorAll(selector) as any;
@@ -759,7 +759,7 @@ export default class MetroMap implements EventTarget {
         console.log(edges);
         console.log(platforms.map(p => this.graph.platforms[p].name));
         svg.animateRoute(this.graph, platforms, edges).then(() => {
-            alertify.message(`${tr('time').toUpperCase()}:<br>${util.formatTime(time.walkTo)} ${onFoot}<br>${util.formatTime(time.metro)} ${tr('by metro')}<br>${util.formatTime(time.walkFrom)} ${onFoot}<br>${tr('TOTAL')}: ${util.formatTime(time.total)}`, 10);
+            alertify.message(`${tr('time').toUpperCase()}:<br>${walkTo} ${onFoot}<br>${util.formatTime(time.metro)} ${tr('by metro')}<br>${util.formatTime(time.walkFrom)} ${onFoot}<br>${tr('TOTAL')}: ${util.formatTime(time.total)}`, 10);
         });
     }
 }
