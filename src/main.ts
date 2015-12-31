@@ -18,7 +18,7 @@ res.dictionaryPromise.then(dict => {
     if (util.userLanguage !== 'en') {
         const simpleDict = {};
         for (let key of Object.keys(dict)) {
-            simpleDict[key] = dict[key][util.userLanguage];
+            simpleDict[key] = dict[key][util.userLanguage] || key;
         }
         util.translate = text => simpleDict[text];
     }
