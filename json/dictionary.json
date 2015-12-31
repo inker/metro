@@ -4,22 +4,24 @@
         "fi": "Pietarin metron hankesuunnitelma"
     },
     "Edit map": {
-        "ru": "Redaktirovať kartu"
+        "ru": "Redaktirovať kartu",
+        "fi": "Muokkaa karttaa"
     },
     "Save map": {
-        "ru": "Sochraniť kartu"
+        "ru": "Sochraniť kartu",
+        "fi": "Tallenna kartta"
     },
     "New station": {
         "ru": "Novaja stancia",
         "fi": "Uusi asema"
     },
-    "Rename": {
-        "ru": "Pereimenovať",
-        "fi": "Nimeä uudelleen"
+    "Rename station": {
+        "ru": "Pereimenovať stanciu",
+        "fi": "Nimeä asema uudelleen"
     },
-    "Delete": {
-        "ru": "Udaliť",
-        "fi": "Poista"
+    "Delete station": {
+        "ru": "Udaliť stanciu",
+        "fi": "Poista asema"
     },
     "Clear route": {
         "ru": "Očistiť maršrut",
@@ -35,7 +37,7 @@
     },
     "Route from here": {
         "ru": "Maršrut otśuda",
-        "fi": "Reitti tältä"
+        "fi": "Reitti täältä"
     },
     "Route to here": {
         "ru": "Maršrut śuda",

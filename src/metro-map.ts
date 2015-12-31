@@ -592,7 +592,7 @@ export default class MetroMap implements EventTarget {
                 }
                 paths[0].id = 'ot-' + transferIndex;
                 paths[1].id = 'it-' + transferIndex;
-                const gradientColors = [pl1, pl2].map(p => {
+                const gradientColors: string[] = [pl1, pl2].map(p => {
                     const span = this.graph.spans[p.spans[0]];
                     const routes = span.routes.map(n => this.graph.routes[n]);
                     const [lineId, lineType, lineNum] = routes[0].line.match(/([MEL])(\d{0,2})/);

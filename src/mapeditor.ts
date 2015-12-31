@@ -94,8 +94,8 @@ export default class MapEditor {
                 if (el.hasAttribute('cy')) {
                     // come up with a better solution
                     const item = new Map()
-                        .set('platformrename', { text: "Rename" })
-                        .set('platformdelete', { text: "Delete" });
+                        .set('platformrename', { text: "Rename station" })
+                        .set('platformdelete', { text: "Delete station" });
                     menu.extraItems.set(el, item);
                 }
             }
