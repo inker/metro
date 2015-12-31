@@ -104,12 +104,19 @@ export function makeTransferArc(start: L.Point, end: L.Point, third: L.Point) {
 }
 
 export function makeTransfer(start: L.Point, end: L.Point): SVGLineElement[] {
+    // gradient disappearing fix (maybe use rectangle?)
+    let tg = end.clone();
+    if (start.x === end.x) {
+        tg.x += 0.01;
+    } else if (start.y === end.y) {
+        tg.y += 0.01;
+    }
     return ['transfer-outer', 'transfer-inner'].map(cls => {
         const line = createSVGElement('line');
         line.setAttribute('x1', start.x.toString());
         line.setAttribute('y1', start.y.toString());
-        line.setAttribute('x2', end.x.toString());
-        line.setAttribute('y2', end.y.toString());
+        line.setAttribute('x2', tg.x.toString());
+        line.setAttribute('y2', tg.y.toString());
         line.classList.add(cls);
         return line as any;
     });
@@ -266,7 +273,7 @@ export function pulsateCircle(circle: SVGCircleElement, scaleFactor: number, dur
     circle.getBoundingClientRect();
     circle.style.transition = `transform ${duration / 2}ms linear`;
     // circle.style.transform = `translate3d(${-circle.getAttribute('cx') * (scaleFactor - 1)}px, ${-circle.getAttribute('cy') * (scaleFactor - 1)}px, 0) scale3d(${scaleFactor}, ${scaleFactor}, 1)`;
-    circle.style.transform = `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${-circle.getAttribute('cx') * (scaleFactor - 1) }, ${-circle.getAttribute('cy') * (scaleFactor - 1) })`;
+    circle.style.transform = `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${-circle.getAttribute('cx') * (scaleFactor - 1)}, ${-circle.getAttribute('cy') * (scaleFactor - 1)})`;
     circle.addEventListener('transitionend', function foo(e) {
         this.removeEventListener('transitionend', foo);
         this.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';

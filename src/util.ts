@@ -21,23 +21,32 @@ export function replaceTransform(el: HTMLElement) {
     el.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
 }
 
+export function arrayEquals<T>(a: T[], b: T[]) {
+    const n = a.length;
+    if (n !== b.length) return false;
+    for (let i = 0; i < n; ++i) {
+        if (a[i] !== b[i]) return false;
+    }
+    return true;
+}
+
 export function findCircle(graph: po.Graph, station: po.Station): po.Platform[] {
     // TODO: if n=3, leave as it is; if n=4, metro has priority
-    if (station.platforms.length > 4) return null;
-    let stationPlatforms = station.platforms.map(platformNum => graph.platforms[platformNum]);;
-    if (station.platforms.length === 4) {
-        stationPlatforms = stationPlatforms.filter(p => !graph.routes[graph.spans[p.spans[0]].routes[0]].line.startsWith('E'));
+    const stationPlatforms = station.platforms.map(platformNum => graph.platforms[platformNum]);
+    if (stationPlatforms.length === 3) {
+        return stationPlatforms.every(p => p.transfers.length === 2) ? stationPlatforms : [];
     }
-    if (stationPlatforms.length !== 3) return null;
-    for (let i = 0; i < stationPlatforms.length - 1; ++i) {
-        const neighbors = stationPlatforms[i].transfers.map(p => graph.platforms[p]);
-        for (let j = i + 1; j < stationPlatforms.length; ++j) {
-            if (neighbors.indexOf(stationPlatforms[j]) < 0) {
-                return null;
-            }
+    if (stationPlatforms.length === 4) {
+        const ps = stationPlatforms.slice().sort((a, b) => a.transfers.length - b.transfers.length);
+        const degs = ps.map(p => p.transfers.length);
+        if (arrayEquals(degs, [2, 2, 3, 3])) {
+            return ps;
+        }
+        if (arrayEquals(degs, [1, 2, 2, 3])) {
+            return ps.slice(1);
         }
     }
-    return stationPlatforms;
+    return [];
 }
 
 export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {

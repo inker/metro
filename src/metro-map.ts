@@ -241,7 +241,7 @@ export default class MetroMap implements EventTarget {
                     .subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
                 const stationCircles = document.getElementById('station-circles'),
                     dummyCircles = document.getElementById('dummy-circles');
-                const circle = svg.makeCircle(pos, parseFloat(stationCircles.firstElementChild.getAttribute('r'))),         dummy = svg.makeCircle(pos, parseFloat(dummyCircles.firstElementChild.getAttribute('r')));
+                const circle = svg.makeCircle(pos, parseFloat(stationCircles.firstElementChild.getAttribute('r'))), dummy = svg.makeCircle(pos, parseFloat(dummyCircles.firstElementChild.getAttribute('r')));
 
                 const id = this.graph.platforms.length;
                 circle.id = 'p-' + id;
@@ -555,14 +555,14 @@ export default class MetroMap implements EventTarget {
             dummyCircles.addEventListener('mouseout', e => this.plate.hide());
 
             const circular = util.findCircle(this.graph, station);
-            for (let platformIndex of station.platforms) {
-                const platform = this.graph.platforms[platformIndex];
-                if (circular && circular.indexOf(platform) > -1) {
-                    circumpoints.push(this.platformsOnSVG[platformIndex]);
-                    platformsInCircles.add(platformIndex);
+            if (circular.length > 0) {
+                for (let platformIndex of station.platforms) {
+                    const platform = this.graph.platforms[platformIndex];
+                    if (circular.indexOf(platform) > -1) {
+                        circumpoints.push(this.platformsOnSVG[platformIndex]);
+                        platformsInCircles.add(platformIndex);
+                    }
                 }
-            }
-            if (circular && circular.length === 3) {
                 stationCircumpoints.set(stationIndex, circular);
             }
 
@@ -571,22 +571,27 @@ export default class MetroMap implements EventTarget {
         if (zoom > 11) {
             for (let transferIndex = 0; transferIndex < this.graph.transfers.length; ++transferIndex) {
                 const transfer = this.graph.transfers[transferIndex];
-                let paths: (SVGPathElement | SVGLineElement)[];
+                var paths: (SVGPathElement | SVGLineElement)[];
                 var pl1 = this.graph.platforms[transfer.source],
                     pl2 = this.graph.platforms[transfer.target];
-                const pos1 = this.platformsOnSVG[transfer.source],
+                var pos1 = this.platformsOnSVG[transfer.source],
                     pos2 = this.platformsOnSVG[transfer.target];
                 if (platformsInCircles.has(transfer.source) && platformsInCircles.has(transfer.target)) {
-                    const triplet = stationCircumpoints.get(pl1.station);
-                    const third = triplet.find(p => p !== pl1 && p !== pl2);
-                    paths = svg.makeTransferArc(pos1, pos2, this.platformsOnSVG[this.graph.platforms.indexOf(third)]);
-                } else {
-                    // gradient disappearing fix (maybe use rectangle?)
-                    if (pos1.x === pos2.x) {
-                        pos2.x += 0.01;
-                    } else if (pos1.y === pos2.y) {
-                        pos2.y += 0.01;
+                    const cluster = stationCircumpoints.get(pl1.station);
+                    const makeArc = (third: po.Platform) => {
+                        const thirdPos = this.platformsOnSVG[this.graph.platforms.indexOf(third)];
+                        paths = svg.makeTransferArc(pos1, pos2, thirdPos);
                     }
+                    if (cluster.length === 3) {
+                        makeArc(cluster.find(p => p !== pl1 && p !== pl2));
+                    } else if (pl1 === cluster[2] && pl2 === cluster[3] || pl1 === cluster[3] && pl2 === cluster[2]) {
+                        paths = svg.makeTransfer(pos1, pos2);
+                    } else {
+                        const degs = cluster.map(p => p.transfers.length);
+                        var [a, b] = pl1.transfers.length === 2 ? [pl1, pl2] : [pl2, pl1];
+                        makeArc(this.graph.platforms[a.transfers.find(i => this.graph.platforms[i] !== b)]);
+                    }
+                } else {
                     paths = svg.makeTransfer(pos1, pos2);
                 }
                 paths[0].id = 'ot-' + transferIndex;
