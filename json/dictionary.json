@@ -40,5 +40,25 @@
     "Route to here": {
         "ru": "Maršrut śuda",
         "fi": "Reitti tänne"
+    },
+    "time": {
+        "ru": "vremä",
+        "fi": "aika"
+    },
+    "on foot": {
+        "ru": "peškom",
+        "fi": "jalan"
+    },
+    "by metro": {
+        "ru": "na metro",
+        "fi": "metrolla"
+    },
+    "h": {
+        "ru": "č",
+        "fi": "t"
+    },
+    "TOTAL": {
+        "ru": "ITOGO",
+        "fi": "YHTEENSÄ"
     }
 }

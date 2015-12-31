@@ -6,8 +6,11 @@ import * as svg from './svg';
 import * as res from './res';
 const alertify = require('alertifyjs');
 
-export function getUserLanguage(): string {
-    return (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();
+export const userLanguage = (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();
+
+export function translate(text: string) {
+    // function will be replaced when a different primary language other than English is detected
+    return text;
 }
 
 export function parseTransform(val: string): L.Point {
@@ -293,7 +296,8 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Short
             if (!objectSet.has(neighborIndex)) continue;
             neighborIndices.push(neighborIndex);
             const neighbor = objects[neighborIndex];
-            const hasE = neighbor.spans.map(i => graph.spans[i].routes[0])
+            const hasE = neighbor.spans
+                .map(i => graph.spans[i].routes[0])
                 .map(i => graph.routes[i].line)
                 .some(l => l.startsWith('E'));
             const distance = distanceBetweenPoints(currentNode.location, neighbor.location);
@@ -443,7 +447,7 @@ export function meanColor(rgb: string[]): string {
 }
 
 function inflect(value: number, str: string) {
-    return value === 0 ? '' : `${value} ${value > 1 ? str + 's' : str}`;
+    return value === 0 ? '' : `${value} ${value > 1 && userLanguage === 'en' ? str + 's' : str}`;
 }
 
 export function formatTime(time: number) {
@@ -506,8 +510,4 @@ export function geoMean(points: L.LatLng[], lossFunction: (pts: L.LatLng[], cur:
 
     }
     return avg;
-}
-
-export function translate(text: string, language: string, dictionary: {}) {
-    return (language === 'en' || !(text in dictionary) || !(language in dictionary[text])) ? text : dictionary[text][language];
 }

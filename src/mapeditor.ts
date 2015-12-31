@@ -2,8 +2,6 @@ import MetroMap from './metro-map';
 import * as util from './util';
 import * as svg from './svg';
 
-let lang;
-
 export default class MapEditor {
     private metroMap: MetroMap;
 
@@ -16,23 +14,21 @@ export default class MapEditor {
     }
 
     set editMode(val: boolean) {
-        const userLang = util.getUserLanguage();
         if (val) {
-            this.button.textContent = util.translate('Save map', userLang, lang);;
+            this.button.textContent = util.translate('Save map');;
             this.button.onclick = this.saveMapClick.bind(this);
             const dummyCircles = document.getElementById('dummy-circles');
             dummyCircles.onmousedown = dummyCircles.onclick = null;
             this.metroMap.contextMenu.items.delete('platformadd');
         } else {
-            this.button.textContent = util.translate('Edit map', userLang, lang);
+            this.button.textContent = util.translate('Edit map');
             this.button.onclick = this.editMapClick.bind(this);
         }
         this._editMode = val;
     }
 
-    constructor(metroMap: MetroMap, language: any) {
+    constructor(metroMap: MetroMap) {
         this.metroMap = metroMap;
-        lang = language;
         const btn = document.createElement('button');
         btn.id = 'edit-map-button';
         btn.textContent = 'Edit Map';

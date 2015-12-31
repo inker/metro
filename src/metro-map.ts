@@ -3,6 +3,7 @@ import * as L from 'leaflet';
 const alertify = require('alertifyjs');
 import * as res from './res';
 import * as util from './util';
+const tr = (text: string) => util.translate(text);
 import * as svg from './svg';
 import * as po from './plain-objects';
 import * as graph from '../metro-graph';
@@ -33,7 +34,6 @@ export default class MetroMap implements EventTarget {
 
     private _contextMenu: ContextMenu;
 
-    private dict: {};
     private lineRules: {};
 
     get contextMenu() {
@@ -56,7 +56,7 @@ export default class MetroMap implements EventTarget {
         return this.graph;
     }
 
-    constructor(containerId: string, kml: string, tileLayers: {}, language: {}) {
+    constructor(containerId: string, kml: string, tileLayers: {}) {
         const graphPromise: Promise<po.Graph> = fetch(kml)
             .then(data => data.json())
             .then(graphJSON => this.graph = graphJSON);
@@ -67,7 +67,6 @@ export default class MetroMap implements EventTarget {
             .then(data => data.json())
             .then(obj => { console.log(obj); return obj; })
             .catch(er => console.error(er))
-        
 
         this.map = new L.Map(containerId, {
             //layers: tileLayers[Object.keys(tileLayers)[0]],
@@ -105,9 +104,8 @@ export default class MetroMap implements EventTarget {
                 this.map.invalidateSize(false);
                 this.resetMapView();
                 this.fixFontRendering();
-                this.dict = language;
-                new MapEditor(this, language);
-                new FAQ(this, 'json/data.json', language);
+                new MapEditor(this);
+                new FAQ(this, 'json/data.json');
                 // const metroPoints = this.graph.platforms.filter(p => this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('M')).map(p => p.location);
                 // const foo = (points, pt) => points.reduce((prev, cur) => prev + pt.distanceTo(cur), 0);
                 // const metroMean = util.geoMean(metroPoints, foo);
@@ -121,7 +119,7 @@ export default class MetroMap implements EventTarget {
                 // L.circle(eMean, 45000).addTo(this.map);
                 return contextMenuPromise;
             })
-            .then(contextMenuData => this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData), language))
+            .then(contextMenuData => this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData)))
             .catch(er => console.error(er));
 
         Promise.all([graphPromise, hintsPromise])
@@ -252,7 +250,7 @@ export default class MetroMap implements EventTarget {
                 stationCircles.appendChild(circle);
                 dummyCircles.appendChild(dummy);
                 const platform: po.Platform = {
-                    name: util.translate('New station', util.getUserLanguage(), this.dict),
+                    name: tr('New station'),
                     altNames: {},
                     station: null,
                     spans: [],
@@ -748,8 +746,9 @@ export default class MetroMap implements EventTarget {
         util.resetStyle();
         alertify.dismissAll();
         const { platforms, edges, time } = util.shortestPath(this.graph, departure, arrival);
+        const onFoot = tr('on foot');
         if (edges === undefined) {
-            return alertify.success(util.formatTime(time.walkTo) + ' on foot!');
+            return alertify.success(`${util.formatTime(time.walkTo)} ${onFoot}!`);
         }
         const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
         const els: HTMLElement[] = this.overlay.querySelectorAll(selector) as any;
@@ -760,7 +759,7 @@ export default class MetroMap implements EventTarget {
         console.log(edges);
         console.log(platforms.map(p => this.graph.platforms[p].name));
         svg.animateRoute(this.graph, platforms, edges).then(() => {
-            alertify.message(`time:<br>${util.formatTime(time.walkTo)} on foot<br>${util.formatTime(time.metro)} by metro<br>${util.formatTime(time.walkFrom)} on foot<br>TOTAL: ${util.formatTime(time.total)}`, 10);
+            alertify.message(`${tr('time').toUpperCase()}:<br>${util.formatTime(time.walkTo)} ${onFoot}<br>${util.formatTime(time.metro)} ${tr('by metro')}<br>${util.formatTime(time.walkFrom)} ${onFoot}<br>${tr('TOTAL')}: ${util.formatTime(time.total)}`, 10);
         });
     }
 }

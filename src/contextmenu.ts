@@ -2,11 +2,6 @@ import * as L from 'leaflet';
 import MetroMap from './metro-map';
 import * as util from './util';
 
-let userLanguage = util.getUserLanguage();
-if (userLanguage !== 'ru' && userLanguage !== 'fi') userLanguage = 'en';
-
-let dict;
-
 type Item = { icon?: string; disabled?: boolean; text: string };
 export default class ContextMenu {
     private metroMap: MetroMap;
@@ -28,11 +23,10 @@ export default class ContextMenu {
         document.body.removeChild(menuElement);
     }
 
-    constructor(metroMap: MetroMap, items: Map<string, Item>, dictionary: any) {
+    constructor(metroMap: MetroMap, items: Map<string, Item>) {
         console.log('adding context menu');
         this.metroMap = metroMap;
         this._items = items;
-        dict = dictionary;
         this._extraItems = new Map();
         const overlay = metroMap.getOverlay();
         overlay.addEventListener('contextmenu', this.addListener.bind(this), true);
@@ -62,7 +56,7 @@ export default class ContextMenu {
             const cell: HTMLTableDataCellElement = (table as any).insertRow().insertCell(0);
             const [attrName, attrVal] = item.disabled ? ['disabled', ''] : ['data-event', eventName];
             cell.setAttribute(attrName, attrVal);
-            cell.textContent = util.translate(item.text, userLanguage, dict);
+            cell.textContent = util.translate(item.text);
         }
         this._items.forEach(fillCell);
         this._extraItems.forEach((map, target) => {

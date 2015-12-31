@@ -79,7 +79,7 @@ export default class TextPlate {
         const fi = platform.altNames['fi'];
         const en = platform.altNames['en'];
     
-        const names = !fi ? [ru] : util.getUserLanguage() === 'fi' ? [fi, ru] : [ru, fi];
+        const names = !fi ? [ru] : util.userLanguage === 'fi' ? [fi, ru] : [ru, fi];
         if (en) names.push(en);
     
         this.modifyBox(poleEnd, names);

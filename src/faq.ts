@@ -4,18 +4,15 @@ import * as util from './util';
 
 type FAQData = {faq: { q: string, a: string }[]};
 
-let lang;
-
 export default class FAQ {
 	private button: HTMLButtonElement;
 	private card: HTMLDivElement;
 	private map: L.Map;
-	constructor(map: MetroMap, faqDataUrl: string, language: any) {
+	constructor(map: MetroMap, faqDataUrl: string) {
 		const promise: Promise<FAQData> = window['fetch'](faqDataUrl)
 		    .catch(err => console.error(err))
 			.then(data => data.json());
 		this.map = map.getMap();
-        lang = language;
 		const btn = document.createElement('button');
 		btn.id = 'faq-button';
         btn.textContent = 'FAQ';

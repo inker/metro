@@ -15,10 +15,17 @@ polyfills();
 import tilelayers from './tilelayers';
 
 res.dictionaryPromise.then(dict => {
-    const metroMap = new MetroMap('map-container', 'json/graph.json', tilelayers, dict);
-    const title = 'St Petersburg metro plan proposal';
-    const a = dict[title];
-    util.flashTitle(Object.keys(a).map(key => a[key]).concat([title]), 3000);
+    if (util.userLanguage !== 'en') {
+        const simpleDict = {};
+        for (let key of Object.keys(dict)) {
+            simpleDict[key] = dict[key][util.userLanguage];
+        }
+        util.translate = text => simpleDict[text];
+    }
+    const metroMap = new MetroMap('map-container', 'json/graph.json', tilelayers);
+    const englishTitle = 'St Petersburg metro plan proposal';
+    const titles = dict[englishTitle];
+    util.flashTitle(Object.keys(titles).map(key => titles[key]).concat([englishTitle]), 3000);
 });
 
 console.log('user: ' + navigator.userLanguage);
