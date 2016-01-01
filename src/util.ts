@@ -238,8 +238,9 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Short
         trainAcceleration = 0.7,
         metroStopTime = 30,
         eLineStopTime = 60,
-        metroWaitingTime = 180,
-        eLineWaitingTime = 300;
+        // includes escalators
+        metroWaitingTime = 240,
+        eLineWaitingTime = 360;
     const distanceBetweenPoints = (a: L.LatLng, b: L.LatLng) => L.LatLng.prototype.distanceTo.call(a, b) as number;
     const objects = graph.platforms;
     // time to travel from station to the p1 location
@@ -307,8 +308,8 @@ export function shortestPath(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Short
                 .map(i => graph.spans[i].routes[0])
                 .map(i => graph.routes[i].line)
                 .some(l => l.startsWith('E'));
-            const distance = distanceBetweenPoints(currentNode.location, neighbor.location);
-            times.push(distance / walkingSpeed + (hasE ? eLineWaitingTime : metroWaitingTime));
+            const distance = distanceBetweenPoints(currentNode.location, neighbor.location) / 2;
+            times.push(distance / walkingWithObstacles + (hasE ? eLineWaitingTime : metroWaitingTime));
         }
 
         for (let i = 0; i < neighborIndices.length; ++i) {

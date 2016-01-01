@@ -1,6 +1,6 @@
 import * as L from 'leaflet';
 import * as svg from './svg';
-import { getCircumcenter } from './util';
+import * as util from './util';
 import * as po from './plain-objects';
 
 export function transferToModel(transfer: po.Transfer, elements: Element[]) {
@@ -44,15 +44,15 @@ export function transferToModel(transfer: po.Transfer, elements: Element[]) {
                     for (let tr of transfers) {
                         circular.add(tr.source).add(tr.target);
                     }
-                    if (circular.size !== 3) {
-                        const name = this.graph.platforms[transfers[0].source].name;
-                        throw new Error(`circle size is ${circular.size}: ${name}`);
-                    }
+                    // if (circular.size !== 3) {
+                    //     const name = this.graph.platforms[transfers[0].source].name;
+                    //     throw new Error(`circle size is ${circular.size}: ${name}`);
+                    // }
 
                     const circumpoints: L.Point[] = [];
                     circular.forEach(i => circumpoints.push(this.platformsOnSVG[i]));
 
-                    const cCenter = getCircumcenter(circumpoints);
+                    const cCenter = util.getCircumcenter(circumpoints);
                     const outerArcs = transferIndices.map(i => document.getElementById('ot-' + i));
                     const innerArcs = transferIndices.map(i => document.getElementById('it-' + i));
                     for (let i = 0; i < 3; ++i) {
@@ -113,13 +113,17 @@ export function platformToModel(platform: po.Platform|number, circles: Element[]
                 const inner = document.getElementById(`ip-${spanIndex}`);
                 if (inner) svg.setBezierPath(inner, controlPoints);
             });
+            let oo = 0;
             for (let tr of this.graph.transfers) {
                 if (tr.source === idx) {
                     tr.source = idx;
+                    ++oo;
                 } else if (tr.target === idx) {
                     tr.target = idx;
+                    ++oo;
                 }
             }
+            console.log(oo);
         }
     });
     obj['_location'] = cached;
