@@ -1,5 +1,6 @@
 import MetroMap from './metro-map';
 import * as util from './util';
+import * as lang from './lang';
 
 type Item = { icon?: string; disabled?: boolean; text: string };
 export default class ContextMenu {
@@ -55,7 +56,7 @@ export default class ContextMenu {
             const cell: HTMLTableDataCellElement = (table as any).insertRow().insertCell(0);
             const [attrName, attrVal] = item.disabled ? ['disabled', ''] : ['data-event', eventName];
             cell.setAttribute(attrName, attrVal);
-            cell.textContent = util.translate(item.text);
+            cell.textContent = lang.translate(item.text);
         }
         this._items.forEach(fillCell);
         this._extraItems.forEach((map, target) => {

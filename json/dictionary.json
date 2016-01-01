@@ -1,4 +1,7 @@
 {
+    "Your browser doesn't seem to have capabilities to display some features of the map. Consider using the latest versions of Chrome or Firefox for the best experience.": {
+        "ru": "Ваш браузер не может в полной мере отобразить некоторые возможности карты. Используйте последние версии Chrome или Firefox."
+    },
     "St Petersburg metro plan proposal": {
         "ru": "Plan metro Sankt-Peterburga",
         "fi": "Pietarin metron hankesuunnitelma"
@@ -62,5 +65,26 @@
     "TOTAL": {
         "ru": "ITOGO",
         "fi": "YHTEENSÄ"
+    },
+    
+    "New name": {
+        "ru": "Novoje imä",
+        "fi": "Uusi nimi"
+    },
+    "Name change cancelled": {
+        "ru": "Pereimenovanie otmeneno",
+        "fi": "Uudelleennimeäminen on peruutettu"
+    },
+    "Rename the entire station": {
+        "ru": "Pereimenovať veś uzel",
+        "fi": "Nimeäkö koko asema uudelleen"
+    },
+    "renamed to": {
+        "ru": "pereimenovana v",
+        "fi": "nimettiin"
+    },
+    "The entire station was renamed to": {
+        "ru": "Veś uzel byl pereimenovan v",
+        "fi": "Koko asema nimettiin"
     }
 }

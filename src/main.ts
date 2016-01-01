@@ -1,7 +1,9 @@
 'use strict';
-import MetroMap from './metro-map';
-import * as util from './util';
+
 import * as res from './res';
+import * as util from './util';
+import * as L from 'leaflet';
+import MetroMap from './metro-map';
 
 if (L.Browser.ie) {
     alert("Does not work in IE (yet)");
@@ -15,13 +17,6 @@ polyfills();
 import tilelayers from './tilelayers';
 
 res.dictionaryPromise.then(dict => {
-    if (util.userLanguage !== 'en') {
-        const simpleDict = {};
-        for (let key of Object.keys(dict)) {
-            simpleDict[key] = dict[key][util.userLanguage] || key;
-        }
-        util.translate = text => simpleDict[text];
-    }
     const metroMap = new MetroMap('map-container', 'json/graph.json', tilelayers);
     const englishTitle = 'St Petersburg metro plan proposal';
     const titles = dict[englishTitle];

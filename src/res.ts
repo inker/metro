@@ -1,7 +1,17 @@
 // <reference path="../typings/tsd.d.ts" />
 
-export const dictionaryPromise = fetch('json/dictionary.json')
-    .then(data => data.json());
+import * as lang from './lang';
+
+export const dictionaryPromise = fetch('json/dictionary.json').then(data => data.json()).then(dict => {
+    if (lang.userLanguage !== 'en') {
+        const simpleDict = {};
+        for (let key of Object.keys(dict)) {
+            simpleDict[key] = dict[key][lang.userLanguage] || key;
+        }
+        lang.translate = text => simpleDict[text];
+    }
+    return dict;
+});
 
 export const lineRulesPromise = new Promise<CSSStyleSheet>(resolve => {
     const link: HTMLLinkElement = document.querySelector(`[href$="css/scheme.css"]`) as any;

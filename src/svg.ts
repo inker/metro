@@ -189,7 +189,9 @@ export namespace Gradients {
         // const overlay = document.getElementById('overlay');
         // overlay.insertBefore(defs, overlay.firstElementChild);
         const transfers = document.getElementById('transfers-outer').children;
-        if (transfers.length === 0) return;
+        if (transfers === undefined || transfers.length === 0) {
+            return;
+        }
         for (let i = 0; i < transfers.length; ++i) {
             const transfer = transfers[i];
             (transfer as HTMLElement).style.stroke = `url(#g-${i})`;

@@ -2,14 +2,9 @@
 import * as L from 'leaflet';
 import { findClosestObject } from './geo';
 import * as po from './plain-objects';
+import * as lang from './lang';
+const tr = (text: string) => lang.translate(text);
 const alertify = require('alertifyjs');
-
-export const userLanguage = (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();
-
-export function translate(text: string) {
-    // function will be replaced when a different primary language other than English is detected
-    return text;
-}
 
 export function parseTransform(val: string): L.Point {
     const matches = val.match(/translate(3d)?\((-?\d+).*?,\s?(-?\d+).*?(,\s?(-?\d+).*?)?\)/i);
@@ -445,17 +440,27 @@ function shortestTransfer(graph: po.Graph, p1i: number, p2i: number) {
     }
 }
 
+function hexColorToArray(hex: string): number[] {
+    return hex.match(/[0-9a-f]{1,2}/ig).map(s => parseInt(s, 16));
+}
+
+function rgbColorToArray(rgb: string): number[] {
+    return rgb.match(/rgb\s*\((\d+),\s*(\d+),\s*(\d+)\s*\)/).slice(1).map(Number);
+}
+
 export function meanColor(rgb: string[]): string {
-    var re = /rgb\s*\((\d+),\s*(\d+),\s*(\d+)\s*\)/,
-        n = rgb.length;
-    var [r, g, b] = rgb
-        .reduce((prev, cur) => cur.match(re).splice(1).map((it, i) => prev[i] + parseInt(it)), [0, 0, 0])
-        .map(i => Math.floor(i / n));
+    console.log('rgb');
+    console.log(rgb);
+    var n = rgb.length;
+    var redFunc = (prev: number[], cur: string) => 
+        (rgb[0].startsWith('#') ? hexColorToArray : rgbColorToArray)(cur)
+        .map((it, i) => prev[i] + it);
+    var [r, g, b] = rgb.reduce(redFunc, [0, 0, 0]).map(i => Math.floor(i / n));
     return `rgb(${r}, ${g}, ${b})`;
 }
 
 function inflect(value: number, str: string) {
-    return value === 0 ? '' : `${value} ${value > 1 && userLanguage === 'en' ? str + 's' : str}`;
+    return value === 0 ? '' : `${value} ${value > 1 && lang.userLanguage === 'en' ? str + 's' : str}`;
 }
 
 export function formatTime(time: number) {
@@ -476,27 +481,27 @@ export function platformRenameDialog(graph: po.Graph, platform: po.Platform) {
 
     const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru];
     const nameString = names.join('|');
-    alertify.prompt('New name', nameString, (okevt, val: string) => {
+    alertify.prompt(tr('New name'), nameString, (okevt, val: string) => {
         const newNames = val.split('|');
         [platform.name, platform.altNames['fi'], platform.altNames['en']] = newNames;
         if (val === nameString) {
-            return alertify.warning('Name was not changed');
+            return alertify.warning(tr('Name was not changed'));
         }
         const oldNamesStr = names.slice(1).join(', '),
             newNamesStr = newNames.slice(1).join(', ');
-        alertify.success(`${ru} (${oldNamesStr}) renamed to ${newNames[0]} (${newNamesStr})`);
+        alertify.success(`${ru} (${oldNamesStr}) ${tr('renamed to')} ${newNames[0]} (${newNamesStr})`);
         const station = graph.stations[platform.station];
         if (station.platforms.length < 2) return;
-        alertify.confirm('Rename the entire station?', () => {
+        alertify.confirm(tr('Rename the entire station') + '?', () => {
             for (let i of station.platforms) {
                 const p = graph.platforms[i];
                 [p.name, p.altNames['fi'], p.altNames['en']] = newNames;
             }
             [station.name, station.altNames['fi'], station.altNames['en']] = newNames;
-            alertify.success(`The entire station was renamed to ${val}`);
+            alertify.success(`${tr('The entire station was renamed to')} ${val}`);
         });
 
-    }, () => alertify.warning('Name change cancelled'));
+    }, () => alertify.warning(tr('Name change cancelled')));
 }
 
 import * as geo from './geo';

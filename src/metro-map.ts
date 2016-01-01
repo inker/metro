@@ -3,7 +3,8 @@ import * as L from 'leaflet';
 const alertify = require('alertifyjs');
 import { lineRulesPromise } from './res';
 import * as util from './util';
-const tr = (text: string) => util.translate(text);
+import * as lang from './lang';
+const tr = (text: string) => lang.translate(text);
 import * as svg from './svg';
 import * as po from './plain-objects';
 import * as bind from './bind';
@@ -88,9 +89,11 @@ export default class MetroMap implements EventTarget {
         const defs = svg.createSVGElement('defs');
         defs.appendChild(svg.Shadows.makeDrop());
         defs.appendChild(svg.Shadows.makeGlow());
+        if (defs.textContent.length === 0) {
+            alert(tr("Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience."));
+        }
         this.overlay.appendChild(defs);
 
-        this.addMapListeners();
         graphPromise
             .catch(errText => alert(errText))
             .then(graphJson => this.extendBounds()) // because the previous assignment returns json
@@ -101,6 +104,7 @@ export default class MetroMap implements EventTarget {
                 this.redrawNetwork();
                 // TODO: fix the kludge making the grey area disappear
                 this.map.invalidateSize(false);
+                this.addMapListeners();
                 this.resetMapView();
                 this.fixFontRendering();
                 new MapEditor(this);
@@ -433,7 +437,8 @@ export default class MetroMap implements EventTarget {
         // transform may not work with svg elements
         //origin.setAttribute('x', originShift.x + 'px');
         //origin.setAttribute('y', originShift.y + 'px');
-        origin.style.transform = `translate(${originShift.x}px, ${originShift.y}px)`;
+        origin.setAttribute('transform', `translate(${originShift.x},${originShift.y})`);
+        //origin.style.transform = `translate(${originShift.x}px, ${originShift.y}px)`;
         //origin.style.left = originShift.x + 'px';
         //origin.style.top = originShift.y + 'px';
         

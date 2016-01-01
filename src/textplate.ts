@@ -1,6 +1,7 @@
 import * as svg from './svg';
 import * as util from './util';
 import * as po from './plain-objects';
+import * as lang from './lang';
     
 export default class TextPlate {
     private _element: SVGGElement;
@@ -13,11 +14,31 @@ export default class TextPlate {
         this._element = svg.createSVGElement('g') as any;
         this._element.id = 'station-plate';
         this._element.style.display = 'none';
-        (this._element as any).innerHTML = `<line id="pole" class="plate-pole"/>
-            <g>
-                <rect id="plate-box" class="plate-box" filter="url(#shadow)"/>
-                <text id="plate-text" fill="black" class="plate-text"><tspan/><tspan/><tspan/></text>
-            </g>`;
+        const pole = svg.createSVGElement('line');
+        pole.id = 'pole';
+        pole.classList.add('plate-pole');
+        this._element.appendChild(pole);
+        const g = svg.createSVGElement('g');
+        const rect = svg.createSVGElement('rect');
+        rect.id = 'plate-box';
+        rect.classList.add('plate-box');
+        rect.setAttribute('filter', 'url(#shadow)');
+        g.appendChild(rect);
+        const text = svg.createSVGElement('text');
+        text.id = 'plate-text';
+        text.setAttribute('fill', 'black');
+        text.classList.add('plate-text');
+        const tspan = svg.createSVGElement('tspan');
+        text.appendChild(tspan);
+        text.appendChild(tspan.cloneNode(true));
+        g.appendChild(text);
+        this._element.appendChild(g);
+        // (this._element as any).innerHTML = `<line id="pole" class="plate-pole"/>
+        //     <g>
+        //         <rect id="plate-box" class="plate-box" filter="url(#shadow)"/>
+        //         <text id="plate-text" fill="black" class="plate-text"><tspan/><tspan/><tspan/></text>
+        //     </g>`;
+        console.log((this._element as any).childNodes);
     }
     
     get element() {
@@ -68,6 +89,10 @@ export default class TextPlate {
         const iR = Math.trunc(r);
     
         const pole = this._element.firstElementChild;
+        console.log('foo');
+        console.log(this._element);
+        console.log(pole);
+                console.log('foo');
         const poleSize = new L.Point(4 + iR, 8 + iR);
         const poleEnd = c.subtract(poleSize);
         pole.setAttribute('x1', c.x.toString());
@@ -79,14 +104,14 @@ export default class TextPlate {
         const fi = platform.altNames['fi'];
         const en = platform.altNames['en'];
     
-        const names = !fi ? [ru] : util.userLanguage === 'fi' ? [fi, ru] : [ru, fi];
+        const names = !fi ? [ru] : lang.userLanguage === 'fi' ? [fi, ru] : [ru, fi];
         if (en) names.push(en);
     
         this.modifyBox(poleEnd, names);
     }
 
     private modifyBox(bottomRight: L.Point, lines: string[]): void {
-        const rect: SVGRectElement = this._element['children'][1].children[0];
+        const rect: SVGRectElement = this._element['childNodes'][1].childNodes[0] as any;
         const spacing = 12;
         const longest = lines.reduce((prev, cur) => prev.length < cur.length ? cur : prev);
         const rectSize = new L.Point(10 + longest.length * 6, 6 + spacing * lines.length);
@@ -96,8 +121,8 @@ export default class TextPlate {
         rect.setAttribute('x', rectTopLeft.x.toString());
         rect.setAttribute('y', rectTopLeft.y.toString());
 
-        const text: SVGTextElement = this._element['children'][1].children[1];
-        const textChildren: SVGElement[] = text['children'];
+        const text: SVGTextElement = this._element['childNodes'][1].childNodes[1] as any;
+        const textChildren: SVGElement[] = text['childNodes'] as any;
         for (var i = 0; i < lines.length; ++i) {
             const textTopLeft = bottomRight.subtract(new L.Point(3, rectSize.y - (i + 1) * spacing));
             const t = textChildren[i];
