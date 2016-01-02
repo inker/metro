@@ -14,28 +14,19 @@ export default class TextPlate {
         this._element = svg.createSVGElement('g') as any;
         this._element.id = 'station-plate';
         this._element.style.display = 'none';
-        const pole = svg.createSVGElement('line');
-        pole.id = 'pole';
-        pole.classList.add('plate-pole');
-        pole.setAttribute('x1', '0');
-        pole.setAttribute('y1', '0');
-        pole.setAttribute('x2', '4');
-        pole.setAttribute('y2', '8');
+        const createElement = (tag: string, id: string, cls: string, attributes: {}): Element => {
+            const el = svg.createSVGElement(tag);
+            el.id = id;
+            el.classList.add(cls);
+            Object.keys(attributes).forEach(key => el.setAttribute(key, attributes[key]));
+            return el;
+        };
+        const pole = createElement('line', 'pole', 'plate-pole', { 'x1': '0', 'y1': '0', 'x2': '4', 'y2': '8' });
         this._element.appendChild(pole);
         const g = svg.createSVGElement('g');
-        const rect = svg.createSVGElement('rect');
-        rect.id = 'plate-box';
-        rect.classList.add('plate-box');
-        rect.setAttribute('x', '0');
-        rect.setAttribute('y', '0');
-        rect.setAttribute('filter', 'url(#shadow)');
+        const rect = createElement('rect', 'plate-box', 'plate-box', { 'x': '0', 'y': '0', 'filter': 'url(#shadow)' });
         g.appendChild(rect);
-        const text = svg.createSVGElement('text');
-        text.id = 'plate-text';
-        text.setAttribute('fill', 'black');
-        text.classList.add('plate-text');
-        text.setAttribute('x', '0');
-        text.setAttribute('y', '0');
+        const text = createElement('text', 'plate-text', 'plate-text', { 'fill': 'black', 'x': '0', 'y': '0' });
         const tspan = svg.createSVGElement('tspan');
         tspan.setAttribute('x', '3');
         tspan.setAttribute('dy', '12');
@@ -44,11 +35,6 @@ export default class TextPlate {
         text.appendChild(tspan.cloneNode(true));
         g.appendChild(text);
         this._element.appendChild(g);
-        // (this._element as any).innerHTML = `<line id="pole" class="plate-pole"/>
-        //     <g>
-        //         <rect id="plate-box" class="plate-box" filter="url(#shadow)"/>
-        //         <text id="plate-text" fill="black" class="plate-text"><tspan/><tspan/><tspan/></text>
-        //     </g>`;
         console.log((this._element as any).childNodes);
     }
 
@@ -101,7 +87,6 @@ export default class TextPlate {
 
         const pole = this._element.firstElementChild;
         const poleSize = new L.Point(4 + iR, 8 + iR);
-        const poleEnd = c.subtract(poleSize);
 
         const platform = svg.platformByCircle(circle, this.graph);
         const ru = platform.name;
@@ -111,7 +96,7 @@ export default class TextPlate {
         const names = !fi ? [ru] : lang.userLanguage === 'fi' ? [fi, ru] : [ru, fi];
         if (en) names.push(en);
 
-        this.modifyBox(poleEnd, names);
+        this.modifyBox(c.subtract(poleSize), names);
     }
 
     private modifyBox(bottomRight: L.Point, lines: string[]): void {
@@ -128,16 +113,17 @@ export default class TextPlate {
             textChildren[i++].textContent = null;
         }
         const adjustDimensions = (y: number) => {
-            const obb = text.getBBox()
-            rect.setAttribute('width', (obb.width + 6).toString());
-            rect.setAttribute('height', (obb.height + y).toString());
-            const tx = bottomRight.x - obb.width,
-                ty = bottomRight.y - obb.height;
+            let {width, height} = text.getBBox();
+            width = Math.round(width);
+            rect.setAttribute('width', (width + 6).toString());
+            rect.setAttribute('height', (height + y).toString());
+            const tx = bottomRight.x - width,
+                ty = bottomRight.y - height;
             this._element.setAttribute('transform', `translate(${tx}, ${ty})`);
-            text.setAttribute('transform', `translate(${obb.width}, 0)`)
+            text.setAttribute('transform', `translate(${width}, 0)`)
         };
         if (L.Browser.webkit) {
-            adjustDimensions(3);
+            adjustDimensions(4);
         } else {
             setTimeout(adjustDimensions, 0, 0);
         }
