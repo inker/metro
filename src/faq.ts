@@ -24,7 +24,7 @@ export default class FAQ {
 		document.body.appendChild(this.card);
 		const closeSpan = document.createElement('div');
 		closeSpan.classList.add('cross-ball');
-		closeSpan.textContent = '×';
+		closeSpan.textContent = '❌';
 		closeSpan.addEventListener('mousedown', e => this.map.fireEvent('mousedown'));
 
 		this.card.appendChild(closeSpan);

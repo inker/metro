@@ -234,6 +234,57 @@ export default class MetroMap implements EventTarget {
                 const me = event as MouseEvent;
                 const platform = svg.platformByCircle(me.relatedTarget as any, this.graph);
                 const spans = platform.spans;
+                const pIdx = this.graph.platforms.indexOf(platform);
+                const lines = this.passingLines(platform);
+                if (lines.size === 1) {
+                    const spans = this.graph.spans.filter(s => s.source === pIdx || s.target === pIdx);
+                    if (spans.length === 1) {
+                        // just delete it
+                    } else if (spans.length === 2) {
+                        // delete the second one
+                        const [a, b] = spans;
+                        a[a.source === pIdx ? 'target' : 'source'] = b[a.source === pIdx ? 'target' : 'source'];
+                        const sIdx = this.graph.spans.indexOf(b);
+                        this.graph.spans.splice(sIdx, 1);
+                        for (let p of this.graph.platforms) {
+                            let that: number = null;
+                            for (let i = 0; i < p.spans.length; ++i) {
+                                if (p.spans[i] > sIdx) {
+                                    --p.spans[i];
+                                } else if (p.spans[i] === sIdx) {
+                                    that = i;
+                                }
+                            }
+                            if (that !== null) {
+                                p.spans.splice(that, 1);
+                            }
+                        }
+                    } else {
+                        // forks
+                    }
+                }
+                this.graph.platforms.splice(pIdx, 1);
+                for (let s of this.graph.spans) {
+                    if (s.source > pIdx) {
+                        --s.source;
+                    }
+                    if (s.target > pIdx) {
+                        --s.target;
+                    }
+                }
+                for (let s of this.graph.stations) {
+                    let that: number = null;
+                    for (let i = 0; i < s.platforms.length; ++i) {
+                        if (s.platforms[i] > pIdx) {
+                            --s.platforms[i];
+                        } else if (s.platforms[i] === pIdx) {
+                            that = i;
+                        }
+                    }
+                    if (that !== null) {
+                        s.platforms.splice(that, 1);
+                    }
+                }
                 //TODO: somehow delete node
                 // find spans that belong to the same line
                 // find 
@@ -515,12 +566,7 @@ export default class MetroMap implements EventTarget {
                     const ci = svg.makeCircle(posOnSVG, circleRadius);
                     ci.id = 'p-' + platformIndex;
                     if (zoom > 11) {
-                        const lines = new Set<string>();
-                        for (let spanIndex of platform.spans) {
-                            for (let routeIndex of this.graph.spans[spanIndex].routes) {
-                                lines.add(this.graph.routes[routeIndex].line);
-                            }
-                        }
+                        const lines = this.passingLines(platform);
                         if (lines.size === 1) {
                             const matches = lines.values().next().value.match(/([MEL])(\d{0,2})/);
                             if (matches) {
@@ -639,6 +685,16 @@ export default class MetroMap implements EventTarget {
             document.getElementById(i).appendChild(docFrags[i]);
         }
         this.addBindings();
+    }
+
+    private passingLines(platform: po.Platform) {
+        const lines = new Set<string>();
+        for (let spanIndex of platform.spans) {
+            for (let routeIndex of this.graph.spans[spanIndex].routes) {
+                lines.add(this.graph.routes[routeIndex].line);
+            }
+        }
+        return lines;
     }
 
     private makeWhiskers(platformIndex: number): {} {

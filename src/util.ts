@@ -449,13 +449,10 @@ function rgbColorToArray(rgb: string): number[] {
 }
 
 export function meanColor(rgb: string[]): string {
-    console.log('rgb');
-    console.log(rgb);
-    var n = rgb.length;
-    var redFunc = (prev: number[], cur: string) => 
-        (rgb[0].startsWith('#') ? hexColorToArray : rgbColorToArray)(cur)
+    const reduceFunc = (prev: number[], cur: string) => 
+        (cur.startsWith('#') ? hexColorToArray : rgbColorToArray)(cur)
         .map((it, i) => prev[i] + it);
-    var [r, g, b] = rgb.reduce(redFunc, [0, 0, 0]).map(i => Math.floor(i / n));
+    const [r, g, b] = rgb.reduce(reduceFunc, [0, 0, 0]).map(i => Math.floor(i / rgb.length));
     return `rgb(${r}, ${g}, ${b})`;
 }
 
