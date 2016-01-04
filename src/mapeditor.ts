@@ -1,5 +1,5 @@
 import MetroMap from './metro-map';
-import * as util from './util';
+import { downloadAsFile } from './util';
 import * as svg from './svg';
 import * as lang from './lang';
 
@@ -56,7 +56,7 @@ export default class MapEditor {
     private saveMapClick(event: MouseEvent) {
         const graph = this.metroMap.getGraph();
         const content = JSON.stringify(graph, (key, val) => key.startsWith('_') ? undefined : val);
-        util.downloadAsFile('graph.json', content);
+        downloadAsFile('graph.json', content);
         this.editMode = false;
     }
 

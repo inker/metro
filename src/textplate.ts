@@ -1,5 +1,4 @@
 import * as svg from './svg';
-import * as util from './util';
 import * as po from './plain-objects';
 import * as lang from './lang';
 
@@ -21,12 +20,12 @@ export default class TextPlate {
             Object.keys(attributes).forEach(key => el.setAttribute(key, attributes[key]));
             return el;
         };
-        const pole = createElement('line', 'pole', 'plate-pole', { 'x1': '0', 'y1': '0', 'x2': '4', 'y2': '8' });
+        const pole = createElement('line', 'pole', 'plate-pole', { x1: 0, y1: 0, x2: 4, y2: 8 });
         this._element.appendChild(pole);
         const g = svg.createSVGElement('g');
-        const rect = createElement('rect', 'plate-box', 'plate-box', { 'x': '0', 'y': '0', 'filter': 'url(#shadow)' });
+        const rect = createElement('rect', 'plate-box', 'plate-box', { x: 0, y: 0, filter: 'url(#shadow)' });
         g.appendChild(rect);
-        const text = createElement('text', 'plate-text', 'plate-text', { 'fill': 'black', 'x': '0', 'y': '0' });
+        const text = createElement('text', 'plate-text', 'plate-text', { fill: 'black', x: 0, y: 0 });
         const tspan = svg.createSVGElement('tspan');
         tspan.setAttribute('x', '3');
         tspan.setAttribute('dy', '12');
@@ -47,11 +46,7 @@ export default class TextPlate {
     }
 
     set disabled(val: boolean) {
-        if (val) {
-            this.hide();
-        } else {
-            getSelection().removeAllRanges();
-        }
+        (val ? this.hide : getSelection().removeAllRanges)();
         this._disabled = val;
     }
 
@@ -100,18 +95,18 @@ export default class TextPlate {
     }
 
     private modifyBox(bottomRight: L.Point, lines: string[]): void {
-        const rect: SVGRectElement = this._element['childNodes'][1].childNodes[0] as any;
-        const text: SVGTextElement = this._element['childNodes'][1].childNodes[1] as any;
+        const g = this._element.lastChild as SVGGElement;
+        const rect = g.firstChild as SVGRectElement;
+        const text = g.lastChild as SVGTextElement;
 
-        const textChildren: SVGElement[] = text['childNodes'] as any;
+        const tspans = text.childNodes;
         for (var i = 0; i < lines.length; ++i) {
-            const t = textChildren[i];
-
-            t.textContent = lines[i];
+            tspans[i].textContent = lines[i];
         }
-        while (i < textChildren.length) {
-            textChildren[i++].textContent = null;
+        while (i < tspans.length) {
+            tspans[i++].textContent = null;
         }
+        
         const adjustDimensions = (y: number) => {
             let {width, height} = text.getBBox();
             width = Math.round(width);
@@ -127,7 +122,6 @@ export default class TextPlate {
         } else {
             setTimeout(adjustDimensions, 0, 0);
         }
-
     }
 }
 
