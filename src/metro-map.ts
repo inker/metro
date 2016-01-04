@@ -398,9 +398,9 @@ export default class MetroMap implements EventTarget {
         const blurringStuff: HTMLElement[] = document.querySelectorAll('img[style*="translate3d"]') as any;
         console.log(blurringStuff);
         for (let i = 0; i < blurringStuff.length; ++i) {
-            util.Transform.replace(blurringStuff[i]);
+            util.CSSTransform.replace(blurringStuff[i]);
         }
-        util.Transform.replace(this.map.getPanes().mapPane);
+        util.CSSTransform.replace(this.map.getPanes().mapPane);
     }
 
     private resetMapView(): void {
@@ -474,7 +474,7 @@ export default class MetroMap implements EventTarget {
         
         const overlayStyle = this.overlay.style;
         const pixelBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
-        const transform = util.Transform.parse(overlayStyle.transform);
+        const transform = util.CSSTransform.parse(overlayStyle.transform);
 
         const pixelBoundsSize = pixelBounds.getSize();
         const topLeft = pixelBounds.min.subtract(transform).subtract(pixelBoundsSize);

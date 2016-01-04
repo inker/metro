@@ -49,7 +49,7 @@ export function resetStyle() {
     }
 }
 
-export namespace Transform {
+export namespace CSSTransform {
     export function parse(val: string): L.Point {
         if (val.length == 0) return new L.Point(0, 0);
         const [m, , x, y] = val.match(/translate(3d)?\((-?\d+).*?,\s?(-?\d+).*?(,\s?(-?\d+).*?)?\)/i);
@@ -59,31 +59,6 @@ export namespace Transform {
     export function replace(el: HTMLElement) {
         const s = el.style;
         s.transform = s.transform.replace(/translate3d\s*\((.+?,\s*.+?),\s*.+?\s*\)/i, 'translate($1)');
-    }
-}
-
-export namespace SVGDataset {
-    export function get(el: Element): any {
-        // for webkit-based browsers
-        if ('dataset' in el) {
-            return el['dataset'];
-        }
-        // for the rest
-        const attrs = el.attributes;
-        const dataset = {};
-        for (let i = 0; i < attrs.length; ++i) {
-            const attr = attrs[i].name;
-            if (attr.startsWith('data-')) {
-                dataset[attr.slice(5)] = el.getAttribute(attr);
-            }
-        }
-        return dataset;
-    }
-
-    export function set(el: Element, dataset: any): void {
-        for (let key of Object.keys(dataset)) {
-            el.setAttribute('data-' + key, dataset[key]);
-        }
     }
 }
 

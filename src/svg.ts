@@ -122,6 +122,31 @@ export function makeTransfer(start: L.Point, end: L.Point): SVGLineElement[] {
     });
 }
 
+export namespace SVGDataset {
+    export function get(el: Element): any {
+        // for webkit-based browsers
+        if ('dataset' in el) {
+            return el['dataset'];
+        }
+        // for the rest
+        const attrs = el.attributes;
+        const dataset = {};
+        for (let i = 0; i < attrs.length; ++i) {
+            const attr = attrs[i].name;
+            if (attr.startsWith('data-')) {
+                dataset[attr.slice(5)] = el.getAttribute(attr);
+            }
+        }
+        return dataset;
+    }
+
+    export function set(el: Element, dataset: any): void {
+        for (let key of Object.keys(dataset)) {
+            el.setAttribute('data-' + key, dataset[key]);
+        }
+    }
+}
+
 export namespace Shadows {
     export function makeDrop(): SVGFilterElement {
         const filter = createSVGElement('filter');
