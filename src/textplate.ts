@@ -120,7 +120,7 @@ export default class TextPlate {
         if (L.Browser.webkit) {
             adjustDimensions(4);
         } else {
-            setTimeout(adjustDimensions, 0, 0);
+            setTimeout(adjustDimensions, 0, 4);
         }
     }
 }

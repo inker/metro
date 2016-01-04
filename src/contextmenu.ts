@@ -27,9 +27,9 @@ export default class ContextMenu {
         this.metroMap = metroMap;
         this._items = items;
         this._extraItems = new Map();
-        const overlay = metroMap.getOverlay();
-        overlay.addEventListener('contextmenu', this.addListener.bind(this), true);
-        overlay.addEventListener('mousedown', evt => {
+        const container = metroMap.getMap().getContainer();
+        container.addEventListener('contextmenu', this.addListener.bind(this), true);
+        container.addEventListener('mousedown', evt => {
             if (evt.button !== 2) {
                 this.state = false;
             }

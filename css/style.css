@@ -18,6 +18,7 @@ a:hover {
 
 #map-container {
     height: 100%; /* the map should have a defined height */
+    cursor: default; /* overriding the hand */
 }
 
 .leaflet-control-scale-line {
@@ -37,20 +38,19 @@ a:hover {
 #overlay {
     width: 100%;
     height: 100%;
-    cursor: default;
     position: relative;
-    fill: white;
-    /*z-index: 500;*/
+
 }
 
 
 .plate-text {
     color: black;
     font-size: 0.9em;
-    font-family: "Corbel Bold", Ubuntu, Cambay, sans-serif;
+    /*font-family: "Corbel Bold", Ubuntu, Cambay, sans-serif;*/
     text-anchor: end;
     text-align: right;
-    /*font-weight: bold;*/
+    font-family: Corbel;
+    font-weight: bold;
     opacity: 1;
     -webkit-user-select: none;
     user-select: none;

@@ -475,26 +475,24 @@ export default class MetroMap implements EventTarget {
         const overlayStyle = this.overlay.style;
         const pixelBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
         const transform = util.CSSTransform.parse(overlayStyle.transform);
-
-        const pixelBoundsSize = pixelBounds.getSize();
-        const topLeft = pixelBounds.min.subtract(transform).subtract(pixelBoundsSize);
-        console.log(this.map.latLngToContainerPoint(nw));
+        
+        const margin = new L.Point(50, 50);
+        const topLeft = pixelBounds.min.subtract(transform).subtract(margin);
         overlayStyle.left = topLeft.x + 'px';
         overlayStyle.top = topLeft.y + 'px';
-        const originShift = pixelBoundsSize;
         const origin = document.getElementById('origin');
         //TODO: test which one is faster
         // transform may not work with svg elements
-        //origin.setAttribute('x', originShift.x + 'px');
-        //origin.setAttribute('y', originShift.y + 'px');
-        origin.setAttribute('transform', `translate(${originShift.x},${originShift.y})`);
-        //origin.style.transform = `translate(${originShift.x}px, ${originShift.y}px)`;
-        //origin.style.left = originShift.x + 'px';
-        //origin.style.top = originShift.y + 'px';
+        //origin.setAttribute('x', margin.x + 'px');
+        //origin.setAttribute('y', margin.y + 'px');
+        origin.setAttribute('transform', `translate(${margin.x}, ${margin.y})`);
+        //origin.style.transform = `translate(${margin.x}px, ${margin.y}px)`;
+        //origin.style.left = margin.x + 'px';
+        //origin.style.top = margin.y + 'px';
         
-        const tripleSvgBoundsSize = pixelBoundsSize.multiplyBy(3);
-        overlayStyle.width = tripleSvgBoundsSize.x + 'px';
-        overlayStyle.height = tripleSvgBoundsSize.y + 'px';
+        const overlaySize = pixelBounds.getSize().add(margin).add(margin);
+        overlayStyle.width = overlaySize.x + 'px';
+        overlayStyle.height = overlaySize.y + 'px';
     }
 
     /**
