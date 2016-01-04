@@ -1,6 +1,6 @@
 import * as L from 'leaflet';
 import * as po from './plain-objects';
-import { Maths } from './util';
+import * as math from './math';
 
 export function createSVGElement(tagName: string) {
     return document.createElementNS('http://www.w3.org/2000/svg', tagName);
@@ -62,7 +62,7 @@ export function getCircularPath(path: Element) {
 }
 
 export function setCircularPath(el: Element, start: L.Point, end: L.Point, third: L.Point) {
-    const center = Maths.getCircumcenter([start, end, third]);
+    const center = math.getCircumcenter([start, end, third]);
 
     const startAngle = Math.atan2(start.y - center.y, start.x - center.x),
         endAngle = Math.atan2(end.y - center.y, end.x - center.x),
@@ -72,7 +72,7 @@ export function setCircularPath(el: Element, start: L.Point, end: L.Point, third
     const u = start.subtract(center),
         v = end.subtract(center);
     let sweep = u.x * v.y - v.x * u.y < 0 ? 0 : 1;
-    const dot = Maths.dot(third.subtract(start), third.subtract(end));
+    const dot = math.dot(third.subtract(start), third.subtract(end));
     if (dot < 0) {
         sweep = 1 - sweep;
         large = 1 - large;
@@ -199,7 +199,7 @@ export namespace Gradients {
     }
 
     export function setDirection(gradient: Element, vector: L.Point) {
-        const coors = Maths.vectorToGradCoordinates(vector);
+        const coors = math.vectorToGradCoordinates(vector);
         gradient.setAttribute('x1', (1 - coors.x) * 50 + '%');
         gradient.setAttribute('y1', (1 - coors.y) * 50 + '%');
         gradient.setAttribute('x2', (1 + coors.x) * 50 + '%');

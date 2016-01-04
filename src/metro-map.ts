@@ -3,6 +3,8 @@ import * as L from 'leaflet';
 const alertify = require('alertifyjs');
 import { lineRulesPromise } from './res';
 import * as util from './util';
+import * as math from './math';
+import * as algorithm from './algorithm';
 import * as lang from './lang';
 const tr = (text: string) => lang.translate(text);
 import * as svg from './svg';
@@ -602,7 +604,7 @@ export default class MetroMap implements EventTarget {
             dummyCircles.addEventListener('mouseover', e => this.plate.show(svg.circleByDummy(e.target as any)));
             dummyCircles.addEventListener('mouseout', e => this.plate.hide());
 
-            const circular = util.Algorithm.findCircle(this.graph, station);
+            const circular = algorithm.findCircle(this.graph, station);
             if (circular.length > 0) {
                 for (let platformIndex of station.platforms) {
                     const platform = this.graph.platforms[platformIndex];
@@ -731,7 +733,7 @@ export default class MetroMap implements EventTarget {
                 }
             }
             const midPts = points.map(pts => posOnSVG
-                .add(pts.length === 1 ? pts[0] : pts.length === 0 ? posOnSVG : util.Maths.getCenter(pts))
+                .add(pts.length === 1 ? pts[0] : pts.length === 0 ? posOnSVG : math.getCenter(pts))
                 .divideBy(2)
             );
             const lens = midPts.map(midPt => posOnSVG.distanceTo(midPt));
@@ -807,7 +809,7 @@ export default class MetroMap implements EventTarget {
     visualizeShortestRoute(departure: L.LatLng, arrival: L.LatLng) {
         util.resetStyle();
         alertify.dismissAll();
-        const { platforms, edges, time } = util.Algorithm.shortestRoute(this.graph, departure, arrival);
+        const { platforms, edges, time } = algorithm.shortestRoute(this.graph, departure, arrival);
         const onFoot = tr('on foot');
         const walkTo = lang.formatTime(time.walkTo);
         if (edges === undefined) {

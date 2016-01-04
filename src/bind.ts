@@ -1,6 +1,6 @@
 import * as L from 'leaflet';
 import * as svg from './svg';
-import { Maths } from './util';
+import * as math from './math';
 import * as po from './plain-objects';
 
 export function transferToModel(transfer: po.Transfer, elements: Element[]) {
@@ -52,7 +52,7 @@ export function transferToModel(transfer: po.Transfer, elements: Element[]) {
                     const circumpoints: L.Point[] = [];
                     circular.forEach(i => circumpoints.push(this.platformsOnSVG[i]));
 
-                    const cCenter = Maths.getCircumcenter(circumpoints);
+                    const cCenter = math.getCircumcenter(circumpoints);
                     const outerArcs = transferIndices.map(i => document.getElementById('ot-' + i));
                     const innerArcs = transferIndices.map(i => document.getElementById('it-' + i));
                     for (let i = 0; i < 3; ++i) {
