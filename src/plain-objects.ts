@@ -1,9 +1,17 @@
 import * as L from 'leaflet';
-import * as graph from '../metro-graph';
+
+type AltNames = { 
+    old?: string;
+    fi?: string;
+    en?: string;
+    se?: string;
+    ee?: string;
+    de?: string;
+ };
 
 export interface Platform {
     name: string;
-    altNames: graph.AltNames;
+    altNames: AltNames;
     station: number;
     location: L.LatLng;
     elevation: number;
@@ -13,7 +21,7 @@ export interface Platform {
 
 export type Station = {
     name: string;
-    altNames: graph.AltNames;
+    altNames: AltNames;
     location: L.LatLng;
     platforms: number[];
 };
@@ -37,7 +45,7 @@ export type Route = {
 export type StationOrPlatform = {
     location: L.LatLng;
     name: string;
-    altNames: graph.AltNames;
+    altNames: AltNames;
 };
 
 export type Graph = {
