@@ -126,7 +126,7 @@ export default class MetroMap implements EventTarget {
             .catch(er => console.error(er));
 
         Promise.all([graphPromise, hintsPromise])
-            .then(results => util.verifyHints(this.graph, this.hints))
+            .then(results => util.Hints.verify(this.graph, this.hints))
             .then(response => console.log(response))
             .catch(err => console.error(err));
     }
@@ -396,15 +396,12 @@ export default class MetroMap implements EventTarget {
         const blurringStuff: HTMLElement[] = document.querySelectorAll('img[style*="translate3d"]') as any;
         console.log(blurringStuff);
         for (let i = 0; i < blurringStuff.length; ++i) {
-            util.replaceTransform(blurringStuff[i]);
+            util.Transform.replace(blurringStuff[i]);
         }
-        util.replaceTransform(this.map.getPanes().mapPane);
-        //this.overlay.style.transform = mapPane.style.transform = `translate(${t3d.x}px, ${t3d.y}px)`;
+        util.Transform.replace(this.map.getPanes().mapPane);
     }
 
     private resetMapView(): void {
-        //this.map.addLayer(L.circle(L.LatLng(60, 30), 10));
-        //this.overlay = <HTMLElement>this.map.getPanes().overlayPane.children[0];
         this.map.setView(this.bounds.getCenter(), L.Browser.retina ? 12 : 11, {
             pan: { animate: false },
             zoom: { animate: false }
@@ -471,11 +468,11 @@ export default class MetroMap implements EventTarget {
     private updateOverlayPositioning(): void {
         const nw = this.bounds.getNorthWest(),
             se = this.bounds.getSouthEast();
-        // svg bounds in pixels relative to container
+        // svg bounds in pixels relative to container 
         
         const overlayStyle = this.overlay.style;
         const pixelBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
-        const transform = util.parseTransform(overlayStyle.transform);
+        const transform = util.Transform.parse(overlayStyle.transform);
 
         const pixelBoundsSize = pixelBounds.getSize();
         const topLeft = pixelBounds.min.subtract(transform).subtract(pixelBoundsSize);
@@ -579,7 +576,7 @@ export default class MetroMap implements EventTarget {
                                 if (!matches) return;
                                 rgbs.push(this.lineRules[matches[1] === 'M' ? matches[0] : matches[1]]);
                             });
-                            ci.style.stroke = util.meanColor(rgbs);
+                            ci.style.stroke = util.Color.mean(rgbs);
                         }
                         //else if (lines.size === 2) {
                         //const vals = lines.values();
@@ -605,7 +602,7 @@ export default class MetroMap implements EventTarget {
             dummyCircles.addEventListener('mouseover', e => this.plate.show(svg.circleByDummy(e.target as any)));
             dummyCircles.addEventListener('mouseout', e => this.plate.hide());
 
-            const circular = util.findCircle(this.graph, station);
+            const circular = util.Algorithm.findCircle(this.graph, station);
             if (circular.length > 0) {
                 for (let platformIndex of station.platforms) {
                     const platform = this.graph.platforms[platformIndex];
@@ -710,7 +707,7 @@ export default class MetroMap implements EventTarget {
             const spanIds: number[][] = [[], []];
 
             const dirHints = this.hints.crossPlatform;
-            const idx = util.hintContainsLine(this.graph, dirHints, platform);
+            const idx = util.Hints.hintContainsLine(this.graph, dirHints, platform);
             if (platform.name in dirHints && idx !== null) {
                 // array or object
                 const platformHints = idx > -1 ? dirHints[platform.name][idx] : dirHints[platform.name];
@@ -734,7 +731,7 @@ export default class MetroMap implements EventTarget {
                 }
             }
             const midPts = points.map(pts => posOnSVG
-                .add(pts.length === 1 ? pts[0] : pts.length === 0 ? posOnSVG : util.getCenter(pts))
+                .add(pts.length === 1 ? pts[0] : pts.length === 0 ? posOnSVG : util.Maths.getCenter(pts))
                 .divideBy(2)
             );
             const lens = midPts.map(midPt => posOnSVG.distanceTo(midPt));
@@ -810,9 +807,9 @@ export default class MetroMap implements EventTarget {
     visualizeShortestRoute(departure: L.LatLng, arrival: L.LatLng) {
         util.resetStyle();
         alertify.dismissAll();
-        const { platforms, edges, time } = util.shortestPath(this.graph, departure, arrival);
+        const { platforms, edges, time } = util.Algorithm.shortestRoute(this.graph, departure, arrival);
         const onFoot = tr('on foot');
-        const walkTo = util.formatTime(time.walkTo);
+        const walkTo = lang.formatTime(time.walkTo);
         if (edges === undefined) {
             return alertify.success(`${walkTo} ${onFoot}!`);
         }
@@ -825,7 +822,7 @@ export default class MetroMap implements EventTarget {
         console.log(edges);
         console.log(platforms.map(p => this.graph.platforms[p].name));
         svg.animateRoute(this.graph, platforms, edges).then(() => {
-            alertify.message(`${tr('time').toUpperCase()}:<br>${walkTo} ${onFoot}<br>${util.formatTime(time.metro)} ${tr('by metro')}<br>${util.formatTime(time.walkFrom)} ${onFoot}<br>${tr('TOTAL')}: ${util.formatTime(time.total)}`, 10);
+            alertify.message(`${tr('time').toUpperCase()}:<br>${walkTo} ${onFoot}<br>${lang.formatTime(time.metro)} ${tr('by metro')}<br>${lang.formatTime(time.walkFrom)} ${onFoot}<br>${tr('TOTAL')}: ${lang.formatTime(time.total)}`, 10);
         });
     }
 }

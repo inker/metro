@@ -11,16 +11,15 @@ export const dictionaryPromise = fetch('json/dictionary.json').then(data => data
         lang.translate = text => simpleDict[text];
     }
     return dict;
-});
+}).catch(err => console.error(err));
 
 export const lineRulesPromise = new Promise<CSSStyleSheet>(resolve => {
-    const link: HTMLLinkElement = document.querySelector(`[href$="css/scheme.css"]`) as any;
-    if (link.sheet && (link.sheet as CSSStyleSheet).cssRules) {
-        console.log('already loaded');
-        resolve(link.sheet as CSSStyleSheet);
+    const link = document.querySelector(`[href$="css/scheme.css"]`) as HTMLLinkElement;
+    const sheet = link.sheet as CSSStyleSheet;
+    if (sheet && sheet.cssRules) {
+        resolve(sheet);
     } else {
-        console.log('waiting to load');
-        link.onload = e => resolve(link.sheet as CSSStyleSheet);
+        link.onload = e => resolve(sheet);
     }
 }).then(styleSheet => {
     const rules = styleSheet.cssRules,
@@ -40,4 +39,4 @@ export const lineRulesPromise = new Promise<CSSStyleSheet>(resolve => {
         }
     }
     return lineRules;
-});
+}).catch(err => console.error(err));

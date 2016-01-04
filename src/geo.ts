@@ -36,3 +36,23 @@ export function getCenter(points: L.LatLng[]): L.LatLng {
     }
     return new L.LatLng(cLat / nPoints, cLon / nPoints);
 }
+
+export function geoMean(points: L.LatLng[], lossFunction: (pts: L.LatLng[], cur: L.LatLng) => number): L.LatLng {
+    let avg = getCenter(points);
+    let step = 1;
+    let totalDistance = Infinity;
+    for (; step > 0.00000001; step *= 0.5) {
+        for (let i = -5 * step; i <= 5 * step; i += step) {
+            for (let j = -5 * step; j <= 5 * step; j += step) {
+                var pt = new L.LatLng(avg.lat + i, avg.lng + j);
+                const total = lossFunction(points, pt);
+                if (total < totalDistance) {
+                    avg = pt;
+                    totalDistance = total;
+                }
+            }
+        }
+
+    }
+    return avg;
+}
