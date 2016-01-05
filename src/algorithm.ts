@@ -1,5 +1,5 @@
 import * as po from './plain-objects';
-import * as util from './util';
+import { arrayEquals } from './util';
 import * as math from './math';
 import { findClosestObject } from './geo';
 
@@ -12,10 +12,10 @@ export function findCircle(graph: po.Graph, station: po.Station): po.Platform[] 
     if (stationPlatforms.length === 4) {
         const ps = stationPlatforms.slice().sort((a, b) => a.transfers.length - b.transfers.length);
         const degs = ps.map(p => p.transfers.length);
-        if (util.arrayEquals(degs, [2, 2, 3, 3])) {
+        if (arrayEquals(degs, [2, 2, 3, 3])) {
             return ps;
         }
-        if (util.arrayEquals(degs, [1, 2, 2, 3])) {
+        if (arrayEquals(degs, [1, 2, 2, 3])) {
             return ps.slice(1);
         }
     }
@@ -109,7 +109,7 @@ export function shortestRoute(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): shor
             times.push(distance / walkingWithObstacles + (hasE ? eLineWaitingTime : metroWaitingTime));
         }
 
-        for (let i = 0; i < neighborIndices.length; ++i) {
+        for (let i = 0, nNeighbors = neighborIndices.length; i < nNeighbors; ++i) {
             const neighborIndex = neighborIndices[i],
                 alt = dist[currentIndex] + times[i];
             if (alt < dist[neighborIndex]) {
@@ -150,7 +150,7 @@ export function shortestRoute(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): shor
             }
         }
         if (p === '') {
-            for (let i = 0; i < graph.transfers.length; ++i) {
+            for (let i = 0, len = graph.transfers.length; i < len; ++i) {
                 const t = graph.transfers[i];
                 if (t.source === currentIndex && t.target === prevIndex || t.target === currentIndex && t.source === prevIndex) {
                     p = 't-' + i;

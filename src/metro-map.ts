@@ -412,15 +412,11 @@ export default class MetroMap implements EventTarget {
     }
 
     private resetOverlayStructure(): void {
-
         const origin = document.getElementById('origin') || svg.createSVGElement('g');
         let child;
         while (child = origin.firstChild) {
             origin.removeChild(child);
         }        
-
-        // svg element won't work because it does not have negative dimensions
-        // (top-left station is partially visible)
 
         origin.id = 'origin';
         const groupIds = [

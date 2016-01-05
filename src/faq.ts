@@ -47,6 +47,7 @@ export default class FAQ {
 		cardStyle.transform = null;
 		cardStyle.opacity = null;
 		this.button.disabled = true;
+        this.map.getContainer().classList.add('dimmed');
 		this.map.once('mousedown', e => this.hideFAQ((e as L.LeafletMouseEvent).originalEvent));
 	}
 	
@@ -54,6 +55,7 @@ export default class FAQ {
 		this.card.getBoundingClientRect();
 		this.card.style.transform = 'scale(0.1)';
 		this.card.style.opacity = '0';
+        this.map.getContainer().classList.remove('dimmed');
 		once(this.card, 'transitionend', e => this.card.style.display = null);
 		this.button.disabled = false;
 	}

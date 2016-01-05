@@ -19,6 +19,13 @@ a:hover {
 #map-container {
     height: 100%; /* the map should have a defined height */
     cursor: default; /* overriding the hand */
+    transition-property: filter -webkit-filter;
+    transition-duration:  200ms;
+}
+
+#map-container.dimmed {
+    -webkit-filter: brightness(0.75);
+    filter: brightness(0.75);
 }
 
 .leaflet-control-scale-line {

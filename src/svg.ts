@@ -205,7 +205,7 @@ export namespace Gradients {
         // }
         const transfers = document.getElementById('transfers-outer').children;
         if (transfers) {
-            for (let i = 0; i < transfers.length; ++i) {
+            for (let i = 0, len = transfers.length; i < len; ++i) {
                 const transfer = transfers[i] as HTMLElement;
                 let fallbackColor = transfer.getAttribute('data-fallbackcolor');
                 if (fallbackColor === null) {
@@ -290,7 +290,7 @@ export function animateRoute(graph: po.Graph, platforms: number[], edges: string
             if (outer.id.charAt(1) !== 't') {
                 // fixing disappearing lines
                 const box = outer.getBoundingClientRect();
-                const strokeWidth = +getComputedStyle(outerOld).strokeWidth;
+                const strokeWidth = parseFloat(getComputedStyle(outerOld).strokeWidth);
                 if (box.height >= strokeWidth && box.width >= strokeWidth) {
                     outerOld.style.filter = 'url(#black-glow)';
                 }
