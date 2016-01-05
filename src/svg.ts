@@ -1,6 +1,7 @@
 import * as L from 'leaflet';
 import * as po from './plain-objects';
 import * as math from './math';
+import { Color } from './util';
 
 export function createSVGElement(tagName: string) {
     return document.createElementNS('http://www.w3.org/2000/svg', tagName);
@@ -205,7 +206,16 @@ export namespace Gradients {
         const transfers = document.getElementById('transfers-outer').children;
         if (transfers) {
             for (let i = 0; i < transfers.length; ++i) {
-                (transfers[i] as HTMLElement).style.stroke = '#888888';
+                const transfer = transfers[i] as HTMLElement;
+                let fallbackColor = transfer.getAttribute('data-fallbackcolor');
+                if (fallbackColor === null) {
+                    const gradient: SVGLinearGradientElement = document.getElementById('g-' + i) as any;
+                    const colors = [gradient.firstElementChild, gradient.lastElementChild]
+                        .map((el: SVGStopElement) => el.style.stopColor);
+                    fallbackColor = Color.mean(colors);
+                    transfer.setAttribute('data-fallbackcolor', fallbackColor);
+                }
+                transfer.style.stroke = fallbackColor;
             }
         }
     }
