@@ -298,7 +298,8 @@ export default class MetroMap implements EventTarget {
                     .subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
                 const stationCircles = document.getElementById('station-circles'),
                     dummyCircles = document.getElementById('dummy-circles');
-                const circle = svg.makeCircle(pos, parseFloat(stationCircles.firstElementChild.getAttribute('r'))), dummy = svg.makeCircle(pos, parseFloat(dummyCircles.firstElementChild.getAttribute('r')));
+                const circle = svg.makeCircle(pos, +stationCircles.firstElementChild.getAttribute('r')),
+                    dummy = svg.makeCircle(pos, +dummyCircles.firstElementChild.getAttribute('r'));
 
                 const id = this.graph.platforms.length;
                 circle.id = 'p-' + id;
@@ -361,7 +362,7 @@ export default class MetroMap implements EventTarget {
             // the secret of correct positioning is the movend transform check for corrent transform
             this.overlay.style.transform = mapPane.style.transform;
         }).on('zoomstart', e => {
-            console.log('zoomstart', e.target);
+            console.log('zoomstart', e);
             this.map.dragging.disable();
             const fromZoom: number = e.target['_zoom'];
             setTimeout(() => {
@@ -476,7 +477,7 @@ export default class MetroMap implements EventTarget {
         const pixelBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
         const transform = util.CSSTransform.parse(overlayStyle.transform);
         
-        const margin = new L.Point(50, 50);
+        const margin = new L.Point(100, 100);
         const topLeft = pixelBounds.min.subtract(transform).subtract(margin);
         overlayStyle.left = topLeft.x + 'px';
         overlayStyle.top = topLeft.y + 'px';

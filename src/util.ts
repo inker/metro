@@ -23,7 +23,7 @@ export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {
     return coors;
 }
 
-export function once(el: EventTarget, eventType: string, listener: (e: KeyboardEvent) => any) {
+export function once(el: EventTarget, eventType: string, listener: (e: Event) => any) {
     const handler: typeof listener = e => {
         el.removeEventListener(eventType, handler);
         listener(e);
@@ -32,7 +32,7 @@ export function once(el: EventTarget, eventType: string, listener: (e: KeyboardE
 }
 
 export function onceEscapePress(handler: (ev: KeyboardEvent) => any) {
-    once(window, 'keydown', e => {
+    once(window, 'keydown', (e: KeyboardEvent) => {
         if (e.keyCode === 27) handler(e);
     });
 }
@@ -41,7 +41,7 @@ export function resetStyle() {
     const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
     const els = document.querySelectorAll(selector);
     for (let i = 0; i < els.length; ++i) {
-        const el: HTMLElement = els[i] as any;
+        const el = els[i] as HTMLElement;
         el.style.opacity = null;
         if (el.id.charAt(1) !== 't') {
             el.style.filter = null;
@@ -123,17 +123,17 @@ export namespace Hints {
 }
 
 export namespace Color {
-    function hexColorToArray(hex: string): number[] {
+    function hexToArray(hex: string): number[] {
         return hex.match(/[0-9a-f]{1,2}/ig).map(s => parseInt(s, 16));
     }
 
-    function rgbColorToArray(rgb: string): number[] {
+    function rgbToArray(rgb: string): number[] {
         return rgb.match(/rgb\s*\((\d+),\s*(\d+),\s*(\d+)\s*\)/).slice(1).map(Number);
     }
 
     export function mean(rgb: string[]): string {
         const reduceFunc = (prev: number[], cur: string) =>
-            (cur.startsWith('#') ? hexColorToArray : rgbColorToArray)(cur)
+            (cur.startsWith('#') ? hexToArray : rgbToArray)(cur)
                 .map((it, i) => prev[i] + it);
         const [r, g, b] = rgb.reduce(reduceFunc, [0, 0, 0]).map(i => Math.floor(i / rgb.length));
         return `rgb(${r}, ${g}, ${b})`;

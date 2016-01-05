@@ -8,7 +8,7 @@ export default class FAQ {
 	private card: HTMLDivElement;
 	private map: L.Map;
 	constructor(map: MetroMap, faqDataUrl: string) {
-		const promise: Promise<FAQData> = window['fetch'](faqDataUrl)
+		const promise: Promise<FAQData> = fetch(faqDataUrl)
 		    .catch(err => console.error(err))
 			.then(data => data.json());
 		this.map = map.getMap();

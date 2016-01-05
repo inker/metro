@@ -260,8 +260,8 @@ export function animateRoute(graph: po.Graph, platforms: number[], edges: string
             ? L.point(Number(outer.getAttribute('x1')), Number(outer.getAttribute('y1'))).distanceTo(L.point(Number(outer.getAttribute('x2')), Number(outer.getAttribute('y2'))))
             : outer['getTotalLength']();
 
-        const parts = edges[i].split('-');
-        const edge: po.Transfer | po.Span = graph[parts[0] === 'p' ? 'spans' : 'transfers'][parseInt(parts[1])];
+        const idParts = edges[i].split('-');
+        const edge: po.Transfer | po.Span = graph[idParts[0] === 'p' ? 'spans' : 'transfers'][+idParts[1]];
         const initialOffset = edge.source === platforms[i] ? length : -length;
         const duration = length;
         outer.style.filter = 'url(#black-glow)';
@@ -280,7 +280,7 @@ export function animateRoute(graph: po.Graph, platforms: number[], edges: string
             if (outer.id.charAt(1) !== 't') {
                 // fixing disappearing lines
                 const box = outer.getBoundingClientRect();
-                const strokeWidth = parseFloat(getComputedStyle(outerOld).strokeWidth);
+                const strokeWidth = +getComputedStyle(outerOld).strokeWidth;
                 if (box.height >= strokeWidth && box.width >= strokeWidth) {
                     outerOld.style.filter = 'url(#black-glow)';
                 }
@@ -316,5 +316,5 @@ export function circleByDummy(dummyCircle: Element): SVGCircleElement {
 }
 
 export function platformByCircle(circle: Element, graph: po.Graph) {
-    return graph.platforms[parseInt(circle.id.slice(2))];
+    return graph.platforms[+circle.id.slice(2)];
 }
