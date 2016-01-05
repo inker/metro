@@ -288,7 +288,7 @@ export function animateRoute(graph: po.Graph, platforms: number[], edges: string
             document.getElementById('paths-outer').removeChild(outer);
             if (inner) {
                 innerOld.style.opacity = null;
-                if (inner) document.getElementById('paths-inner').removeChild(inner);
+                document.getElementById('paths-inner').removeChild(inner);
             }
             animateSpan(i + 1);
         });
