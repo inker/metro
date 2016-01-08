@@ -1,5 +1,5 @@
 import MetroMap from './metro-map';
-import { once } from './util';
+import { once } from '../util';
 
 type FAQData = {faq: { q: string, a: string }[]};
 

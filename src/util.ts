@@ -105,7 +105,7 @@ export namespace Hints {
         const spans = platform.spans.map(i => graph.spans[i]);
         const routes: po.Route[] = [];
         spans.forEach(span => span.routes.forEach(i => routes.push(graph.routes[i])));
-        const lines = routes.map(rt => rt.line);
+        const lines = routes.map(r => r.line);
         const platformHints = dirHints[platform.name];
         if (platformHints) {
             if ('forEach' in platformHints) {
@@ -147,7 +147,7 @@ export function flashTitle(titles: string[], duration: number) {
 
 export function downloadAsFile(title: string, content: string) {
     const a = document.createElement('a');
-    const blob = new Blob([content], { type: "octet/stream" });
+    const blob = new Blob([content], { type: 'octet/stream' });
     const url = window.URL.createObjectURL(blob);
     a.href = url;
     a['download'] = title;
@@ -157,7 +157,6 @@ export function downloadAsFile(title: string, content: string) {
 
 export function platformRenameDialog(graph: po.Graph, platform: po.Platform) {
     const ru = platform.name, {fi, en} = platform.altNames;
-
     const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru];
     const nameString = names.join('|');
     alertify.prompt(tr('New name'), nameString, (okevt, val: string) => {

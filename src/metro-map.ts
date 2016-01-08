@@ -5,16 +5,12 @@ import { lineRulesPromise } from './res';
 import * as util from './util';
 import * as math from './math';
 import * as algorithm from './algorithm';
-import * as lang from './lang';
-const tr = (text: string) => lang.translate(text);
+import { translate as tr, formatTime as ft } from './lang';
 import * as svg from './svg';
 import * as po from './plain-objects';
 import * as bind from './bind';
 import * as geo from './geo';
-import MapEditor from './mapeditor';
-import FAQ from './faq';
-import TextPlate from './textplate';
-import ContextMenu from './contextmenu';
+import { ContextMenu, MapEditor, FAQ, TextPlate } from './ui';
 
 L.Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images';
 
@@ -77,12 +73,10 @@ export default class MetroMap implements EventTarget {
             minZoom: 9,
             inertia: false
         }).addControl(new L.Control.Scale({ imperial: false }));
-        console.log(tileLayers[Object.keys(tileLayers)[0]][0]);
+        
         tileLayers[Object.keys(tileLayers)[0]].addTo(this.map);
         this.map.addLayer(this.fromMarker).addLayer(this.toMarker);
-        //new addons.LayerControl(tileLayers).addTo(this.map);
         
-        console.log('map should be created by now');
         this.overlay = document.getElementById('overlay');
         const container = this.map.getContainer();
         container.removeChild(this.overlay);
@@ -546,11 +540,9 @@ export default class MetroMap implements EventTarget {
         }
 
         const platformsInCircles = new Set<number>();
-        const stationCircumpoints = new Map<number, po.Platform[]>();
+        const stationCircumpoints = new Map<po.Station, po.Platform[]>();
 
-        for (let stationIndex = 0; stationIndex < this.graph.stations.length; ++stationIndex) {
-            const station = this.graph.stations[stationIndex];
-
+        for (let station of this.graph.stations) {
             const circumpoints: L.Point[] = [];
             for (let platformIndex of station.platforms) {
                 const platform = this.graph.platforms[platformIndex];
@@ -608,7 +600,7 @@ export default class MetroMap implements EventTarget {
                         platformsInCircles.add(platformIndex);
                     }
                 }
-                stationCircumpoints.set(stationIndex, circular);
+                stationCircumpoints.set(station, circular);
             }
 
         }
@@ -622,7 +614,7 @@ export default class MetroMap implements EventTarget {
                 var pos1 = this.platformsOnSVG[transfer.source],
                     pos2 = this.platformsOnSVG[transfer.target];
                 if (platformsInCircles.has(transfer.source) && platformsInCircles.has(transfer.target)) {
-                    const cluster = stationCircumpoints.get(pl1.station);
+                    const cluster = stationCircumpoints.get(this.graph.stations[pl1.station]);
                     const makeArc = (third: po.Platform) => {
                         const thirdPos = this.platformsOnSVG[this.graph.platforms.indexOf(third)];
                         paths = svg.makeTransferArc(pos1, pos2, thirdPos);
@@ -651,7 +643,7 @@ export default class MetroMap implements EventTarget {
                 const circlePortion = (circleRadius + circleBorder / 2) / pos1.distanceTo(pos2);
                 let gradient: SVGLinearGradientElement = document.getElementById('g-' + transferIndex) as any;
                 if (gradient === null) {
-                    gradient = svg.Gradients.make(pos2.subtract(pos1), gradientColors, circlePortion);
+                    gradient = svg.Gradients.makeLinear(pos2.subtract(pos1), gradientColors, circlePortion);
                     gradient.id = 'g-' + transferIndex;
                     this.overlay.querySelector('defs').appendChild(gradient);
                 } else {
@@ -806,7 +798,7 @@ export default class MetroMap implements EventTarget {
         alertify.dismissAll();
         const { platforms, edges, time } = algorithm.shortestRoute(this.graph, departure, arrival);
         const onFoot = tr('on foot');
-        const walkTo = lang.formatTime(time.walkTo);
+        const walkTo = ft(time.walkTo);
         if (edges === undefined) {
             return alertify.success(`${walkTo} ${onFoot}!`);
         }
@@ -818,8 +810,8 @@ export default class MetroMap implements EventTarget {
         }
         console.log(edges);
         console.log(platforms.map(p => this.graph.platforms[p].name));
-        svg.animateRoute(this.graph, platforms, edges).then(() => {
-            alertify.message(`${tr('time').toUpperCase()}:<br>${walkTo} ${onFoot}<br>${lang.formatTime(time.metro)} ${tr('by metro')}<br>${lang.formatTime(time.walkFrom)} ${onFoot}<br>${tr('TOTAL')}: ${lang.formatTime(time.total)}`, 10);
+        svg.Animation.animateRoute(this.graph, platforms, edges).then(() => {
+            alertify.message(`${tr('time').toUpperCase()}:<br>${walkTo} ${onFoot}<br>${ft(time.metro)} ${tr('by metro')}<br>${ft(time.walkFrom)} ${onFoot}<br>${tr('TOTAL')}: ${ft(time.total)}`, 10);
         });
     }
 }

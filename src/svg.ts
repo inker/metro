@@ -64,7 +64,6 @@ export function getCircularPath(path: Element) {
 
 export function setCircularPath(el: Element, start: L.Point, end: L.Point, third: L.Point) {
     const center = math.getCircumcenter([start, end, third]);
-
     const startAngle = Math.atan2(start.y - center.y, start.x - center.x),
         endAngle = Math.atan2(end.y - center.y, end.x - center.x),
         thirdAngle = Math.atan2(third.y - center.y, third.x - center.x);
@@ -121,6 +120,14 @@ export function makeTransfer(start: L.Point, end: L.Point): SVGLineElement[] {
         line.classList.add(cls);
         return line as any;
     });
+}
+
+export function circleByDummy(dummyCircle: Element): SVGCircleElement {
+    return document.getElementById('p-' + dummyCircle.id.slice(2)) as any;
+}
+
+export function platformByCircle(circle: Element, graph: po.Graph) {
+    return graph.platforms[+circle.id.slice(2)];
 }
 
 export namespace SVGDataset {
@@ -188,7 +195,7 @@ export namespace Shadows {
 export namespace Gradients {
     //let defs; 
     
-    export function make(vector: L.Point, colors: string[], offset = 0): SVGLinearGradientElement {
+    export function makeLinear(vector: L.Point, colors: string[], offset = 0): SVGLinearGradientElement {
         const gradient = createSVGElement('linearGradient') as SVGLinearGradientElement;
         setDirection(gradient, vector);
         (gradient as any).innerHTML = `<stop offset="${offset}" style="stop-color:${colors[0]}" />
@@ -247,84 +254,81 @@ export namespace Gradients {
     }
 }
 
-export function animateRoute(graph: po.Graph, platforms: number[], edges: string[]) {
-    return new Promise(resolve => (function animateSpan(i: number) {
-        const circle: SVGCircleElement = document.getElementById('p-' + platforms[i]) as any;
-        circle.style.opacity = null;
-        if (i < edges.length) {
-            pulsateCircle(circle, 1.5, 200);
-        } else {
-            pulsateCircle(circle, 3, 200);
-            return resolve();
-        }
-        const outerOld: SVGPathElement | SVGLineElement = document.getElementById('o' + edges[i]) as any;
-        if (outerOld === null) {
-            return animateSpan(i + 1);
-        }
-        const innerOld: typeof outerOld = document.getElementById('i' + edges[i]) as any;
-        const outer: typeof outerOld = outerOld.cloneNode(true) as any;
-        const inner: typeof outer = innerOld === null ? null : innerOld.cloneNode(true) as any;
-        document.getElementById('paths-outer').appendChild(outer);
-        if (inner) document.getElementById('paths-inner').appendChild(inner);
-        const length: number = outer instanceof SVGLineElement
-            ? L.point(Number(outer.getAttribute('x1')), Number(outer.getAttribute('y1'))).distanceTo(L.point(Number(outer.getAttribute('x2')), Number(outer.getAttribute('y2'))))
-            : outer['getTotalLength']();
+export namespace Animation {
+    export function animateRoute(graph: po.Graph, platforms: number[], edges: string[]) {
+        return new Promise(resolve => (function animateSpan(i: number) {
+            const circle: SVGCircleElement = document.getElementById('p-' + platforms[i]) as any;
+            circle.style.opacity = null;
+            if (!L.Browser.mobile) {
+                pulsateCircle(circle, i < edges.length ? 1.5 : 3, 200);
+            }
+            if (i === edges.length) {
+                return resolve();
+            }
+            const outerOld: SVGPathElement | SVGLineElement = document.getElementById('o' + edges[i]) as any;
+            if (outerOld === null) {
+                return animateSpan(i + 1);
+            }
+            const innerOld: typeof outerOld = document.getElementById('i' + edges[i]) as any;
+            const outer: typeof outerOld = outerOld.cloneNode(true) as any;
+            const inner: typeof outer = innerOld === null ? null : innerOld.cloneNode(true) as any;
+            document.getElementById('paths-outer').appendChild(outer);
+            if (inner) document.getElementById('paths-inner').appendChild(inner);
+            const length: number = outer instanceof SVGLineElement
+                ? L.point(Number(outer.getAttribute('x1')), Number(outer.getAttribute('y1'))).distanceTo(L.point(Number(outer.getAttribute('x2')), Number(outer.getAttribute('y2'))))
+                : outer['getTotalLength']();
 
-        const idParts = edges[i].split('-');
-        const edge: po.Transfer | po.Span = graph[idParts[0] === 'p' ? 'spans' : 'transfers'][+idParts[1]];
-        const initialOffset = edge.source === platforms[i] ? length : -length;
-        const duration = length;
-        outer.style.filter = 'url(#black-glow)';
-        for (let path of (inner === null ? [outer] : [outer, inner])) {
-            const pathStyle = path.style;
-            pathStyle.transition = null;
-            pathStyle.opacity = null;
-            pathStyle.strokeDasharray = length + ' ' + length;
-            pathStyle.strokeDashoffset = initialOffset.toString();
-            path.getBoundingClientRect();
-            pathStyle.transition = `stroke-dashoffset ${duration}ms linear`;
-            pathStyle.strokeDashoffset = '0';
-        }
-        outer.addEventListener('transitionend', e => {
-            outerOld.style.opacity = null;
-            if (outer.id.charAt(1) !== 't') {
-                // fixing disappearing lines
-                const box = outer.getBoundingClientRect();
-                const strokeWidth = parseFloat(getComputedStyle(outerOld).strokeWidth);
-                if (box.height >= strokeWidth && box.width >= strokeWidth) {
-                    outerOld.style.filter = 'url(#black-glow)';
+            const idParts = edges[i].split('-');
+            const edge: po.Transfer | po.Span = graph[idParts[0] === 'p' ? 'spans' : 'transfers'][+idParts[1]];
+            const initialOffset = edge.source === platforms[i] ? length : -length;
+            const duration = length;
+            outer.style.filter = 'url(#black-glow)';
+            for (let path of (inner === null ? [outer] : [outer, inner])) {
+                const pathStyle = path.style;
+                pathStyle.transition = null;
+                pathStyle.opacity = null;
+                pathStyle.strokeDasharray = length + ' ' + length;
+                pathStyle.strokeDashoffset = initialOffset.toString();
+                path.getBoundingClientRect();
+                pathStyle.transition = `stroke-dashoffset ${duration}ms linear`;
+                pathStyle.strokeDashoffset = '0';
+            }
+            outer.addEventListener('transitionend', e => {
+                outerOld.style.opacity = null;
+                if (outer.id.charAt(1) !== 't') {
+                    // fixing disappearing lines
+                    const box = outer.getBoundingClientRect();
+                    const strokeWidth = parseFloat(getComputedStyle(outerOld).strokeWidth);
+                    if (box.height >= strokeWidth && box.width >= strokeWidth) {
+                        outerOld.style.filter = 'url(#black-glow)';
+                    }
                 }
-            }
-            document.getElementById('paths-outer').removeChild(outer);
-            if (inner) {
-                innerOld.style.opacity = null;
-                document.getElementById('paths-inner').removeChild(inner);
-            }
-            animateSpan(i + 1);
+                document.getElementById('paths-outer').removeChild(outer);
+                if (inner) {
+                    innerOld.style.opacity = null;
+                    document.getElementById('paths-inner').removeChild(inner);
+                }
+                animateSpan(i + 1);
+            });
+            console.log(outer);
+        })(0));
+    }
+
+    export function pulsateCircle(circle: SVGCircleElement, scaleFactor: number, duration: number) {
+        circle.getBoundingClientRect();
+        circle.style.transition = `transform ${duration / 2}ms linear`;
+        const t = scaleFactor - 1,
+            tx = -circle.getAttribute('cx') * t,
+            ty = -circle.getAttribute('cy') * t;
+        // circle.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scaleFactor}, ${scaleFactor})`;
+        circle.style.transform = `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${tx}, ${ty})`;
+        circle.addEventListener('transitionend', function foo(e) {
+            this.removeEventListener('transitionend', foo);
+            this.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
+            this.addEventListener('transitionend', function bar(e) {
+                this.removeEventListener('transitionend', bar);
+                this.style.transform = null;
+            });
         });
-        console.log(outer);
-    })(0));
-}
-
-export function pulsateCircle(circle: SVGCircleElement, scaleFactor: number, duration: number) {
-    circle.getBoundingClientRect();
-    circle.style.transition = `transform ${duration / 2}ms linear`;
-    // circle.style.transform = `translate3d(${-circle.getAttribute('cx') * (scaleFactor - 1)}px, ${-circle.getAttribute('cy') * (scaleFactor - 1)}px, 0) scale3d(${scaleFactor}, ${scaleFactor}, 1)`;
-    circle.style.transform = `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${-circle.getAttribute('cx') * (scaleFactor - 1)}, ${-circle.getAttribute('cy') * (scaleFactor - 1)})`;
-    circle.addEventListener('transitionend', function foo(e) {
-        this.removeEventListener('transitionend', foo);
-        this.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
-        this.addEventListener('transitionend', function bar(e) {
-            this.removeEventListener('transitionend', bar);
-            this.style.transform = null;
-        });
-    });
-}
-
-export function circleByDummy(dummyCircle: Element): SVGCircleElement {
-    return document.getElementById('p-' + dummyCircle.id.slice(2)) as any;
-}
-
-export function platformByCircle(circle: Element, graph: po.Graph) {
-    return graph.platforms[+circle.id.slice(2)];
+    }
 }

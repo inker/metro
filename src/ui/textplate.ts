@@ -1,6 +1,6 @@
-import * as svg from './svg';
-import * as po from './plain-objects';
-import * as lang from './lang';
+import * as svg from '../svg';
+import * as po from '../plain-objects';
+import * as lang from '../lang';
 
 export default class TextPlate {
     private _element: SVGGElement;

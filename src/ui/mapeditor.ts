@@ -1,7 +1,7 @@
-import MetroMap from './metro-map';
-import { downloadAsFile } from './util';
-import * as svg from './svg';
-import * as lang from './lang';
+import MetroMap from '../metro-map';
+import { downloadAsFile } from '../util';
+import * as svg from '../svg';
+import * as lang from '../lang';
 
 export default class MapEditor {
     private metroMap: MetroMap;

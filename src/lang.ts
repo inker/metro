@@ -4,7 +4,7 @@ export const userLanguage = (navigator.userLanguage || navigator.language).slice
 
 export let dictionary = {};
 
-export function translate(text: string) {
+export function translate(text: string): string {
     return text in dictionary && userLanguage in dictionary[text] ? dictionary[text][userLanguage] : text;
 }
 

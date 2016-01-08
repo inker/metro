@@ -1,5 +1,5 @@
 import MetroMap from './metro-map';
-import * as lang from './lang';
+import * as lang from '../lang';
 
 type Item = { icon?: string; disabled?: boolean; text: string };
 export default class ContextMenu {
