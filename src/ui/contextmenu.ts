@@ -7,6 +7,7 @@ export default class ContextMenu {
     private metroMap: MetroMap;
     private _items: Map<string, Item>;
     private _extraItems: Map<EventTarget, Map<string, Item>>;
+    private table: HTMLTableElement;
     get items() {
         return this._items;
     }
@@ -14,13 +15,10 @@ export default class ContextMenu {
         return this._extraItems;
     }
     get state() {
-        return document.getElementById('contextmenu') !== null;
+        return this.table.style.display !== 'none';
     }
-    set state(state: boolean) {
-        if (state) return;
-        const menuElement = document.getElementById('contextmenu');
-        if (menuElement === null) return;
-        document.body.removeChild(menuElement);
+    set state(val: boolean) {
+        this.table.style.display = val ? null : 'none';
     }
 
     constructor(metroMap: MetroMap, items: Map<string, Item>) {
@@ -37,25 +35,19 @@ export default class ContextMenu {
                 this.state = false;
             }
         });
-    } 
+        this.table = document.createElement('table');
+        this.table.id = 'contextmenu';
+        document.body.appendChild(this.table);
+    }
 
     private listener(event: MouseEvent) {
         console.log('target', event.target);
         event.preventDefault();
         console.log('bb', event.bubbles);
-        let table: HTMLTableElement;
-        if (this.state) {
-            table = document.getElementById('contextmenu') as any;
-        } else {
-            table = document.createElement('table');
-            table.id = 'contextmenu';
-            table.style.position = 'absolute';
-            document.body.appendChild(table);
-            this.state = true;
-        }
-        table.innerHTML = '';
-        function fillCell(item: Item, eventName: string) {
-            const cell: HTMLTableDataCellElement = (table as any).insertRow().insertCell(0);
+        this.state = true;
+        this.table.innerHTML = '';
+        const fillCell = (item: Item, eventName: string) => {
+            const cell: HTMLTableDataCellElement = (this.table.insertRow() as any).insertCell(0);
             const [attr, val] = item.disabled ? ['disabled', ''] : ['data-event', eventName];
             cell.setAttribute(attr, val);
             cell.textContent = lang.translate(item.text);
@@ -68,7 +60,8 @@ export default class ContextMenu {
             this._extraItems.delete(target);
         });
         // defined here so that the marker gets set here (TODO: fix later)
-        table.onclick = e => {
+        this.table.onclick = e => {
+            console.log(e);
             const cell: HTMLTableCellElement = e.target as any;
             const dict = {
                 clientX: event.clientX,
@@ -82,12 +75,12 @@ export default class ContextMenu {
             }
         };
 
-        const { width, height } = table.getBoundingClientRect();
+        const { width, height } = this.table.getBoundingClientRect();
         const { clientWidth, clientHeight } = document.documentElement;
         const { clientX, clientY } = event;
-        table.style.top = `${clientY + height > clientHeight ? clientY - height : clientY}px`;
-        table.style.left = `${clientX + width > clientWidth ? clientWidth - width : clientX}px`;
-        console.log('context menu!');
+        const tx = clientX + width > clientWidth ? clientWidth - width : clientX,
+            ty = clientY + height > clientHeight ? clientY - height : clientY
+        this.table.style.transform = `translate(${tx}px, ${ty}px)`;
     }
 
 
