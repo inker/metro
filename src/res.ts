@@ -21,14 +21,11 @@ export const lineRulesPromise = new Promise<CSSStyleSheet>(resolve => {
     for (let i = 0; i < rules.length; ++i) {
         const rule = rules[i];
         if (rule instanceof CSSStyleRule) {
-            const selector = rule.selectorText;
-            if (selector === '#paths-outer .E') {
+            const matches = rule.selectorText.match(/\.(M\d+|L)/);
+            if (matches && matches[1]) {
+                lineRules[matches[1]] = rule.style.stroke;
+            } else if (rule.selectorText === '#paths-outer .E') {
                 lineRules['E'] = rule.style.stroke;
-            } else {
-                const matches = selector.match(/\.(M\d+|L)/);
-                if (matches) {
-                    lineRules[matches[1]] = rule.style.stroke;
-                }
             }
         }
     }

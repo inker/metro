@@ -1,4 +1,4 @@
-import MetroMap from './metro-map';
+import MetroMap from '../metro-map';
 import { once } from '../util';
 
 type FAQData = {faq: { q: string, a: string }[]};
@@ -28,14 +28,8 @@ export default class FAQ {
 		closeSpan.addEventListener('mousedown', e => this.map.fireEvent('mousedown'));
 
 		this.card.appendChild(closeSpan);
-		promise.then(data => {
-			for (let qa of data.faq) {
-				const qaEl = document.createElement('div');
-				qaEl.innerHTML = `<span class="question">${qa.q}</span><span class="answer">${qa.a}</span>`;
-				this.card.appendChild(qaEl);
-			}
-		});
-
+        const qa2html = qa => `<div><span class="question">${qa.q}</span><span class="answer">${qa.a}</span></div>`;
+		promise.then(data => this.card.innerHTML += data.faq.map(qa2html).join(''));
 	}
 
 	showFAQ(event: MouseEvent) {

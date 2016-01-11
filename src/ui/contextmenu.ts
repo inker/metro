@@ -1,4 +1,5 @@
-import MetroMap from './metro-map';
+import MetroMap from '../metro-map';
+import * as util from '../util';
 import * as lang from '../lang';
 
 type Item = { icon?: string; disabled?: boolean; text: string };
@@ -27,16 +28,18 @@ export default class ContextMenu {
         this.metroMap = metroMap;
         this._items = items;
         this._extraItems = new Map();
+        const handler = this.listener.bind(this);
+        metroMap.getMap().getPanes().mapPane.addEventListener('contextmenu', handler);
+        metroMap.getOverlay().addEventListener('contextmenu', handler);
         const container = metroMap.getMap().getContainer();
-        container.addEventListener('contextmenu', this.addListener.bind(this), true);
         container.addEventListener('mousedown', evt => {
             if (evt.button !== 2) {
                 this.state = false;
             }
         });
-    }
+    } 
 
-    private addListener(event: MouseEvent) {
+    private listener(event: MouseEvent) {
         console.log('target', event.target);
         event.preventDefault();
         console.log('bb', event.bubbles);
@@ -51,10 +54,10 @@ export default class ContextMenu {
             this.state = true;
         }
         table.innerHTML = '';
-        function fillCell(item: Item, eventName) {
+        function fillCell(item: Item, eventName: string) {
             const cell: HTMLTableDataCellElement = (table as any).insertRow().insertCell(0);
-            const [attrName, attrVal] = item.disabled ? ['disabled', ''] : ['data-event', eventName];
-            cell.setAttribute(attrName, attrVal);
+            const [attr, val] = item.disabled ? ['disabled', ''] : ['data-event', eventName];
+            cell.setAttribute(attr, val);
             cell.textContent = lang.translate(item.text);
         }
         this._items.forEach(fillCell);

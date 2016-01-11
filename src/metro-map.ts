@@ -519,7 +519,7 @@ export default class MetroMap implements EventTarget {
             : platform => this.posOnSVG(svgBounds, platform.location);
         this.platformsOnSVG = this.graph.platforms.map(posTransform);
 
-        let lineWidth = (zoom - 7) * 0.5;
+        let lineWidth = (zoom - 7) * 0.5; // or just (zoom - 9) ? 
         let circleRadius = zoom < 12 ? lineWidth * 1.25 : lineWidth;
         let circleBorder = zoom < 12 ? circleRadius * 0.4 : circleRadius * 0.6;
         let transferWidth = lineWidth * 0.9;

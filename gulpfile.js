@@ -70,7 +70,7 @@ gulp.task('watch-js', () => {
 });
 
 gulp.task('watch-ts-for-all-way', () => {
-    gulp.watch(['src/*.ts'], ['ts-transpile-merge-compress']);
+    gulp.watch(['src/*.ts', 'src/*/*.ts'], ['ts-transpile-merge-compress']);
 });
 
 gulp.task('ts-transpile-merge-compress', () => {
