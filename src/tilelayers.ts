@@ -4,7 +4,7 @@ const tileLayers = {
     Mapbox: new L.TileLayer('https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png', {
         minZoom: 9,
         //id: 'inker.mlo91c41',
-        detectRetina: true,
+        detectRetina: false,
         //reuseTiles: true,
         bounds: null,
         attribution: "Map data &copy; <a href=\"https://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://mapbox.com\">Mapbox</a>"

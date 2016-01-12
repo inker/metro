@@ -32,9 +32,25 @@ export function once(el: EventTarget, eventType: string, listener: (e: Event) =>
 }
 
 export function onceEscapePress(handler: (ev: KeyboardEvent) => any) {
-    once(window, 'keydown', (e: KeyboardEvent) => {
-        if (e.keyCode === 27) handler(e);
-    });
+    const keydownListener = (e: KeyboardEvent) => {
+        if (e.keyCode !== 27) return;
+        handler(e);
+        removeListener();
+    };
+    const backbuttonListener = e => {
+        handler(e);
+        removeListener();
+    }
+    function removeListener() {
+        removeEventListener('keydown', keydownListener);
+        removeEventListener('backbutton', backbuttonListener);
+    }
+
+    addEventListener('keydown', keydownListener);
+    addEventListener('backbutton', backbuttonListener);
+    // once(window, 'keydown', (e: KeyboardEvent) => {
+    //     if (e.keyCode === 27) handler(e);
+    // });
 }
 
 export function resetStyle() {

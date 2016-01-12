@@ -69,7 +69,7 @@ export default class MetroMap implements EventTarget {
         this.map = new L.Map(containerId, {
             //layers: tileLayers[Object.keys(tileLayers)[0]],
             center: new L.LatLng(59.943556, 30.30452),
-            zoom: L.Browser.retina ? 12 : 11,
+            zoom: 11,
             minZoom: 9,
             inertia: false
         }).addControl(new L.Control.Scale({ imperial: false }));
@@ -119,6 +119,7 @@ export default class MetroMap implements EventTarget {
                 return contextMenuPromise;
             })
             .then(contextMenuData => this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData)))
+            //.then(() => this.resetMapView())
             .catch(er => console.error(er));
 
         Promise.all([graphPromise, hintsPromise])
@@ -399,7 +400,7 @@ export default class MetroMap implements EventTarget {
     }
 
     private resetMapView(): void {
-        this.map.setView(this.bounds.getCenter(), L.Browser.retina ? 12 : 11, {
+        this.map.setView(this.bounds.getCenter(), 11, {
             pan: { animate: false },
             zoom: { animate: false }
         });
@@ -524,10 +525,10 @@ export default class MetroMap implements EventTarget {
         let circleBorder = zoom < 12 ? circleRadius * 0.4 : circleRadius * 0.6;
         let transferWidth = lineWidth * 0.9;
         let transferBorder = circleBorder * 1.25;
-        if (L.Browser.retina) {
-            const arr = [lineWidth, circleRadius, circleBorder, transferWidth];
-            [lineWidth, circleRadius, circleBorder, transferWidth, transferBorder] = arr.map(item => item * 1.5);
-        }
+        // if (L.Browser.retina) {
+        //     const arr = [lineWidth, circleRadius, circleBorder, transferWidth];
+        //     [lineWidth, circleRadius, circleBorder, transferWidth, transferBorder] = arr.map(item => item * 1.5);
+        // }
         const strokeWidths = {
             'station-circles': circleBorder,
             'transfers-outer': transferWidth + transferBorder / 2,
