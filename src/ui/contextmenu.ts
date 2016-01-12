@@ -74,13 +74,15 @@ export default class ContextMenu {
                 this.metroMap.dispatchEvent(new MouseEvent(eventType, dict))
             }
         };
-
+        const scale = L.Browser.mobile ? 1.5 : 1;
+        this.table.style.transform = `scale(${scale})`;
         const { width, height } = this.table.getBoundingClientRect();
         const { clientWidth, clientHeight } = document.documentElement;
         const { clientX, clientY } = event;
         const tx = clientX + width > clientWidth ? clientWidth - width : clientX,
             ty = clientY + height > clientHeight ? clientY - height : clientY
-        this.table.style.transform = `translate(${tx}px, ${ty}px)`;
+        this.table.style.transform = `matrix(${scale}, 0, 0, ${scale}, ${tx}, ${ty})`;
+
     }
 
 
