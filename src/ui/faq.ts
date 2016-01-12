@@ -25,7 +25,7 @@ export default class FAQ {
 		const closeSpan = document.createElement('div');
 		closeSpan.classList.add('cross-ball');
 		closeSpan.textContent = '❌';
-		closeSpan.addEventListener('mousedown', e => this.map.fireEvent('mousedown'));
+		closeSpan.addEventListener('click', e => this.map.fireEvent('mousedown'));
 
 		this.card.appendChild(closeSpan);
         const qa2html = qa => `<div><span class="question">${qa.q}</span><span class="answer">${qa.a}</span></div>`;
@@ -41,7 +41,9 @@ export default class FAQ {
 		cardStyle.transform = null;
 		cardStyle.opacity = null;
 		this.button.disabled = true;
-        this.map.getContainer().classList.add('dimmed');
+        if (!L.Browser.mobile) {
+            this.map.getContainer().classList.add('dimmed');
+        }
 		this.map.once('mousedown', e => this.hideFAQ((e as L.LeafletMouseEvent).originalEvent));
 	}
 	
@@ -49,7 +51,9 @@ export default class FAQ {
 		this.card.getBoundingClientRect();
 		this.card.style.transform = 'scale(0.1)';
 		this.card.style.opacity = '0';
-        this.map.getContainer().classList.remove('dimmed');
+        if (!L.Browser.mobile) {
+            this.map.getContainer().classList.remove('dimmed');
+        }
 		once(this.card, 'transitionend', e => this.card.style.display = null);
 		this.button.disabled = false;
 	}

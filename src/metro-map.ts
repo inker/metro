@@ -103,7 +103,9 @@ export default class MetroMap implements EventTarget {
                 this.addMapListeners();
                 this.resetMapView();
                 this.fixFontRendering();
-                new MapEditor(this);
+                if (!L.Browser.mobile) {
+                    new MapEditor(this);
+                }
                 new FAQ(this, 'json/data.json');
                 // const metroPoints = this.graph.platforms.filter(p => this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('M')).map(p => p.location);
                 // const foo = (points, pt) => points.reduce((prev, cur) => prev + pt.distanceTo(cur), 0);
@@ -119,7 +121,6 @@ export default class MetroMap implements EventTarget {
                 return contextMenuPromise;
             })
             .then(contextMenuData => this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData)))
-            //.then(() => this.resetMapView())
             .catch(er => console.error(er));
 
         Promise.all([graphPromise, hintsPromise])
