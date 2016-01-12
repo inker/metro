@@ -1,3 +1,4 @@
+import * as Hammer from 'hammerjs';
 import MetroMap from '../metro-map';
 import { once } from '../util';
 
@@ -21,16 +22,11 @@ export default class FAQ {
         this.button = btn;
         this.card = document.createElement('div');
         this.card.id = 'faq-card';
-        document.body.appendChild(this.card);
-        if (L.Browser.mobile) {
-            const closeSpan = document.createElement('div');
-            closeSpan.classList.add('cross-ball');
-            closeSpan.id = 'close-span';
-            closeSpan.textContent = '❌';
-            closeSpan.onclick = e => console.log('foo');
-            this.card.appendChild(closeSpan);
-        }
         
+        if (L.Browser.mobile) {
+            new Hammer(this.card).on('swipeleft swiperight', this.hideFAQ.bind(this));
+        }
+        document.body.appendChild(this.card);
         const qa2html = qa => `<div><span class="question">${qa.q}</span><span class="answer">${qa.a}</span></div>`;
         promise.then(data => this.card.innerHTML += data.faq.map(qa2html).join(''));
     }

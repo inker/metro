@@ -8,15 +8,14 @@
     "classlist-polyfill": "latest",
     "es6-promise": "latest",
     "es6-set": "latest",
+    "hammerjs": "latest",
     "leaflet": "latest"
   },
   "devDependencies": {
     "babel-preset-es2015": "latest",
     "babelify": "latest",
     "browserify": "latest",
-    "browserify-shim": {
-
-    },
+    "browserify-shim": {},
     "gulp": "latest",
     "gulp-notify": "latest",
     "gulp-sourcemaps": "latest",
