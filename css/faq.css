@@ -5,8 +5,7 @@
     bottom: 5%;
     right: 5%;
     left: 5%;
-    width: 90%;
-    max-width: 20cm;
+    width: 50%;
     margin: 0 auto;
     padding: 1%;
     display: none;
@@ -17,6 +16,13 @@
     overflow-y: scroll;
     transition-property: transform opacity;
     transition-duration:  200ms;
+}
+
+@media only screen and (max-width: 1000px) {
+    #faq-card {
+        max-width: 500px;
+        width: 90%;
+    }
 }
 
 .cross-ball {

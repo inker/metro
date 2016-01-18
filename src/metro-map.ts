@@ -23,7 +23,7 @@ export default class MetroMap implements EventTarget {
     private textData: {};
 
     private whiskers = [];
-    private platformsOnSVG: L.Point[];
+    private platformsOnSVG = new Map<number, L.Point>();
 
     private plate: TextPlate;
 
@@ -62,9 +62,7 @@ export default class MetroMap implements EventTarget {
             .then(data => data.json())
             .then(hintsJSON => this.hints = hintsJSON);
         const contextMenuPromise = fetch('json/contextmenudata.json')
-            .then(data => data.json())
-            .then(obj => { console.log(obj); return obj; })
-            .catch(er => console.error(er))
+            .then(data => data.json());
 
         this.map = new L.Map(containerId, {
             //layers: tileLayers[Object.keys(tileLayers)[0]],
@@ -73,10 +71,10 @@ export default class MetroMap implements EventTarget {
             minZoom: 9,
             inertia: false
         }).addControl(new L.Control.Scale({ imperial: false }));
-        
+
         tileLayers[Object.keys(tileLayers)[0]].addTo(this.map);
         this.map.addLayer(this.fromMarker).addLayer(this.toMarker);
-        
+
         this.overlay = document.getElementById('overlay');
         const container = this.map.getContainer();
         container.removeChild(this.overlay);
@@ -102,31 +100,19 @@ export default class MetroMap implements EventTarget {
                 this.map.invalidateSize(false);
                 this.addMapListeners();
                 this.resetMapView();
+                //util.drawZones(this);
                 this.fixFontRendering();
                 if (!L.Browser.mobile) {
                     new MapEditor(this);
                 }
                 new FAQ(this, 'json/data.json');
-                // const metroPoints = this.graph.platforms.filter(p => this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('M')).map(p => p.location);
-                // const foo = (points, pt) => points.reduce((prev, cur) => prev + pt.distanceTo(cur), 0);
-                // const metroMean = util.geoMean(metroPoints, foo);
-                // for (let i = 5000; i < 20000; i += 5000) {
-                //     L.circle(metroMean, i - 250, { weight: 1 }).addTo(this.map);
-                //     L.circle(metroMean, i + 250, { weight: 1 }).addTo(this.map);
-                // }
-                // const ePoints = this.graph.platforms.filter(p => this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('E')).map(p => p.location);
-                // const eMean = this.graph.platforms.find(p => p.name === 'Glavnyj voxal' && this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('E')).location;
-                // L.circle(eMean, 30000).addTo(this.map);
-                // L.circle(eMean, 45000).addTo(this.map);
                 return contextMenuPromise;
             })
-            .then(contextMenuData => this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData)))
-            .catch(er => console.error(er));
+            .then(contextMenuData => this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData)));
 
         Promise.all([graphPromise, hintsPromise])
             .then(results => util.Hints.verify(this.graph, this.hints))
-            .then(response => console.log(response))
-            .catch(err => console.error(err));
+            .then(response => console.log(response));
     }
 
     addEventListener(type: string, listener: EventListener) { }
@@ -392,10 +378,10 @@ export default class MetroMap implements EventTarget {
      * Fixes blurry font due to 'transform3d' CSS property. Changes everything to 'transform' when the map is not moving
      */
     private fixFontRendering(): void {
-        const blurringStuff: HTMLElement[] = document.querySelectorAll('img[style*="translate3d"]') as any;
+        const blurringStuff = document.querySelectorAll('img[style*="translate3d"]');
         console.log(blurringStuff);
         for (let i = 0; i < blurringStuff.length; ++i) {
-            util.CSSTransform.replace(blurringStuff[i]);
+            util.CSSTransform.replace(blurringStuff[i] as HTMLElement);
         }
         util.CSSTransform.replace(this.map.getPanes().mapPane);
     }
@@ -412,7 +398,7 @@ export default class MetroMap implements EventTarget {
         let child;
         while (child = origin.firstChild) {
             origin.removeChild(child);
-        }        
+        }
 
         origin.id = 'origin';
         const groupIds = [
@@ -468,7 +454,7 @@ export default class MetroMap implements EventTarget {
         const overlayStyle = this.overlay.style;
         const pixelBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
         const transform = util.CSSTransform.parse(overlayStyle.transform);
-        
+
         const margin = new L.Point(100, 100);
         const topLeft = pixelBounds.min.subtract(transform).subtract(margin);
         overlayStyle.left = topLeft.x + 'px';
@@ -501,7 +487,8 @@ export default class MetroMap implements EventTarget {
         this.toMarker.setLatLng([0, 0]);
         this.resetOverlayStructure();
         this.updateOverlayPositioning();
-
+        this.getPlatformsPositionOnOverlay();
+        
         const docFrags = {
             'station-circles': document.createDocumentFragment(),
             'dummy-circles': document.createDocumentFragment(),
@@ -512,24 +499,12 @@ export default class MetroMap implements EventTarget {
         };
 
         const zoom = this.map.getZoom();
-        const nw = this.bounds.getNorthWest();
-        const se = this.bounds.getSouthEast();
-        const svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
 
-        const posTransform = zoom < 12
-            ? platform => this.posOnSVG(svgBounds, this.graph.stations[platform.station].location)
-            : platform => this.posOnSVG(svgBounds, platform.location);
-        this.platformsOnSVG = this.graph.platforms.map(posTransform);
-
-        let lineWidth = (zoom - 7) * 0.5; // or just (zoom - 9) ? 
-        let circleRadius = zoom < 12 ? lineWidth * 1.25 : lineWidth;
-        let circleBorder = zoom < 12 ? circleRadius * 0.4 : circleRadius * 0.6;
-        let transferWidth = lineWidth * 0.9;
-        let transferBorder = circleBorder * 1.25;
-        // if (L.Browser.retina) {
-        //     const arr = [lineWidth, circleRadius, circleBorder, transferWidth];
-        //     [lineWidth, circleRadius, circleBorder, transferWidth, transferBorder] = arr.map(item => item * 1.5);
-        // }
+        const lineWidth = (zoom - 7) * 0.5; // or just (zoom - 9) ? 
+        const circleRadius = zoom < 12 ? lineWidth * 1.25 : lineWidth;
+        const circleBorder = zoom < 12 ? circleRadius * 0.4 : circleRadius * 0.6;
+        const transferWidth = lineWidth * 0.9;
+        const transferBorder = circleBorder * 1.25;
         const strokeWidths = {
             'station-circles': circleBorder,
             'transfers-outer': transferWidth + transferBorder / 2,
@@ -548,7 +523,7 @@ export default class MetroMap implements EventTarget {
             const circumpoints: L.Point[] = [];
             for (let platformIndex of station.platforms) {
                 const platform = this.graph.platforms[platformIndex];
-                const posOnSVG = this.platformsOnSVG[platformIndex];
+                const posOnSVG = this.platformsOnSVG.get(platformIndex);
 
                 if (zoom > 9) {
                     const ci = svg.makeCircle(posOnSVG, circleRadius);
@@ -598,7 +573,7 @@ export default class MetroMap implements EventTarget {
                 for (let platformIndex of station.platforms) {
                     const platform = this.graph.platforms[platformIndex];
                     if (circular.indexOf(platform) > -1) {
-                        circumpoints.push(this.platformsOnSVG[platformIndex]);
+                        circumpoints.push(this.platformsOnSVG.get(platformIndex));
                         platformsInCircles.add(platformIndex);
                     }
                 }
@@ -613,12 +588,12 @@ export default class MetroMap implements EventTarget {
                 var paths: (SVGPathElement | SVGLineElement)[];
                 var pl1 = this.graph.platforms[transfer.source],
                     pl2 = this.graph.platforms[transfer.target];
-                var pos1 = this.platformsOnSVG[transfer.source],
-                    pos2 = this.platformsOnSVG[transfer.target];
+                var pos1 = this.platformsOnSVG.get(transfer.source),
+                    pos2 = this.platformsOnSVG.get(transfer.target);
                 if (platformsInCircles.has(transfer.source) && platformsInCircles.has(transfer.target)) {
                     const cluster = stationCircumpoints.get(this.graph.stations[pl1.station]);
                     const makeArc = (third: po.Platform) => {
-                        const thirdPos = this.platformsOnSVG[this.graph.platforms.indexOf(third)];
+                        const thirdPos = this.platformsOnSVG.get(this.graph.platforms.indexOf(third));
                         paths = svg.makeTransferArc(pos1, pos2, thirdPos);
                     }
                     if (cluster.length === 3) {
@@ -675,6 +650,22 @@ export default class MetroMap implements EventTarget {
         this.addBindings();
     }
 
+    private getPlatformsPositionOnOverlay() {
+        const zoom = this.map.getZoom();
+        const nw = this.bounds.getNorthWest();
+        const se = this.bounds.getSouthEast();
+        const svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
+        const graphPlatforms = this.graph.platforms;
+        const stationCenter = (st: po.Station) => geo.getCenter(st.platforms.map(i => graphPlatforms[i].location));
+        for (let station of this.graph.stations) {
+            const center = zoom < 12 ? stationCenter(station) : null;
+            for (let platformIndex of station.platforms) {
+                const pos = this.posOnSVG(svgBounds, center || graphPlatforms[platformIndex].location);
+                this.platformsOnSVG.set(platformIndex, pos);
+            }
+        }
+    }
+
     private passingLines(platform: po.Platform) {
         const lines = new Set<string>();
         for (let spanIndex of platform.spans) {
@@ -687,7 +678,7 @@ export default class MetroMap implements EventTarget {
 
     private makeWhiskers(platformIndex: number): {} {
         const platform = this.graph.platforms[platformIndex];
-        const posOnSVG = this.platformsOnSVG[platformIndex];
+        const posOnSVG = this.platformsOnSVG.get(platformIndex);
         if (platform.spans.length < 2) {
             return { [platform.spans[0]]: posOnSVG };
         }
@@ -715,7 +706,7 @@ export default class MetroMap implements EventTarget {
                     const span = this.graph.spans[spanIndex];
                     const neighborIndex = span.source === platformIndex ? span.target : span.source;
                     const neighbor = this.graph.platforms[neighborIndex];
-                    const neighborPos = this.platformsOnSVG[neighborIndex];
+                    const neighborPos = this.platformsOnSVG.get(neighborIndex);
                     const dirIdx = nextPlatformNames.indexOf(neighbor.name) > -1 ? 1 : 0;
                     points[dirIdx].push(neighborPos);
                     spanIds[dirIdx].push(spanIndex);
@@ -754,7 +745,7 @@ export default class MetroMap implements EventTarget {
         for (let i = 0; i < 2; ++i) {
             const span = this.graph.spans[platform.spans[i]];
             const neighborNum = (span.source === platformIndex) ? span.target : span.source;
-            const neighborOnSVG = this.platformsOnSVG[neighborNum];
+            const neighborOnSVG = this.platformsOnSVG.get(neighborNum);
             lens[i] = posOnSVG.distanceTo(neighborOnSVG);
             midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
         }
@@ -774,10 +765,10 @@ export default class MetroMap implements EventTarget {
         const routes = span.routes.map(n => this.graph.routes[n]);
         const [lineId, lineType, lineNum] = routes[0].line.match(/([MEL])(\d{0,2})/);
         const controlPoints = [
-            this.platformsOnSVG[srcN],
+            this.platformsOnSVG.get(srcN),
             this.whiskers[srcN][spanIndex],
             this.whiskers[trgN][spanIndex],
-            this.platformsOnSVG[trgN]
+            this.platformsOnSVG.get(trgN)
         ];
         const bezier = svg.makeCubicBezier(controlPoints);
         bezier.id = 'op-' + spanIndex;

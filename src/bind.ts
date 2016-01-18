@@ -12,10 +12,10 @@ export function transferToModel(transfer: po.Transfer, elements: Element[]) {
             set: (platformIndex: number) => {
                 const circle: SVGCircleElement = document.getElementById('p-' + platformIndex) as any;
                 const circleTotalRadius = Number(circle.getAttribute('r')) / 2 + parseFloat(getComputedStyle(circle).strokeWidth);
-                const pos = this.platformsOnSVG[platformIndex];
+                const pos = this.platformsOnSVG.get(platformIndex);
                 if (elements[0].tagName === 'line') {
                     const n = pi + 1;
-                    const otherPos = this.platformsOnSVG[transfer[props[1 - pi]]];
+                    const otherPos = this.platformsOnSVG.get(transfer[props[1 - pi]]);
                     for (let el of elements) {
                         el.setAttribute('x' + n, pos.x.toString());
                         el.setAttribute('y' + n, pos.y.toString());
@@ -50,7 +50,7 @@ export function transferToModel(transfer: po.Transfer, elements: Element[]) {
                     // }
 
                     const circumpoints: L.Point[] = [];
-                    circular.forEach(i => circumpoints.push(this.platformsOnSVG[i]));
+                    circular.forEach(i => circumpoints.push(this.platformsOnSVG.get(i)));
 
                     const cCenter = math.getCircumcenter(circumpoints);
                     const outerArcs = transferIndices.map(i => document.getElementById('ot-' + i));
@@ -59,8 +59,8 @@ export function transferToModel(transfer: po.Transfer, elements: Element[]) {
                         const tr = transfers[i],
                             outer = outerArcs[i],
                             inner = innerArcs[i];
-                        var pos1 = this.platformsOnSVG[tr.source],
-                            pos2 = this.platformsOnSVG[tr.target];
+                        var pos1 = this.platformsOnSVG.get(tr.source),
+                            pos2 = this.platformsOnSVG.get(tr.target);
                         const thirdPos = circumpoints.find(pos => pos !== pos1 && pos !== pos2);
                         svg.setCircularPath(outer, pos1, pos2, thirdPos);
                         inner.setAttribute('d', outer.getAttribute('d'));
@@ -96,7 +96,7 @@ export function platformToModel(platform: po.Platform|number, circles: Element[]
                 c.setAttribute('cy', pos.y.toString());
             }
             this.whiskers[idx] = this.makeWhiskers(idx);
-            this.platformsOnSVG[idx] = pos;
+            this.platformsOnSVG.set(idx, pos);
             const spansToChange = new Set<number>(obj.spans);
             for (let spanIndex of obj.spans) {
                 const span = this.graph.spans[spanIndex];
@@ -108,7 +108,7 @@ export function platformToModel(platform: po.Platform|number, circles: Element[]
             spansToChange.forEach(spanIndex => {
                 const span = this.graph.spans[spanIndex];
                 const srcN = span.source, trgN = span.target;
-                const controlPoints = [this.platformsOnSVG[srcN], this.whiskers[srcN][spanIndex], this.whiskers[trgN][spanIndex], this.platformsOnSVG[trgN]];
+                const controlPoints = [this.platformsOnSVG.get(srcN), this.whiskers[srcN][spanIndex], this.whiskers[trgN][spanIndex], this.platformsOnSVG.get(trgN)];
                 svg.setBezierPath(document.getElementById(`op-${spanIndex}`), controlPoints);
                 const inner = document.getElementById(`ip-${spanIndex}`);
                 if (inner) svg.setBezierPath(inner, controlPoints);

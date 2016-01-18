@@ -197,3 +197,20 @@ export function platformRenameDialog(graph: po.Graph, platform: po.Platform) {
 
     }, () => alertify.warning(tr('Name change cancelled')));
 }
+
+import * as geo from './geo';
+export function drawZones(metroMap) {
+    this.graph = metroMap.getGraph();
+    this.map = metroMap.getMap();
+    const metroPoints = this.graph.platforms.filter(p => this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('M')).map(p => p.location);
+    const foo = (points, pt) => points.reduce((prev, cur) => prev + pt.distanceTo(cur), 0);
+    const metroMean = geo.geoMean(metroPoints, foo);
+    for (let i = 5000; i < 20000; i += 5000) {
+        L.circle(metroMean, i - 250, { weight: 1 }).addTo(this.map);
+        L.circle(metroMean, i + 250, { weight: 1 }).addTo(this.map);
+    }
+    const ePoints = this.graph.platforms.filter(p => this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('E')).map(p => p.location);
+    const eMean = this.graph.platforms.find(p => p.name === 'Glavnyj voxal' && this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('E')).location;
+    L.circle(eMean, 30000).addTo(this.map);
+    L.circle(eMean, 45000).addTo(this.map);
+}
