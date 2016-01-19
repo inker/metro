@@ -39,9 +39,11 @@ export default class ContextMenu {
         
         const container = map.getContainer();
         const cancelListener = e => this.state = false;
-        map.getContainer().addEventListener('mousedown', cancelListener);
-        map.getContainer().addEventListener('touchstart', cancelListener);
-        map.on('movestart', cancelListener);
+        container.addEventListener('mousedown', cancelListener);
+        container.addEventListener('touchstart', cancelListener);
+        if (!L.Browser.mobile) {
+            map.on('movestart', cancelListener);
+        }
         this.table = document.createElement('table');
         this.table.id = 'contextmenu';
         document.body.appendChild(this.table);
