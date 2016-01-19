@@ -20,6 +20,10 @@ export default class ContextMenu {
     }
     set state(val: boolean) {
         this.table.style.display = val ? null : 'none';
+        if (L.Browser.mobile) {
+            const dragging = this.metroMap.getMap().dragging;
+            (val ? dragging.disable : dragging.enable)();
+        }
     }
 
     constructor(metroMap: MetroMap, items: Map<string, Item>) {
@@ -37,8 +41,7 @@ export default class ContextMenu {
         const cancelListener = e => this.state = false;
         map.getContainer().addEventListener('mousedown', cancelListener);
         map.getContainer().addEventListener('touchstart', cancelListener);
-        map.on(L.Browser.mobile ? 'zoomstart' : 'movestart', cancelListener);
-        
+        map.on('movestart', cancelListener);
         this.table = document.createElement('table');
         this.table.id = 'contextmenu';
         document.body.appendChild(this.table);
