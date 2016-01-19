@@ -1,3 +1,4 @@
+import * as L from 'leaflet';
 import MetroMap from '../metro-map';
 import * as util from '../util';
 import * as lang from '../lang';
@@ -36,7 +37,7 @@ export default class ContextMenu {
         const cancelListener = e => this.state = false;
         map.getContainer().addEventListener('mousedown', cancelListener);
         map.getContainer().addEventListener('touchstart', cancelListener);
-        map.on('movestart', cancelListener);
+        map.on(L.Browser.mobile ? 'zoomstart' : 'movestart', cancelListener);
         
         this.table = document.createElement('table');
         this.table.id = 'contextmenu';
