@@ -26,24 +26,26 @@ export default class ContextMenu {
         this.metroMap = metroMap;
         this._items = items;
         this._extraItems = new Map();
-        const handler = this.listener.bind(this);
-        metroMap.getMap().getPanes().mapPane.addEventListener('contextmenu', handler);
-        metroMap.getOverlay().addEventListener('contextmenu', handler);
-        const container = metroMap.getMap().getContainer();
-        container.addEventListener('mousedown', evt => {
-            if (evt.button !== 2) {
-                this.state = false;
-            }
-        });
+        
+        const map = metroMap.getMap();
+        const listener = this.handler.bind(this);
+        metroMap.getOverlay().addEventListener('contextmenu', listener);
+        map.getPanes().mapPane.addEventListener('contextmenu', listener);
+        
+        const container = map.getContainer();
+        const cancelListener = e => this.state = false;
+        map.getContainer().addEventListener('mousedown', cancelListener);
+        map.getContainer().addEventListener('touchstart', cancelListener);
+        map.on('movestart', cancelListener);
+        
         this.table = document.createElement('table');
         this.table.id = 'contextmenu';
         document.body.appendChild(this.table);
     }
 
-    private listener(event: MouseEvent) {
+    private handler(event: MouseEvent) {
         console.log('target', event.target);
         event.preventDefault();
-        console.log('bb', event.bubbles);
         this.state = true;
         this.table.innerHTML = '';
         const fillCell = (item: Item, eventName: string) => {
@@ -62,7 +64,7 @@ export default class ContextMenu {
         // defined here so that the marker gets set here (TODO: fix later)
         this.table.onclick = e => {
             console.log(e);
-            const cell: HTMLTableCellElement = e.target as any;
+            const cell = e.target as HTMLTableCellElement;
             const dict = {
                 clientX: event.clientX,
                 clientY: event.clientY,
@@ -74,16 +76,11 @@ export default class ContextMenu {
                 this.metroMap.dispatchEvent(new MouseEvent(eventType, dict))
             }
         };
-        const scale = L.Browser.mobile ? 1.5 : 1;
-        this.table.style.transform = `scale(${scale})`;
         const { width, height } = this.table.getBoundingClientRect();
         const { clientWidth, clientHeight } = document.documentElement;
         const { clientX, clientY } = event;
         const tx = clientX + width > clientWidth ? clientWidth - width : clientX,
             ty = clientY + height > clientHeight ? clientY - height : clientY
-        this.table.style.transform = `matrix(${scale}, 0, 0, ${scale}, ${tx}, ${ty})`;
-
+        this.table.style.transform = `translate(${tx}px, ${ty}px)`;
     }
-
-
 }

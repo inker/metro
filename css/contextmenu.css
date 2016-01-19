@@ -17,6 +17,12 @@
     user-select: none;
 }
 
+@media only screen and (max-device-width: 400px) and (-webkit-min-device-pixel-ratio: 2) {
+    #contextmenu {
+        font-size: 1.2em;
+    }
+} 
+
 #contextmenu tr td {
     padding: 5px;
     cursor: default;
