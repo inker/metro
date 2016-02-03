@@ -16,17 +16,12 @@ export const lineRulesPromise = new Promise<CSSStyleSheet>(resolve => {
         link.onload = e => resolve(sheet);
     }
 }).then(styleSheet => {
-    const rules = styleSheet.cssRules,
-        lineRules = {};
-    for (let i = 0; i < rules.length; ++i) {
-        const rule = rules[i];
-        if (rule instanceof CSSStyleRule) {
-            const matches = rule.selectorText.match(/\.(M\d+|L)/);
-            if (matches && matches[1]) {
-                lineRules[matches[1]] = rule.style.stroke;
-            } else if (rule.selectorText === '#paths-outer .E') {
-                lineRules['E'] = rule.style.stroke;
-            }
+    const lineRules = new Map<string, string>();
+    for (let rule of (styleSheet.cssRules as any as CSSStyleRule[])) {
+        if (!(rule instanceof CSSStyleRule)) continue;
+        const tokens = rule.selectorText.match(/\.(M\d+|L|E)/);
+        if (tokens && tokens[1]) {
+            lineRules.set(tokens[1], rule.style.stroke);
         }
     }
     return lineRules;

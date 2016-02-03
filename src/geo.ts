@@ -8,7 +8,7 @@ export function findClosestObject<T extends Locatable>(point: L.LatLng, objects:
     }
     let closest = objects[0];
     let closestDistance = point.distanceTo(closest.location);
-    for (let i = 1; i < objects.length; ++i) {
+    for (let i = 1, len = objects.length; i < len; ++i) {
         const tempDist = point.distanceTo(objects[i].location);
         if (tempDist < closestDistance) {
             closest = objects[i];
@@ -28,30 +28,37 @@ export function findObjectsWithinRadius<T extends Locatable>(point: L.LatLng, ob
 }
 
 export function getCenter(points: L.LatLng[]): L.LatLng {
-    const nPoints = points.length;
-    let cLat = 0, cLon = 0;
-    for (let i = 0; i < nPoints; ++i) {
-        cLat += points[i].lat;
-        cLon += points[i].lng;
+    let y = 0, x = 0;
+    for (let { lat, lng } of points) {
+        y += lat;
+        x += lng;
     }
-    return new L.LatLng(cLat / nPoints, cLon / nPoints);
+    return new L.LatLng(y / points.length, x / points.length);
 }
 
-export function geoMean(points: L.LatLng[], lossFunction: (pts: L.LatLng[], cur: L.LatLng) => number): L.LatLng {
-    let avg = getCenter(points);
-    let totalDistance = Infinity;
-    for (let step = 1; step > 0.00000001; step *= 0.5) {
-        for (let max = step * 5, lat = -max; lat <= max; lat += step) {
-            for (let lng = -5 * step; lng <= 5 * step; lng += step) {
-                const pt = new L.LatLng(avg.lat + lat, avg.lng + lng);
-                const total = lossFunction(points, pt);
-                if (total < totalDistance) {
-                    avg = pt;
-                    totalDistance = total;
+type FitnessFunction = (coordinates: L.LatLng[], current: L.LatLng) => number;
+type OnClimb = (coordinate: L.LatLng) => void;
+export function calculateGeoMean(points: L.LatLng[], fitnessFunc: FitnessFunction, onClimb?: OnClimb): L.LatLng {
+    console.time('geo mean');
+    let point = getCenter(points);
+    let fitness = fitnessFunc(points, point);
+    function foo() {
+        if (onClimb !== undefined) onClimb(point);
+    }
+    foo();
+    for (let step = 10; step > 0.00000001; step *= 0.61803398875) {
+        for (let max = step, lat = -max; lat <= max; lat += step) {
+            for (let lng = -max; lng <= max; lng += step) {
+                const pt = new L.LatLng(point.lat + lat, point.lng + lng);
+                const total = fitnessFunc(points, pt);
+                if (total < fitness) {
+                    point = pt;
+                    fitness = total;
+                    foo();
                 }
             }
         }
-
     }
-    return avg;
+    console.timeEnd('geo mean');
+    return point;
 }

@@ -68,13 +68,14 @@ export function resetStyle() {
 export namespace CSSTransform {
     export function parse(val: string): L.Point {
         if (val.length == 0) return new L.Point(0, 0);
-        const [m, , x, y] = val.match(/translate(3d)?\((-?\d+).*?,\s?(-?\d+).*?(,\s?(-?\d+).*?)?\)/i);
-        return m ? new L.Point(Number(x), Number(y)) : new L.Point(0, 0);
+        const tokens = val.match(/translate(3d)?\((-?\d+).*?,\s?(-?\d+).*?(,\s?(-?\d+).*?)?\)/i);
+        return tokens && tokens[0] ? new L.Point(+tokens[2], +tokens[3]) : new L.Point(0, 0);
     }
 
     export function replace(el: HTMLElement) {
         const s = el.style;
-        s.transform = s.transform.replace(/translate3d\s*\((.+?,\s*.+?),\s*.+?\s*\)/i, 'translate($1)');
+        const re = /translate3d\s*\((.+?,\s*.+?),\s*.+?\s*\)/i;
+        s.transform = s.transform.replace(re, 'translate($1)');
     }
 }
 
@@ -203,8 +204,10 @@ export function drawZones(metroMap) {
     this.graph = metroMap.getGraph();
     this.map = metroMap.getMap();
     const metroPoints = this.graph.platforms.filter(p => this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('M')).map(p => p.location);
-    const foo = (points, pt) => points.reduce((prev, cur) => prev + pt.distanceTo(cur), 0);
-    const metroMean = geo.geoMean(metroPoints, foo);
+    const fitnessFunc = (points, pt) => points.reduce((prev, cur) => prev + pt.distanceTo(cur), 0);
+    const poly = L.polyline([]);
+    const metroMean = geo.calculateGeoMean(metroPoints, fitnessFunc, poly.addLatLng.bind(poly));
+    this.map.addLayer(poly);
     for (let i = 5000; i < 20000; i += 5000) {
         L.circle(metroMean, i - 250, { weight: 1 }).addTo(this.map);
         L.circle(metroMean, i + 250, { weight: 1 }).addTo(this.map);

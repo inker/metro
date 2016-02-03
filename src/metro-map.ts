@@ -32,7 +32,7 @@ export default class MetroMap implements EventTarget {
 
     private _contextMenu: ContextMenu;
 
-    private lineRules: {};
+    private lineRules: Map<string, string>;
 
     get contextMenu() {
         return this._contextMenu;
@@ -69,7 +69,7 @@ export default class MetroMap implements EventTarget {
             center: new L.LatLng(59.943556, 30.30452),
             zoom: 11,
             minZoom: 9,
-            inertia: false
+            inertia: true
         }).addControl(new L.Control.Scale({ imperial: false }));
 
         tileLayers[Object.keys(tileLayers)[0]].addTo(this.map);
@@ -77,8 +77,14 @@ export default class MetroMap implements EventTarget {
 
         this.overlay = document.getElementById('overlay');
         const container = this.map.getContainer();
+        const objectsPane = this.map.getPanes().objectsPane;
         container.removeChild(this.overlay);
-        container.appendChild(this.overlay);
+        objectsPane.insertBefore(this.overlay, objectsPane.querySelector('.leaflet-marker-pane'));
+        //container.appendChild(this.overlay);
+        window.addEventListener('keydown', e => {
+           if (e.keyCode !== 70) return;
+           this.updateOverlayPositioning(); 
+        });
 
         const defs = svg.createSVGElement('defs');
         defs.appendChild(svg.Shadows.makeDrop());
@@ -333,7 +339,7 @@ export default class MetroMap implements EventTarget {
         }).on('move', e => {
             // using 'move' here instead of 'drag' because on window resize the overlay 
             // is translated instantly without causing the entire network to be redrawn
-            this.overlay.style.transform = mapPane.style.transform;
+            //this.overlay.style.transform = mapPane.style.transform;
         }).on('moveend', e => {
             console.log('move ended');
             this.map.touchZoom.enable();
@@ -342,9 +348,12 @@ export default class MetroMap implements EventTarget {
             }
             this.fixFontRendering();
             // the secret of correct positioning is the movend transform check for corrent transform
-            this.overlay.style.transform = mapPane.style.transform;
+            //this.overlay.style.transform = mapPane.style.transform;
+            this.overlay.style.transform = null;
         }).on('zoomstart', e => {
             console.log('zoomstart', e);
+            const a = this.map.getPanes().mapPane;
+            //a.style.transition = null;
             this.map.dragging.disable();
             const fromZoom: number = e.target['_zoom'];
             setTimeout(() => {
@@ -359,10 +368,10 @@ export default class MetroMap implements EventTarget {
                 const clickOffset = new L.Point(client.x - box.left, client.y - box.top);
                 const ratio = new L.Point(clickOffset.x / box.width, clickOffset.y / box.height);
                 const overlayStyle = this.overlay.style;
-                overlayStyle.left = '0';
-                overlayStyle.top = '0';
+                // overlayStyle.left = '0';
+                // overlayStyle.top = '0';
                 overlayStyle.transformOrigin = `${ratio.x * 100}% ${ratio.y * 100}%`;
-                overlayStyle.transform = `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${box.left}, ${box.top})`;
+                overlayStyle.transform = `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, 0, 0)`;
                 // overlayStyle.transform = `translate3d(${box.left}px, ${box.top}px, 0) scale(${scaleFactor})`;
             }, 0);
             this.overlay.style.opacity = '0.5';
@@ -452,11 +461,10 @@ export default class MetroMap implements EventTarget {
         // svg bounds in pixels relative to container 
         
         const overlayStyle = this.overlay.style;
-        const pixelBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
-        const transform = util.CSSTransform.parse(overlayStyle.transform);
-
+        const pixelBounds = new L.Bounds(this.map.latLngToLayerPoint(nw), this.map.latLngToLayerPoint(se));
+        
         const margin = new L.Point(100, 100);
-        const topLeft = pixelBounds.min.subtract(transform).subtract(margin);
+        const topLeft = pixelBounds.min.subtract(margin);
         overlayStyle.left = topLeft.x + 'px';
         overlayStyle.top = topLeft.y + 'px';
         const origin = document.getElementById('origin');
@@ -488,7 +496,7 @@ export default class MetroMap implements EventTarget {
         this.resetOverlayStructure();
         this.updateOverlayPositioning();
         this.getPlatformsPositionOnOverlay();
-        
+
         const docFrags = {
             'station-circles': document.createDocumentFragment(),
             'dummy-circles': document.createDocumentFragment(),
@@ -531,17 +539,17 @@ export default class MetroMap implements EventTarget {
                     if (zoom > 11) {
                         const lines = this.passingLines(platform);
                         if (lines.size === 1) {
-                            const matches = lines.values().next().value.match(/([MEL])(\d{0,2})/);
-                            if (matches) {
-                                ci.classList.add(matches[1] === 'M' ? matches[0] : matches[1]);
+                            const tokens = lines.values().next().value.match(/([MEL])(\d{0,2})/);
+                            if (tokens) {
+                                ci.classList.add(tokens[1] === 'M' ? tokens[0] : tokens[1]);
                             }
                         } else {
-                            var rgbs = [];
-                            lines.forEach(l => {
-                                const matches = l.match(/([MEL])(\d{0,2})/);
-                                if (!matches) return;
-                                rgbs.push(this.lineRules[matches[1] === 'M' ? matches[0] : matches[1]]);
-                            });
+                            const rgbs = [];
+                            for (let vals = lines.values(), it = vals.next(); !it.done; it = vals.next()) {
+                                const tokens = it.value.match(/([MEL])(\d{0,2})/);
+                                if (!tokens) return;
+                                rgbs.push(this.lineRules.get(tokens[1] === 'M' ? tokens[0] : tokens[1]));
+                            } 
                             ci.style.stroke = util.Color.mean(rgbs);
                         }
                         //else if (lines.size === 2) {
@@ -614,7 +622,7 @@ export default class MetroMap implements EventTarget {
                     const span = this.graph.spans[p.spans[0]];
                     const routes = span.routes.map(n => this.graph.routes[n]);
                     const [lineId, lineType, lineNum] = routes[0].line.match(/([MEL])(\d{0,2})/);
-                    return this.lineRules[lineType === 'L' ? lineType : lineId];
+                    return this.lineRules.get(lineType === 'L' ? lineType : lineId);
                 });
                 //const colors = [transfer.source, transfer.target].map(i => getComputedStyle(docFrags['station-circles'].childNodes[i] as Element, null).getPropertyValue('stroke'));
                 const circlePortion = (circleRadius + circleBorder / 2) / pos1.distanceTo(pos2);

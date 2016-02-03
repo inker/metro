@@ -137,12 +137,11 @@ export namespace SVGDataset {
             return el['dataset'];
         }
         // for the rest
-        const attrs = el.attributes;
+        const attrs: Attr[] = el.attributes as any;
         const dataset = {};
-        for (let i = 0; i < attrs.length; ++i) {
-            const attr = attrs[i].name;
-            if (attr.startsWith('data-')) {
-                dataset[attr.slice(5)] = el.getAttribute(attr);
+        for (let { name } of attrs) {
+            if (name.startsWith('data-')) {
+                dataset[name.slice(5)] = el.getAttribute(name);
             }
         }
         return dataset;

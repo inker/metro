@@ -46,8 +46,7 @@ path {
 .M12 { stroke: #84B817; }
 .E { stroke:  #7156A5; }
 .L { stroke: #00A4A7; }
-#paths-outer .E { stroke: #7156A5; }
-#paths-inner .E { stroke: #FFFFFF; }
+#paths-inner * { stroke: #FFFFFF; }
 
 /* material colors */
 /*
