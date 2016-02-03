@@ -86,7 +86,7 @@ gulp.task('ts-transpile-merge-compress', () => {
          .pipe(source('script.js'))
         //   .pipe(buffer())
         //   .pipe(uglify())
-        //// uglifyjs -m -c --screw-ie8 -o js/script.js -- js/script.j
+        //// uglifyjs -m -c --screw-ie8 -o js/script.js -- js/script.js
          .pipe(gulp.dest('./js/'))
          .pipe(notify("Bundling complete!"))
          ;
