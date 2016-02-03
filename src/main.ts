@@ -7,8 +7,6 @@ import MetroMap from './metro-map';
 
 if (L.Browser.ie) {
     alert("Does not work in IE (yet)");
-} else if (L.Browser.mobile) {
-    alert("May work incorrectly in mobile browser");
 }
 
 import polyfills from './polyfills';

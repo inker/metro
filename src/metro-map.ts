@@ -80,11 +80,6 @@ export default class MetroMap implements EventTarget {
         const objectsPane = this.map.getPanes().objectsPane;
         container.removeChild(this.overlay);
         objectsPane.insertBefore(this.overlay, objectsPane.querySelector('.leaflet-marker-pane'));
-        //container.appendChild(this.overlay);
-        window.addEventListener('keydown', e => {
-           if (e.keyCode !== 70) return;
-           this.updateOverlayPositioning(); 
-        });
 
         const defs = svg.createSVGElement('defs');
         defs.appendChild(svg.Shadows.makeDrop());
