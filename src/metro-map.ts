@@ -27,8 +27,8 @@ export default class MetroMap implements EventTarget {
 
     private plate: TextPlate;
 
-    private fromMarker = new L.Marker([0, 0]);
-    private toMarker = new L.Marker([0, 0]);
+    private fromMarker = new L.Marker([0, 0], { draggable: true });
+    private toMarker = new L.Marker([0, 0], { draggable: true });
 
     private _contextMenu: ContextMenu;
 
@@ -73,6 +73,14 @@ export default class MetroMap implements EventTarget {
         }).addControl(new L.Control.Scale({ imperial: false }));
 
         tileLayers[Object.keys(tileLayers)[0]].addTo(this.map);
+
+        const onMarkerDragEnd = e => {
+            this.fixFontRendering();
+            this.visualizeShortestRoute(this.fromMarker.getLatLng(), this.toMarker.getLatLng());
+        }
+        const onMarkerDrag = e => this.visualizeShortestRoute(this.fromMarker.getLatLng(), this.toMarker.getLatLng(), false);
+        this.fromMarker.on('drag', onMarkerDrag).on('dragend', onMarkerDragEnd);
+        this.toMarker.on('drag', onMarkerDrag).on('dragend', onMarkerDragEnd);
         this.map.addLayer(this.fromMarker).addLayer(this.toMarker);
 
         this.overlay = document.getElementById('overlay');
@@ -457,7 +465,7 @@ export default class MetroMap implements EventTarget {
         
         const overlayStyle = this.overlay.style;
         const pixelBounds = new L.Bounds(this.map.latLngToLayerPoint(nw), this.map.latLngToLayerPoint(se));
-        
+
         const margin = new L.Point(100, 100);
         const topLeft = pixelBounds.min.subtract(margin);
         overlayStyle.left = topLeft.x + 'px';
@@ -544,7 +552,7 @@ export default class MetroMap implements EventTarget {
                                 const tokens = it.value.match(/([MEL])(\d{0,2})/);
                                 if (!tokens) return;
                                 rgbs.push(this.lineRules.get(tokens[1] === 'M' ? tokens[0] : tokens[1]));
-                            } 
+                            }
                             ci.style.stroke = util.Color.mean(rgbs);
                         }
                         //else if (lines.size === 2) {
@@ -789,7 +797,7 @@ export default class MetroMap implements EventTarget {
         }
     }
 
-    visualizeShortestRoute(departure: L.LatLng, arrival: L.LatLng) {
+    visualizeShortestRoute(departure: L.LatLng, arrival: L.LatLng, animate = true) {
         util.resetStyle();
         alertify.dismissAll();
         const { platforms, edges, time } = algorithm.shortestRoute(this.graph, departure, arrival);
@@ -798,16 +806,32 @@ export default class MetroMap implements EventTarget {
         if (edges === undefined) {
             return alertify.success(`${walkTo} ${onFoot}!`);
         }
+
         const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
-        const els: HTMLElement[] = this.overlay.querySelectorAll(selector) as any;
-        for (let i = 0; i < els.length; ++i) {
-            //els[i].style['-webkit-filter'] = 'grayscale(1)';
-            els[i].style.opacity = '0.25';
-        }
-        console.log(edges);
-        console.log(platforms.map(p => this.graph.platforms[p].name));
-        svg.Animation.animateRoute(this.graph, platforms, edges).then(() => {
-            alertify.message(`${tr('time').toUpperCase()}:<br>${walkTo} ${onFoot}<br>${ft(time.metro)} ${tr('by metro')}<br>${ft(time.walkFrom)} ${onFoot}<br>${tr('TOTAL')}: ${ft(time.total)}`, 10);
+        svg.Animation.terminateAnimations().then(() => {
+            const els: HTMLElement[] = this.overlay.querySelectorAll(selector) as any;
+            for (let i = 0; i < els.length; ++i) {
+                //els[i].style['-webkit-filter'] = 'grayscale(1)';
+                els[i].style.opacity = '0.25';
+            }
+            if (animate) throw animate;
+        }).then(() => {
+            for (let edge of edges) {
+                const inner = document.getElementById('i' + edge);
+                const outer = document.getElementById('o' + edge);
+                if (outer !== null) {
+                    outer.style.opacity = null;
+                    if (inner !== null) {
+                        inner.style.opacity = null;
+                    }
+                }
+            }
+            for (let platform of platforms) {
+                document.getElementById('p-' + platform).style.opacity = null;
+            }
+        }).catch(() => svg.Animation.animateRoute(this.graph, platforms, edges)).then(finished => {
+            if (!finished) return;
+            alertify.message(`${tr('time').toUpperCase()}:<br>${walkTo} ${onFoot}<br>${ft(time.metro)} ${tr('by metro')}<br>${ft(time.walkFrom)} ${onFoot}<br>${tr('TOTAL')}: ${ft(time.total)}`, 10)
         });
     }
 }

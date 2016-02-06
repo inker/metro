@@ -254,15 +254,32 @@ export namespace Gradients {
 }
 
 export namespace Animation {
+    
+    let animationsAllowed = true;
+    let currentAnimation: Promise<boolean> = null;
+    
+    export function terminateAnimations() {
+        if (currentAnimation === null) {
+            console.log('no animation currently');
+            return Promise.resolve(true);
+        }
+        console.log('terminating running animation');
+        animationsAllowed = false;
+        return currentAnimation;
+    }
+    
     export function animateRoute(graph: po.Graph, platforms: number[], edges: string[]) {
-        return new Promise(resolve => (function animateSpan(i: number) {
+        currentAnimation = new Promise<boolean>((resolve, reject) => (function animateSpan(i: number) {
+            if (!animationsAllowed) {
+                return resolve(false);
+            }
             const circle: SVGCircleElement = document.getElementById('p-' + platforms[i]) as any;
             circle.style.opacity = null;
             if (!L.Browser.mobile) {
                 pulsateCircle(circle, i < edges.length ? 1.5 : 3, 200);
             }
             if (i === edges.length) {
-                return resolve();
+                return resolve(true);
             }
             const outerOld: SVGPathElement | SVGLineElement = document.getElementById('o' + edges[i]) as any;
             if (outerOld === null) {
@@ -272,10 +289,18 @@ export namespace Animation {
             const outer: typeof outerOld = outerOld.cloneNode(true) as any;
             const inner: typeof outer = innerOld === null ? null : innerOld.cloneNode(true) as any;
             document.getElementById('paths-outer').appendChild(outer);
-            if (inner) document.getElementById('paths-inner').appendChild(inner);
-            const length: number = outer instanceof SVGLineElement
-                ? L.point(Number(outer.getAttribute('x1')), Number(outer.getAttribute('y1'))).distanceTo(L.point(Number(outer.getAttribute('x2')), Number(outer.getAttribute('y2'))))
-                : outer['getTotalLength']();
+            if (inner) {
+                document.getElementById('paths-inner').appendChild(inner);
+            }
+            
+            let length: number;
+            if (outer instanceof SVGPathElement) {
+                length = outer.getTotalLength();
+            } else {
+                const from = new L.Point(+outer.getAttribute('x1'), +outer.getAttribute('y1')),
+                    to = new L.Point(+outer.getAttribute('x2'), +outer.getAttribute('y2'));
+                length = from.distanceTo(to);
+            }
 
             const idParts = edges[i].split('-');
             const edge: po.Transfer | po.Span = graph[idParts[0] === 'p' ? 'spans' : 'transfers'][+idParts[1]];
@@ -309,8 +334,13 @@ export namespace Animation {
                 }
                 animateSpan(i + 1);
             });
-            console.log(outer);
-        })(0));
+            //console.log(outer);
+        })(0)).then(finished => {
+            currentAnimation = null;
+            animationsAllowed = true;
+            return finished;
+        });
+        return currentAnimation;
     }
 
     export function pulsateCircle(circle: SVGCircleElement, scaleFactor: number, duration: number) {
