@@ -81,7 +81,6 @@ export default class MetroMap implements EventTarget {
         const onMarkerDrag = e => this.visualizeShortestRoute(this.fromMarker.getLatLng(), this.toMarker.getLatLng(), false);
         this.fromMarker.on('drag', onMarkerDrag).on('dragend', onMarkerDragEnd);
         this.toMarker.on('drag', onMarkerDrag).on('dragend', onMarkerDragEnd);
-        this.map.addLayer(this.fromMarker).addLayer(this.toMarker);
 
         this.overlay = document.getElementById('overlay');
         const container = this.map.getContainer();
@@ -131,8 +130,8 @@ export default class MetroMap implements EventTarget {
         console.log(event);
         switch (event.type) {
             case 'clearroute':
-                this.fromMarker.setLatLng([0, 0]);
-                this.toMarker.setLatLng([0, 0]);
+                svg.Animation.terminateAnimations();
+                this.map.removeLayer(this.fromMarker).removeLayer(this.toMarker);
                 util.resetStyle();
                 alertify.dismissAll();
                 this.fixFontRendering();
@@ -322,9 +321,8 @@ export default class MetroMap implements EventTarget {
         const coors = util.mouseToLatLng(this.map, e);
         const marker = e.type === 'fromclick' ? this.fromMarker : this.toMarker;
         marker.setLatLng(coors);
-        console.log(this.fromMarker, this.toMarker);
-        const zero = new L.LatLng(0, 0);
-        if (!this.fromMarker.getLatLng().equals(zero) && !this.toMarker.getLatLng().equals(zero)) {
+        this.map.addLayer(marker);
+        if (this.map.hasLayer(this.fromMarker) && this.map.hasLayer(this.toMarker)) {
             this.visualizeShortestRoute(this.fromMarker.getLatLng(), this.toMarker.getLatLng());
         }
         util.onceEscapePress(e => this.dispatchEvent(new MouseEvent('clearroute')));
@@ -494,8 +492,6 @@ export default class MetroMap implements EventTarget {
      *  ...
      */
     private redrawNetwork() {
-        this.fromMarker.setLatLng([0, 0]);
-        this.toMarker.setLatLng([0, 0]);
         this.resetOverlayStructure();
         this.updateOverlayPositioning();
         this.getPlatformsPositionOnOverlay();
