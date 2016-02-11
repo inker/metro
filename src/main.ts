@@ -27,7 +27,7 @@ console.log('browser: ' + navigator.browserLanguage);
 console.log('system: ' + navigator.systemLanguage);
 
 /* TODO:
-E-line have terminuses (larger circles?)
+E-line have termini (larger circles?)
 no pole, bigger
 circles in 4+ platforms
 resolve colorful transfers perfomance issue

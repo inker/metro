@@ -34,7 +34,7 @@ export default class ContextMenu {
         
         const map = metroMap.getMap();
         const listener = this.handler.bind(this);
-        metroMap.getOverlay().addEventListener('contextmenu', listener);
+        //metroMap.getOverlay().addEventListener('contextmenu', listener);
         map.getPanes().mapPane.addEventListener('contextmenu', listener);
         
         const container = map.getContainer();
@@ -63,6 +63,7 @@ export default class ContextMenu {
         this._items.forEach(fillCell);
         this._extraItems.forEach((map, target) => {
             if (target === event.target) {
+                console.log(event.target, target);
                 map.forEach(fillCell);
             }
             this._extraItems.delete(target);
@@ -71,15 +72,11 @@ export default class ContextMenu {
         this.table.onclick = e => {
             console.log(e);
             const cell = e.target as HTMLTableCellElement;
-            const dict = {
-                clientX: event.clientX,
-                clientY: event.clientY,
-                relatedTarget: event.target
-            };
             const eventType = cell.getAttribute('data-event');
             if (eventType) {
                 this.state = false;
-                this.metroMap.dispatchEvent(new MouseEvent(eventType, dict))
+                const me = new MouseEvent(eventType, { clientX, clientY, relatedTarget: event.target });
+                this.metroMap.dispatchEvent(me)
             }
         };
         const { width, height } = this.table.getBoundingClientRect();

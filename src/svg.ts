@@ -189,6 +189,35 @@ export namespace Shadows {
             </feMerge>`;
         return filter as any;
     }
+    
+    export function makeOpacity(): SVGFilterElement {
+        const filter = createSVGElement('filter');
+        filter.id = 'opacity';
+        (filter as any).innerHTML = `<feComponentTransfer>
+            <feFuncA type="table" tableValues="0 0.5">
+        </feComponentTransfer>`;
+        return filter as any;
+    }
+    
+    export function makeGray(): SVGFilterElement {
+        const filter = createSVGElement('filter');
+        filter.id = 'gray';
+        (filter as any).innerHTML = `<feColorMatrix type="matrix"
+               values="0.2126 0.7152 0.0722 0 0
+                       0.2126 0.7152 0.0722 0 0
+                       0.2126 0.7152 0.0722 0 0
+                       0 0 0 1 0"/>`;
+        return filter as any;
+    }
+    
+    export function applyDrop(path: Element & SVGStylable) {
+        // fixing disappearing lines
+        const box = path.getBoundingClientRect();
+        const strokeWidth = parseFloat(getComputedStyle(path).strokeWidth);
+        if (box.height >= strokeWidth && box.width >= strokeWidth) {
+            path.style.filter = 'url(#black-glow)';
+        }        
+    }
 }
 
 export namespace Gradients {
@@ -320,12 +349,7 @@ export namespace Animation {
             outer.addEventListener('transitionend', e => {
                 outerOld.style.opacity = null;
                 if (outer.id.charAt(1) !== 't') {
-                    // fixing disappearing lines
-                    const box = outer.getBoundingClientRect();
-                    const strokeWidth = parseFloat(getComputedStyle(outerOld).strokeWidth);
-                    if (box.height >= strokeWidth && box.width >= strokeWidth) {
-                        outerOld.style.filter = 'url(#black-glow)';
-                    }
+                    Shadows.applyDrop(outerOld);
                 }
                 document.getElementById('paths-outer').removeChild(outer);
                 if (inner) {

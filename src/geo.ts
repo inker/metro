@@ -1,4 +1,5 @@
 import * as L from 'leaflet';
+import { time } from './decorators';
 
 interface Locatable { location: L.LatLng };
 
@@ -36,21 +37,21 @@ export function getCenter(points: L.LatLng[]): L.LatLng {
     return new L.LatLng(y / points.length, x / points.length);
 }
 
-type FitnessFunction = (coordinates: L.LatLng[], current: L.LatLng) => number;
+type FitnessFunction = (current: L.LatLng) => number;
 type OnClimb = (coordinate: L.LatLng) => void;
-export function calculateGeoMean(points: L.LatLng[], fitnessFunc: FitnessFunction, onClimb?: OnClimb): L.LatLng {
-    console.time('geo mean');
+//@time
+export function calculateGeoMean(points: L.LatLng[], fitnessFunc: FitnessFunction, minStep = 0.00001, onClimb?: OnClimb): L.LatLng {
     let point = getCenter(points);
-    let fitness = fitnessFunc(points, point);
+    let fitness = fitnessFunc(point);
     function foo() {
         if (onClimb !== undefined) onClimb(point);
     }
     foo();
-    for (let step = 10; step > 0.00000001; step *= 0.61803398875) {
+    for (let step = 10; step > minStep; step *= 0.61803398875) {
         for (let max = step, lat = -max; lat <= max; lat += step) {
             for (let lng = -max; lng <= max; lng += step) {
                 const pt = new L.LatLng(point.lat + lat, point.lng + lng);
-                const total = fitnessFunc(points, pt);
+                const total = fitnessFunc(pt);
                 if (total < fitness) {
                     point = pt;
                     fitness = total;
@@ -59,6 +60,5 @@ export function calculateGeoMean(points: L.LatLng[], fitnessFunc: FitnessFunctio
             }
         }
     }
-    console.timeEnd('geo mean');
     return point;
 }

@@ -90,8 +90,10 @@ export default class MapEditor {
                 });
             } else if (de.button === 1) {
                 //
-            } else {
-                console.log('circle right-clicked');
+            }
+            
+            dummyCircles.oncontextmenu = de => {
+                 console.log('circle right-clicked');
                 const el = de.target as HTMLElement;
                 if (el.hasAttribute('cy')) {
                     // come up with a better solution
@@ -99,7 +101,7 @@ export default class MapEditor {
                         .set('platformrename', { text: "Rename station" })
                         .set('platformdelete', { text: "Delete station" });
                     menu.extraItems.set(el, item);
-                }
+                }               
             }
         };
     }

@@ -204,7 +204,7 @@ export function drawZones(metroMap) {
     this.graph = metroMap.getGraph();
     this.map = metroMap.getMap();
     const metroPoints = this.graph.platforms.filter(p => this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('M')).map(p => p.location);
-    const fitnessFunc = (points, pt) => points.reduce((prev, cur) => prev + pt.distanceTo(cur), 0);
+    const fitnessFunc = pt => metroPoints.reduce((prev, cur) => prev + pt.distanceTo(cur), 0);
     const poly = L.polyline([]);
     const metroMean = geo.calculateGeoMean(metroPoints, fitnessFunc, poly.addLatLng.bind(poly));
     this.map.addLayer(poly);
@@ -216,4 +216,20 @@ export function drawZones(metroMap) {
     const eMean = this.graph.platforms.find(p => p.name === 'Glavnyj voxal' && this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('E')).location;
     L.circle(eMean, 30000).addTo(this.map);
     L.circle(eMean, 45000).addTo(this.map);
+}
+
+export function scaleOverlay(overlay: HTMLElement, scaleFactor: number, coordinates?: L.Point) {
+    const overlayStyle = overlay.style;
+    const box = overlay.getBoundingClientRect();
+    if (!coordinates) {
+        const el = document.documentElement;
+        coordinates = new L.Point(el.clientWidth / 2, el.clientHeight / 2);
+    }
+    const clickOffset = new L.Point(coordinates.x - box.left, coordinates.y - box.top);
+    const ratio = new L.Point(clickOffset.x / box.width, clickOffset.y / box.height);
+    // overlayStyle.left = '0';
+    // overlayStyle.top = '0';
+    overlayStyle.transformOrigin = `${ratio.x * 100}% ${ratio.y * 100}%`;
+    overlayStyle.transform = `scale(${scaleFactor})`;
+    console.log(overlayStyle.transformOrigin);      
 }

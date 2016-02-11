@@ -91,6 +91,8 @@ export default class MetroMap implements EventTarget {
         const defs = svg.createSVGElement('defs');
         defs.appendChild(svg.Shadows.makeDrop());
         defs.appendChild(svg.Shadows.makeGlow());
+        defs.appendChild(svg.Shadows.makeOpacity());
+        defs.appendChild(svg.Shadows.makeGray());
         if (defs.textContent.length === 0) {
             alert(tr("Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience."));
         }
@@ -98,25 +100,27 @@ export default class MetroMap implements EventTarget {
 
         graphPromise
             .catch(errText => alert(errText))
-            .then(graphJson => this.extendBounds()) // because the previous assignment returns json
-            .then(() => hintsPromise)
+            .then(graphJson => hintsPromise)
             .then(hintsJson => lineRulesPromise)
             .then(lineRules => {
                 this.lineRules = lineRules;
+                this.bounds = new L.LatLngBounds(this.graph.platforms.map(p => p.location));
                 this.redrawNetwork();
                 // TODO: fix the kludge making the grey area disappear
                 this.map.invalidateSize(false);
                 this.addMapListeners();
-                this.resetMapView();
                 //util.drawZones(this);
-                this.fixFontRendering();
                 if (!L.Browser.mobile) {
                     new MapEditor(this);
                 }
                 new FAQ(this, 'json/data.json');
                 return contextMenuPromise;
             })
-            .then(contextMenuData => this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData)));
+            .then(contextMenuData => {
+                this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData));
+                this.resetMapView();
+                this.fixFontRendering();
+            });
 
         Promise.all([graphPromise, hintsPromise])
             .then(results => util.Hints.verify(this.graph, this.hints))
@@ -137,7 +141,9 @@ export default class MetroMap implements EventTarget {
                 this.fixFontRendering();
                 break;
             case 'showheatmap':
-                if (this.fromMarker.getLatLng().equals([0, 0])) {
+                if (this.map.hasLayer(this.fromMarker)) {
+                    // draw time map from the marker                    
+                } else {
                     // draw time map to the closest station from each point
                     const nw = this.bounds.getNorthWest();
                     const topLeft = this.map.latLngToContainerPoint(nw);
@@ -157,8 +163,6 @@ export default class MetroMap implements EventTarget {
                         }
                     }
                     console.timeEnd('checking');
-                } else {
-                    // draw time map from the marker
                 }
                 break;
             case 'measuredistance': {
@@ -223,64 +227,7 @@ export default class MetroMap implements EventTarget {
                 break;
             }
             case 'platformdelete': {
-                const me = event as MouseEvent;
-                const platform = svg.platformByCircle(me.relatedTarget as any, this.graph);
-                const spans = platform.spans;
-                const pIdx = this.graph.platforms.indexOf(platform);
-                const lines = this.passingLines(platform);
-                if (lines.size === 1) {
-                    const spans = this.graph.spans.filter(s => s.source === pIdx || s.target === pIdx);
-                    if (spans.length === 1) {
-                        // just delete it
-                    } else if (spans.length === 2) {
-                        // delete the second one
-                        const [a, b] = spans;
-                        a[a.source === pIdx ? 'target' : 'source'] = b[a.source === pIdx ? 'target' : 'source'];
-                        const sIdx = this.graph.spans.indexOf(b);
-                        this.graph.spans.splice(sIdx, 1);
-                        for (let p of this.graph.platforms) {
-                            let that: number = null;
-                            for (let i = 0; i < p.spans.length; ++i) {
-                                if (p.spans[i] > sIdx) {
-                                    --p.spans[i];
-                                } else if (p.spans[i] === sIdx) {
-                                    that = i;
-                                }
-                            }
-                            if (that !== null) {
-                                p.spans.splice(that, 1);
-                            }
-                        }
-                    } else {
-                        // forks
-                    }
-                }
-                this.graph.platforms.splice(pIdx, 1);
-                for (let s of this.graph.spans) {
-                    if (s.source > pIdx) {
-                        --s.source;
-                    }
-                    if (s.target > pIdx) {
-                        --s.target;
-                    }
-                }
-                for (let s of this.graph.stations) {
-                    let that: number = null;
-                    for (let i = 0; i < s.platforms.length; ++i) {
-                        if (s.platforms[i] > pIdx) {
-                            --s.platforms[i];
-                        } else if (s.platforms[i] === pIdx) {
-                            that = i;
-                        }
-                    }
-                    if (that !== null) {
-                        s.platforms.splice(that, 1);
-                    }
-                }
-                //TODO: somehow delete node
-                // find spans that belong to the same line
-                // find 
-                break;
+
             }
             case 'platformadd':
                 const coor = util.mouseToLatLng(this.map, event as MouseEvent);
@@ -331,6 +278,8 @@ export default class MetroMap implements EventTarget {
 
     private addMapListeners(): void {
         const mapPane = this.map.getPanes().mapPane;
+        const overlayStyle = this.overlay.style;
+        let wheel = 1;
         this.map.on('movestart', e => {
             console.log('move start');
             this.map.touchZoom.disable();
@@ -340,7 +289,7 @@ export default class MetroMap implements EventTarget {
         }).on('move', e => {
             // using 'move' here instead of 'drag' because on window resize the overlay 
             // is translated instantly without causing the entire network to be redrawn
-            //this.overlay.style.transform = mapPane.style.transform;
+            //overlayStyle.transform = mapPane.style.transform;
         }).on('moveend', e => {
             console.log('move ended');
             this.map.touchZoom.enable();
@@ -349,54 +298,51 @@ export default class MetroMap implements EventTarget {
             }
             this.fixFontRendering();
             // the secret of correct positioning is the movend transform check for corrent transform
-            //this.overlay.style.transform = mapPane.style.transform;
-            this.overlay.style.transform = null;
+            //overlayStyle.transform = mapPane.style.transform;
+            overlayStyle.transform = null;
         }).on('zoomstart', e => {
             console.log('zoomstart', e);
-            const a = this.map.getPanes().mapPane;
-            //a.style.transition = null;
             this.map.dragging.disable();
-            const fromZoom: number = e.target['_zoom'];
-            setTimeout(() => {
-                const toZoom: number = e.target['_animateToZoom'];
-                const scaleFactor = 2 ** (toZoom - fromZoom);
-                const box = this.overlay.getBoundingClientRect();
-                let client: L.Point = e.target['scrollWheelZoom']['_lastMousePos'];
-                if (!client) {
-                    const el = document.documentElement;
-                    client = new L.Point(el.clientWidth / 2, el.clientHeight / 2);
-                }
-                const clickOffset = new L.Point(client.x - box.left, client.y - box.top);
-                const ratio = new L.Point(clickOffset.x / box.width, clickOffset.y / box.height);
-                const overlayStyle = this.overlay.style;
-                // overlayStyle.left = '0';
-                // overlayStyle.top = '0';
-                overlayStyle.transformOrigin = `${ratio.x * 100}% ${ratio.y * 100}%`;
-                overlayStyle.transform = `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, 0, 0)`;
-                // overlayStyle.transform = `translate3d(${box.left}px, ${box.top}px, 0) scale(${scaleFactor})`;
-            }, 0);
-            this.overlay.style.opacity = '0.5';
+            if (wheel === 1) {
+                const fromZoom: number = e.target['_zoom'];
+                setTimeout(() => {
+                    const toZoom: number = e.target['_animateToZoom'];
+                    const scaleFactor = 2 ** (toZoom - fromZoom);
+                    if (scaleFactor !== wheel) {
+                        console.log('fixing');
+                        util.scaleOverlay(this.overlay, scaleFactor, e.target['scrollWheelZoom']['_lastMousePos']);
+                    }
+                }, 0);                
+            } else {
+                util.scaleOverlay(this.overlay, wheel, e.target['scrollWheelZoom']['_lastMousePos']);
+                wheel = 1;                
+            }
+            overlayStyle.opacity = '0.5';
         }).on('zoomend', e => {
-            this.overlay.style.opacity = null;
-            this.overlay.style.transformOrigin = null;
+            wheel = 1;
+            overlayStyle.opacity = null;
+            overlayStyle.transformOrigin = null;
             this.redrawNetwork();
             this.map.dragging.enable();
         });
+        this.overlay.addEventListener('wheel', e => wheel *= e.deltaY < 0 ? 2 : 0.5);
     }
 
     /**
      * Fixes blurry font due to 'transform3d' CSS property. Changes everything to 'transform' when the map is not moving
      */
     private fixFontRendering(): void {
-        const blurringStuff = document.querySelectorAll('img[style*="translate3d"]');
+        const blurringStuff = document.querySelectorAll('[style*="translate3d"]');
         console.log(blurringStuff);
         for (let i = 0; i < blurringStuff.length; ++i) {
             util.CSSTransform.replace(blurringStuff[i] as HTMLElement);
         }
-        util.CSSTransform.replace(this.map.getPanes().mapPane);
+        //util.CSSTransform.replace(this.map.getPanes().mapPane);
     }
 
     private resetMapView(): void {
+        //const fitness = (points, pt) => points.reduce((prev, cur) => this.bounds., 0);
+        //const center = geo.calculateGeoMean(this.graph.platforms.map(p => p.location), fitness, 0.1);
         this.map.setView(this.bounds.getCenter(), 11, {
             pan: { animate: false },
             zoom: { animate: false }
@@ -427,13 +373,6 @@ export default class MetroMap implements EventTarget {
         this.overlay.appendChild(origin);
         this.plate = new TextPlate(this.graph);
         origin.insertBefore(this.plate.element, document.getElementById('dummy-circles'));
-    }
-
-
-    private extendBounds(): void {
-        const a = this.graph.platforms[0].location;
-        this.bounds = new L.LatLngBounds(a, a);
-        this.graph.platforms.forEach(platform => this.bounds.extend(platform.location));
     }
 
     private addBindings() {
@@ -572,7 +511,7 @@ export default class MetroMap implements EventTarget {
             }
 
             const dummyCircles = document.getElementById('dummy-circles');
-            dummyCircles.addEventListener('mouseover', e => this.plate.show(svg.circleByDummy(e.target as any)));
+            dummyCircles.addEventListener('mouseover', e => this.plate.show(svg.circleByDummy(e.target as Element)));
             dummyCircles.addEventListener('mouseout', e => this.plate.hide());
 
             const circular = algorithm.findCircle(this.graph, station);
@@ -702,7 +641,7 @@ export default class MetroMap implements EventTarget {
                 const platformHints = idx > -1 ? dirHints[platform.name][idx] : dirHints[platform.name];
                 const nextPlatformNames: string[] = [];
                 for (let key of Object.keys(platformHints)) {
-                    const val = platformHints[key];
+                    const val: string[]|string = platformHints[key];
                     if (typeof val === 'string') {
                         nextPlatformNames.push(val);
                     } else {
@@ -781,16 +720,15 @@ export default class MetroMap implements EventTarget {
         bezier.id = 'op-' + spanIndex;
         if (lineType === 'E') {
             bezier.classList.add('E');
-            const inner: typeof bezier = bezier.cloneNode(true) as any;
+            const inner = bezier.cloneNode(true) as typeof bezier;
             inner.id = 'ip-' + spanIndex;
             return [bezier, inner];
-        } else {
-            if (lineId) {
-                bezier.classList.add(lineId);
-            }
-            bezier.classList.add(lineType);
-            return [bezier];
         }
+        if (lineId) {
+            bezier.classList.add(lineId);
+        }
+        bezier.classList.add(lineType);
+        return [bezier];
     }
 
     visualizeShortestRoute(departure: L.LatLng, arrival: L.LatLng, animate = true) {
@@ -807,23 +745,28 @@ export default class MetroMap implements EventTarget {
         svg.Animation.terminateAnimations().then(() => {
             const els: HTMLElement[] = this.overlay.querySelectorAll(selector) as any;
             for (let i = 0; i < els.length; ++i) {
+                const elStyle = els[i].style;
                 //els[i].style['-webkit-filter'] = 'grayscale(1)';
-                els[i].style.opacity = '0.25';
+                elStyle.filter = null;
+                elStyle.opacity = '0.25';
             }
             if (animate) throw animate;
         }).then(() => {
-            for (let edge of edges) {
-                const inner = document.getElementById('i' + edge);
-                const outer = document.getElementById('o' + edge);
+            for (let edgeIdTail of edges) {
+                const outer: SVGPathElement = document.getElementById('o' + edgeIdTail) as any;
                 if (outer !== null) {
                     outer.style.opacity = null;
+                    const inner = document.getElementById('i' + edgeIdTail);
                     if (inner !== null) {
                         inner.style.opacity = null;
                     }
+                    if (outer.id.charAt(1) !== 't') {
+                        svg.Shadows.applyDrop(outer);
+                    }
                 }
             }
-            for (let platform of platforms) {
-                document.getElementById('p-' + platform).style.opacity = null;
+            for (let platformNum of platforms) {
+                document.getElementById('p-' + platformNum).style.opacity = null;
             }
         }).catch(() => svg.Animation.animateRoute(this.graph, platforms, edges)).then(finished => {
             if (!finished) return;
