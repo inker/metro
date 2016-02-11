@@ -308,10 +308,7 @@ export default class MetroMap implements EventTarget {
                 setTimeout(() => {
                     const toZoom: number = e.target['_animateToZoom'];
                     const scaleFactor = 2 ** (toZoom - fromZoom);
-                    if (scaleFactor !== wheel) {
-                        console.log('fixing');
-                        util.scaleOverlay(this.overlay, scaleFactor, e.target['scrollWheelZoom']['_lastMousePos']);
-                    }
+                    util.scaleOverlay(this.overlay, scaleFactor, e.target['scrollWheelZoom']['_lastMousePos']);
                 }, 0);                
             } else {
                 util.scaleOverlay(this.overlay, wheel, e.target['scrollWheelZoom']['_lastMousePos']);
