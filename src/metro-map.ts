@@ -279,7 +279,7 @@ export default class MetroMap implements EventTarget {
     private addMapListeners(): void {
         const mapPane = this.map.getPanes().mapPane;
         const overlayStyle = this.overlay.style;
-        let wheel = 1;
+        let scaleFactor = 1;
         this.map.on('movestart', e => {
             console.log('move start');
             this.map.touchZoom.disable();
@@ -303,26 +303,27 @@ export default class MetroMap implements EventTarget {
         }).on('zoomstart', e => {
             console.log('zoomstart', e);
             this.map.dragging.disable();
-            if (wheel === 1) {
+            const mousePos = e.target['scrollWheelZoom']['_lastMousePos'];
+            if (scaleFactor === 1) {
                 const fromZoom: number = e.target['_zoom'];
                 setTimeout(() => {
                     const toZoom: number = e.target['_animateToZoom'];
-                    const scaleFactor = 2 ** (toZoom - fromZoom);
-                    util.scaleOverlay(this.overlay, scaleFactor, e.target['scrollWheelZoom']['_lastMousePos']);
+                    scaleFactor = 2 ** (toZoom - fromZoom);
+                    util.scaleOverlay(this.overlay, scaleFactor, mousePos);
                 }, 0);                
             } else {
-                util.scaleOverlay(this.overlay, wheel, e.target['scrollWheelZoom']['_lastMousePos']);
-                wheel = 1;                
+                util.scaleOverlay(this.overlay, scaleFactor, mousePos);               
             }
+            scaleFactor = 1; 
             overlayStyle.opacity = '0.5';
         }).on('zoomend', e => {
-            wheel = 1;
+            scaleFactor = 1;
             overlayStyle.opacity = null;
             overlayStyle.transformOrigin = null;
             this.redrawNetwork();
             this.map.dragging.enable();
         });
-        this.overlay.addEventListener('wheel', e => wheel *= e.deltaY < 0 ? 2 : 0.5);
+        this.overlay.addEventListener('wheel', e => scaleFactor *= e.deltaY < 0 ? 2 : 0.5);
     }
 
     /**

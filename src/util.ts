@@ -218,14 +218,14 @@ export function drawZones(metroMap) {
     L.circle(eMean, 45000).addTo(this.map);
 }
 
-export function scaleOverlay(overlay: HTMLElement, scaleFactor: number, coordinates?: L.Point) {
+export function scaleOverlay(overlay: HTMLElement, scaleFactor: number, mousePos?: L.Point) {
     const overlayStyle = overlay.style;
     const box = overlay.getBoundingClientRect();
-    if (!coordinates) {
+    if (!mousePos) {
         const el = document.documentElement;
-        coordinates = new L.Point(el.clientWidth / 2, el.clientHeight / 2);
+        mousePos = new L.Point(el.clientWidth / 2, el.clientHeight / 2);
     }
-    const clickOffset = new L.Point(coordinates.x - box.left, coordinates.y - box.top);
+    const clickOffset = new L.Point(mousePos.x - box.left, mousePos.y - box.top);
     const ratio = new L.Point(clickOffset.x / box.width, clickOffset.y / box.height);
     // overlayStyle.left = '0';
     // overlayStyle.top = '0';
