@@ -1,7 +1,7 @@
 /// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 const alertify = require('alertifyjs');
-import { lineRulesPromise } from './res';
+import { lineRulesPromise, RedIcon } from './res';
 import * as util from './util';
 import * as math from './math';
 import * as algorithm from './algorithm';
@@ -28,7 +28,7 @@ export default class MetroMap implements EventTarget {
     private plate: TextPlate;
 
     private fromMarker = new L.Marker([0, 0], { draggable: true });
-    private toMarker = new L.Marker([0, 0], { draggable: true });
+    private toMarker = new L.Marker([0, 0], { draggable: true, icon: RedIcon });
 
     private _contextMenu: ContextMenu;
 
@@ -119,6 +119,7 @@ export default class MetroMap implements EventTarget {
             .then(contextMenuData => {
                 this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData));
                 this.resetMapView();
+                util.loadIcons(this.map, [this.fromMarker, this.toMarker]);
                 this.fixFontRendering();
             });
 

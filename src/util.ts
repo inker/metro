@@ -233,3 +233,9 @@ export function scaleOverlay(overlay: HTMLElement, scaleFactor: number, mousePos
     overlayStyle.transform = `scale(${scaleFactor})`;
     console.log(overlayStyle.transformOrigin);      
 }
+
+export function loadIcons(map: L.Map, markers: L.Marker[]) {
+    for (let marker of markers) {
+        map.addLayer(marker).removeLayer(marker);
+    }
+}
