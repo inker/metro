@@ -46,6 +46,10 @@ export default class ContextMenu {
         }
         this.table = document.createElement('table');
         this.table.id = 'contextmenu';
+        this.table.addEventListener('contextmenu', e => {
+            e.preventDefault();
+            (e.target as HTMLElement).click();
+        });
         document.body.appendChild(this.table);
     }
 
