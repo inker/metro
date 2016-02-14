@@ -1,7 +1,7 @@
 /// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 const alertify = require('alertifyjs');
-import { lineRulesPromise, RedIcon } from './res';
+import { lineRulesPromise } from './res';
 import * as util from './util';
 import * as math from './math';
 import * as algorithm from './algorithm';
@@ -10,9 +10,11 @@ import * as svg from './svg';
 import * as po from './plain-objects';
 import * as bind from './bind';
 import * as geo from './geo';
-import { ContextMenu, MapEditor, FAQ, TextPlate } from './ui';
+import { ContextMenu, MapEditor, FAQ, TextPlate, Icons } from './ui';
 
 L.Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images';
+
+const minZoom = 9, maxZoom = 18;
 
 export default class MetroMap implements EventTarget {
     private map: L.Map;
@@ -27,8 +29,9 @@ export default class MetroMap implements EventTarget {
 
     private plate: TextPlate;
 
-    private fromMarker = new L.Marker([0, 0], { draggable: true });
-    private toMarker = new L.Marker([0, 0], { draggable: true, icon: RedIcon });
+    private fromMarker = new L.Marker([0, 0], { draggable: true , icon: Icons.start });
+    private toMarker = new L.Marker([0, 0], { draggable: true, icon: Icons.end });
+    //private routeWorker = new Worker('js/routeworker.js');
 
     private _contextMenu: ContextMenu;
 
@@ -68,19 +71,12 @@ export default class MetroMap implements EventTarget {
             //layers: tileLayers[Object.keys(tileLayers)[0]],
             center: new L.LatLng(59.943556, 30.30452),
             zoom: 11,
-            minZoom: 9,
+            minZoom,
+            maxZoom,
             inertia: true
         }).addControl(new L.Control.Scale({ imperial: false }));
 
         tileLayers[Object.keys(tileLayers)[0]].addTo(this.map);
-
-        const onMarkerDragEnd = e => {
-            this.fixFontRendering();
-            this.visualizeShortestRoute(this.fromMarker.getLatLng(), this.toMarker.getLatLng());
-        }
-        const onMarkerDrag = e => this.visualizeShortestRoute(this.fromMarker.getLatLng(), this.toMarker.getLatLng(), false);
-        this.fromMarker.on('drag', onMarkerDrag).on('dragend', onMarkerDragEnd);
-        this.toMarker.on('drag', onMarkerDrag).on('dragend', onMarkerDragEnd);
 
         this.overlay = document.getElementById('overlay');
         const container = this.map.getContainer();
@@ -109,6 +105,7 @@ export default class MetroMap implements EventTarget {
                 // TODO: fix the kludge making the grey area disappear
                 this.map.invalidateSize(false);
                 this.addMapListeners();
+                //this.routeWorker.postMessage(this.graph);
                 //util.drawZones(this);
                 if (!L.Browser.mobile) {
                     new MapEditor(this);
@@ -120,7 +117,7 @@ export default class MetroMap implements EventTarget {
                 this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData));
                 this.resetMapView();
                 util.loadIcons(this.map, [this.fromMarker, this.toMarker]);
-                this.fixFontRendering();
+                util.fixFontRendering(); // just in case
             });
 
         Promise.all([graphPromise, hintsPromise])
@@ -137,9 +134,10 @@ export default class MetroMap implements EventTarget {
             case 'clearroute':
                 svg.Animation.terminateAnimations();
                 this.map.removeLayer(this.fromMarker).removeLayer(this.toMarker);
+                this.fromMarker.off('drag').off('dragend');
+                this.toMarker.off('drag').off('dragend');
                 util.resetStyle();
                 alertify.dismissAll();
-                this.fixFontRendering();
                 break;
             case 'showheatmap':
                 if (this.map.hasLayer(this.fromMarker)) {
@@ -169,6 +167,21 @@ export default class MetroMap implements EventTarget {
             case 'measuredistance': {
                 const coors = util.mouseToLatLng(this.map, event as MouseEvent);
                 const origin = document.getElementById('origin');
+                // const points: L.LatLng[] = [];
+                // this.map.on('click', (e: L.LeafletMouseEvent) => {
+                //     if (e.originalEvent.button !== 0) return;
+                //     const circle = new L.CircleMarker(e.latlng, {
+                        
+                //     });
+                //     points.push(e.latlng);
+                //     const el = { lang: { ru: 'Udaliť izmerenia', en: 'Delete measurements' } };
+                //     this._contextMenu.extraItems.set(circle, new Map().set('deletemeasurements', el));                                       
+                // });
+                // this.map.fire('click', { latlng: coors, originalEvent: { button: 0 } });
+                // util.onceEscapePress(e => this.dispatchEvent(new MouseEvent('deletemeasurements')));
+                // break;
+                
+                                
                 let ptGroup = document.getElementById('measure-circles');
                 let lineGroup = document.getElementById('measure-lines');
                 if (ptGroup !== null) {
@@ -271,10 +284,27 @@ export default class MetroMap implements EventTarget {
         marker.setLatLng(coors);
         this.map.addLayer(marker);
         if (this.map.hasLayer(this.fromMarker) && this.map.hasLayer(this.toMarker)) {
-            this.visualizeShortestRoute(this.fromMarker.getLatLng(), this.toMarker.getLatLng());
+            this.visualizeShortestRoute([this.fromMarker.getLatLng(), this.toMarker.getLatLng()]);
+            // this.routeWorker.onmessage = e => {
+            //     this.visualizeShortestRoute(e.data, false);
+            // };
+            // const onMarkerDrag = e => {
+            //     this.routeWorker.postMessage([this.fromMarker.getLatLng(), this.toMarker.getLatLng()]);
+            // };
+            // const onMarkerDragEnd = e => {
+            //     util.fixFontRendering();
+            //     this.calcAndVisualizeShortestRoute(this.fromMarker.getLatLng(), this.toMarker.getLatLng());
+            // }
+            const onMarkerDrag = e => this.visualizeShortestRoute([this.fromMarker.getLatLng(), this.toMarker.getLatLng()], false);
+            const onMarkerDragEnd = e => {
+                util.fixFontRendering();
+                this.visualizeShortestRoute([this.fromMarker.getLatLng(), this.toMarker.getLatLng()]);
+            }
+            
+            this.fromMarker.on('drag', onMarkerDrag).on('dragend', onMarkerDragEnd);
+            this.toMarker.on('drag', onMarkerDrag).on('dragend', onMarkerDragEnd);
         }
         util.onceEscapePress(e => this.dispatchEvent(new MouseEvent('clearroute')));
-        this.fixFontRendering();
     }
 
     private addMapListeners(): void {
@@ -282,37 +312,37 @@ export default class MetroMap implements EventTarget {
         const overlayStyle = this.overlay.style;
         let scaleFactor = 1;
         this.map.on('movestart', e => {
-            console.log('move start');
             this.map.touchZoom.disable();
             if (L.Browser.webkit) {
                 svg.Gradients.removeAll();
             }
-        }).on('move', e => {
-            // using 'move' here instead of 'drag' because on window resize the overlay 
-            // is translated instantly without causing the entire network to be redrawn
-            //overlayStyle.transform = mapPane.style.transform;
         }).on('moveend', e => {
             console.log('move ended');
             this.map.touchZoom.enable();
             if (L.Browser.webkit) {
                 svg.Gradients.addAll();
             }
-            this.fixFontRendering();
+            util.fixFontRendering();
             // the secret of correct positioning is the movend transform check for corrent transform
-            //overlayStyle.transform = mapPane.style.transform;
             overlayStyle.transform = null;
         }).on('zoomstart', e => {
             console.log('zoomstart', e);
             this.map.dragging.disable();
             const mousePos = e.target['scrollWheelZoom']['_lastMousePos'];
+            const fromZoom: number = e.target['_zoom'];
             if (scaleFactor === 1) {
-                const fromZoom: number = e.target['_zoom'];
                 setTimeout(() => {
                     const toZoom: number = e.target['_animateToZoom'];
                     scaleFactor = 2 ** (toZoom - fromZoom);
                     util.scaleOverlay(this.overlay, scaleFactor, mousePos);
                 }, 0);                
             } else {
+                //const a = fromZoom + Math.log2(scaleFactor);
+                // if (a < minZoom) {
+                //     scaleFactor *= 2 ** (minZoom - a);
+                // } else if (a > maxZoom) {
+                //     scaleFactor *= 2 ** (maxZoom - a);
+                // }
                 util.scaleOverlay(this.overlay, scaleFactor, mousePos);               
             }
             scaleFactor = 1; 
@@ -323,21 +353,10 @@ export default class MetroMap implements EventTarget {
             overlayStyle.transformOrigin = null;
             this.redrawNetwork();
             this.map.dragging.enable();
-        });
+        }).on('layeradd', e => util.fixFontRendering());
         this.overlay.addEventListener('wheel', e => scaleFactor *= e.deltaY < 0 ? 2 : 0.5);
     }
 
-    /**
-     * Fixes blurry font due to 'transform3d' CSS property. Changes everything to 'transform' when the map is not moving
-     */
-    private fixFontRendering(): void {
-        const blurringStuff = document.querySelectorAll('[style*="translate3d"]');
-        console.log(blurringStuff);
-        for (let i = 0; i < blurringStuff.length; ++i) {
-            util.CSSTransform.replace(blurringStuff[i] as HTMLElement);
-        }
-        //util.CSSTransform.replace(this.map.getPanes().mapPane);
-    }
 
     private resetMapView(): void {
         //const fitness = (points, pt) => points.reduce((prev, cur) => this.bounds., 0);
@@ -350,10 +369,7 @@ export default class MetroMap implements EventTarget {
 
     private resetOverlayStructure(): void {
         const origin = document.getElementById('origin') || svg.createSVGElement('g');
-        let child;
-        while (child = origin.firstChild) {
-            origin.removeChild(child);
-        }
+        util.removeAllChildren(origin);
 
         origin.id = 'origin';
         const groupIds = [
@@ -433,16 +449,7 @@ export default class MetroMap implements EventTarget {
         this.resetOverlayStructure();
         this.updateOverlayPositioning();
         this.getPlatformsPositionOnOverlay();
-
-        const docFrags = {
-            'station-circles': document.createDocumentFragment(),
-            'dummy-circles': document.createDocumentFragment(),
-            'paths-inner': document.createDocumentFragment(),
-            'paths-outer': document.createDocumentFragment(),
-            'transfers-inner': document.createDocumentFragment(),
-            'transfers-outer': document.createDocumentFragment()
-        };
-
+        
         const zoom = this.map.getZoom();
 
         const lineWidth = (zoom - 7) * 0.5; // or just (zoom - 9) ? 
@@ -452,17 +459,23 @@ export default class MetroMap implements EventTarget {
         const transferBorder = circleBorder * 1.25;
         const strokeWidths = {
             'station-circles': circleBorder,
+            'dummy-circles': 0,
             'transfers-outer': transferWidth + transferBorder / 2,
             'transfers-inner': transferWidth - transferBorder / 2,
             'paths-outer': lineWidth,
             'paths-inner': lineWidth / 2
         };
+        const docFrags = new Map<string, DocumentFragment>();
         for (let id of Object.keys(strokeWidths)) {
+            docFrags.set(id, document.createDocumentFragment());
             document.getElementById(id).style.strokeWidth = strokeWidths[id] + 'px';
         }
 
         const platformsInCircles = new Set<number>();
         const stationCircumpoints = new Map<po.Station, po.Platform[]>();
+        
+        const stationCirclesFrag = docFrags.get('station-circles');
+        const dummyCirclesFrag = docFrags.get('dummy-circles');
 
         for (let station of this.graph.stations) {
             const circumpoints: L.Point[] = [];
@@ -502,8 +515,8 @@ export default class MetroMap implements EventTarget {
                     const dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
                     dummyCircle.id = 'd-' + platformIndex;
 
-                    docFrags['station-circles'].appendChild(ci);
-                    docFrags['dummy-circles'].appendChild(dummyCircle);
+                    stationCirclesFrag.appendChild(ci);
+                    dummyCirclesFrag.appendChild(dummyCircle);
                 }
 
                 this.whiskers[platformIndex] = this.makeWhiskers(platformIndex);
@@ -528,6 +541,8 @@ export default class MetroMap implements EventTarget {
         }
 
         if (zoom > 11) {
+            const transfersOuterFrag = docFrags.get('transfers-outer');
+            const transfersInnerFrag = docFrags.get('transfers-inner');
             for (let transferIndex = 0; transferIndex < this.graph.transfers.length; ++transferIndex) {
                 const transfer = this.graph.transfers[transferIndex];
                 var paths: (SVGPathElement | SVGLineElement)[];
@@ -574,24 +589,24 @@ export default class MetroMap implements EventTarget {
                 }
 
                 paths[0].style.stroke = `url(#${gradient.id})`;
-                docFrags['transfers-outer'].appendChild(paths[0]);
-                docFrags['transfers-inner'].appendChild(paths[1]);
+                transfersOuterFrag.appendChild(paths[0]);
+                transfersInnerFrag.appendChild(paths[1]);
                 bind.transferToModel.call(this, transfer, paths);
             }
         }
+        const pathsOuterFrag = docFrags.get('paths-outer');
+        const pathsInnerFrag = docFrags.get('paths-inner');
         for (let i = 0; i < this.graph.spans.length; ++i) {
             const [outer, inner] = this.makePath(i);
-            docFrags['paths-outer'].appendChild(outer);
+            pathsOuterFrag.appendChild(outer);
             if (inner) {
-                docFrags['paths-inner'].appendChild(inner);
+                pathsInnerFrag.appendChild(inner);
             } else if (this.graph.routes[this.graph.spans[i].routes[0]].line.startsWith('L')) {
                 outer.style.strokeWidth = lineWidth * 0.75 + 'px';
             }
         }
-
-        for (let i of Object.keys(docFrags)) {
-            document.getElementById(i).appendChild(docFrags[i]);
-        }
+        
+        docFrags.forEach((val, key) => document.getElementById(key).appendChild(val));
         this.addBindings();
     }
 
@@ -729,17 +744,17 @@ export default class MetroMap implements EventTarget {
         bezier.classList.add(lineType);
         return [bezier];
     }
-
-    visualizeShortestRoute(departure: L.LatLng, arrival: L.LatLng, animate = true) {
+    
+    private visualizeShortestRoute(obj: L.LatLng[]|algorithm.ShortestRouteObject, animate = true) {
         util.resetStyle();
         alertify.dismissAll();
-        const { platforms, edges, time } = algorithm.shortestRoute(this.graph, departure, arrival);
+        const o = obj instanceof Array ? algorithm.shortestRoute(this.graph, obj[0], obj[1]) : obj;
+        const { platforms, edges, time } = o as algorithm.ShortestRouteObject;
         const onFoot = tr('on foot');
         const walkTo = ft(time.walkTo);
         if (edges === undefined) {
             return alertify.success(`${walkTo} ${onFoot}!`);
         }
-
         const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
         svg.Animation.terminateAnimations().then(() => {
             const els: HTMLElement[] = this.overlay.querySelectorAll(selector) as any;
@@ -753,23 +768,22 @@ export default class MetroMap implements EventTarget {
         }).then(() => {
             for (let edgeIdTail of edges) {
                 const outer: SVGPathElement = document.getElementById('o' + edgeIdTail) as any;
-                if (outer !== null) {
-                    outer.style.opacity = null;
-                    const inner = document.getElementById('i' + edgeIdTail);
-                    if (inner !== null) {
-                        inner.style.opacity = null;
-                    }
-                    if (outer.id.charAt(1) !== 't') {
-                        svg.Shadows.applyDrop(outer);
-                    }
+                if (outer === null) continue;
+                outer.style.opacity = null;
+                const inner = document.getElementById('i' + edgeIdTail);
+                if (inner !== null) {
+                    inner.style.opacity = null;
+                }
+                if (outer.id.charAt(1) !== 't') {
+                    svg.Shadows.applyDrop(outer);
                 }
             }
             for (let platformNum of platforms) {
                 document.getElementById('p-' + platformNum).style.opacity = null;
             }
-        }).catch(() => svg.Animation.animateRoute(this.graph, platforms, edges)).then(finished => {
+        }).catch(animate => svg.Animation.animateRoute(this.graph, platforms, edges)).then(finished => {
             if (!finished) return;
             alertify.message(`${tr('time').toUpperCase()}:<br>${walkTo} ${onFoot}<br>${ft(time.metro)} ${tr('by metro')}<br>${ft(time.walkFrom)} ${onFoot}<br>${tr('TOTAL')}: ${ft(time.total)}`, 10)
-        });
+        });       
     }
 }

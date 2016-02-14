@@ -23,18 +23,18 @@ export function findCircle(graph: po.Graph, station: po.Station): po.Platform[] 
 }
 
 
-type shortestRouteObject = {
+export type ShortestRouteObject = {
     platforms?: number[];
     edges?: string[];
     time: { walkTo: number, metro?: number, walkFrom?: number, total?: number };
 }
-export function shortestRoute(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): shortestRouteObject {
+export function shortestRoute(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): ShortestRouteObject {
     const walkingSpeed = 1.4,
         walkingWithObstacles = 1,
         maxTrainSpeed = 20,
         trainAcceleration = 0.7,
-        metroStopTime = 30,
-        eLineStopTime = 60,
+        metroStopTime = 25,
+        eLineStopTime = 40,
         // includes escalators
         metroWaitingTime = 240,
         eLineWaitingTime = 360;

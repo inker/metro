@@ -66,16 +66,15 @@ export function resetStyle() {
 }
 
 export namespace CSSTransform {
-    export function parse(val: string): L.Point {
+    export function toPoint(val: string): L.Point {
         if (val.length == 0) return new L.Point(0, 0);
         const tokens = val.match(/translate(3d)?\((-?\d+).*?,\s?(-?\d+).*?(,\s?(-?\d+).*?)?\)/i);
-        return tokens && tokens[0] ? new L.Point(+tokens[2], +tokens[3]) : new L.Point(0, 0);
+        return  tokens && tokens[0] ? new L.Point(+tokens[2], +tokens[3]) : new L.Point(0, 0);
     }
 
-    export function replace(el: HTMLElement) {
+    export function trim3d(el: HTMLElement | SVGStylable) {
         const s = el.style;
-        const re = /translate3d\s*\((.+?,\s*.+?),\s*.+?\s*\)/i;
-        s.transform = s.transform.replace(re, 'translate($1)');
+        s.transform = s.transform.replace(/translate3d\s*\((.+?,\s*.+?),\s*.+?\s*\)/i, 'translate($1)');
     }
 }
 
@@ -231,11 +230,30 @@ export function scaleOverlay(overlay: HTMLElement, scaleFactor: number, mousePos
     // overlayStyle.top = '0';
     overlayStyle.transformOrigin = `${ratio.x * 100}% ${ratio.y * 100}%`;
     overlayStyle.transform = `scale(${scaleFactor})`;
-    console.log(overlayStyle.transformOrigin);      
+    console.log(overlayStyle.transformOrigin);
 }
 
 export function loadIcons(map: L.Map, markers: L.Marker[]) {
     for (let marker of markers) {
         map.addLayer(marker).removeLayer(marker);
+    }
+}
+
+export function removeAllChildren(el: Node) {
+    let child: Node;
+    while (child = el.firstChild) {
+        el.removeChild(child);
+    }
+}
+
+
+/**
+ * Fixes blurry font due to 'transform3d' CSS property. Changes everything to 'transform' when the map is not moving
+ */
+export function fixFontRendering(): void {
+    const blurringStuff = document.querySelectorAll('[style*="translate3d"]');
+    console.log(blurringStuff);
+    for (let i = 0; i < blurringStuff.length; ++i) {
+        CSSTransform.trim3d(blurringStuff[i] as HTMLElement&SVGStylable);
     }
 }

@@ -18,9 +18,14 @@ a:hover {
 
 #map-container {
     height: 100%; /* the map should have a defined height */
-    cursor: default; /* overriding the hand */
+    cursor: default;
     transition-property: filter -webkit-filter;
     transition-duration:  200ms;
+}
+
+.leaflet-dragging #map-container {
+    cursor: -webkit-grab;
+    cursor: grab;
 }
 
 #map-container.dimmed {

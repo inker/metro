@@ -289,10 +289,8 @@ export namespace Animation {
     
     export function terminateAnimations() {
         if (currentAnimation === null) {
-            console.log('no animation currently');
             return Promise.resolve(true);
         }
-        console.log('terminating running animation');
         animationsAllowed = false;
         return currentAnimation;
     }

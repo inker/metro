@@ -70,7 +70,8 @@ gulp.task('watch-js', () => {
 });
 
 gulp.task('watch-ts-for-all-way', () => {
-    gulp.watch(['src/*.ts', 'src/*/*.ts'], ['ts-transpile-merge-compress']);
+    gulp.watch(['src/*.ts', 'src/*/*.ts', '!src/routeworker.ts'], ['ts-transpile-merge-compress']);
+    gulp.watch(['src/routeworker.ts'], ['webworker-merge-compress']);
 });
 
 gulp.task('ts-transpile-merge-compress', () => {
@@ -90,6 +91,19 @@ gulp.task('ts-transpile-merge-compress', () => {
          .pipe(gulp.dest('./js/'))
          .pipe(notify("Bundling complete!"))
          ;
+});
+
+gulp.task('webworker-merge-compress', () => {
+    browserify()
+        .add('typings/tsd.d.ts')
+        .add('src/routeworker.ts')
+        .plugin(tsify, {target: 'es5', module: 'commonjs', noLib: true})
+        .bundle()
+        .on('error', error => console.error(error.toString()))
+        .pipe(source('routeworker.js'))
+        .pipe(gulp.dest('./js/'))
+        .pipe(notify("Bundling complete!"))
+    ;
 });
 
 gulp.task('js-es5-merge-compress', () => {
