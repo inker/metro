@@ -12,10 +12,8 @@ if (L.Browser.ie) {
 import polyfills from './polyfills';
 polyfills();
 
-import tilelayers from './tilelayers';
-
 res.dictionaryPromise.then(dict => {
-    const metroMap = new MetroMap('map-container', 'json/graph.json', tilelayers);
+    const metroMap = new MetroMap('map-container', 'json/graph.json');
     const englishTitle = 'St Petersburg metro plan proposal';
     const titles = dict[englishTitle];
     flashTitle(Object.keys(titles).map(key => titles[key]).concat([englishTitle]), 3000);

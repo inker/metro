@@ -2,6 +2,7 @@
 import * as L from 'leaflet';
 const alertify = require('alertifyjs');
 import { lineRulesPromise } from './res';
+import { mapbox, mapnik } from './tilelayers';
 import * as util from './util';
 import * as math from './math';
 import * as algorithm from './algorithm';
@@ -57,7 +58,7 @@ export default class MetroMap implements EventTarget {
         return this.graph;
     }
 
-    constructor(containerId: string, kml: string, tileLayers: {}) {
+    constructor(containerId: string, kml: string) {
         const graphPromise: Promise<po.Graph> = fetch(kml)
             .then(data => data.json())
             .then(graphJSON => this.graph = graphJSON);
@@ -74,9 +75,15 @@ export default class MetroMap implements EventTarget {
             minZoom,
             maxZoom,
             inertia: true
-        }).addControl(new L.Control.Scale({ imperial: false }));
+        }).addControl(new L.Control.Scale({ imperial: false })).addLayer(mapbox);
 
-        tileLayers[Object.keys(tileLayers)[0]].addTo(this.map);
+        addEventListener('keydown', e => {
+            if (!e.ctrlKey) return;
+            switch (e.keyCode) {
+                case 76: return mapnik.addTo(this.map).bringToFront();
+                default: return;
+            }
+        });
 
         this.overlay = document.getElementById('overlay');
         const container = this.map.getContainer();
