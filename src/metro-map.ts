@@ -289,8 +289,11 @@ export default class MetroMap implements EventTarget {
         const coors = util.mouseToLatLng(this.map, e);
         const marker = e.type === 'fromclick' ? this.fromMarker : this.toMarker;
         marker.setLatLng(coors);
-        this.map.addLayer(marker);
-        if (this.map.hasLayer(this.fromMarker) && this.map.hasLayer(this.toMarker)) {
+        if (!this.map.hasLayer(marker)) {
+            this.map.addLayer(marker);
+        }
+        const otherMarker = marker === this.fromMarker ? this.toMarker : this.fromMarker;
+        if (this.map.hasLayer(otherMarker)) {
             this.visualizeShortestRoute([this.fromMarker.getLatLng(), this.toMarker.getLatLng()]);
             // this.routeWorker.onmessage = e => {
             //     this.visualizeShortestRoute(e.data, false);
