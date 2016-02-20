@@ -146,12 +146,12 @@ export default class MetroMap implements EventTarget {
         console.log(event);
         switch (event.type) {
             case 'clearroute':
-                svg.Animation.terminateAnimations();
+                const terminate = svg.Animation.terminateAnimations();
                 this.map.removeLayer(this.fromMarker).removeLayer(this.toMarker);
                 this.fromMarker.off('drag').off('dragend');
                 this.toMarker.off('drag').off('dragend');
-                util.resetStyle();
                 alertify.dismissAll();
+                terminate.then(status => util.resetStyle());
                 break;
             case 'showheatmap':
                 if (this.map.hasLayer(this.fromMarker)) {

@@ -213,7 +213,7 @@ export namespace Shadows {
     export function applyDrop(path: Element & SVGStylable) {
         // fixing disappearing lines
         const box = path.getBoundingClientRect();
-        const strokeWidth = parseFloat(getComputedStyle(path).strokeWidth);
+        const strokeWidth = parseFloat(getComputedStyle(path).strokeWidth) * 2;
         if (box.height >= strokeWidth && box.width >= strokeWidth) {
             path.style.filter = 'url(#black-glow)';
         }        
@@ -333,7 +333,7 @@ export namespace Animation {
             const edge: po.Transfer | po.Span = graph[idParts[0] === 'p' ? 'spans' : 'transfers'][+idParts[1]];
             const initialOffset = edge.source === platforms[i] ? length : -length;
             const duration = length;
-            outer.style.filter = 'url(#black-glow)';
+            Shadows.applyDrop(outer);
             for (let path of (inner === null ? [outer] : [outer, inner])) {
                 const pathStyle = path.style;
                 pathStyle.transition = null;
