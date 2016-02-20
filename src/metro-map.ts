@@ -305,14 +305,16 @@ export default class MetroMap implements EventTarget {
             //     util.fixFontRendering();
             //     this.calcAndVisualizeShortestRoute(this.fromMarker.getLatLng(), this.toMarker.getLatLng());
             // }
-            const onMarkerDrag = e => this.visualizeShortestRoute([this.fromMarker.getLatLng(), this.toMarker.getLatLng()], false);
-            const onMarkerDragEnd = e => {
-                util.fixFontRendering();
-                this.visualizeShortestRoute([this.fromMarker.getLatLng(), this.toMarker.getLatLng()]);
+            if (!marker.hasEventListeners('drag')) {
+                const onMarkerDrag = e => this.visualizeShortestRoute([this.fromMarker.getLatLng(), this.toMarker.getLatLng()], false);
+                const onMarkerDragEnd = e => {
+                    util.fixFontRendering();
+                    this.visualizeShortestRoute([this.fromMarker.getLatLng(), this.toMarker.getLatLng()]);
+                }
+                
+                this.fromMarker.on('drag', onMarkerDrag).on('dragend', onMarkerDragEnd);
+                this.toMarker.on('drag', onMarkerDrag).on('dragend', onMarkerDragEnd);                
             }
-            
-            this.fromMarker.on('drag', onMarkerDrag).on('dragend', onMarkerDragEnd);
-            this.toMarker.on('drag', onMarkerDrag).on('dragend', onMarkerDragEnd);
         }
         util.onceEscapePress(e => this.dispatchEvent(new MouseEvent('clearroute')));
     }
