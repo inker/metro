@@ -42,12 +42,6 @@ export type Route = {
     branch: string;
 };
 
-export type StationOrPlatform = {
-    location: L.LatLng;
-    name: string;
-    altNames: AltNames;
-};
-
 export type Graph = {
     platforms: Platform[];
     stations: Station[];

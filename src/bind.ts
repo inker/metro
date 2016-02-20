@@ -95,20 +95,20 @@ export function platformToModel(platform: po.Platform|number, circles: Element[]
                 c.setAttribute('cx', pos.x.toString());
                 c.setAttribute('cy', pos.y.toString());
             }
-            this.whiskers[idx] = this.makeWhiskers(idx);
+            this.whiskers.set(idx, this.makeWhiskers(idx));
             this.platformsOnSVG.set(idx, pos);
             const spansToChange = new Set<number>(obj.spans);
             for (let spanIndex of obj.spans) {
                 const span = this.graph.spans[spanIndex];
                 const srcN = span.source, trgN = span.target;
                 const neighborIndex = idx === srcN ? trgN : srcN;
-                this.whiskers[neighborIndex] = this.makeWhiskers(neighborIndex);
+                this.whiskers.set(neighborIndex, this.makeWhiskers(neighborIndex));
                 this.graph.platforms[neighborIndex].spans.forEach(si => spansToChange.add(si));
             }
             spansToChange.forEach(spanIndex => {
                 const span = this.graph.spans[spanIndex];
                 const srcN = span.source, trgN = span.target;
-                const controlPoints = [this.platformsOnSVG.get(srcN), this.whiskers[srcN][spanIndex], this.whiskers[trgN][spanIndex], this.platformsOnSVG.get(trgN)];
+                const controlPoints = [this.platformsOnSVG.get(srcN), this.whiskers.get(srcN).get(spanIndex), this.whiskers.get(trgN).get(spanIndex), this.platformsOnSVG.get(trgN)];
                 svg.setBezierPath(document.getElementById(`op-${spanIndex}`), controlPoints);
                 const inner = document.getElementById(`ip-${spanIndex}`);
                 if (inner) svg.setBezierPath(inner, controlPoints);

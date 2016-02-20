@@ -25,7 +25,7 @@ export default class MetroMap implements EventTarget {
     private hints: po.Hints;
     private textData: {};
 
-    private whiskers = [];
+    private whiskers = new Map<number, Map<number, L.Point>>();
     private platformsOnSVG = new Map<number, L.Point>();
 
     private plate: TextPlate;
@@ -61,7 +61,7 @@ export default class MetroMap implements EventTarget {
     constructor(containerId: string, kml: string) {
         const graphPromise: Promise<po.Graph> = fetch(kml)
             .then(data => data.json())
-            .then(graphJSON => this.graph = graphJSON);
+            .then(graphJSON => this.graph = util.parseGraph(graphJSON));
         const hintsPromise = fetch('json/hints.json')
             .then(data => data.json())
             .then(hintsJSON => this.hints = hintsJSON);
@@ -76,6 +76,7 @@ export default class MetroMap implements EventTarget {
             maxZoom,
             inertia: true
         }).addControl(new L.Control.Scale({ imperial: false })).addLayer(mapbox);
+        this.map.getPanes().tilePane.style.display = 'none';
 
         addEventListener('keydown', e => {
             if (e.ctrlKey) {
@@ -92,9 +93,9 @@ export default class MetroMap implements EventTarget {
 
         this.overlay = document.getElementById('overlay');
         const container = this.map.getContainer();
-        const objectsPane = this.map.getPanes().objectsPane;
+        const { objectsPane, markerPane } = this.map.getPanes();
         container.removeChild(this.overlay);
-        objectsPane.insertBefore(this.overlay, objectsPane.querySelector('.leaflet-marker-pane'));
+        objectsPane.insertBefore(this.overlay, markerPane);
 
         const defs = svg.createSVGElement('defs');
         defs.appendChild(svg.Shadows.makeDrop());
@@ -128,6 +129,7 @@ export default class MetroMap implements EventTarget {
             .then(contextMenuData => {
                 this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData));
                 this.resetMapView();
+                this.map.getPanes().tilePane.style.display = null;
                 util.loadIcons(this.map, [this.fromMarker, this.toMarker]);
                 util.fixFontRendering(); // just in case
             });
@@ -535,7 +537,7 @@ export default class MetroMap implements EventTarget {
                     dummyCirclesFrag.appendChild(dummyCircle);
                 }
 
-                this.whiskers[platformIndex] = this.makeWhiskers(platformIndex);
+                this.whiskers.set(platformIndex, this.makeWhiskers(platformIndex));
             }
 
             const dummyCircles = document.getElementById('dummy-circles');
@@ -652,11 +654,12 @@ export default class MetroMap implements EventTarget {
         return lines;
     }
 
-    private makeWhiskers(platformIndex: number): {} {
+    private makeWhiskers(platformIndex: number): Map<number, L.Point> {
         const platform = this.graph.platforms[platformIndex];
         const posOnSVG = this.platformsOnSVG.get(platformIndex);
-        if (platform.spans.length < 2) {
-            return { [platform.spans[0]]: posOnSVG };
+        const wh = new Map<number, L.Point>();
+        if (platform.spans.length === 1) {
+            return wh.set(platform.spans[0], posOnSVG);
         }
 
         if (platform.spans.length > 2) {
@@ -696,19 +699,16 @@ export default class MetroMap implements EventTarget {
             const mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
             const mm = midPts[0].add(mdiff);
             const diff = posOnSVG.subtract(mm);
-            const whisker = {};
-            spanIds[0].forEach(spanIndex => whisker[spanIndex] = midPts[0].add(diff));
-            spanIds[1].forEach(spanIndex => whisker[spanIndex] = midPts[1].add(diff));
-            return whisker;
+            spanIds[0].forEach(spanIndex => wh.set(spanIndex, midPts[0].add(diff)));
+            spanIds[1].forEach(spanIndex => wh.set(spanIndex, midPts[1].add(diff)));
+            return wh;
         }
 
         const lines = platform.spans.map(i => this.graph.routes[this.graph.spans[i].routes[0]].line);
         // TODO: refactor this stuff, unify 2-span & >2-span platforms
         if (lines[0] !== lines[1]) {
-            return {
-                [platform.spans[0]]: posOnSVG,
-                [platform.spans[1]]: posOnSVG
-            };
+            return wh.set(platform.spans[0], posOnSVG)
+                .set(platform.spans[1], posOnSVG);
         }
 
         const midPts = [posOnSVG, posOnSVG];
@@ -728,11 +728,8 @@ export default class MetroMap implements EventTarget {
         const mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
         const mm = midPts[0].add(mdiff);
         const diff = posOnSVG.subtract(mm);
-        return {
-            [platform.spans[0]]: midPts[0].add(diff),
-            [platform.spans[1]]: midPts[1].add(diff)
-        };
-
+        return wh.set(platform.spans[0], midPts[0].add(diff))
+            .set(platform.spans[1], midPts[1].add(diff));
     }
 
     private makePath(spanIndex: number) {
@@ -742,8 +739,8 @@ export default class MetroMap implements EventTarget {
         const [lineId, lineType, lineNum] = routes[0].line.match(/([MEL])(\d{0,2})/);
         const controlPoints = [
             this.platformsOnSVG.get(srcN),
-            this.whiskers[srcN][spanIndex],
-            this.whiskers[trgN][spanIndex],
+            this.whiskers.get(srcN).get(spanIndex),
+            this.whiskers.get(trgN).get(spanIndex),
             this.platformsOnSVG.get(trgN)
         ];
         const bezier = svg.makeCubicBezier(controlPoints);

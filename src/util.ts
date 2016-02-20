@@ -65,6 +65,10 @@ export function resetStyle() {
     }
 }
 
+export function parseGraph(graphObj: any): po.Graph {
+    return graphObj;
+}
+
 export namespace CSSTransform {
     export function toPoint(val: string): L.Point {
         if (val.length == 0) return new L.Point(0, 0);
