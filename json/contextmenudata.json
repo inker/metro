@@ -1,13 +1,13 @@
 [
     [
-        "fromclick",
+        "routefrom",
         {
             "icon": "add location",
             "text": "Route from here"
         }
     ],
     [
-        "toclick",
+        "routeto",
         {
             "icon": "directions",
             "text": "Route to here"

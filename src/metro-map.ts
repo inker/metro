@@ -78,11 +78,17 @@ export default class MetroMap implements EventTarget {
         }).addControl(new L.Control.Scale({ imperial: false })).addLayer(mapbox);
 
         addEventListener('keydown', e => {
-            if (!e.ctrlKey) return;
-            switch (e.keyCode) {
-                case 76: return mapnik.addTo(this.map).bringToFront();
+            if (e.ctrlKey) {
+                switch (e.keyCode) {
+                    case 76: return mapnik.addTo(this.map).bringToFront();
+                    default: return;
+                }
+            }
+            switch(e.keyCode) {
+                case 27: return this.dispatchEvent(new Event('clearroute'));
                 default: return;
             }
+
         });
 
         this.overlay = document.getElementById('overlay');
@@ -276,47 +282,46 @@ export default class MetroMap implements EventTarget {
                 this.graph.platforms.push(platform);
                 bind.platformToModel.call(this, platform, [circle, dummy])
                 break;
-            default:
+            case 'routefrom':
+            case 'routeto':
                 this.handleMenuFromTo(event as MouseEvent);
-                return false;
-
+                break;
+            default:
+                break;
         }
+        return false;
     }
 
     removeEventListener(type: string, listener: EventListener) { }
 
     private handleMenuFromTo(e: MouseEvent) {
         const coors = util.mouseToLatLng(this.map, e);
-        const marker = e.type === 'fromclick' ? this.fromMarker : this.toMarker;
+        const marker = e.type === 'routefrom' ? this.fromMarker : this.toMarker;
         marker.setLatLng(coors);
+        if (!marker.hasEventListeners('drag')) {
+            marker.on('drag', e => {
+                if (!this.map.hasLayer(this.fromMarker) || !this.map.hasLayer(this.toMarker)) return;
+                this.visualizeShortestRoute([this.fromMarker.getLatLng(), this.toMarker.getLatLng()], false);
+            });
+        }
+        if (!marker.hasEventListeners('dragend')) {
+            marker.on('dragend', e => {
+                util.fixFontRendering();
+                if (!this.map.hasLayer(this.fromMarker) || !this.map.hasLayer(this.toMarker)) return;
+                this.visualizeShortestRoute([this.fromMarker.getLatLng(), this.toMarker.getLatLng()]);             
+            });
+        }
         if (!this.map.hasLayer(marker)) {
             this.map.addLayer(marker);
         }
+        
         const otherMarker = marker === this.fromMarker ? this.toMarker : this.fromMarker;
         if (this.map.hasLayer(otherMarker)) {
-            this.visualizeShortestRoute([this.fromMarker.getLatLng(), this.toMarker.getLatLng()]);
-            // this.routeWorker.onmessage = e => {
-            //     this.visualizeShortestRoute(e.data, false);
-            // };
-            // const onMarkerDrag = e => {
-            //     this.routeWorker.postMessage([this.fromMarker.getLatLng(), this.toMarker.getLatLng()]);
-            // };
-            // const onMarkerDragEnd = e => {
-            //     util.fixFontRendering();
-            //     this.calcAndVisualizeShortestRoute(this.fromMarker.getLatLng(), this.toMarker.getLatLng());
-            // }
-            if (!marker.hasEventListeners('drag')) {
-                const onMarkerDrag = e => this.visualizeShortestRoute([this.fromMarker.getLatLng(), this.toMarker.getLatLng()], false);
-                const onMarkerDragEnd = e => {
-                    util.fixFontRendering();
-                    this.visualizeShortestRoute([this.fromMarker.getLatLng(), this.toMarker.getLatLng()]);
-                }
-                
-                this.fromMarker.on('drag', onMarkerDrag).on('dragend', onMarkerDragEnd);
-                this.toMarker.on('drag', onMarkerDrag).on('dragend', onMarkerDragEnd);                
-            }
+            // fixing font rendering here boosts the performance
+            util.fixFontRendering();
+            this.visualizeShortestRoute([this.fromMarker.getLatLng(), this.toMarker.getLatLng()]);   
         }
-        util.onceEscapePress(e => this.dispatchEvent(new MouseEvent('clearroute')));
+
     }
 
     private addMapListeners(): void {
