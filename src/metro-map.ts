@@ -88,7 +88,6 @@ export default class MetroMap implements EventTarget {
                 case 27: return this.dispatchEvent(new Event('clearroute'));
                 default: return;
             }
-
         });
 
         this.overlay = document.getElementById('overlay');

@@ -34,8 +34,9 @@ export default class ContextMenu {
         
         const map = metroMap.getMap();
         const listener = this.handler.bind(this);
-        //metroMap.getOverlay().addEventListener('contextmenu', listener);
-        map.getPanes().mapPane.addEventListener('contextmenu', listener);
+        const { mapPane, objectsPane } = map.getPanes();
+        mapPane.addEventListener('contextmenu', listener, false);
+        objectsPane.addEventListener('contextmenu', listener, true); // 'true' prevents propagation
         
         const container = map.getContainer();
         const cancelListener = e => this.state = false;
@@ -54,9 +55,8 @@ export default class ContextMenu {
     }
 
     private handler(event: MouseEvent) {
-        console.log('target', event.target);
         event.preventDefault();
-        this.state = true;
+        console.log('target', event.target);
         this.table.innerHTML = '';
         const fillCell = (item: Item, eventName: string) => {
             const cell: HTMLTableDataCellElement = (this.table.insertRow() as any).insertCell(0);
@@ -89,5 +89,6 @@ export default class ContextMenu {
         const tx = clientX + width > clientWidth ? clientWidth - width : clientX,
             ty = clientY + height > clientHeight ? clientY - height : clientY
         this.table.style.transform = `translate(${tx}px, ${ty}px)`;
+        this.state = true;
     }
 }
