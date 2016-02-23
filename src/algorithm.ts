@@ -7,11 +7,18 @@ export function findCircle(graph: po.Graph, station: po.Station): po.Platform[] 
     // TODO: if n=3, leave as it is; if n=4, metro has priority
     const stationPlatforms = station.platforms.map(platformNum => graph.platforms[platformNum]);
     if (stationPlatforms.length === 3) {
-        return stationPlatforms.every(p => p.transfers.length === 2) ? stationPlatforms : [];
+        for (var i of station.platforms) {
+            if (graph.transfers.filter(t => t.source === i || t.target === i).length !== 2) return [];
+        }
+        return stationPlatforms;
     }
     if (stationPlatforms.length === 4) {
-        const ps = stationPlatforms.slice().sort((a, b) => a.transfers.length - b.transfers.length);
-        const degs = ps.map(p => p.transfers.length);
+        const gPls = graph.platforms, gTrs = graph.transfers;
+        const hasPlatform = (t: po.Transfer, p: number) => t.source === p || t.target === p;
+        const toTuple = (i: number) => ({platform: gPls[i], degree: gTrs.filter(t => hasPlatform(t, i)).length});
+        const psAndDegs = station.platforms.map(toTuple).sort((a, b) => a.degree - b.degree);
+        const degs = psAndDegs.map(i => i.degree);
+        const ps = psAndDegs.map(i => i.platform);
         if (arrayEquals(degs, [2, 2, 3, 3])) {
             return ps;
         }
@@ -213,7 +220,11 @@ function shortestTransfer(graph: po.Graph, p1i: number, p2i: number) {
         });
         platformSet.delete(currentIndex);
         const platform = graph.platforms[currentIndex];
-        const neighborIndices = platform.transfers;
+        const neighborIndices: number[] = [];
+        for (let t of graph.transfers) {
+            if (t.source === currentIndex) neighborIndices.push(t.target);
+            else if (t.target === currentIndex) neighborIndices.push(t.source);
+        }
         for (let neighborIndex of neighborIndices) {
             if (!platformSet.has(neighborIndex)) continue;
             const distance = distanceBetweenPoints(platform.location, graph.platforms[neighborIndex].location),

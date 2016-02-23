@@ -16,13 +16,11 @@ export interface Platform {
     location: L.LatLng;
     elevation: number;
     spans: number[];
-    transfers: number[];
 };
 
 export type Station = {
     name: string;
     altNames: AltNames;
-    location: L.LatLng;
     platforms: number[];
 };
 
@@ -54,6 +52,5 @@ export type Graph = {
 
 export type Hints = {
     crossPlatform: any;
-    englishNames: any;
     elevationSegments: any;
 }

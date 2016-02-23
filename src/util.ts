@@ -65,7 +65,21 @@ export function resetStyle() {
     }
 }
 
-export function parseGraph(graphObj: any): po.Graph {
+export function parseGraph(graphObj: po.Graph): po.Graph {
+    for (let platform of graphObj.platforms) {
+        platform['spans'] = [];
+    }
+    for (let i = 0, len = graphObj.spans.length; i < len; ++i) {
+        const span = graphObj.spans[i];
+        graphObj.platforms[span.source].spans.push(i);
+        graphObj.platforms[span.target].spans.push(i);
+    }
+    for (let i = 0, len = graphObj.stations.length; i < len; ++i) {
+        const station = graphObj.stations[i];
+        for (let p of station.platforms) {
+            graphObj.platforms[p]['station'] = i;
+        }
+    }
     return graphObj;
 }
 
@@ -260,4 +274,17 @@ export function fixFontRendering(): void {
     for (let i = 0; i < blurringStuff.length; ++i) {
         CSSTransform.trim3d(blurringStuff[i] as HTMLElement&SVGStylable);
     }
+}
+
+export function addLayerSwitcher(map: L.Map, layers: L.TileLayer[]): void {
+    let currentLayerIndex = 0;
+    console.log(layers.length);
+    addEventListener('keydown', e => {
+        if (!e.ctrlKey || e.keyCode !== 76) return;
+        e.preventDefault();
+        map.removeLayer(layers[currentLayerIndex]);
+        if (++currentLayerIndex === layers.length) currentLayerIndex = 0;
+        map.addLayer(layers[currentLayerIndex]);
+        map.invalidateSize(false);
+    });
 }

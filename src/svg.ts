@@ -263,8 +263,8 @@ export namespace Gradients {
             return;
         }
         for (let i = 0; i < transfers.length; ++i) {
-            const transfer = transfers[i];
-            (transfer as HTMLElement).style.stroke = `url(#g-${i})`;
+            const transfer = transfers[i] as SVGPathElement;
+            transfer.style.stroke = `url(#g-${i})`;
         }
     }
 
@@ -349,10 +349,10 @@ export namespace Animation {
                 if (outer.id.charAt(1) !== 't') {
                     Shadows.applyDrop(outerOld);
                 }
-                document.getElementById('paths-outer').removeChild(outer);
+                outer.parentNode.removeChild(outer);
                 if (inner) {
                     innerOld.style.opacity = null;
-                    document.getElementById('paths-inner').removeChild(inner);
+                    inner.parentNode.removeChild(inner);
                 }
                 animateSpan(i + 1);
             });

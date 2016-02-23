@@ -2,7 +2,7 @@
 import * as L from 'leaflet';
 const alertify = require('alertifyjs');
 import { lineRulesPromise } from './res';
-import { mapbox, mapnik } from './tilelayers';
+import { mapbox, mapnik, osmFrance } from './tilelayers';
 import * as util from './util';
 import * as math from './math';
 import * as algorithm from './algorithm';
@@ -23,7 +23,6 @@ export default class MetroMap implements EventTarget {
     private graph: po.Graph;
     private bounds: L.LatLngBounds;
     private hints: po.Hints;
-    private textData: {};
 
     private whiskers = new Map<number, Map<number, L.Point>>();
     private platformsOnSVG = new Map<number, L.Point>();
@@ -76,12 +75,14 @@ export default class MetroMap implements EventTarget {
             maxZoom,
             inertia: true
         }).addControl(new L.Control.Scale({ imperial: false })).addLayer(mapbox);
-        this.map.getPanes().tilePane.style.display = 'none';
+        
+        const { tilePane, objectsPane, markerPane } = this.map.getPanes();
+        tilePane.style.display = 'none';
 
+        util.addLayerSwitcher(this.map, [mapbox, mapnik, osmFrance]);
         addEventListener('keydown', e => {
             if (e.ctrlKey) {
                 switch (e.keyCode) {
-                    case 76: return mapnik.addTo(this.map).bringToFront();
                     default: return;
                 }
             }
@@ -93,7 +94,7 @@ export default class MetroMap implements EventTarget {
 
         this.overlay = document.getElementById('overlay');
         const container = this.map.getContainer();
-        const { objectsPane, markerPane } = this.map.getPanes();
+
         container.removeChild(this.overlay);
         objectsPane.insertBefore(this.overlay, markerPane);
 
@@ -129,7 +130,7 @@ export default class MetroMap implements EventTarget {
             .then(contextMenuData => {
                 this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData));
                 this.resetMapView();
-                this.map.getPanes().tilePane.style.display = null;
+                tilePane.style.display = null;
                 util.loadIcons(this.map, [this.fromMarker, this.toMarker]);
                 util.fixFontRendering(); // just in case
             });
@@ -276,7 +277,6 @@ export default class MetroMap implements EventTarget {
                     altNames: {},
                     station: null,
                     spans: [],
-                    transfers: [],
                     elevation: 0,
                     location: coor
                 };
@@ -579,9 +579,26 @@ export default class MetroMap implements EventTarget {
                     } else if (pl1 === cluster[2] && pl2 === cluster[3] || pl1 === cluster[3] && pl2 === cluster[2]) {
                         paths = svg.makeTransfer(pos1, pos2);
                     } else {
-                        const degs = cluster.map(p => p.transfers.length);
-                        var [a, b] = pl1.transfers.length === 2 ? [pl1, pl2] : [pl2, pl1];
-                        makeArc(this.graph.platforms[a.transfers.find(i => this.graph.platforms[i] !== b)]);
+                        var s = transfer.source;
+                        const pl1neighbors = this.graph.transfers.filter(t => t.source === s || t.target === s);
+                        const pl1deg = pl1neighbors.length;
+                        var [a, b] = pl1deg === 2 ? [pl1, pl2] : [pl2, pl1];
+                        const rarr: number[] = [];
+                        let thirdIndex: number;
+                        for (let t of this.graph.transfers) {
+                            if (t === transfer) continue;
+                            if (t.source === transfer.source || t.source === transfer.target) rarr.push(t.target);
+                            else if (t.target === transfer.source || t.target === transfer.target) rarr.push(t.source);
+                        }
+                        if (rarr.length === 2) {
+                            if (rarr[0] !== rarr[1]) throw Error("FFFFUC");
+                            thirdIndex = rarr[0];
+                        } else if (rarr.length === 3) {
+                            thirdIndex = rarr.sort()[1];
+                        } else {
+                            throw new Error("111FUUFF");
+                        }
+                        makeArc(this.graph.platforms[thirdIndex]);
                     }
                 } else {
                     paths = svg.makeTransfer(pos1, pos2);
@@ -634,9 +651,9 @@ export default class MetroMap implements EventTarget {
         const se = this.bounds.getSouthEast();
         const svgBounds = new L.Bounds(this.map.latLngToContainerPoint(nw), this.map.latLngToContainerPoint(se));
         const graphPlatforms = this.graph.platforms;
-        const stationCenter = (st: po.Station) => geo.getCenter(st.platforms.map(i => graphPlatforms[i].location));
+        const locByPlatformIdx = (i: number) => graphPlatforms[i].location;
         for (let station of this.graph.stations) {
-            const center = zoom < 12 ? stationCenter(station) : null;
+            const center = zoom < 12 ? geo.getCenter(station.platforms.map(locByPlatformIdx)) : null;
             for (let platformIndex of station.platforms) {
                 const pos = this.posOnSVG(svgBounds, center || graphPlatforms[platformIndex].location);
                 this.platformsOnSVG.set(platformIndex, pos);

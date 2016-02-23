@@ -55,7 +55,7 @@ export default class MapEditor {
 
     private saveMapClick(event: MouseEvent) {
         const graph = this.metroMap.getGraph();
-        const content = JSON.stringify(graph, (key, val) => key.startsWith('_') ? undefined : val);
+        const content = JSON.stringify(graph, (key, val) => key.startsWith('_') || (key === 'station') ? undefined : val);
         downloadAsFile('graph.json', content);
         this.editMode = false;
     }
