@@ -231,43 +231,6 @@ export namespace Gradients {
         return gradient as any;
     }
 
-    export function removeAll() {
-        // const overlay = document.getElementById('overlay');
-        // const temp = overlay.querySelectorAll('defs');
-        // defs = temp[temp.length - 1];
-        // for (let i = 0; i < defs.length; ++i) {
-        //     overlay.removeChild(temp[i]);
-        // }
-        const transfers = document.getElementById('transfers-outer').children;
-        if (transfers) {
-            for (let i = 0, len = transfers.length; i < len; ++i) {
-                const transfer = transfers[i] as HTMLElement;
-                let fallbackColor = transfer.getAttribute('data-fallbackcolor');
-                if (fallbackColor === null) {
-                    const gradient: SVGLinearGradientElement = document.getElementById('g-' + i) as any;
-                    const colors = [gradient.firstElementChild, gradient.lastElementChild]
-                        .map((el: SVGStopElement) => el.style.stopColor);
-                    fallbackColor = Color.mean(colors);
-                    transfer.setAttribute('data-fallbackcolor', fallbackColor);
-                }
-                transfer.style.stroke = fallbackColor;
-            }
-        }
-    }
-
-    export function addAll() {
-        // const overlay = document.getElementById('overlay');
-        // overlay.insertBefore(defs, overlay.firstElementChild);
-        const transfers = document.getElementById('transfers-outer').children;
-        if (transfers === undefined || transfers.length === 0) {
-            return;
-        }
-        for (let i = 0; i < transfers.length; ++i) {
-            const transfer = transfers[i] as SVGPathElement;
-            transfer.style.stroke = `url(#g-${i})`;
-        }
-    }
-
     export function setDirection(gradient: Element, vector: L.Point) {
         const coors = math.vectorToGradCoordinates(vector);
         gradient.setAttribute('x1', (1 - coors.x) * 50 + '%');

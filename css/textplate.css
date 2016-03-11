@@ -1,4 +1,4 @@
-.plate-text {
+.plate-box {
     color: black;
     font-size: 0.9em;
     /*font-family: "Corbel Bold", Ubuntu, Cambay, sans-serif;*/
@@ -9,19 +9,14 @@
     opacity: 1;
     -webkit-user-select: none;
     user-select: none;
-}
-
-.plate-box {
-    /*stroke: grey;*/
-    border-radius: 2px;
-    /*box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);*/
-    /*filter: drop-shadow( 0 1px 2px rgba(0,0,0,0.24) );*/
-    fill: white; /* for rect */
-    /*background-color: white; /!* for div *!/*/
-    opacity: 1;
-}
-
-.plate-pole {
-    stroke: #404040;
-    stroke-width: 1px;
+    
+    white-space: nowrap;
+    /*border-radius: 2px;*/
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    /*filter: url(#shadow);*/
+    background-color: white; /* for div */
+    padding: 1px 3px 1px 3px;
+    line-height: 1.3em;
+    display: inline-block;
+    /*float: left;*/
 }

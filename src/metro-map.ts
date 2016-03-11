@@ -83,19 +83,18 @@ export default class MetroMap implements EventTarget {
         addEventListener('keydown', e => {
             if (e.ctrlKey) {
                 switch (e.keyCode) {
+                    case 82: return this.redrawNetwork(); // r
                     default: return;
                 }
             }
             switch(e.keyCode) {
-                case 27: return this.dispatchEvent(new Event('clearroute'));
+                case 27: return this.dispatchEvent(new Event('clearroute')); // esc
                 default: return;
             }
         });
 
         this.overlay = document.getElementById('overlay');
-        const container = this.map.getContainer();
-
-        container.removeChild(this.overlay);
+        this.overlay.parentNode.removeChild(this.overlay);
         objectsPane.insertBefore(this.overlay, markerPane);
 
         const defs = svg.createSVGElement('defs');
@@ -130,9 +129,9 @@ export default class MetroMap implements EventTarget {
             .then(contextMenuData => {
                 this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData));
                 this.resetMapView();
-                tilePane.style.display = null;
                 util.loadIcons(this.map, [this.fromMarker, this.toMarker]);
                 util.fixFontRendering(); // just in case
+                tilePane.style.display = '';
             });
 
         Promise.all([graphPromise, hintsPromise])
@@ -331,15 +330,9 @@ export default class MetroMap implements EventTarget {
         let scaleFactor = 1;
         this.map.on('movestart', e => {
             this.map.touchZoom.disable();
-            if (L.Browser.webkit) {
-                svg.Gradients.removeAll();
-            }
         }).on('moveend', e => {
             console.log('move ended');
             this.map.touchZoom.enable();
-            if (L.Browser.webkit) {
-                svg.Gradients.addAll();
-            }
             util.fixFontRendering();
             // the secret of correct positioning is the movend transform check for corrent transform
             overlayStyle.transform = null;
@@ -386,10 +379,15 @@ export default class MetroMap implements EventTarget {
     }
 
     private resetOverlayStructure(): void {
-        const origin = document.getElementById('origin') || svg.createSVGElement('g');
-        util.removeAllChildren(origin);
+        let origin: SVGGElement = document.getElementById('origin') as any;
+        if (origin === null) {
+            origin = svg.createSVGElement('g') as SVGGElement;
+            origin.id = 'origin';
+            this.overlay.appendChild(origin);
+        } else {
+            util.removeAllChildren(origin);            
+        }
 
-        origin.id = 'origin';
         const groupIds = [
             'paths-outer',
             'paths-inner',
@@ -403,7 +401,7 @@ export default class MetroMap implements EventTarget {
             group.id = groupId;
             origin.appendChild(group);
         }
-        this.overlay.appendChild(origin);
+
         this.plate = new TextPlate(this.graph);
         origin.insertBefore(this.plate.element, document.getElementById('dummy-circles'));
     }
@@ -466,7 +464,7 @@ export default class MetroMap implements EventTarget {
     private redrawNetwork() {
         this.resetOverlayStructure();
         this.updateOverlayPositioning();
-        this.getPlatformsPositionOnOverlay();
+        this.updatePlatformsPositionOnOverlay();
         
         const zoom = this.map.getZoom();
 
@@ -491,6 +489,8 @@ export default class MetroMap implements EventTarget {
 
         const platformsInCircles = new Set<number>();
         const stationCircumpoints = new Map<po.Station, po.Platform[]>();
+        
+        // station circles
         
         const stationCirclesFrag = docFrags.get('station-circles');
         const dummyCirclesFrag = docFrags.get('dummy-circles');
@@ -540,10 +540,6 @@ export default class MetroMap implements EventTarget {
                 this.whiskers.set(platformIndex, this.makeWhiskers(platformIndex));
             }
 
-            const dummyCircles = document.getElementById('dummy-circles');
-            dummyCircles.addEventListener('mouseover', e => this.plate.show(svg.circleByDummy(e.target as Element)));
-            dummyCircles.addEventListener('mouseout', e => this.plate.hide());
-
             const circular = algorithm.findCircle(this.graph, station);
             if (circular.length > 0) {
                 for (let platformIndex of station.platforms) {
@@ -557,10 +553,17 @@ export default class MetroMap implements EventTarget {
             }
 
         }
+        
+        const dummyCircles = document.getElementById('dummy-circles');
+        dummyCircles.addEventListener('mouseover', e => this.plate.show(svg.circleByDummy(e.target as Element)));
+        dummyCircles.addEventListener('mouseout', e => this.plate.hide());
+        
+        // transfers
 
         if (zoom > 11) {
             const transfersOuterFrag = docFrags.get('transfers-outer');
             const transfersInnerFrag = docFrags.get('transfers-inner');
+            const defs = this.overlay.querySelector('defs');
             for (let transferIndex = 0; transferIndex < this.graph.transfers.length; ++transferIndex) {
                 const transfer = this.graph.transfers[transferIndex];
                 var paths: (SVGPathElement | SVGLineElement)[];
@@ -611,13 +614,14 @@ export default class MetroMap implements EventTarget {
                     const [lineId, lineType, lineNum] = routes[0].line.match(/([MEL])(\d{0,2})/);
                     return this.lineRules.get(lineType === 'L' ? lineType : lineId);
                 });
-                //const colors = [transfer.source, transfer.target].map(i => getComputedStyle(docFrags['station-circles'].childNodes[i] as Element, null).getPropertyValue('stroke'));
+                // const colors = [transfer.source, transfer.target].map(i => getComputedStyle(stationCirclesFrag.childNodes[i] as Element, null).stroke);
+                // console.log(colors);
                 const circlePortion = (circleRadius + circleBorder / 2) / pos1.distanceTo(pos2);
                 let gradient: SVGLinearGradientElement = document.getElementById('g-' + transferIndex) as any;
                 if (gradient === null) {
                     gradient = svg.Gradients.makeLinear(pos2.subtract(pos1), gradientColors, circlePortion);
                     gradient.id = 'g-' + transferIndex;
-                    this.overlay.querySelector('defs').appendChild(gradient);
+                    defs.appendChild(gradient);
                 } else {
                     svg.Gradients.setDirection(gradient, pos2.subtract(pos1));
                     svg.Gradients.setOffset(gradient, circlePortion);
@@ -629,9 +633,12 @@ export default class MetroMap implements EventTarget {
                 bind.transferToModel.call(this, transfer, paths);
             }
         }
+        
+        // paths
+        
         const pathsOuterFrag = docFrags.get('paths-outer');
         const pathsInnerFrag = docFrags.get('paths-inner');
-        for (let i = 0; i < this.graph.spans.length; ++i) {
+        for (let i = 0, numSpans = this.graph.spans.length; i < numSpans; ++i) {
             const [outer, inner] = this.makePath(i);
             pathsOuterFrag.appendChild(outer);
             if (inner) {
@@ -645,7 +652,7 @@ export default class MetroMap implements EventTarget {
         this.addBindings();
     }
 
-    private getPlatformsPositionOnOverlay() {
+    private updatePlatformsPositionOnOverlay() {
         const zoom = this.map.getZoom();
         const nw = this.bounds.getNorthWest();
         const se = this.bounds.getSouthEast();

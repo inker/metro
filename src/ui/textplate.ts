@@ -10,30 +10,19 @@ export default class TextPlate {
 
     constructor(graph: po.Graph) {
         this.graph = graph;
-        this._element = svg.createSVGElement('g') as any;
-        this._element.id = 'station-plate';
-        this._element.style.display = 'none';
-        const createElement = (tag: string, id: string, cls: string, attributes: {}): Element => {
-            const el = svg.createSVGElement(tag);
-            el.id = id;
-            el.classList.add(cls);
-            Object.keys(attributes).forEach(key => el.setAttribute(key, attributes[key]));
-            return el;
-        };
-        const pole = createElement('line', 'pole', 'plate-pole', { x1: 0, y1: 0, x2: 4, y2: 8 });
-        this._element.appendChild(pole);
-        const g = svg.createSVGElement('g');
-        const rect = createElement('rect', 'plate-box', 'plate-box', { x: 0, y: 0, filter: 'url(#shadow)' });
-        g.appendChild(rect);
-        const text = createElement('text', 'plate-text', 'plate-text', { fill: 'black', x: 0, y: 0 });
-        const tspan = svg.createSVGElement('tspan');
-        tspan.setAttribute('x', '3');
-        tspan.setAttribute('dy', '12');
-        text.appendChild(tspan);
-        text.appendChild(tspan.cloneNode(true));
-        text.appendChild(tspan.cloneNode(true));
-        g.appendChild(text);
-        this._element.appendChild(g);
+        const g = svg.createSVGElement('g') as SVGGElement;
+        g.id = 'station-plate';
+        g.style.display = 'none';
+        const foreign = svg.createSVGElement('foreignObject');
+        foreign.setAttribute('x', '0');
+        foreign.setAttribute('y', '0');
+        foreign.setAttribute('width', '100%');
+        foreign.setAttribute('height', '100%');
+        const div = document.createElement('div');
+        div.classList.add('plate-box');
+        foreign.appendChild(div);
+        g.appendChild(foreign);
+        this._element = g;
         console.log((this._element as any).childNodes);
     }
 
@@ -64,11 +53,8 @@ export default class TextPlate {
     }
 
     show(circle: SVGCircleElement) {
-        if (this.disabled) return;
-        if (this._element.style.display === 'none') {
-            this.modify(circle);
-            this._element.style.display = null;
-        }
+        if (this.disabled || this._element.style.display !== 'none') return;
+        this.modify(circle);
     }
 
     hide() {
@@ -84,9 +70,9 @@ export default class TextPlate {
         const poleSize = new L.Point(4 + iR, 8 + iR);
 
         const platform = svg.platformByCircle(circle, this.graph);
-        const ru = platform.name;
-        const fi = platform.altNames['fi'];
-        const en = platform.altNames['en'];
+
+        const ru = platform.name,
+            { fi, en } = platform.altNames;
 
         const names = !fi ? [ru] : lang.userLanguage === 'fi' ? [fi, ru] : [ru, fi];
         if (en) names.push(en);
@@ -95,48 +81,18 @@ export default class TextPlate {
     }
 
     private modifyBox(bottomRight: L.Point, lines: string[]): void {
-        const g = this._element.lastChild as SVGGElement;
-        const rect = g.firstChild as SVGRectElement;
-        const text = g.lastChild as SVGTextElement;
+        const foreign = this._element.firstChild as SVGForeignObjectElement;
+        const div = foreign.firstChild as HTMLDivElement;
 
-        const tspans = text.childNodes;
-        for (var i = 0; i < lines.length; ++i) {
-            tspans[i].textContent = lines[i];
-        }
-        while (i < tspans.length) {
-            tspans[i++].textContent = null;
-        }
+        div.innerHTML = lines.join('<br>');
+        // foreign.setAttribute('width', width.toString());
+        this._element.setAttribute('transform', `translate(${bottomRight.x}, ${bottomRight.y})`);
+        this._element.style.display = null;
+        let { width, height } = div.getBoundingClientRect();
         
-        const adjustDimensions = (y: number) => {
-            let {width, height} = text.getBBox();
-            width = Math.round(width);
-            rect.setAttribute('width', (width + 6).toString());
-            rect.setAttribute('height', (height + y).toString());
-            const tx = bottomRight.x - width,
-                ty = bottomRight.y - height;
-            this._element.setAttribute('transform', `translate(${tx}, ${ty})`);
-            text.setAttribute('transform', `translate(${width}, 0)`)
-        };
-        if (L.Browser.webkit) {
-            adjustDimensions(4);
-        } else {
-            setTimeout(adjustDimensions, 0, 4);
-        }
+        width = Math.round(width);
+        foreign.setAttribute('transform', `translate(${-~~width}, ${-~~height})`);
+        console.log(foreign.getBoundingClientRect());
+        console.log(div.getBoundingClientRect());
     }
 }
-
-//function makeForeignDiv(topLeft: L.Point, text: string): SVGElement {
-//    const foreign = createSVGElement('foreignObject');
-//    //foreign.setAttribute('requiredExtensions', 'http://www.w3.org/1999/xhtml');
-//    foreign.setAttribute('x', topLeft.x.toString());
-//    foreign.setAttribute('y', topLeft.y.toString());
-//    foreign.setAttribute('width', '200');
-//    foreign.setAttribute('height', '50');
-//    //let div = <HTMLElement>document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
-//    const div = document.createElement('div');
-//    div.innerHTML = text;
-//    div.classList.add('plate-box');
-//    div.classList.add('plate-text');
-//    foreign.appendChild(div);
-//    return <any>foreign;
-//}

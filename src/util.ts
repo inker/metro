@@ -65,22 +65,23 @@ export function resetStyle() {
     }
 }
 
-export function parseGraph(graphObj: po.Graph): po.Graph {
-    for (let platform of graphObj.platforms) {
+export function parseGraph(graph: po.Graph): po.Graph {
+    const graphPlatforms = graph.platforms;
+    for (let platform of graphPlatforms) {
         platform['spans'] = [];
     }
-    for (let i = 0, len = graphObj.spans.length; i < len; ++i) {
-        const span = graphObj.spans[i];
-        graphObj.platforms[span.source].spans.push(i);
-        graphObj.platforms[span.target].spans.push(i);
+    for (let i = 0, len = graph.spans.length; i < len; ++i) {
+        const span = graph.spans[i];
+        graphPlatforms[span.source].spans.push(i);
+        graphPlatforms[span.target].spans.push(i);
     }
-    for (let i = 0, len = graphObj.stations.length; i < len; ++i) {
-        const station = graphObj.stations[i];
+    for (let i = 0, len = graph.stations.length; i < len; ++i) {
+        const station = graph.stations[i];
         for (let p of station.platforms) {
-            graphObj.platforms[p]['station'] = i;
+            graphPlatforms[p]['station'] = i;
         }
     }
-    return graphObj;
+    return graph;
 }
 
 export namespace CSSTransform {

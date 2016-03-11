@@ -3,14 +3,15 @@ import { time } from './decorators';
 
 interface Locatable { location: L.LatLng };
 
-export function findClosestObject<T extends Locatable>(point: L.LatLng, objects: T[]): T {
+export function findClosestObject<T extends Locatable|L.LatLng>(point: L.LatLng, objects: T[]): T {
     if (objects.length < 1) {
         throw new Error('an objects array must contain at least 1 object');
     }
     let closest = objects[0];
-    let closestDistance = point.distanceTo(closest.location);
+    let closestDistance = point.distanceTo(closest['location'] || closest);
     for (let i = 1, len = objects.length; i < len; ++i) {
-        const tempDist = point.distanceTo(objects[i].location);
+        const obj = objects[i];
+        const tempDist = point.distanceTo(obj['location'] || obj);
         if (tempDist < closestDistance) {
             closest = objects[i];
             closestDistance = tempDist;
@@ -21,11 +22,10 @@ export function findClosestObject<T extends Locatable>(point: L.LatLng, objects:
 
 /** object must contain the 'location' field */
 export function findObjectsWithinRadius<T extends Locatable>(point: L.LatLng, objects: T[], radius: number, sortArray = false): T[] {
-    const arr = objects.filter(obj => point.distanceTo(obj.location) <= radius);
-    if (sortArray) {
-        arr.sort((a, b) => point.distanceTo(a.location) - point.distanceTo(b.location));
-    }
-    return arr;
+    const arr = objects
+        .map(item => ({ object: item, distance: point.distanceTo(item.location) }))
+        .filter(o => o.distance <= radius);
+    return (sortArray ? arr.sort((a, b) => a.distance - b.distance) : arr).map(o => o.object);
 }
 
 export function getCenter(points: L.LatLng[]): L.LatLng {
@@ -37,10 +37,10 @@ export function getCenter(points: L.LatLng[]): L.LatLng {
     return new L.LatLng(y / points.length, x / points.length);
 }
 
-type FitnessFunction = (current: L.LatLng) => number;
+type FitnessFunc = (current: L.LatLng) => number;
 type OnClimb = (coordinate: L.LatLng) => void;
 //@time
-export function calculateGeoMean(points: L.LatLng[], fitnessFunc: FitnessFunction, minStep = 0.00001, onClimb?: OnClimb): L.LatLng {
+export function calculateGeoMean(points: L.LatLng[], fitnessFunc: FitnessFunc, minStep = 0.00001, onClimb?: OnClimb): L.LatLng {
     let point = getCenter(points);
     let fitness = fitnessFunc(point);
     function foo() {
