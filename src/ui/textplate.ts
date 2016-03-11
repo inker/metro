@@ -62,36 +62,27 @@ export default class TextPlate {
     }
 
     private modify(circle: SVGCircleElement) {
-        const c = new L.Point(Number(circle.getAttribute('cx')), Number(circle.getAttribute('cy')));
-        const r = Number(circle.getAttribute('r'));
-        const iR = Math.trunc(r);
-
-        const pole = this._element.firstElementChild;
-        const poleSize = new L.Point(4 + iR, 8 + iR);
-
-        const platform = svg.platformByCircle(circle, this.graph);
-
-        const ru = platform.name,
-            { fi, en } = platform.altNames;
-
-        const names = !fi ? [ru] : lang.userLanguage === 'fi' ? [fi, ru] : [ru, fi];
+        const c = new L.Point(+circle.getAttribute('cx'), +circle.getAttribute('cy')),
+            iR = ~~circle.getAttribute('r');
+            
+        const offset = new L.Point(0 + iR, 4 + iR),
+            bottomRight = c.subtract(offset);
+            
+        const platform = svg.platformByCircle(circle, this.graph),
+            ru = platform.name,
+            { fi, en } = platform.altNames,
+            names = !fi ? [ru] : lang.userLanguage === 'fi' ? [fi, ru] : [ru, fi];
         if (en) names.push(en);
 
-        this.modifyBox(c.subtract(poleSize), names);
-    }
-
-    private modifyBox(bottomRight: L.Point, lines: string[]): void {
         const foreign = this._element.firstChild as SVGForeignObjectElement;
         const div = foreign.firstChild as HTMLDivElement;
 
-        div.innerHTML = lines.join('<br>');
-        // foreign.setAttribute('width', width.toString());
+        div.innerHTML = names.join('<br>');
         this._element.setAttribute('transform', `translate(${bottomRight.x}, ${bottomRight.y})`);
         this._element.style.display = null;
-        let { width, height } = div.getBoundingClientRect();
+        const { width, height } = div.getBoundingClientRect();
         
-        width = Math.round(width);
-        foreign.setAttribute('transform', `translate(${-~~width}, ${-~~height})`);
+        foreign.setAttribute('transform', `translate(${-width}, ${-height})`);
         console.log(foreign.getBoundingClientRect());
         console.log(div.getBoundingClientRect());
     }

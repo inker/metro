@@ -1,10 +1,9 @@
 .plate-box {
-    color: black;
+    color: #000000;
     font-size: 0.9em;
-    /*font-family: "Corbel Bold", Ubuntu, Cambay, sans-serif;*/
     text-anchor: end;
     text-align: right;
-    font-family: Corbel;
+    font-family: Corbel, Candara, Calibri, Ubuntu, sans-serif;
     font-weight: bold;
     opacity: 1;
     -webkit-user-select: none;

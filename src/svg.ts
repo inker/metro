@@ -226,9 +226,20 @@ export namespace Gradients {
     export function makeLinear(vector: L.Point, colors: string[], offset = 0): SVGLinearGradientElement {
         const gradient = createSVGElement('linearGradient') as SVGLinearGradientElement;
         setDirection(gradient, vector);
-        (gradient as any).innerHTML = `<stop offset="${offset}" style="stop-color:${colors[0]}" />
-        <stop offset="${1 - offset}" style="stop-color:${colors[1]}" />`;
-        return gradient as any;
+        if ('innerHTML' in gradient) {
+            (gradient as any).innerHTML = `<stop offset="${offset}" style="stop-color:${colors[0]}" />
+            <stop offset="${1 - offset}" style="stop-color:${colors[1]}" />`;
+            return gradient;
+        }
+        const from = createSVGElement('stop') as SVGStopElement;
+        from.setAttribute('offset', offset.toString());
+        from.style.stopColor = colors[0];
+        const to = createSVGElement('stop') as SVGStopElement;
+        to.setAttribute('offset', (1 - offset).toString());
+        to.style.stopColor = colors[1];
+        gradient.appendChild(from);
+        gradient.appendChild(to);
+        return gradient;
     }
 
     export function setDirection(gradient: Element, vector: L.Point) {
@@ -240,8 +251,8 @@ export namespace Gradients {
     }
 
     export function setOffset(gradient: Element, offset: number) {
-        gradient.firstElementChild.setAttribute('offset', offset.toString());
-        gradient.lastElementChild.setAttribute('offset', (1 - offset).toString());
+        (gradient.firstChild as SVGStopElement).setAttribute('offset', offset.toString());
+        (gradient.lastChild as SVGStopElement).setAttribute('offset', (1 - offset).toString());
     }
 }
 

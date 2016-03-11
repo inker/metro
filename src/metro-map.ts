@@ -486,6 +486,8 @@ export default class MetroMap implements EventTarget {
             docFrags.set(id, document.createDocumentFragment());
             document.getElementById(id).style.strokeWidth = strokeWidths[id] + 'px';
         }
+        
+        (this.plate.element.firstChild.firstChild as HTMLElement).style.fontSize = (zoom - 2) * 0.1 + 'em';
 
         const platformsInCircles = new Set<number>();
         const stationCircumpoints = new Map<po.Station, po.Platform[]>();
