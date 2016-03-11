@@ -130,6 +130,70 @@ export function platformByCircle(circle: Element, graph: po.Graph) {
     return graph.platforms[+circle.id.slice(2)];
 }
 
+
+
+export namespace Scale {
+    export function scaleCircle(circle: SVGCircleElement, scaleFactor: number, asAttribute = false) {
+        const t = scaleFactor - 1,
+            tx = -circle.getAttribute('cx') * t,
+            ty = -circle.getAttribute('cy') * t;
+        // el.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scaleFactor}, ${scaleFactor})`;
+        const matrix = `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${tx}, ${ty})`;
+        if (asAttribute) {
+            circle.setAttribute('transform', matrix);
+        } else {
+            circle.style.transform = matrix;
+        }
+    }
+
+    export function scaleOverlayElement(el: (SVGPathElement|SVGLineElement)&SVGStylable, scaleFactor: number) {
+        const rect = el.getBBox();
+        const t = scaleFactor - 1,
+            tx = -(rect.x + rect.width * 0.5) * t,
+            ty = -(rect.y + rect.height * 0.5) * t;
+        el.style.transform = `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${tx}, ${ty})`;  
+    }
+     
+    const initialCircles = new Set<SVGCircleElement>();
+    const initialTransfers = new Set<SVGPathElement|SVGLineElement>();
+    const scaleFactor = 1.25;
+    export function scaleStation(graphPlatforms: po.Platform[], station: po.Station, graphTransfers?: po.Transfer[]) {
+        const transferOuterStrokeWidth = parseFloat(document.getElementById('transfers-outer').style.strokeWidth),
+            transferInnerStrokeWidth = parseFloat(document.getElementById('transfers-inner').style.strokeWidth)
+        for (let p of station.platforms) {
+            const platform = graphPlatforms[p];
+            const circle = document.getElementById('p-' + p) as any;
+            initialCircles.add(circle);
+            scaleCircle(circle, scaleFactor, true);
+            if (graphTransfers === undefined) continue;
+            for (let i = 0; i < graphTransfers.length; ++i) {
+                const tr = graphTransfers[i];
+                if (tr.source === p || tr.target === p) {
+                    const outer = document.getElementById('ot-' + i) as any;
+                    const inner = document.getElementById('it-' + i) as any;
+                    initialTransfers.add(outer);
+                    initialTransfers.add(inner);
+                    outer.style.strokeWidth = transferOuterStrokeWidth * scaleFactor + 'px';
+                    inner.style.strokeWidth = transferInnerStrokeWidth * scaleFactor + 'px';
+                }
+            }
+        }    
+    }
+    
+    export function unscaleAll() {
+        initialCircles.forEach(circle => circle.removeAttribute('transform'));
+        initialTransfers.forEach(tr => tr.style.strokeWidth = null);
+        initialTransfers.clear();
+        initialCircles.clear(); 
+        // setTimeout(() => {
+        //     initialCircles.forEach(circle => circle.style.transform = null);
+               
+        // }, 1000);  
+    }
+}
+
+
+
 export namespace SVGDataset {
     export function get(el: Element): any {
         // for webkit-based browsers
@@ -342,16 +406,13 @@ export namespace Animation {
     export function pulsateCircle(circle: SVGCircleElement, scaleFactor: number, duration: number) {
         circle.getBoundingClientRect();
         circle.style.transition = `transform ${duration / 2}ms linear`;
-        const t = scaleFactor - 1,
-            tx = -circle.getAttribute('cx') * t,
-            ty = -circle.getAttribute('cy') * t;
-        // circle.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scaleFactor}, ${scaleFactor})`;
-        circle.style.transform = `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${tx}, ${ty})`;
+        Scale.scaleCircle(circle, scaleFactor);
         circle.addEventListener('transitionend', function foo(e) {
             this.removeEventListener('transitionend', foo);
             this.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
             this.addEventListener('transitionend', function bar(e) {
                 this.removeEventListener('transitionend', bar);
+                this.style.transition = null;
                 this.style.transform = null;
             });
         });

@@ -555,10 +555,32 @@ export default class MetroMap implements EventTarget {
             }
 
         }
-        
         const dummyCircles = document.getElementById('dummy-circles');
-        dummyCircles.addEventListener('mouseover', e => this.plate.show(svg.circleByDummy(e.target as Element)));
-        dummyCircles.addEventListener('mouseout', e => this.plate.hide());
+        dummyCircles.addEventListener('mouseover', e => {
+            const dummy = e.target as SVGCircleElement;
+            const platform = this.graph.platforms[+dummy.id.slice(2)];
+            const station = this.graph.stations[platform.station];
+            svg.Scale.scaleStation(this.graph.platforms, station, zoom < 12 ? undefined : this.graph.transfers);    
+            this.plate.show(svg.circleByDummy(dummy));
+        });
+        function onOut(e: MouseEvent) {
+            this.plate.hide();
+            svg.Scale.unscaleAll();
+        }
+        dummyCircles.addEventListener('mouseout', onOut.bind(this));
+        function onTransferOver(e: MouseEvent) {
+            const tr = e.target as SVGPathElement|SVGLineElement;
+            const transfer = this.graph.transfers[+tr.id.slice(3)];
+            const station = this.graph.stations[this.graph.platforms[transfer.source].station];
+            svg.Scale.scaleStation(this.graph.platforms, station, zoom < 12 ? undefined : this.graph.transfers);    
+            this.plate.show(document.getElementById('p-' + transfer.source) as any);             
+        }
+        const transfersOuter = document.getElementById('transfers-outer'),
+            transfersInner = document.getElementById('transfers-inner');
+        transfersOuter.addEventListener('mouseover', onTransferOver.bind(this));
+        transfersInner.addEventListener('mouseover', onTransferOver.bind(this));
+        transfersOuter.addEventListener('mouseout', onOut.bind(this));
+        transfersInner.addEventListener('mouseout', onOut.bind(this));
         
         // transfers
 
