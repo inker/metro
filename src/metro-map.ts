@@ -555,25 +555,23 @@ export default class MetroMap implements EventTarget {
             }
 
         }
+        const onOut = (e: MouseEvent) => {
+            this.plate.hide();
+            svg.Scale.unscaleAll();
+        }
         const dummyCircles = document.getElementById('dummy-circles');
         dummyCircles.addEventListener('mouseover', e => {
             const dummy = e.target as SVGCircleElement;
             const platform = this.graph.platforms[+dummy.id.slice(2)];
             const station = this.graph.stations[platform.station];
-            svg.Scale.scaleStation(this.graph.platforms, station, zoom < 12 ? undefined : this.graph.transfers);    
-            this.plate.show(svg.circleByDummy(dummy));
+            this.highlightStation(station);
         });
-        function onOut(e: MouseEvent) {
-            this.plate.hide();
-            svg.Scale.unscaleAll();
-        }
         dummyCircles.addEventListener('mouseout', onOut.bind(this));
-        function onTransferOver(e: MouseEvent) {
+        const onTransferOver = (e: MouseEvent) => {
             const tr = e.target as SVGPathElement|SVGLineElement;
             const transfer = this.graph.transfers[+tr.id.slice(3)];
             const station = this.graph.stations[this.graph.platforms[transfer.source].station];
-            svg.Scale.scaleStation(this.graph.platforms, station, zoom < 12 ? undefined : this.graph.transfers);    
-            this.plate.show(document.getElementById('p-' + transfer.source) as any);             
+            this.highlightStation(station);         
         }
         const transfersOuter = document.getElementById('transfers-outer'),
             transfersInner = document.getElementById('transfers-inner');
@@ -804,6 +802,13 @@ export default class MetroMap implements EventTarget {
         }
         bezier.classList.add(lineType);
         return [bezier];
+    }
+    
+    private highlightStation(station: po.Station) {
+        svg.Scale.scaleStation(this.graph.platforms, station, this.map.getZoom() < 12 ? undefined : this.graph.transfers); 
+        const platforms = station.platforms.map(pi => this.graph.platforms[pi]);
+        const topmost = platforms.reduce((prev, cur) => prev.location.lat < cur.location.lat ? cur : prev);
+        this.plate.show(document.getElementById('p-' + this.graph.platforms.indexOf(topmost)) as any);         
     }
     
     private visualizeShortestRoute(obj: L.LatLng[]|algorithm.ShortestRouteObject, animate = true) {
