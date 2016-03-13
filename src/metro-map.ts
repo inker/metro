@@ -814,19 +814,25 @@ export default class MetroMap implements EventTarget {
     }
     
     private highlightStation(station: po.Station) {
-        const stationPlatforms = station.platforms;
-        const scaleFactor = 1.25;
+        const scaleFactor = 1.25,
+            graphPlatforms = this.graph.platforms,
+            stationPlatforms = station.platforms;
+        let circle: SVGCircleElement,
+            platform: po.Platform;
         if (stationPlatforms.length === 1) {
-            return svg.Scale.scaleCircle(svg.circleByIndex(stationPlatforms[0]), scaleFactor, true);
-        }
-        const graphPlatforms = this.graph.platforms;
-        const transfers = this.map.getZoom() < 12 ? undefined : this.graph.transfers;
-        svg.Scale.scaleStation(graphPlatforms, station, scaleFactor, transfers);
+            circle = svg.circleByIndex(stationPlatforms[0]);
+            svg.Scale.scaleCircle(circle, scaleFactor, true);
+            platform = graphPlatforms[stationPlatforms[0]];
+        } else {
+            const transfers = this.map.getZoom() < 12 ? undefined : this.graph.transfers;
+            svg.Scale.scaleStation(graphPlatforms, station, scaleFactor, transfers);
 
-        const latByIndex = (i: number) => graphPlatforms[i].location.lat;
-        const topmostIndex = stationPlatforms.reduce((prev, cur) => latByIndex(prev) < latByIndex(cur) ? cur : prev);
-        const circle = svg.circleByIndex(topmostIndex);
-        this.plate.show(svg.circleOffset(circle), util.getPlatformNames(graphPlatforms[topmostIndex]));       
+            const latByIndex = (i: number) => graphPlatforms[i].location.lat;
+            const topmostIndex = stationPlatforms.reduce((prev, cur) => latByIndex(prev) < latByIndex(cur) ? cur : prev);
+            circle = svg.circleByIndex(topmostIndex);
+            platform = graphPlatforms[topmostIndex];
+        }
+        this.plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));       
     }
     
     private visualizeShortestRoute(obj: L.LatLng[]|algorithm.ShortestRouteObject, animate = true) {
