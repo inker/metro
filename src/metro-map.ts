@@ -814,15 +814,18 @@ export default class MetroMap implements EventTarget {
     }
     
     private highlightStation(station: po.Station) {
-        const graphPlatforms = this.graph.platforms;
-        svg.Scale.scaleStation(graphPlatforms, station, this.map.getZoom() < 12 ? undefined : this.graph.transfers);
         const stationPlatforms = station.platforms;
-        let topmostIndex = stationPlatforms[0];
-        if (stationPlatforms.length > 1) {
-            const latByIndex = (i: number) => graphPlatforms[i].location.lat;
-            topmostIndex = stationPlatforms.reduce((prev, cur) => latByIndex(prev) < latByIndex(cur) ? cur : prev);
+        const scaleFactor = 1.25;
+        if (stationPlatforms.length === 1) {
+            return svg.Scale.scaleCircle(svg.circleByIndex(stationPlatforms[0]), scaleFactor, true);
         }
-        const circle: SVGCircleElement = document.getElementById('p-' + topmostIndex) as any;
+        const graphPlatforms = this.graph.platforms;
+        const transfers = this.map.getZoom() < 12 ? undefined : this.graph.transfers;
+        svg.Scale.scaleStation(graphPlatforms, station, scaleFactor, transfers);
+
+        const latByIndex = (i: number) => graphPlatforms[i].location.lat;
+        const topmostIndex = stationPlatforms.reduce((prev, cur) => latByIndex(prev) < latByIndex(cur) ? cur : prev);
+        const circle = svg.circleByIndex(topmostIndex);
         this.plate.show(svg.circleOffset(circle), util.getPlatformNames(graphPlatforms[topmostIndex]));       
     }
     

@@ -122,6 +122,10 @@ export function makeTransfer(start: L.Point, end: L.Point): SVGLineElement[] {
     });
 }
 
+export function circleByIndex(index: number): SVGCircleElement {
+    return document.getElementById('p-' + index) as any;
+}
+
 export function circleByDummy(dummyCircle: Element): SVGCircleElement {
     return document.getElementById('p-' + dummyCircle.id.slice(2)) as any;
 }
@@ -143,6 +147,7 @@ export namespace Scale {
             circle.style.transform = `scale(${scaleFactor})`;
             return;
         }
+        initialCircles.add(circle);
         const t = scaleFactor - 1,
             tx = -circle.getAttribute('cx') * t,
             ty = -circle.getAttribute('cy') * t;
@@ -151,16 +156,14 @@ export namespace Scale {
      
     const initialCircles = new Set<SVGCircleElement>();
     const initialTransfers = new Set<SVGPathElement|SVGLineElement>();
-    const scaleFactor = 1.25;
-    export function scaleStation(graphPlatforms: po.Platform[], station: po.Station, graphTransfers?: po.Transfer[]) {
+    export function scaleStation(graphPlatforms: po.Platform[], station: po.Station, scaleFactor: number, graphTransfers?: po.Transfer[]) {
         const transferOuterStrokeWidth = parseFloat(document.getElementById('transfers-outer').style.strokeWidth),
             transferInnerStrokeWidth = parseFloat(document.getElementById('transfers-inner').style.strokeWidth)
         for (let p of station.platforms) {
             const platform = graphPlatforms[p];
             const circle = document.getElementById('p-' + p) as any;
-            initialCircles.add(circle);
             scaleCircle(circle, scaleFactor, true);
-            if (graphTransfers === undefined) continue;
+            if (graphTransfers === undefined || station.platforms.length < 2) continue;
             for (let i = 0; i < graphTransfers.length; ++i) {
                 const tr = graphTransfers[i];
                 if (tr.source === p || tr.target === p) {
