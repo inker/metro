@@ -60,6 +60,10 @@ a:hover {
     z-index: 5;
 }
 
+circle {
+    transform-origin: 50% 50%;
+}
+
 .measure-line {
     stroke: #ff0000;
     stroke-width: 4px;

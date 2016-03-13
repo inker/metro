@@ -1,7 +1,7 @@
 import MetroMap from '../metro-map';
-import { downloadAsFile } from '../util';
 import * as svg from '../svg';
 import * as lang from '../lang';
+import * as util from '../util';
 
 export default class MapEditor {
     private metroMap: MetroMap;
@@ -56,7 +56,7 @@ export default class MapEditor {
     private saveMapClick(event: MouseEvent) {
         const graph = this.metroMap.getGraph();
         const content = JSON.stringify(graph, (key, val) => key.startsWith('_') ? undefined : val);
-        downloadAsFile('graph.json', content);
+        util.downloadAsFile('graph.json', content);
         this.editMode = false;
     }
 
@@ -86,7 +86,8 @@ export default class MapEditor {
                 map.once('mouseup', (le: L.LeafletMouseEvent) => {
                     map.off('mousemove').dragging.enable();
                     plate.disabled = false;
-                    plate.show(svg.circleByDummy(le.originalEvent.target as any));
+                    const circle: SVGCircleElement = le.originalEvent.target as any;
+                    plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));
                 });
             } else if (de.button === 1) {
                 //

@@ -84,6 +84,14 @@ export function parseGraph(graph: po.Graph): po.Graph {
     return graph;
 }
 
+export function getPlatformNames(platform: po.Platform): string[] {
+    const ru = platform.name,
+        { fi, en } = platform.altNames,
+        names = !fi ? [ru] : lang.userLanguage === 'fi' ? [fi, ru] : [ru, fi];
+    if (en) names.push(en);
+    return names;
+}
+
 export namespace CSSTransform {
     export function toPoint(val: string): L.Point {
         if (val.length == 0) return new L.Point(0, 0);

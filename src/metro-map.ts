@@ -140,6 +140,7 @@ export default class MetroMap implements EventTarget {
     }
 
     addEventListener(type: string, listener: EventListener) { }
+    removeEventListener(type: string, listener: EventListener) { }
 
     dispatchEvent(event: Event): boolean {
         console.log('event target as seen from dispatcher', event.target);
@@ -249,8 +250,9 @@ export default class MetroMap implements EventTarget {
             }
             case 'platformrename': {
                 const me = event as MouseEvent;
-                const platform = svg.platformByCircle(me.relatedTarget as any, this.graph);
-                this.plate.show(svg.circleByDummy(me.relatedTarget as any));
+                const circle = me.relatedTarget as SVGCircleElement;
+                const platform = svg.platformByCircle(circle, this.graph);
+                this.plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));
                 util.platformRenameDialog(this.graph, platform);
                 break;
             }
@@ -292,8 +294,6 @@ export default class MetroMap implements EventTarget {
         return false;
     }
 
-    removeEventListener(type: string, listener: EventListener) { }
-
     private handleMenuFromTo(e: MouseEvent) {
         const coors = util.mouseToLatLng(this.map, e);
         const marker = e.type === 'routefrom' ? this.fromMarker : this.toMarker;
@@ -328,11 +328,7 @@ export default class MetroMap implements EventTarget {
         const mapPane = this.map.getPanes().mapPane;
         const overlayStyle = this.overlay.style;
         let scaleFactor = 1;
-        this.map.on('movestart', e => {
-            this.map.touchZoom.disable();
-        }).on('moveend', e => {
-            console.log('move ended');
-            this.map.touchZoom.enable();
+        this.map.on('moveend', e => {
             util.fixFontRendering();
             // the secret of correct positioning is the movend transform check for corrent transform
             overlayStyle.transform = null;
@@ -397,9 +393,12 @@ export default class MetroMap implements EventTarget {
             'dummy-circles'
         ];
         for (let groupId of groupIds) {
-            const group = svg.createSVGElement('g');
-            group.id = groupId;
-            origin.appendChild(group);
+            const g = svg.createSVGElement('g');
+            g.id = groupId;
+            if (groupId.startsWith('transfers-')) {
+                g.setAttribute('fill', 'none');
+            }
+            origin.appendChild(g);
         }
 
         this.plate = new TextPlate(this.graph);
@@ -555,30 +554,6 @@ export default class MetroMap implements EventTarget {
             }
 
         }
-        const onOut = (e: MouseEvent) => {
-            this.plate.hide();
-            svg.Scale.unscaleAll();
-        }
-        const dummyCircles = document.getElementById('dummy-circles');
-        dummyCircles.addEventListener('mouseover', e => {
-            const dummy = e.target as SVGCircleElement;
-            const platform = this.graph.platforms[+dummy.id.slice(2)];
-            const station = this.graph.stations[platform.station];
-            this.highlightStation(station);
-        });
-        dummyCircles.addEventListener('mouseout', onOut.bind(this));
-        const onTransferOver = (e: MouseEvent) => {
-            const tr = e.target as SVGPathElement|SVGLineElement;
-            const transfer = this.graph.transfers[+tr.id.slice(3)];
-            const station = this.graph.stations[this.graph.platforms[transfer.source].station];
-            this.highlightStation(station);         
-        }
-        const transfersOuter = document.getElementById('transfers-outer'),
-            transfersInner = document.getElementById('transfers-inner');
-        transfersOuter.addEventListener('mouseover', onTransferOver.bind(this));
-        transfersInner.addEventListener('mouseover', onTransferOver.bind(this));
-        transfersOuter.addEventListener('mouseout', onOut.bind(this));
-        transfersInner.addEventListener('mouseout', onOut.bind(this));
         
         // transfers
 
@@ -588,46 +563,13 @@ export default class MetroMap implements EventTarget {
             const defs = this.overlay.querySelector('defs');
             for (let transferIndex = 0; transferIndex < this.graph.transfers.length; ++transferIndex) {
                 const transfer = this.graph.transfers[transferIndex];
-                var paths: (SVGPathElement | SVGLineElement)[];
-                var pl1 = this.graph.platforms[transfer.source],
+                const pl1 = this.graph.platforms[transfer.source],
                     pl2 = this.graph.platforms[transfer.target];
-                var pos1 = this.platformsOnSVG.get(transfer.source),
+                const pos1 = this.platformsOnSVG.get(transfer.source),
                     pos2 = this.platformsOnSVG.get(transfer.target);
-                if (platformsInCircles.has(transfer.source) && platformsInCircles.has(transfer.target)) {
-                    const cluster = stationCircumpoints.get(this.graph.stations[pl1.station]);
-                    const makeArc = (third: po.Platform) => {
-                        const thirdPos = this.platformsOnSVG.get(this.graph.platforms.indexOf(third));
-                        paths = svg.makeTransferArc(pos1, pos2, thirdPos);
-                    }
-                    if (cluster.length === 3) {
-                        makeArc(cluster.find(p => p !== pl1 && p !== pl2));
-                    } else if (pl1 === cluster[2] && pl2 === cluster[3] || pl1 === cluster[3] && pl2 === cluster[2]) {
-                        paths = svg.makeTransfer(pos1, pos2);
-                    } else {
-                        var s = transfer.source;
-                        const pl1neighbors = this.graph.transfers.filter(t => t.source === s || t.target === s);
-                        const pl1deg = pl1neighbors.length;
-                        var [a, b] = pl1deg === 2 ? [pl1, pl2] : [pl2, pl1];
-                        const rarr: number[] = [];
-                        let thirdIndex: number;
-                        for (let t of this.graph.transfers) {
-                            if (t === transfer) continue;
-                            if (t.source === transfer.source || t.source === transfer.target) rarr.push(t.target);
-                            else if (t.target === transfer.source || t.target === transfer.target) rarr.push(t.source);
-                        }
-                        if (rarr.length === 2) {
-                            if (rarr[0] !== rarr[1]) throw Error("FFFFUC");
-                            thirdIndex = rarr[0];
-                        } else if (rarr.length === 3) {
-                            thirdIndex = rarr.sort()[1];
-                        } else {
-                            throw new Error("111FUUFF");
-                        }
-                        makeArc(this.graph.platforms[thirdIndex]);
-                    }
-                } else {
-                    paths = svg.makeTransfer(pos1, pos2);
-                }
+                const paths = platformsInCircles.has(transfer.source) && platformsInCircles.has(transfer.target)
+                    ? this.makeTransferArc(transfer, stationCircumpoints.get(this.graph.stations[pl1.station]))
+                    : svg.makeTransfer(pos1, pos2);
                 paths[0].id = 'ot-' + transferIndex;
                 paths[1].id = 'it-' + transferIndex;
                 const gradientColors: string[] = [pl1, pl2].map(p => {
@@ -640,12 +582,13 @@ export default class MetroMap implements EventTarget {
                 // console.log(colors);
                 const circlePortion = (circleRadius + circleBorder / 2) / pos1.distanceTo(pos2);
                 let gradient: SVGLinearGradientElement = document.getElementById('g-' + transferIndex) as any;
+                const gradientVector = pos2.subtract(pos1);
                 if (gradient === null) {
-                    gradient = svg.Gradients.makeLinear(pos2.subtract(pos1), gradientColors, circlePortion);
+                    gradient = svg.Gradients.makeLinear(gradientVector, gradientColors, circlePortion);
                     gradient.id = 'g-' + transferIndex;
                     defs.appendChild(gradient);
                 } else {
-                    svg.Gradients.setDirection(gradient, pos2.subtract(pos1));
+                    svg.Gradients.setDirection(gradient, gradientVector);
                     svg.Gradients.setOffset(gradient, circlePortion);
                 }
 
@@ -671,6 +614,8 @@ export default class MetroMap implements EventTarget {
         }
         
         docFrags.forEach((val, key) => document.getElementById(key).appendChild(val));
+        
+        this.addStationListeners();
         this.addBindings();
     }
 
@@ -777,6 +722,43 @@ export default class MetroMap implements EventTarget {
         return wh.set(platform.spans[0], midPts[0].add(diff))
             .set(platform.spans[1], midPts[1].add(diff));
     }
+    
+    private makeTransferArc(transfer: po.Transfer, cluster: po.Platform[]): (SVGLineElement|SVGPathElement)[] {
+        const graphPlatforms = this.graph.platforms;
+        var pl1 = graphPlatforms[transfer.source],
+            pl2 = graphPlatforms[transfer.target];
+        const pos1 = this.platformsOnSVG.get(transfer.source),
+            pos2 = this.platformsOnSVG.get(transfer.target);
+        const makeArc = (thirdIndex: number) => {
+            const thirdPos = this.platformsOnSVG.get(thirdIndex);
+            return svg.makeTransferArc(pos1, pos2, thirdPos);
+        }
+        if (cluster.length === 3) {
+            const third = cluster.find(p => p !== pl1 && p !== pl2);
+            return makeArc(graphPlatforms.indexOf(third));
+        } else if (pl1 === cluster[2] && pl2 === cluster[3] || pl1 === cluster[3] && pl2 === cluster[2]) {
+            return svg.makeTransfer(pos1, pos2);
+        }
+        var s = transfer.source;
+        const pl1neighbors = this.graph.transfers.filter(t => t.source === s || t.target === s);
+        const pl1deg = pl1neighbors.length;
+        const rarr: number[] = [];
+        for (let t of this.graph.transfers) {
+            if (t === transfer) continue;
+            if (t.source === transfer.source || t.source === transfer.target) rarr.push(t.target);
+            else if (t.target === transfer.source || t.target === transfer.target) rarr.push(t.source);
+        }
+        let thirdIndex: number;
+        if (rarr.length === 2) {
+            if (rarr[0] !== rarr[1]) throw Error("FFFFUC");
+            thirdIndex = rarr[0];
+        } else if (rarr.length === 3) {
+            thirdIndex = rarr.sort()[1];
+        } else {
+            throw new Error("111FUUFF");
+        }
+        return makeArc(thirdIndex);  
+    }
 
     private makePath(spanIndex: number) {
         const span = this.graph.spans[spanIndex];
@@ -804,11 +786,44 @@ export default class MetroMap implements EventTarget {
         return [bezier];
     }
     
+    private addStationListeners() {
+        const onOut = (e: MouseEvent) => {
+            this.plate.hide();
+            svg.Scale.unscaleAll();
+        }
+        const dummyCircles = document.getElementById('dummy-circles');
+        dummyCircles.addEventListener('mouseover', e => {
+            const dummy = e.target as SVGCircleElement;
+            const platform = this.graph.platforms[+dummy.id.slice(2)];
+            const station = this.graph.stations[platform.station];
+            this.highlightStation(station);
+        });
+        dummyCircles.addEventListener('mouseout', onOut.bind(this));
+        const onTransferOver = (e: MouseEvent) => {
+            const tr = e.target as SVGPathElement|SVGLineElement;
+            const transfer = this.graph.transfers[+tr.id.slice(3)];
+            const station = this.graph.stations[this.graph.platforms[transfer.source].station];
+            this.highlightStation(station);         
+        }
+        const transfersOuter = document.getElementById('transfers-outer'),
+            transfersInner = document.getElementById('transfers-inner');
+        transfersOuter.addEventListener('mouseover', onTransferOver.bind(this));
+        transfersInner.addEventListener('mouseover', onTransferOver.bind(this));
+        transfersOuter.addEventListener('mouseout', onOut.bind(this));
+        transfersInner.addEventListener('mouseout', onOut.bind(this));        
+    }
+    
     private highlightStation(station: po.Station) {
-        svg.Scale.scaleStation(this.graph.platforms, station, this.map.getZoom() < 12 ? undefined : this.graph.transfers); 
-        const platforms = station.platforms.map(pi => this.graph.platforms[pi]);
-        const topmost = platforms.reduce((prev, cur) => prev.location.lat < cur.location.lat ? cur : prev);
-        this.plate.show(document.getElementById('p-' + this.graph.platforms.indexOf(topmost)) as any);         
+        const graphPlatforms = this.graph.platforms;
+        svg.Scale.scaleStation(graphPlatforms, station, this.map.getZoom() < 12 ? undefined : this.graph.transfers);
+        const stationPlatforms = station.platforms;
+        let topmostIndex = stationPlatforms[0];
+        if (stationPlatforms.length > 1) {
+            const latByIndex = (i: number) => graphPlatforms[i].location.lat;
+            topmostIndex = stationPlatforms.reduce((prev, cur) => latByIndex(prev) < latByIndex(cur) ? cur : prev);
+        }
+        const circle: SVGCircleElement = document.getElementById('p-' + topmostIndex) as any;
+        this.plate.show(svg.circleOffset(circle), util.getPlatformNames(graphPlatforms[topmostIndex]));       
     }
     
     private visualizeShortestRoute(obj: L.LatLng[]|algorithm.ShortestRouteObject, animate = true) {

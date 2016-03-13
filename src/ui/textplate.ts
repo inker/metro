@@ -1,6 +1,8 @@
 import * as svg from '../svg';
 import * as po from '../plain-objects';
 import * as lang from '../lang';
+import * as util from '../util';
+import * as L from 'leaflet';
 
 export default class TextPlate {
     private _element: SVGGElement;
@@ -52,27 +54,8 @@ export default class TextPlate {
         }
     }
 
-    show(circle: SVGCircleElement) {
+    show(bottomRight: L.Point, names: string[]) {
         if (this.disabled || this._element.style.display !== 'none') return;
-        this.modify(circle);
-    }
-
-    hide() {
-        this._element.style.display = 'none';
-    }
-
-    private modify(circle: SVGCircleElement) {
-        const c = new L.Point(+circle.getAttribute('cx'), +circle.getAttribute('cy')),
-            iR = ~~circle.getAttribute('r');
-            
-        const offset = new L.Point(0 + iR, 4 + iR),
-            bottomRight = c.subtract(offset);
-            
-        const platform = svg.platformByCircle(circle, this.graph),
-            ru = platform.name,
-            { fi, en } = platform.altNames,
-            names = !fi ? [ru] : lang.userLanguage === 'fi' ? [fi, ru] : [ru, fi];
-        if (en) names.push(en);
 
         const foreign = this._element.firstChild as SVGForeignObjectElement;
         const div = foreign.firstChild as HTMLDivElement;
@@ -85,5 +68,9 @@ export default class TextPlate {
         foreign.setAttribute('transform', `translate(${-width}, ${-height})`);
         console.log(foreign.getBoundingClientRect());
         console.log(div.getBoundingClientRect());
+    }
+
+    hide() {
+        this._element.style.display = 'none';
     }
 }

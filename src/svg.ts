@@ -130,28 +130,23 @@ export function platformByCircle(circle: Element, graph: po.Graph) {
     return graph.platforms[+circle.id.slice(2)];
 }
 
-
+export function circleOffset(circle: SVGCircleElement): L.Point {
+    const c = new L.Point(+circle.getAttribute('cx'), +circle.getAttribute('cy')),
+        iR = ~~circle.getAttribute('r'),
+        offset = new L.Point(0 + iR, 4 + iR);
+    return c.subtract(offset);
+}
 
 export namespace Scale {
     export function scaleCircle(circle: SVGCircleElement, scaleFactor: number, asAttribute = false) {
+        if (!asAttribute) {
+            circle.style.transform = `scale(${scaleFactor})`;
+            return;
+        }
         const t = scaleFactor - 1,
             tx = -circle.getAttribute('cx') * t,
             ty = -circle.getAttribute('cy') * t;
-        // el.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scaleFactor}, ${scaleFactor})`;
-        const matrix = `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${tx}, ${ty})`;
-        if (asAttribute) {
-            circle.setAttribute('transform', matrix);
-        } else {
-            circle.style.transform = matrix;
-        }
-    }
-
-    export function scaleOverlayElement(el: (SVGPathElement|SVGLineElement)&SVGStylable, scaleFactor: number) {
-        const rect = el.getBBox();
-        const t = scaleFactor - 1,
-            tx = -(rect.x + rect.width * 0.5) * t,
-            ty = -(rect.y + rect.height * 0.5) * t;
-        el.style.transform = `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${tx}, ${ty})`;  
+        circle.setAttribute('transform', `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${tx}, ${ty})`);
     }
      
     const initialCircles = new Set<SVGCircleElement>();
@@ -185,10 +180,6 @@ export namespace Scale {
         initialTransfers.forEach(tr => tr.style.strokeWidth = null);
         initialTransfers.clear();
         initialCircles.clear(); 
-        // setTimeout(() => {
-        //     initialCircles.forEach(circle => circle.style.transform = null);
-               
-        // }, 1000);  
     }
 }
 
@@ -409,7 +400,7 @@ export namespace Animation {
         Scale.scaleCircle(circle, scaleFactor);
         circle.addEventListener('transitionend', function foo(e) {
             this.removeEventListener('transitionend', foo);
-            this.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
+            this.style.transform = 'scale(1)';
             this.addEventListener('transitionend', function bar(e) {
                 this.removeEventListener('transitionend', bar);
                 this.style.transition = null;
