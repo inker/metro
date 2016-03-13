@@ -315,7 +315,7 @@ export namespace Gradients {
 }
 
 export namespace Animation {
-    
+
     let animationsAllowed = true;
     let currentAnimation: Promise<boolean> = null;
     
@@ -328,13 +328,14 @@ export namespace Animation {
     }
     
     export function animateRoute(graph: po.Graph, platforms: number[], edges: string[]) {
+        const pulsate = L.Browser.webkit && !L.Browser.mobile;
         currentAnimation = new Promise<boolean>((resolve, reject) => (function animateSpan(i: number) {
             if (!animationsAllowed) {
                 return resolve(false);
             }
             const circle: SVGCircleElement = document.getElementById('p-' + platforms[i]) as any;
             circle.style.opacity = null;
-            if (!L.Browser.mobile) {
+            if (pulsate) {
                 pulsateCircle(circle, i < edges.length ? 1.5 : 3, 200);
             }
             if (i === edges.length) {

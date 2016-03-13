@@ -64,6 +64,12 @@ circle {
     transform-origin: 50% 50%;
 }
 
+@-moz-document url-prefix() {
+    circle {
+        transform-origin: 0% 0%;
+    }
+}
+
 .measure-line {
     stroke: #ff0000;
     stroke-width: 4px;

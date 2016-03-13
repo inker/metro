@@ -581,8 +581,8 @@ export default class MetroMap implements EventTarget {
                 // const colors = [transfer.source, transfer.target].map(i => getComputedStyle(stationCirclesFrag.childNodes[i] as Element, null).stroke);
                 // console.log(colors);
                 const circlePortion = (circleRadius + circleBorder / 2) / pos1.distanceTo(pos2);
-                let gradient: SVGLinearGradientElement = document.getElementById('g-' + transferIndex) as any;
                 const gradientVector = pos2.subtract(pos1);
+                let gradient: SVGLinearGradientElement = document.getElementById('g-' + transferIndex) as any;
                 if (gradient === null) {
                     gradient = svg.Gradients.makeLinear(gradientVector, gradientColors, circlePortion);
                     gradient.id = 'g-' + transferIndex;
