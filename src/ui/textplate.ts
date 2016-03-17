@@ -8,24 +8,21 @@ export default class TextPlate {
     private _element: SVGGElement;
     private _disabled = false;
     private _editable = false;
-    private graph: po.Graph;
 
-    constructor(graph: po.Graph) {
-        this.graph = graph;
-        const g = svg.createSVGElement('g') as SVGGElement;
-        g.id = 'station-plate';
-        g.style.display = 'none';
+    constructor() {
+        const div = document.createElement('div');
+        div.classList.add('plate-box');
         const foreign = svg.createSVGElement('foreignObject');
         foreign.setAttribute('x', '0');
         foreign.setAttribute('y', '0');
         foreign.setAttribute('width', '100%');
         foreign.setAttribute('height', '100%');
-        const div = document.createElement('div');
-        div.classList.add('plate-box');
         foreign.appendChild(div);
+        const g = svg.createSVGElement('g') as SVGGElement;
+        g.id = 'station-plate';
+        g.style.display = 'none';
         g.appendChild(foreign);
         this._element = g;
-        console.log((this._element as any).childNodes);
     }
 
     get element() {

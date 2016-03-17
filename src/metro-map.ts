@@ -121,7 +121,7 @@ export default class MetroMap implements EventTarget {
                 //this.routeWorker.postMessage(this.graph);
                 //util.drawZones(this);
                 if (!L.Browser.mobile) {
-                    new MapEditor(this);
+                    //new MapEditor(this);
                 }
                 new FAQ(this, 'json/data.json');
                 return contextMenuPromise;
@@ -401,7 +401,7 @@ export default class MetroMap implements EventTarget {
             origin.appendChild(g);
         }
 
-        this.plate = new TextPlate(this.graph);
+        this.plate = new TextPlate();
         origin.insertBefore(this.plate.element, document.getElementById('dummy-circles'));
     }
 
@@ -485,8 +485,9 @@ export default class MetroMap implements EventTarget {
             docFrags.set(id, document.createDocumentFragment());
             document.getElementById(id).style.strokeWidth = strokeWidths[id] + 'px';
         }
-        // 11 - 0.9, 12 - 0.95, 13 - 1
-        (this.plate.element.firstChild.firstChild as HTMLElement).style.fontSize = (zoom + 7) * 0.05 + 'em';
+        // 11 - 11, 12 - 11.5, 13 - 12, 14 - 12.5
+        const fontSize = Math.max((zoom + 10) * 0.5, 11);
+        (this.plate.element.firstChild.firstChild as HTMLElement).style.fontSize = fontSize + 'px';
 
         const platformsInCircles = new Set<number>();
         const stationCircumpoints = new Map<po.Station, po.Platform[]>();
@@ -798,19 +799,19 @@ export default class MetroMap implements EventTarget {
             const station = this.graph.stations[platform.station];
             this.highlightStation(station);
         });
-        dummyCircles.addEventListener('mouseout', onOut.bind(this));
+        dummyCircles.addEventListener('mouseout', onOut);
         const onTransferOver = (e: MouseEvent) => {
-            const tr = e.target as SVGPathElement|SVGLineElement;
-            const transfer = this.graph.transfers[+tr.id.slice(3)];
+            const el = e.target as SVGPathElement|SVGLineElement;
+            const transfer = this.graph.transfers[+el.id.slice(3)];
             const station = this.graph.stations[this.graph.platforms[transfer.source].station];
             this.highlightStation(station);         
         }
         const transfersOuter = document.getElementById('transfers-outer'),
             transfersInner = document.getElementById('transfers-inner');
-        transfersOuter.addEventListener('mouseover', onTransferOver.bind(this));
-        transfersInner.addEventListener('mouseover', onTransferOver.bind(this));
-        transfersOuter.addEventListener('mouseout', onOut.bind(this));
-        transfersInner.addEventListener('mouseout', onOut.bind(this));        
+        transfersOuter.addEventListener('mouseover', onTransferOver);
+        transfersInner.addEventListener('mouseover', onTransferOver);
+        transfersOuter.addEventListener('mouseout', onOut);
+        transfersInner.addEventListener('mouseout', onOut);        
     }
     
     private highlightStation(station: po.Station) {
@@ -827,8 +828,8 @@ export default class MetroMap implements EventTarget {
             const transfers = this.map.getZoom() < 12 ? undefined : this.graph.transfers;
             svg.Scale.scaleStation(graphPlatforms, station, scaleFactor, transfers);
 
-            const latByIndex = (i: number) => graphPlatforms[i].location.lat;
-            const topmostIndex = stationPlatforms.reduce((prev, cur) => latByIndex(prev) < latByIndex(cur) ? cur : prev);
+            const idx2lat = (i: number) => graphPlatforms[i].location.lat;
+            const topmostIndex = stationPlatforms.reduce((prev, cur) => idx2lat(prev) < idx2lat(cur) ? cur : prev);
             circle = svg.circleByIndex(topmostIndex);
             platform = graphPlatforms[topmostIndex];
         }

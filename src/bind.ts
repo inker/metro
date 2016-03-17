@@ -11,7 +11,7 @@ export function transferToModel(transfer: po.Transfer, elements: Element[]) {
             get: () => transfer['_' + prop],
             set: (platformIndex: number) => {
                 const circle: SVGCircleElement = document.getElementById('p-' + platformIndex) as any;
-                const circleTotalRadius = Number(circle.getAttribute('r')) / 2 + parseFloat(getComputedStyle(circle).strokeWidth);
+                const circleTotalRadius = +circle.getAttribute('r') / 2 + parseFloat(getComputedStyle(circle).strokeWidth);
                 const pos = this.platformsOnSVG.get(platformIndex);
                 if (elements[0].tagName === 'line') {
                     const n = pi + 1;
