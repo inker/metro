@@ -1,3 +1,4 @@
+/// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 import * as po from './plain-objects';
 import * as math from './math';
@@ -151,7 +152,10 @@ export namespace Scale {
         const t = scaleFactor - 1,
             tx = -circle.getAttribute('cx') * t,
             ty = -circle.getAttribute('cy') * t;
-        circle.setAttribute('transform', `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${tx}, ${ty})`);
+        //circle.setAttribute('transform', `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${tx}, ${ty})`);
+        const oldR = circle.getAttribute('r');
+        circle.setAttribute('data-r', oldR);
+        circle.setAttribute('r', (+oldR * scaleFactor).toString());
     }
      
     const initialCircles = new Set<SVGCircleElement>();
@@ -179,7 +183,8 @@ export namespace Scale {
     }
     
     export function unscaleAll() {
-        initialCircles.forEach(circle => circle.removeAttribute('transform'));
+        initialCircles.forEach(circle => circle.setAttribute('r', circle.getAttribute('data-r')));
+        //initialCircles.forEach(circle => circle.removeAttribute('transform'));
         initialTransfers.forEach(tr => tr.style.strokeWidth = null);
         initialTransfers.clear();
         initialCircles.clear(); 
@@ -327,7 +332,7 @@ export namespace Animation {
         return currentAnimation;
     }
     
-    export function animateRoute(graph: po.Graph, platforms: number[], edges: string[]) {
+    export function animateRoute(graph: po.Graph, platforms: number[], edges: string[], speed = 1) {
         const pulsate = L.Browser.webkit && !L.Browser.mobile;
         currentAnimation = new Promise<boolean>((resolve, reject) => (function animateSpan(i: number) {
             if (!animationsAllowed) {
@@ -365,7 +370,7 @@ export namespace Animation {
             const idParts = edges[i].split('-');
             const edge: po.Transfer | po.Span = graph[idParts[0] === 'p' ? 'spans' : 'transfers'][+idParts[1]];
             const initialOffset = edge.source === platforms[i] ? length : -length;
-            const duration = length;
+            const duration = length / speed;
             Shadows.applyDrop(outer);
             for (let path of (inner === null ? [outer] : [outer, inner])) {
                 const pathStyle = path.style;

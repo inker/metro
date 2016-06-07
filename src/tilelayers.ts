@@ -37,3 +37,15 @@ export const esriGrey = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/
     minZoom: 9,
     detectRetina: true,
 });
+
+export const cartoDB = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+	//subdomains: 'abcd',
+	maxZoom: 19
+});
+
+export const cartoDBNoLabels = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+	//subdomains: 'abcd',
+	maxZoom: 19
+});

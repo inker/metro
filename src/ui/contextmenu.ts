@@ -1,3 +1,4 @@
+/// <reference path="../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 import MetroMap from '../metro-map';
 import * as util from '../util';

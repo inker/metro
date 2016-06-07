@@ -1,3 +1,4 @@
+/// <reference path="../typings/tsd.d.ts" />
 import * as po from './plain-objects';
 import { arrayEquals } from './util';
 import * as math from './math';
@@ -29,6 +30,7 @@ export function findCircle(graph: po.Graph, station: po.Station): po.Platform[] 
     return [];
 }
 
+const distanceBetween = (a: L.LatLng, b: L.LatLng) => L.LatLng.prototype.distanceTo.call(a, b) as number;
 
 export type ShortestRouteObject = {
     platforms?: number[];
@@ -45,7 +47,6 @@ export function shortestRoute(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Shor
         // includes escalators
         metroWaitingTime = 240,
         eLineWaitingTime = 360;
-    const distanceBetweenPoints = (a: L.LatLng, b: L.LatLng) => L.LatLng.prototype.distanceTo.call(a, b) as number;
     const objects = graph.platforms;
     // time to travel from station to the p1 location
     const dist: number[] = [],
@@ -54,10 +55,10 @@ export function shortestRoute(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Shor
         const hasE = o.spans.map(i => graph.spans[i].routes[0])
             .map(i => graph.routes[i].line)
             .some(l => l.startsWith('E'));
-        let distance = distanceBetweenPoints(p1, o.location),
+        let distance = distanceBetween(p1, o.location),
             time = distance / walkingWithObstacles
         dist.push(time + (hasE ? eLineWaitingTime : metroWaitingTime));
-        distance = distanceBetweenPoints(o.location, p2);
+        distance = distanceBetween(o.location, p2);
         time = distance / walkingWithObstacles;
         timesOnFoot.push(time);
     }
@@ -66,7 +67,7 @@ export function shortestRoute(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Shor
     const objectSet = new Set<number>(objects.map((o, i) => i)),
         prev: number[] = objects.map(i => null);
     // time on foot between locations
-    const onFoot = distanceBetweenPoints(p1, p2) / walkingWithObstacles;
+    const onFoot = distanceBetween(p1, p2) / walkingWithObstacles;
     while (objectSet.size > 0) {
         var minDist = Infinity;
         objectSet.forEach(i => {
@@ -91,7 +92,7 @@ export function shortestRoute(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Shor
             if (!objectSet.has(neighborIndex)) continue;
             neighborIndices.push(neighborIndex);
             const neighbor = objects[neighborIndex];
-            const distance = distanceBetweenPoints(currentNode.location, neighbor.location);
+            const distance = distanceBetween(currentNode.location, neighbor.location);
             let lineChangePenalty = 0;
             if (prevSpan && graph.routes[prevSpan.routes[0]] !== graph.routes[s.routes[0]]) {
                 // doesn't seem to work
@@ -112,7 +113,7 @@ export function shortestRoute(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Shor
                 .map(i => graph.spans[i].routes[0])
                 .map(i => graph.routes[i].line)
                 .some(l => l.startsWith('E'));
-            const distance = distanceBetweenPoints(currentNode.location, neighbor.location) / 2;
+            const distance = distanceBetween(currentNode.location, neighbor.location) / 2;
             times.push(distance / walkingWithObstacles + (hasE ? eLineWaitingTime : metroWaitingTime));
         }
 
@@ -198,7 +199,6 @@ function shortestTransfer(graph: po.Graph, p1i: number, p2i: number) {
     if (p1.station !== p2.station) {
         throw new Error(`platforms (${p1.name} & ${p2.name} must be on the same station`);
     }
-    const distanceBetweenPoints = (a: L.LatLng, b: L.LatLng) => L.LatLng.prototype.distanceTo.call(a, b) as number;
     const station = graph.stations[p1.station];
     const platforms = station.platforms;
     const platformSet = new Set<number>(platforms);
@@ -227,7 +227,7 @@ function shortestTransfer(graph: po.Graph, p1i: number, p2i: number) {
         }
         for (let neighborIndex of neighborIndices) {
             if (!platformSet.has(neighborIndex)) continue;
-            const distance = distanceBetweenPoints(platform.location, graph.platforms[neighborIndex].location),
+            const distance = distanceBetween(platform.location, graph.platforms[neighborIndex].location),
                 alt = dist[currentIndex] + distance;
             if (alt < dist[neighborIndex]) {
                 dist[neighborIndex] = alt;

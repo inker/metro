@@ -1,3 +1,4 @@
+/// <reference path="../../typings/tsd.d.ts" />
 import * as svg from '../svg';
 import * as po from '../plain-objects';
 import * as lang from '../lang';

@@ -1,3 +1,4 @@
+/// <reference path="../../typings/tsd.d.ts" />
 import * as Hammer from 'hammerjs';
 import MetroMap from '../metro-map';
 import { once } from '../util';
@@ -17,21 +18,21 @@ export default class FAQ {
         btn.id = 'faq-button';
         btn.textContent = 'FAQ';
         btn.classList.add('leaflet-control');
-        btn.onclick = this.showFAQ.bind(this);
+        btn.addEventListener('click', e => this.showFAQ());
         document.querySelector('.leaflet-right.leaflet-top').appendChild(btn);
         this.button = btn;
         this.card = document.createElement('div');
         this.card.id = 'faq-card';
         
         if (L.Browser.mobile) {
-            new Hammer(this.card).on('swipeleft swiperight', this.hideFAQ.bind(this));
+            new Hammer(this.card).on('swipeleft swiperight', e => this.hideFAQ());
         }
         document.body.appendChild(this.card);
         const qa2html = qa => `<div><span class="question">${qa.q}</span><span class="answer">${qa.a}</span></div>`;
         promise.then(data => this.card.innerHTML += data.faq.map(qa2html).join(''));
     }
 
-    showFAQ(event: MouseEvent) {
+    showFAQ() {
         const cardStyle = this.card.style;
         cardStyle.display = 'inline';
         cardStyle.transform = 'scale(0.1)';
@@ -42,7 +43,7 @@ export default class FAQ {
         this.button.disabled = true;
         if (!L.Browser.mobile) {
             this.map.getContainer().classList.add('dimmed');
-            this.map.once('mousedown', e => this.hideFAQ((e as L.LeafletMouseEvent).originalEvent));
+            this.map.once('mousedown', e => this.hideFAQ());
             once(window, 'keydown', e => {
                 if ((e as KeyboardEvent).keyCode !== 27) return;
                 this.map.fireEvent('mousedown');
@@ -50,7 +51,7 @@ export default class FAQ {
         }
     }
 
-    hideFAQ(event: MouseEvent) {
+    hideFAQ() {
         console.log('hiding');
         this.card.getBoundingClientRect();
         this.card.style.transform = 'scale(0.1)';

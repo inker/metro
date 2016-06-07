@@ -1,3 +1,7 @@
+/// <reference path="../typings/tsd.d.ts" />
+
+import * as L from 'leaflet';
+
 export function dot(v1: L.Point, v2: L.Point): number {
     return v1.x * v2.x + v1.y * v2.y;
 }
@@ -14,13 +18,14 @@ export function getCircumcenter(positions: L.Point[]): L.Point {
     if (positions.length !== 3) {
         throw new Error('must have 3 vertices');
     }
-    const b = positions[1].subtract(positions[0]);
-    const c = positions[2].subtract(positions[0]);
+    const first = positions[0];
+    const b = positions[1].subtract(first);
+    const c = positions[2].subtract(first);
     const bb = dot(b, b);
     const cc = dot(c, c);
     return new L.Point((c.y * bb - b.y * cc), (b.x * cc - c.x * bb))
         .divideBy(2.0 * (b.x * c.y - b.y * c.x))
-        .add(positions[0]);
+        .add(first);
 }
 
 export function polarToCartesian(center: L.Point, radius: number, angle: number) {

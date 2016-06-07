@@ -1,3 +1,4 @@
+/// <reference path="../../typings/tsd.d.ts" />
 import MetroMap from '../metro-map';
 import * as svg from '../svg';
 import * as lang from '../lang';
@@ -54,9 +55,7 @@ export default class MapEditor {
     }
 
     private saveMapClick(event: MouseEvent) {
-        const graph = this.metroMap.getGraph();
-        const content = JSON.stringify(graph, (key, val) => key.startsWith('_') ? undefined : val);
-        util.downloadAsFile('graph.json', content);
+        util.downloadAsFile('graph.json', this.metroMap.getGraph().toJSON());
         this.editMode = false;
     }
 
@@ -86,7 +85,7 @@ export default class MapEditor {
                 map.once('mouseup', (le: L.LeafletMouseEvent) => {
                     map.off('mousemove').dragging.enable();
                     plate.disabled = false;
-                    const circle: SVGCircleElement = le.originalEvent.target as any;
+                    const circle = le.originalEvent.target as SVGCircleElement;
                     plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));
                 });
             } else if (de.button === 1) {

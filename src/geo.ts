@@ -1,5 +1,7 @@
+/// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 import { time } from './decorators';
+import { callMeMaybe } from './util';
 
 interface Locatable { location: L.LatLng };
 
@@ -43,10 +45,7 @@ type OnClimb = (coordinate: L.LatLng) => void;
 export function calculateGeoMean(points: L.LatLng[], fitnessFunc: FitnessFunc, minStep = 0.00001, onClimb?: OnClimb): L.LatLng {
     let point = getCenter(points);
     let fitness = fitnessFunc(point);
-    function foo() {
-        if (onClimb !== undefined) onClimb(point);
-    }
-    foo();
+    callMeMaybe(onClimb, point);
     for (let step = 10; step > minStep; step *= 0.61803398875) {
         for (let max = step, lat = -max; lat <= max; lat += step) {
             for (let lng = -max; lng <= max; lng += step) {
@@ -55,7 +54,7 @@ export function calculateGeoMean(points: L.LatLng[], fitnessFunc: FitnessFunc, m
                 if (total < fitness) {
                     point = pt;
                     fitness = total;
-                    foo();
+                    callMeMaybe(onClimb, point);
                 }
             }
         }

@@ -2,7 +2,7 @@
 import * as L from 'leaflet';
 const alertify = require('alertifyjs');
 import { lineRulesPromise } from './res';
-import { mapbox, mapnik, osmFrance } from './tilelayers';
+import { mapbox, mapnik, osmFrance, cartoDBNoLabels } from './tilelayers';
 import * as util from './util';
 import * as math from './math';
 import * as algorithm from './algorithm';
@@ -10,8 +10,9 @@ import { translate as tr, formatTime as ft } from './lang';
 import * as svg from './svg';
 import * as po from './plain-objects';
 import * as bind from './bind';
+import * as hints from './hints';
 import * as geo from './geo';
-import { ContextMenu, MapEditor, FAQ, TextPlate, Icons } from './ui';
+import * as ui from './ui';
 
 L.Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images';
 
@@ -27,13 +28,13 @@ export default class MetroMap implements EventTarget {
     private whiskers = new Map<number, Map<number, L.Point>>();
     private platformsOnSVG = new Map<number, L.Point>();
 
-    private plate: TextPlate;
+    private plate: ui.TextPlate;
 
-    private fromMarker = new L.Marker([0, 0], { draggable: true , icon: Icons.start });
-    private toMarker = new L.Marker([0, 0], { draggable: true, icon: Icons.end });
+    private fromMarker = new L.Marker([0, 0], { draggable: true , icon: ui.Icons.start });
+    private toMarker = new L.Marker([0, 0], { draggable: true, icon: ui.Icons.end });
     //private routeWorker = new Worker('js/routeworker.js');
 
-    private _contextMenu: ContextMenu;
+    private _contextMenu: ui.ContextMenu;
 
     private lineRules: Map<string, string>;
 
@@ -49,7 +50,7 @@ export default class MetroMap implements EventTarget {
         return this.overlay;
     }
 
-    getPlate(): TextPlate {
+    getPlate(): ui.TextPlate {
         return this.plate;
     }
 
@@ -59,8 +60,8 @@ export default class MetroMap implements EventTarget {
 
     constructor(containerId: string, kml: string) {
         const graphPromise: Promise<po.Graph> = fetch(kml)
-            .then(data => data.json())
-            .then(graphJSON => this.graph = util.parseGraph(graphJSON));
+            .then(data => data.text())
+            .then(graphJSON => this.graph = new po.Graph(graphJSON));
         const hintsPromise = fetch('json/hints.json')
             .then(data => data.json())
             .then(hintsJSON => this.hints = hintsJSON);
@@ -79,7 +80,7 @@ export default class MetroMap implements EventTarget {
         const { tilePane, objectsPane, markerPane } = this.map.getPanes();
         tilePane.style.display = 'none';
 
-        util.addLayerSwitcher(this.map, [mapbox, mapnik, osmFrance]);
+        ui.addLayerSwitcher(this.map, [mapbox, mapnik, osmFrance, cartoDBNoLabels]);
         addEventListener('keydown', e => {
             if (e.ctrlKey) {
                 switch (e.keyCode) {
@@ -87,7 +88,7 @@ export default class MetroMap implements EventTarget {
                     default: return;
                 }
             }
-            switch(e.keyCode) {
+            switch (e.keyCode) {
                 case 27: return this.dispatchEvent(new Event('clearroute')); // esc
                 default: return;
             }
@@ -119,23 +120,23 @@ export default class MetroMap implements EventTarget {
                 this.map.invalidateSize(false);
                 this.addMapListeners();
                 //this.routeWorker.postMessage(this.graph);
-                //util.drawZones(this);
+                //drawZones(this);
                 if (!L.Browser.mobile) {
-                    //new MapEditor(this);
+                    new ui.MapEditor(this);
                 }
-                new FAQ(this, 'json/data.json');
+                new ui.FAQ(this, 'json/data.json');
                 return contextMenuPromise;
             })
             .then(contextMenuData => {
-                this._contextMenu = new ContextMenu(this, new Map<string, any>(contextMenuData));
+                this._contextMenu = new ui.ContextMenu(this, new Map<string, any>(contextMenuData));
                 this.resetMapView();
-                util.loadIcons(this.map, [this.fromMarker, this.toMarker]);
+                ui.loadIcons(this.map, [this.fromMarker, this.toMarker]);
                 util.fixFontRendering(); // just in case
                 tilePane.style.display = '';
             });
 
         Promise.all([graphPromise, hintsPromise])
-            .then(results => util.Hints.verify(this.graph, this.hints))
+            .then(results => hints.verify(this.graph, this.hints))
             .then(response => console.log(response));
     }
 
@@ -253,7 +254,7 @@ export default class MetroMap implements EventTarget {
                 const circle = me.relatedTarget as SVGCircleElement;
                 const platform = svg.platformByCircle(circle, this.graph);
                 this.plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));
-                util.platformRenameDialog(this.graph, platform);
+                ui.platformRenameDialog(this.graph, platform);
                 break;
             }
             case 'platformdelete': {
@@ -319,7 +320,10 @@ export default class MetroMap implements EventTarget {
         if (this.map.hasLayer(otherMarker)) {
             // fixing font rendering here boosts the performance
             util.fixFontRendering();
-            this.visualizeShortestRoute([this.fromMarker.getLatLng(), this.toMarker.getLatLng()]);   
+            const latLngArr = [this.fromMarker.getLatLng(), this.toMarker.getLatLng()];
+            this.visualizeShortestRoute(latLngArr);
+            //this.map.once('zoomend', e => this.visualizeShortestRoute(latLngArr));
+            //this.map.fitBounds(new L.LatLngBounds(latLngArr));
         }
 
     }
@@ -401,13 +405,13 @@ export default class MetroMap implements EventTarget {
             origin.appendChild(g);
         }
 
-        this.plate = new TextPlate();
+        this.plate = new ui.TextPlate();
         origin.insertBefore(this.plate.element, document.getElementById('dummy-circles'));
     }
 
     private addBindings() {
-        const graphPlatforms = this.graph.platforms;
-        for (let i = 0; i < graphPlatforms.length; ++i) {
+        const nPlatforms = this.graph.platforms.length;
+        for (let i = 0; i < nPlatforms; ++i) {
             const circle = document.getElementById('p-' + i);
             const dummyCircle = document.getElementById('d-' + i);
             bind.platformToModel.call(this, i, [circle, dummyCircle]);
@@ -418,7 +422,7 @@ export default class MetroMap implements EventTarget {
      *
      * @param SVGBounds
      * @param location
-     * @returns {Point}
+     * @returns {L.Point}
      */
     private posOnSVG(SVGBounds: L.Bounds, location: L.LatLngExpression): L.Point {
         const pos = this.map.latLngToContainerPoint(location);
@@ -562,8 +566,9 @@ export default class MetroMap implements EventTarget {
             const transfersOuterFrag = docFrags.get('transfers-outer');
             const transfersInnerFrag = docFrags.get('transfers-inner');
             const defs = this.overlay.querySelector('defs');
-            for (let transferIndex = 0; transferIndex < this.graph.transfers.length; ++transferIndex) {
-                const transfer = this.graph.transfers[transferIndex];
+            const graphTransfers = this.graph.transfers, nTransfers = graphTransfers.length;
+            for (let transferIndex = 0; transferIndex < nTransfers; ++transferIndex) {
+                const transfer = graphTransfers[transferIndex];
                 const pl1 = this.graph.platforms[transfer.source],
                     pl2 = this.graph.platforms[transfer.target];
                 const pos1 = this.platformsOnSVG.get(transfer.source),
@@ -613,7 +618,7 @@ export default class MetroMap implements EventTarget {
                 outer.style.strokeWidth = lineWidth * 0.75 + 'px';
             }
         }
-        
+
         docFrags.forEach((val, key) => document.getElementById(key).appendChild(val));
         
         this.addStationListeners();
@@ -660,7 +665,7 @@ export default class MetroMap implements EventTarget {
             const spanIds: number[][] = [[], []];
 
             const dirHints = this.hints.crossPlatform;
-            const idx = util.Hints.hintContainsLine(this.graph, dirHints, platform);
+            const idx = hints.hintContainsLine(this.graph, dirHints, platform);
             if (platform.name in dirHints && idx !== null) {
                 // array or object
                 const platformHints = idx > -1 ? dirHints[platform.name][idx] : dirHints[platform.name];
@@ -730,10 +735,7 @@ export default class MetroMap implements EventTarget {
             pl2 = graphPlatforms[transfer.target];
         const pos1 = this.platformsOnSVG.get(transfer.source),
             pos2 = this.platformsOnSVG.get(transfer.target);
-        const makeArc = (thirdIndex: number) => {
-            const thirdPos = this.platformsOnSVG.get(thirdIndex);
-            return svg.makeTransferArc(pos1, pos2, thirdPos);
-        }
+        const makeArc = (thirdIndex: number) => svg.makeTransferArc(pos1, pos2, this.platformsOnSVG.get(thirdIndex));
         if (cluster.length === 3) {
             const third = cluster.find(p => p !== pl1 && p !== pl2);
             return makeArc(graphPlatforms.indexOf(third));
@@ -788,7 +790,7 @@ export default class MetroMap implements EventTarget {
     }
     
     private addStationListeners() {
-        const onOut = (e: MouseEvent) => {
+        const onMouseOut = (e: MouseEvent) => {
             this.plate.hide();
             svg.Scale.unscaleAll();
         }
@@ -799,7 +801,7 @@ export default class MetroMap implements EventTarget {
             const station = this.graph.stations[platform.station];
             this.highlightStation(station);
         });
-        dummyCircles.addEventListener('mouseout', onOut);
+        dummyCircles.addEventListener('mouseout', onMouseOut);
         const onTransferOver = (e: MouseEvent) => {
             const el = e.target as SVGPathElement|SVGLineElement;
             const transfer = this.graph.transfers[+el.id.slice(3)];
@@ -810,8 +812,8 @@ export default class MetroMap implements EventTarget {
             transfersInner = document.getElementById('transfers-inner');
         transfersOuter.addEventListener('mouseover', onTransferOver);
         transfersInner.addEventListener('mouseover', onTransferOver);
-        transfersOuter.addEventListener('mouseout', onOut);
-        transfersInner.addEventListener('mouseout', onOut);        
+        transfersOuter.addEventListener('mouseout', onMouseOut);
+        transfersInner.addEventListener('mouseout', onMouseOut);        
     }
     
     private highlightStation(station: po.Station) {
@@ -848,12 +850,10 @@ export default class MetroMap implements EventTarget {
         }
         const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
         svg.Animation.terminateAnimations().then(() => {
-            const els: HTMLElement[] = this.overlay.querySelectorAll(selector) as any;
-            for (let i = 0; i < els.length; ++i) {
-                const elStyle = els[i].style;
-                //els[i].style['-webkit-filter'] = 'grayscale(1)';
-                elStyle.filter = null;
-                elStyle.opacity = '0.25';
+            for (let { style } of this.overlay.querySelectorAll(selector) as any) {
+                //style['-webkit-filter'] = 'grayscale(1)';
+                style.filter = null;
+                style.opacity = '0.25';
             }
             if (animate) throw animate;
         }).then(() => {
@@ -872,7 +872,7 @@ export default class MetroMap implements EventTarget {
             for (let platformNum of platforms) {
                 document.getElementById('p-' + platformNum).style.opacity = null;
             }
-        }).catch(animate => svg.Animation.animateRoute(this.graph, platforms, edges)).then(finished => {
+        }).catch(animate => svg.Animation.animateRoute(this.graph, platforms, edges, 1)).then(finished => {
             if (!finished) return;
             alertify.message(`${tr('time').toUpperCase()}:<br>${walkTo} ${onFoot}<br>${ft(time.metro)} ${tr('by metro')}<br>${ft(time.walkFrom)} ${onFoot}<br>${tr('TOTAL')}: ${ft(time.total)}`, 10)
         });       
