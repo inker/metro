@@ -66,8 +66,8 @@ export function getCircularPath(path: Element) {
 export function setCircularPath(el: Element, start: L.Point, end: L.Point, third: L.Point) {
     const center = math.getCircumcenter([start, end, third]);
     const startAngle = Math.atan2(start.y - center.y, start.x - center.x),
-        endAngle = Math.atan2(end.y - center.y, end.x - center.x),
-        thirdAngle = Math.atan2(third.y - center.y, third.x - center.x);
+        endAngle = Math.atan2(end.y - center.y, end.x - center.x);
+    //const thirdAngle = Math.atan2(third.y - center.y, third.x - center.x);
     const diff = endAngle - startAngle;
     let large = diff <= Math.PI || diff > -Math.PI ? 0 : 1;
     const u = start.subtract(center),
@@ -149,9 +149,9 @@ export namespace Scale {
             return;
         }
         initialCircles.add(circle);
-        const t = scaleFactor - 1,
-            tx = -circle.getAttribute('cx') * t,
-            ty = -circle.getAttribute('cy') * t;
+        // const t = scaleFactor - 1,
+        //     tx = -circle.getAttribute('cx') * t,
+        //     ty = -circle.getAttribute('cy') * t;
         //circle.setAttribute('transform', `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${tx}, ${ty})`);
         const oldR = circle.getAttribute('r');
         circle.setAttribute('data-r', oldR);
@@ -164,7 +164,7 @@ export namespace Scale {
         const transferOuterStrokeWidth = parseFloat(document.getElementById('transfers-outer').style.strokeWidth),
             transferInnerStrokeWidth = parseFloat(document.getElementById('transfers-inner').style.strokeWidth)
         for (let p of station.platforms) {
-            const platform = graphPlatforms[p];
+            //const platform = graphPlatforms[p];
             const circle = document.getElementById('p-' + p) as any;
             scaleCircle(circle, scaleFactor, true);
             if (graphTransfers === undefined || station.platforms.length < 2) continue;

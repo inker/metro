@@ -2,7 +2,7 @@
 import * as L from 'leaflet';
 const alertify = require('alertifyjs');
 import { lineRulesPromise } from './res';
-import { mapbox, mapnik, osmFrance, cartoDBNoLabels } from './tilelayers';
+import { mapbox, mapnik, osmFrance, cartoDBNoLabels, wikimapia } from './tilelayers';
 import * as util from './util';
 import * as math from './math';
 import * as algorithm from './algorithm';
@@ -80,7 +80,7 @@ export default class MetroMap implements EventTarget {
         const { tilePane, objectsPane, markerPane } = this.map.getPanes();
         tilePane.style.display = 'none';
 
-        ui.addLayerSwitcher(this.map, [mapbox, mapnik, osmFrance, cartoDBNoLabels]);
+        ui.addLayerSwitcher(this.map, [mapbox, mapnik, osmFrance, cartoDBNoLabels, wikimapia]);
         addEventListener('keydown', e => {
             if (e.ctrlKey) {
                 switch (e.keyCode) {
@@ -109,7 +109,7 @@ export default class MetroMap implements EventTarget {
         this.overlay.appendChild(defs);
 
         graphPromise
-            .catch(errText => alert(errText))
+            //.catch(errText => alert(errText))
             .then(graphJson => hintsPromise)
             .then(hintsJson => lineRulesPromise)
             .then(lineRules => {
@@ -731,7 +731,7 @@ export default class MetroMap implements EventTarget {
     
     private makeTransferArc(transfer: po.Transfer, cluster: po.Platform[]): (SVGLineElement|SVGPathElement)[] {
         const graphPlatforms = this.graph.platforms;
-        var pl1 = graphPlatforms[transfer.source],
+        const pl1 = graphPlatforms[transfer.source],
             pl2 = graphPlatforms[transfer.target];
         const pos1 = this.platformsOnSVG.get(transfer.source),
             pos2 = this.platformsOnSVG.get(transfer.target);
@@ -742,9 +742,9 @@ export default class MetroMap implements EventTarget {
         } else if (pl1 === cluster[2] && pl2 === cluster[3] || pl1 === cluster[3] && pl2 === cluster[2]) {
             return svg.makeTransfer(pos1, pos2);
         }
-        var s = transfer.source;
-        const pl1neighbors = this.graph.transfers.filter(t => t.source === s || t.target === s);
-        const pl1deg = pl1neighbors.length;
+        const s = transfer.source;
+        //const pl1neighbors = this.graph.transfers.filter(t => t.source === s || t.target === s);
+        //const pl1deg = pl1neighbors.length;
         const rarr: number[] = [];
         for (let t of this.graph.transfers) {
             if (t === transfer) continue;

@@ -52,7 +52,7 @@ export function transferToModel(transfer: po.Transfer, elements: Element[]) {
                     const circumpoints: L.Point[] = [];
                     circular.forEach(i => circumpoints.push(this.platformsOnSVG.get(i)));
 
-                    const cCenter = math.getCircumcenter(circumpoints);
+                    //const cCenter = math.getCircumcenter(circumpoints);
                     const outerArcs = transferIndices.map(i => document.getElementById('ot-' + i));
                     const innerArcs = transferIndices.map(i => document.getElementById('it-' + i));
                     for (let i = 0; i < 3; ++i) {
