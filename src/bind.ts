@@ -1,9 +1,9 @@
 import * as L from 'leaflet';
 import * as svg from './svg';
 import * as math from './math';
-import * as po from './plain-objects';
+import * as g from './graph';
 
-export function transferToModel(transfer: po.Transfer, elements: Element[]) {
+export function transferToModel(transfer: g.Transfer, elements: Element[]) {
     const cached =  [transfer.source, transfer.target];
     const props = ['source', 'target'];
     props.forEach((prop, pi) => {
@@ -26,7 +26,7 @@ export function transferToModel(transfer: po.Transfer, elements: Element[]) {
                     const circlePortion = circleTotalRadius / pos.distanceTo(otherPos);
                     svg.Gradients.setOffset(gradient, circlePortion);
                 } else if (elements[0].tagName === 'path') {
-                    const transfers: po.Transfer[] = [];
+                    const transfers: g.Transfer[] = [];
                     const transferIndices: number[] = [];
                     for (let i = 0; i < this.graph.transfers.length; ++i) {
                         const t = this.graph.transfers[i];
@@ -78,7 +78,7 @@ export function transferToModel(transfer: po.Transfer, elements: Element[]) {
     });
 }
 
-export function platformToModel(platform: po.Platform|number, circles: Element[]) {
+export function platformToModel(platform: g.Platform|number, circles: Element[]) {
     const [idx, obj] = typeof platform === 'number'
         ? [platform, this.graph.platforms[platform]]
         : [this.graph.platforms.indexOf(platform), platform];
@@ -90,7 +90,8 @@ export function platformToModel(platform: po.Platform|number, circles: Element[]
             const locForPos = this.map.getZoom() < 12
                 ? this.graph.stations[obj.station].location
                 : location;
-            const pos = this.map.latLngToContainerPoint(locForPos).subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
+            const nw = this.bounds.getNorthWest();
+            const pos = this.map.latLngToContainerPoint(locForPos).subtract(this.map.latLngToContainerPoint(nw));
             for (let c of circles) {
                 c.setAttribute('cx', pos.x.toString());
                 c.setAttribute('cy', pos.y.toString());

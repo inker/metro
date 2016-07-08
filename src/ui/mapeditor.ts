@@ -55,7 +55,7 @@ export default class MapEditor {
     }
 
     private saveMapClick(event: MouseEvent) {
-        util.downloadAsFile('graph.json', this.metroMap.getGraph().toJSON());
+        util.downloadTextFile('graph.json', this.metroMap.getGraph().toJSON());
         this.editMode = false;
     }
 
@@ -75,7 +75,7 @@ export default class MapEditor {
 
         dummyCircles.onmousedown = de => {
             if (de.button === 0) {
-                const platform = svg.platformByCircle(de.target as any, graph);
+                const platform = util.platformByCircle(de.target as any, graph);
                 //const initialLocation = platform.location; // TODO: Ctrl+Z
                 map.dragging.disable();
                 map.on('mousemove', (le: L.LeafletMouseEvent) => {

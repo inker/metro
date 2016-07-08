@@ -1,10 +1,11 @@
 /// <reference path="../typings/tsd.d.ts" />
-import * as po from './plain-objects';
+import * as g from './graph';
 import { arrayEquals } from './util';
 import * as math from './math';
 import { findClosestObject } from './geo';
 
-export function findCircle(graph: po.Graph, station: po.Station): po.Platform[] {
+export function findCircle(graph: g.Graph, station: g.Station): g.Platform[] {
+    if (station.platforms.length < 3) return [];
     // TODO: if n=3, leave as it is; if n=4, metro has priority
     const stationPlatforms = station.platforms.map(platformNum => graph.platforms[platformNum]);
     if (stationPlatforms.length === 3) {
@@ -15,7 +16,7 @@ export function findCircle(graph: po.Graph, station: po.Station): po.Platform[] 
     }
     if (stationPlatforms.length === 4) {
         const gPls = graph.platforms, gTrs = graph.transfers;
-        const hasPlatform = (t: po.Transfer, p: number) => t.source === p || t.target === p;
+        const hasPlatform = (t: g.Transfer, p: number) => t.source === p || t.target === p;
         const toTuple = (i: number) => ({platform: gPls[i], degree: gTrs.filter(t => hasPlatform(t, i)).length});
         const psAndDegs = station.platforms.map(toTuple).sort((a, b) => a.degree - b.degree);
         const degs = psAndDegs.map(i => i.degree);
@@ -37,7 +38,7 @@ export type ShortestRouteObject = {
     edges?: string[];
     time: { walkTo: number, metro?: number, walkFrom?: number, total?: number };
 }
-export function shortestRoute(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): ShortestRouteObject {
+export function shortestRoute(graph: g.Graph, p1: L.LatLng, p2: L.LatLng): ShortestRouteObject {
     const walkingSpeed = 1.4,
         walkingWithObstacles = 1,
         maxTrainSpeed = 20,
@@ -49,31 +50,31 @@ export function shortestRoute(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Shor
         eLineWaitingTime = 360;
     const objects = graph.platforms;
     // time to travel from station to the p1 location
-    const dist: number[] = [],
-        timesOnFoot: number[] = [];
+    const currentTime: number[] = [],
+        fromPlatformToDest: number[] = [];
     for (let o of objects) {
         const hasE = o.spans.map(i => graph.spans[i].routes[0])
             .map(i => graph.routes[i].line)
             .some(l => l.startsWith('E'));
         let distance = distanceBetween(p1, o.location),
             time = distance / walkingWithObstacles
-        dist.push(time + (hasE ? eLineWaitingTime : metroWaitingTime));
+        currentTime.push(time + (hasE ? eLineWaitingTime : metroWaitingTime));
         distance = distanceBetween(o.location, p2);
         time = distance / walkingWithObstacles;
-        timesOnFoot.push(time);
+        fromPlatformToDest.push(time);
     }
     // pick the closest one so far
     let currentIndex = objects.indexOf(findClosestObject(p1, objects));
     const objectSet = new Set<number>(objects.map((o, i) => i)),
         prev: number[] = objects.map(i => null);
     // time on foot between locations
-    const onFoot = distanceBetween(p1, p2) / walkingWithObstacles;
+
     while (objectSet.size > 0) {
         var minDist = Infinity;
         objectSet.forEach(i => {
-            if (dist[i] < minDist) {
+            if (currentTime[i] < minDist) {
                 currentIndex = i;
-                minDist = dist[i];
+                minDist = currentTime[i];
             }
         });
         const currentNode = objects[currentIndex];
@@ -85,7 +86,7 @@ export function shortestRoute(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Shor
         const prevSpan = graph.spans.find(s => s.source === currentIndex && s.target === prevIndex || s.source === prevIndex && s.target === currentIndex);
 
         const neighborIndices: number[] = [],
-            times: number[] = [];
+            timeToNeighbors: number[] = [];
         for (let i of currentNode.spans) {
             const s = graph.spans[i];
             const neighborIndex = currentIndex === s.source ? s.target : s.source;
@@ -101,7 +102,7 @@ export function shortestRoute(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Shor
             // TODO: lower priority for E-lines
             const callTime = graph.routes[s.routes[0]].line.startsWith('E') ? eLineStopTime : metroStopTime;
             const travelTime = math.timeToTravel(distance, maxTrainSpeed, trainAcceleration);
-            times.push(travelTime + callTime + lineChangePenalty);
+            timeToNeighbors.push(travelTime + callTime + lineChangePenalty);
         }
         // TODO: if transferring to an E-line, wait more
         // TODO: penalty for changing lines (cross-platform)
@@ -114,29 +115,30 @@ export function shortestRoute(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Shor
                 .map(i => graph.routes[i].line)
                 .some(l => l.startsWith('E'));
             const distance = distanceBetween(currentNode.location, neighbor.location) / 2;
-            times.push(distance / walkingWithObstacles + (hasE ? eLineWaitingTime : metroWaitingTime));
+            timeToNeighbors.push(distance / walkingWithObstacles + (hasE ? eLineWaitingTime : metroWaitingTime));
         }
 
         for (let i = 0, nNeighbors = neighborIndices.length; i < nNeighbors; ++i) {
             const neighborIndex = neighborIndices[i],
-                alt = dist[currentIndex] + times[i];
-            if (alt < dist[neighborIndex]) {
-                dist[neighborIndex] = alt;
+                alt = currentTime[currentIndex] + timeToNeighbors[i];
+            if (alt < currentTime[neighborIndex]) {
+                currentTime[neighborIndex] = alt;
                 prev[neighborIndex] = currentIndex;
             }
         }
-        const alt = dist[currentIndex] + timesOnFoot[currentIndex];
+        const alt = currentTime[currentIndex] + fromPlatformToDest[currentIndex];
     }
     // find the shortest time & the exit station
     let shortestTime = Infinity;
-    for (let i = 0; i < dist.length; ++i) {
-        const alt = dist[i] + timesOnFoot[i];
+    for (let i = 0; i < currentTime.length; ++i) {
+        const alt = currentTime[i] + fromPlatformToDest[i];
         if (alt < shortestTime) {
             shortestTime = alt;
             currentIndex = i;
         }
     }
     // if walking on foot is faster, then why take the underground?
+    const onFoot = distanceBetween(p1, p2) / walkingWithObstacles;
     if (onFoot < shortestTime) {
         return { time: { walkTo: onFoot } };
     }
@@ -178,22 +180,21 @@ export function shortestRoute(graph: po.Graph, p1: L.LatLng, p2: L.LatLng): Shor
     }
     platformPath.reverse();
     path.reverse();
-    const walkFromTime = timesOnFoot[platformPath[platformPath.length - 1]];
-    const walkToTime = dist[platformPath[0]];
-    const metroTime = shortestTime - walkFromTime - walkToTime;
+    const walkFrom = fromPlatformToDest[platformPath[platformPath.length - 1]];
+    const walkTo = currentTime[platformPath[0]];
     return {
         platforms: platformPath,
         edges: path,
         time: {
-            walkTo: walkToTime,
-            metro: metroTime,
-            walkFrom: walkFromTime,
+            walkTo,
+            metro: shortestTime - walkFrom - walkTo,
+            walkFrom,
             total: shortestTime
         }
     };
 }
 
-function shortestTransfer(graph: po.Graph, p1i: number, p2i: number) {
+function shortestTransfer(graph: g.Graph, p1i: number, p2i: number) {
     const p1 = graph.platforms[p1i],
         p2 = graph.platforms[p2i];
     if (p1.station !== p2.station) {

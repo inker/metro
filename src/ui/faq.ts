@@ -28,8 +28,10 @@ export default class FAQ {
             new Hammer(this.card).on('swipeleft swiperight', e => this.hideFAQ());
         }
         document.body.appendChild(this.card);
+        const urlRe = /\[\[(.+?)\|(.*?)\]\]/g;
+        const replacement = '<a href=\"$1\" target=\"_blank\">$2</a>';
         const qa2html = qa => `<div><span class="question">${qa.q}</span><span class="answer">${qa.a}</span></div>`;
-        promise.then(data => this.card.innerHTML += data.faq.map(qa2html).join(''));
+        promise.then(data => this.card.innerHTML += data.faq.map(qa2html).join('').replace(urlRe, replacement));
     }
 
     showFAQ() {

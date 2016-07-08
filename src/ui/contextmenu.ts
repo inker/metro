@@ -4,7 +4,7 @@ import MetroMap from '../metro-map';
 import * as util from '../util';
 import * as lang from '../lang';
 
-type Item = { icon?: string; disabled?: boolean; text: string };
+export type Item = { icon?: string; disabled?: boolean; text: string };
 export default class ContextMenu {
     private metroMap: MetroMap;
     private _items: Map<string, Item>;

@@ -16,13 +16,16 @@ export const lineRulesPromise = new Promise<CSSStyleSheet>(resolve => {
         link.onload = e => resolve(sheet);
     }
 }).then(styleSheet => {
-    const lineRules = new Map<string, string>();
+    const lineRules = new Map<string, CSSStyleDeclaration>();
     for (let rule of (styleSheet.cssRules as any as CSSStyleRule[])) {
         if (!(rule instanceof CSSStyleRule)) continue;
-        const tokens = rule.selectorText.match(/\.(M\d+|L|E)/);
+        const tokens = rule.selectorText.match(/^.(M\d+|L|E)$/);
         if (tokens && tokens[1]) {
-            lineRules.set(tokens[1], rule.style.stroke);
+            lineRules.set(tokens[1], rule.style);
+        } else if (rule.selectorText === '#paths-outer > .L') {
+            lineRules.set('light-rail-path', rule.style);
         }
     }
+    console.log(lineRules);
     return lineRules;
 }).catch(err => console.error(err));

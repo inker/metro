@@ -59,6 +59,7 @@ a:hover {
     height: 100%;
     position: relative;
     z-index: 5;
+    /*will-change: transform;*/ /*blurs fonts */
 }
 
 circle {
@@ -108,3 +109,7 @@ button:disabled {
     color: #a8a8a8;
     cursor: auto;
 }
+
+ /*.leaflet-zoom-anim  .leaflet-zoom-animated {
+     transition-duration: 1s;
+ }*/

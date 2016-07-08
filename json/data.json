@@ -7,12 +7,12 @@
     
     {
       "q": "Počemu vśo napisano translitom?",
-      "a": "<a href=\"https://vk.com/russkaja_latinica\">Latinica</a> dľa russkogo jazyka mne lično nravitśa boľše, odnako ja ne predlagaju uprazdňať kirillicu, prosto ispoľzovať latinicu, osnovannuju na češkoj grafike vmesto translita i v kačestve alternativy kirillice (kak, naprimer, v Serbii)."
+      "a": "[[https://vk.com/russkaja_latinica|Latinica]] dľa russkogo jazyka mne lično nravitśa boľše, odnako ja ne predlagaju uprazdňať kirillicu, prosto ispoľzovať latinicu, osnovannuju na češkoj grafike vmesto translita i v kačestve alternativy kirillice (kak, naprimer, v Serbii)."
     },
 
     {
       "q": "Почему станции дублированы по-фински? Мы не в Финляндии.",
-      "a": "Финский нужно сделать вторым официальным языком как дань балтофиннам (ингерманландским финнам, ижоре, води и т.д.), тысячелетиями проживающим на территории Санкт-Петербурга и Лен. области (<a href=\"https://vk.com/inkerinmaa\">Ингрии/Ингерманландии</a>)."
+      "a": "Финский нужно сделать вторым официальным языком как дань балтофиннам (ингерманландским финнам, ижоре, води и т.д.), тысячелетиями проживающим на территории Санкт-Петербурга и Лен. области ([[https://vk.com/inkerinmaa|Ингрии/Ингерманландии]])."
     },
 
     {
@@ -42,7 +42,7 @@
     
     {
       "q": "Я не согласен со схемой. Что за Княжево? Где станция у моего дома в Кронштадте?",
-      "a": "Предложи свою - <a href=\"https://github.com/inker/metro\">форкни и сделай pull request</a>."
+      "a": "Предложи свою - [[https://github.com/inker/metro|форкни и сделай pull request]]."
     },
     
     {

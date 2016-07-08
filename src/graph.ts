@@ -4,36 +4,34 @@ import * as L from 'leaflet';
 
 type AltNames = { 
     old?: string;
-    fi?: string;
     en?: string;
-    se?: string;
-    ee?: string;
-    de?: string;
+    [lang: string]: string;
  };
 
-export interface Platform {
+interface Nameable {
     name: string;
     altNames: AltNames;
+}
+
+export interface Platform extends Nameable {
     station: number;
     location: L.LatLng;
     elevation: number;
     spans: number[];
 };
 
-export type Station = {
-    name: string;
-    altNames: AltNames;
+export interface Station extends Nameable {
     platforms: number[];
 };
 
-export type Transfer = {
+interface Edge {
     source: number;
     target: number;
-};
+}
 
-export type Span = {
-    source: number;
-    target: number;
+export type Transfer = Edge;
+
+export interface Span extends Edge {
     routes: number[];
 };
 
@@ -71,9 +69,9 @@ export class Graph {
         const transferSet = new Set(this.transfers);
         const platformsCopy = this.platforms.slice();
         while (transferSet.size > 0) {
-            const first = transferSet.values().next().value;
-            const pls = new Set<number>().add(first.source).add(first.target);
-            transferSet.delete(first);
+            const firstTransfer = transferSet.values().next().value;
+            const pls = new Set<number>().add(firstTransfer.source).add(firstTransfer.target);
+            transferSet.delete(firstTransfer);
             for (let it = pls.values(), p = it.next().value; p !== undefined; p = it.next().value) {
                 const forDeletion = new Set<Transfer>();
                 for (let tit = transferSet.values(), t = tit.next().value; t !== undefined; t = tit.next().value) {
@@ -89,12 +87,8 @@ export class Graph {
                 platformsCopy[p] = undefined;
             }
             const plarr = Array.from(pls);
-            const firstPlatform = this.platforms[plarr[0]];
-            this.stations.push({
-                name: firstPlatform.name,
-                altNames: firstPlatform.altNames,
-                platforms: plarr
-            });
+            const first = this.platforms[plarr[0]];
+            this.stations.push({ name: first.name, altNames: first.altNames, platforms: plarr });
             for (let p of plarr) {
                 this.platforms[p]['station'] = this.stations.length - 1;
             }
@@ -177,8 +171,3 @@ export class Graph {
         }, (k, v) => k.startsWith('_') ? undefined : v);
     }
 };
-
-export type Hints = {
-    crossPlatform: any;
-    elevationSegments: any;
-}

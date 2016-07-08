@@ -1,6 +1,6 @@
 /// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
-import * as po from './plain-objects';
+import * as g from './graph';
 import * as lang from './lang'
 
 export function arrayEquals<T>(a: T[], b: T[]) {
@@ -13,11 +13,9 @@ export function arrayEquals<T>(a: T[], b: T[]) {
 }
 
 export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {
-    const clientPos = new L.Point(event.clientX, event.clientY);
     const rect = map.getContainer().getBoundingClientRect();
-    const containerPos = new L.Point(rect.left, rect.top);
-    const coors = map.containerPointToLatLng(clientPos.subtract(containerPos));
-    return coors;
+    const containerPoint = new L.Point(event.clientX - rect.left, event.clientY - rect.top);
+    return map.containerPointToLatLng(containerPoint);
 }
 
 export function callMeMaybe<ReturnType>(func: (...params: any[]) => ReturnType, ...params: any[]): ReturnType {
@@ -66,7 +64,7 @@ export function resetStyle() {
     }
 }
 
-export function getPlatformNames(platform: po.Platform): string[] {
+export function getPlatformNames(platform: g.Platform): string[] {
     const ru = platform.name,
         { fi, en } = platform.altNames,
         names = !fi ? [ru] : lang.userLanguage === 'fi' ? [fi, ru] : [ru, fi];
@@ -74,16 +72,27 @@ export function getPlatformNames(platform: po.Platform): string[] {
     return names;
 }
 
+export function circleByIndex(index: number): SVGCircleElement {
+    return document.getElementById('p-' + index) as any;
+}
+
+export function circleByDummy(dummyCircle: Element): SVGCircleElement {
+    return document.getElementById('p-' + dummyCircle.id.slice(2)) as any;
+}
+
+export function platformByCircle(circle: Element, graph: g.Graph) {
+    return graph.platforms[+circle.id.slice(2)];
+}
+
 export namespace CSSTransform {
     export function toPoint(val: string): L.Point {
         if (val.length == 0) return new L.Point(0, 0);
         const tokens = val.match(/translate(3d)?\((-?\d+).*?,\s?(-?\d+).*?(,\s?(-?\d+).*?)?\)/i);
-        return  tokens && tokens[0] ? new L.Point(+tokens[2], +tokens[3]) : new L.Point(0, 0);
+        return tokens && tokens[0] ? new L.Point(+tokens[2], +tokens[3]) : new L.Point(0, 0);
     }
 
-    export function trim3d(el: HTMLElement | SVGStylable) {
-        const s = el.style;
-        s.transform = s.transform.replace(/translate3d\s*\((.+?,\s*.+?),\s*.+?\s*\)/i, 'translate($1)');
+    export function trim3d<T extends { style: CSSStyleDeclaration }>({ style }: T) {
+        style.transform = style.transform.replace(/translate3d\s*\((.+?,\s*.+?),\s*.+?\s*\)/i, 'translate($1)');
     }
 }
 
@@ -93,7 +102,7 @@ export namespace Color {
     }
 
     function rgbToArray(rgb: string): number[] {
-        return rgb.match(/rgb\s*\((\d+),\s*(\d+),\s*(\d+)\s*\)/).slice(1).map(Number);
+        return rgb.match(/rgb\s*\((\d+),\s*(\d+),\s*(\d+)\s*\)/i).slice(1).map(Number);
     }
 
     export function mean(rgb: string[]): string {
@@ -110,17 +119,20 @@ export function flashTitle(titles: string[], duration: number) {
     setInterval(() => document.title = titles[++i % titles.length], duration);
 }
 
-export function downloadAsFile(title: string, content: string) {
+export function downloadFile(title: string, blob: Blob) {
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    const blob = new Blob([content], { type: 'octet/stream' });
-    const url = window.URL.createObjectURL(blob);
     a.href = url;
     a['download'] = title;
     a.click();
-    window.URL.revokeObjectURL(url);
+    URL.revokeObjectURL(url);
 }
 
-export function scaleOverlay(overlay: HTMLElement, scaleFactor: number, mousePos?: L.Point) {
+export function downloadTextFile(title: string, content: string) {
+    downloadFile(title, new Blob([content], { type: 'octet/stream' }));
+}
+
+export function scaleOverlay(overlay: SVGSVGElement, scaleFactor: number, mousePos?: L.Point) {
     const overlayStyle = overlay.style;
     const box = overlay.getBoundingClientRect();
     if (!mousePos) {
@@ -132,8 +144,7 @@ export function scaleOverlay(overlay: HTMLElement, scaleFactor: number, mousePos
     // overlayStyle.left = '0';
     // overlayStyle.top = '0';
     overlayStyle.transformOrigin = `${ratio.x * 100}% ${ratio.y * 100}%`;
-    overlayStyle.transform = `scale(${scaleFactor})`;
-    console.log(overlayStyle.transformOrigin);
+    overlayStyle.transform = `scale3d(${scaleFactor}, ${scaleFactor}, ${scaleFactor})`;
 }
 
 export function removeAllChildren(el: Node) {
@@ -147,9 +158,22 @@ export function removeAllChildren(el: Node) {
  * Fixes blurry font due to 'transform3d' CSS property. Changes everything to 'transform' when the map is not moving
  */
 export function fixFontRendering(): void {
+    console.log('fixing font');
     const blurringStuff = document.querySelectorAll('[style*="translate3d"]');
     console.log(blurringStuff);
     for (let i = 0; i < blurringStuff.length; ++i) {
         CSSTransform.trim3d(blurringStuff[i] as HTMLElement&SVGStylable);
     }
+}
+
+export function formatInteger(integer: number): string {
+    const s = integer.toString();
+    console.log(s);
+    const start = s.length % 3;
+    const arr = start > 0 ? [s.slice(0, start)] : [];
+    for (let i = s.length % 3; i < s.length; i += 3) {
+        arr.push(s.substr(i, 3));
+    }
+    console.log(arr);
+    return arr.join("'");
 }

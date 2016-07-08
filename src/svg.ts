@@ -1,6 +1,6 @@
 /// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
-import * as po from './plain-objects';
+import * as g from './graph';
 import * as math from './math';
 import { Color } from './util';
 
@@ -9,11 +9,11 @@ export function createSVGElement(tagName: string) {
 }
 
 export function makeCircle(position: L.Point, radius: number): SVGCircleElement {
-    const circle = createSVGElement('circle');
+    const circle = createSVGElement('circle') as SVGCircleElement;
     circle.setAttribute('r', radius.toString());
     circle.setAttribute('cy', position.y.toString());
     circle.setAttribute('cx', position.x.toString());
-    return circle as any;
+    return circle;
 }
 
 export function makeLine(start: L.Point, end: L.Point): SVGLineElement {
@@ -28,7 +28,7 @@ export function makeLine(start: L.Point, end: L.Point): SVGLineElement {
 export function makeArc(start: L.Point, end: L.Point, third: L.Point): SVGPathElement {
     const path = createSVGElement('path') as SVGPathElement;
     setCircularPath(path, start, end, third);
-    return path as any;
+    return path;
 }
 
 export function getBezierPath(path: Element) {
@@ -113,26 +113,14 @@ export function makeTransfer(start: L.Point, end: L.Point): SVGLineElement[] {
         tg.y += 0.01;
     }
     return ['transfer-outer', 'transfer-inner'].map(cls => {
-        const line = createSVGElement('line');
+        const line = createSVGElement('line') as SVGLineElement;
         line.setAttribute('x1', start.x.toString());
         line.setAttribute('y1', start.y.toString());
         line.setAttribute('x2', tg.x.toString());
         line.setAttribute('y2', tg.y.toString());
         line.classList.add(cls);
-        return line as any;
+        return line;
     });
-}
-
-export function circleByIndex(index: number): SVGCircleElement {
-    return document.getElementById('p-' + index) as any;
-}
-
-export function circleByDummy(dummyCircle: Element): SVGCircleElement {
-    return document.getElementById('p-' + dummyCircle.id.slice(2)) as any;
-}
-
-export function platformByCircle(circle: Element, graph: po.Graph) {
-    return graph.platforms[+circle.id.slice(2)];
 }
 
 export function circleOffset(circle: SVGCircleElement): L.Point {
@@ -160,7 +148,7 @@ export namespace Scale {
      
     const initialCircles = new Set<SVGCircleElement>();
     const initialTransfers = new Set<SVGPathElement|SVGLineElement>();
-    export function scaleStation(graphPlatforms: po.Platform[], station: po.Station, scaleFactor: number, graphTransfers?: po.Transfer[]) {
+    export function scaleStation(graphPlatforms: g.Platform[], station: g.Station, scaleFactor: number, graphTransfers?: g.Transfer[]) {
         const transferOuterStrokeWidth = parseFloat(document.getElementById('transfers-outer').style.strokeWidth),
             transferInnerStrokeWidth = parseFloat(document.getElementById('transfers-inner').style.strokeWidth)
         for (let p of station.platforms) {
@@ -286,22 +274,26 @@ export namespace Shadows {
 export namespace Gradients {
     //let defs; 
     
-    export function makeLinear(vector: L.Point, colors: string[], offset = 0): SVGLinearGradientElement {
+    export function makeUndirectedLinear(colors: string[]): SVGLinearGradientElement {
         const gradient = createSVGElement('linearGradient') as SVGLinearGradientElement;
-        setDirection(gradient, vector);
         if ('innerHTML' in gradient) {
-            (gradient as any).innerHTML = `<stop offset="${offset}" style="stop-color:${colors[0]}" />
-            <stop offset="${1 - offset}" style="stop-color:${colors[1]}" />`;
+            gradient['innerHTML'] = `<stop style="stop-color:${colors[0]}" /><stop style="stop-color:${colors[1]}" />`;
             return gradient;
+        } else {
+            const from = createSVGElement('stop') as SVGStopElement;
+            from.style.stopColor = colors[0];
+            const to = createSVGElement('stop') as SVGStopElement;
+            to.style.stopColor = colors[1];
+            gradient.appendChild(from);
+            gradient.appendChild(to);
         }
-        const from = createSVGElement('stop') as SVGStopElement;
-        from.setAttribute('offset', offset.toString());
-        from.style.stopColor = colors[0];
-        const to = createSVGElement('stop') as SVGStopElement;
-        to.setAttribute('offset', (1 - offset).toString());
-        to.style.stopColor = colors[1];
-        gradient.appendChild(from);
-        gradient.appendChild(to);
+        return gradient;
+    }
+
+    export function makeLinear(vector: L.Point, colors: string[], offset = 0): SVGLinearGradientElement {
+        const gradient = makeUndirectedLinear(colors);
+        setOffset(gradient, offset);
+        setDirection(gradient, vector);
         return gradient;
     }
 
@@ -332,7 +324,7 @@ export namespace Animation {
         return currentAnimation;
     }
     
-    export function animateRoute(graph: po.Graph, platforms: number[], edges: string[], speed = 1) {
+    export function animateRoute(graph: g.Graph, platforms: number[], edges: string[], speed = 1) {
         const pulsate = L.Browser.webkit && !L.Browser.mobile;
         currentAnimation = new Promise<boolean>((resolve, reject) => (function animateSpan(i: number) {
             if (!animationsAllowed) {
@@ -368,7 +360,7 @@ export namespace Animation {
             }
 
             const idParts = edges[i].split('-');
-            const edge: po.Transfer | po.Span = graph[idParts[0] === 'p' ? 'spans' : 'transfers'][+idParts[1]];
+            const edge: g.Transfer | g.Span = graph[idParts[0] === 'p' ? 'spans' : 'transfers'][+idParts[1]];
             const initialOffset = edge.source === platforms[i] ? length : -length;
             const duration = length / speed;
             Shadows.applyDrop(outer);

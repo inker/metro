@@ -5,13 +5,15 @@ import MapEditor from './ui/mapeditor';
 import FAQ from './ui/faq';
 import TextPlate from './ui/textplate';
 import ContextMenu from './ui/contextmenu';
+import DistanceMeasure from './ui/distancemeasure';
 
-export { MapEditor, FAQ, TextPlate, ContextMenu, Icons }
+export { DistanceMeasure, MapEditor, FAQ, TextPlate, ContextMenu, Icons }
 
 import * as L from 'leaflet';
-import * as po from './plain-objects';
+import * as g from './graph';
+import * as geo from './geo';
 import * as lang from './lang';
-const tr = (text: string) => lang.translate(text);
+const tr = lang.translate;
 
 namespace Icons {
     export const start = L.icon({
@@ -37,7 +39,7 @@ namespace Icons {
     });
 }
 
-export function platformRenameDialog(graph: po.Graph, platform: po.Platform) {
+export function platformRenameDialog(graph: g.Graph, platform: g.Platform) {
     const ru = platform.name, {fi, en} = platform.altNames;
     const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru];
     const nameString = names.join('|');
@@ -77,8 +79,6 @@ export function addLayerSwitcher(map: L.Map, layers: L.TileLayer[]): void {
     });
 }
 
-
-import * as geo from './geo';
 export function drawZones(metroMap) {
     this.graph = metroMap.getGraph();
     this.map = metroMap.getMap();

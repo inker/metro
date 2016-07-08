@@ -1,6 +1,5 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import * as svg from '../svg';
-import * as po from '../plain-objects';
 import * as lang from '../lang';
 import * as util from '../util';
 import * as L from 'leaflet';
@@ -13,7 +12,7 @@ export default class TextPlate {
     constructor() {
         const div = document.createElement('div');
         div.classList.add('plate-box');
-        const foreign = svg.createSVGElement('foreignObject');
+        const foreign = svg.createSVGElement('foreignObject') as SVGForeignObjectElement;
         foreign.setAttribute('x', '0');
         foreign.setAttribute('y', '0');
         foreign.setAttribute('width', '100%');
