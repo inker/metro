@@ -12,6 +12,22 @@ export function arrayEquals<T>(a: T[], b: T[]) {
     return true;
 }
 
+export function uniquify<T>(arr: T[]) {
+    return Array.from(new Set(arr));
+} 
+
+export function formatInteger(integer: number): string {
+    const s = integer.toString();
+    console.log(s);
+    const start = s.length % 3;
+    const arr = start > 0 ? [s.slice(0, start)] : [];
+    for (let i = s.length % 3; i < s.length; i += 3) {
+        arr.push(s.substr(i, 3));
+    }
+    console.log(arr);
+    return arr.join("'");
+}
+
 export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {
     const rect = map.getContainer().getBoundingClientRect();
     const containerPoint = new L.Point(event.clientX - rect.left, event.clientY - rect.top);
@@ -102,7 +118,7 @@ export namespace Color {
     }
 
     function rgbToArray(rgb: string): number[] {
-        return rgb.match(/rgb\s*\((\d+),\s*(\d+),\s*(\d+)\s*\)/i).slice(1).map(Number);
+        return rgb.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i).slice(1).map(Number);
     }
 
     export function mean(rgb: string[]): string {
@@ -144,7 +160,7 @@ export function scaleOverlay(overlay: SVGSVGElement, scaleFactor: number, mouseP
     // overlayStyle.left = '0';
     // overlayStyle.top = '0';
     overlayStyle.transformOrigin = `${ratio.x * 100}% ${ratio.y * 100}%`;
-    overlayStyle.transform = `scale3d(${scaleFactor}, ${scaleFactor}, ${scaleFactor})`;
+    overlayStyle.transform = `scale(${scaleFactor})`;
 }
 
 export function removeAllChildren(el: Node) {
@@ -158,22 +174,9 @@ export function removeAllChildren(el: Node) {
  * Fixes blurry font due to 'transform3d' CSS property. Changes everything to 'transform' when the map is not moving
  */
 export function fixFontRendering(): void {
-    console.log('fixing font');
     const blurringStuff = document.querySelectorAll('[style*="translate3d"]');
-    console.log(blurringStuff);
+    console.log('fixing font', blurringStuff);
     for (let i = 0; i < blurringStuff.length; ++i) {
         CSSTransform.trim3d(blurringStuff[i] as HTMLElement&SVGStylable);
     }
-}
-
-export function formatInteger(integer: number): string {
-    const s = integer.toString();
-    console.log(s);
-    const start = s.length % 3;
-    const arr = start > 0 ? [s.slice(0, start)] : [];
-    for (let i = s.length % 3; i < s.length; i += 3) {
-        arr.push(s.substr(i, 3));
-    }
-    console.log(arr);
-    return arr.join("'");
 }

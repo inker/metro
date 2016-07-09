@@ -2,12 +2,13 @@
 import * as L from 'leaflet';
 import MetroMap from '../metro-map';
 import * as util from '../util';
+import { Icons } from '../ui';
 import { Item as ContextMenuItem } from './contextmenu';
 
 export default class DistanceMeasure {
     private metroMap: MetroMap;
     private map: L.Map;
-    private polyline = new L.Polyline([]);
+    private polyline = new L.Polyline([], { color: 'red'});
     private markers = new L.FeatureGroup().on('layeradd layerremove', util.fixFontRendering);
     private contextMenuItem: ContextMenuItem;
     constructor(metroMap: MetroMap) {
@@ -38,7 +39,7 @@ export default class DistanceMeasure {
         }
     }
 
-    private mapOnClick = (e: L.LeafletMouseEvent) => {
+    private makeMarker = (e: L.LeafletMouseEvent) => {
         if (e.originalEvent.button !== 0) return;
         const marker = new L.Marker(e.latlng, { draggable: true })
             .bindPopup('')
@@ -48,16 +49,17 @@ export default class DistanceMeasure {
                 //L.DomEvent.preventDefault(e.originalEvent);
                 this.markers.removeLayer(marker);
                 if (this.markers.getLayers().length > 0) {
-                    this.updateDistances();  
+                    this.updateDistances();
                 } else {
                     this.metroMap.dispatchEvent(new MouseEvent('deletemeasurements'));
                 }
-                       
+
                 //L.DomEvent.stopPropagation(e.originalEvent);
                 //return false;
             });
         // const el = { lang: { ru: 'Udaliť izmerenia', en: 'Delete measurements' } };
-        // this.metroMap.contextMenu.extraItems.set(circle, new Map().set('deletemeasurements', el));               
+        // this.metroMap.contextMenu.extraItems.set(circle, new Map().set('deletemeasurements', el));
+        marker.setIcon(Icons.circle);
         this.markers.addLayer(marker);
         this.updateDistances();
     };
@@ -66,16 +68,15 @@ export default class DistanceMeasure {
         this.metroMap.contextMenu.items.delete('measuredistance');
         this.map.addLayer(this.polyline.setLatLngs([]))
             .addLayer(this.markers)
-            .on('click', this.mapOnClick);
+            .on('click', this.makeMarker);
         this.map.fire('click', { latlng: initialCoordinate, originalEvent: { button: 0 } });
-        util.onceEscapePress(e => this.metroMap.dispatchEvent(new MouseEvent('deletemeasurements')));   
+        util.onceEscapePress(e => this.metroMap.dispatchEvent(new MouseEvent('deletemeasurements')));
     }
 
     deleteMeasurements() {
-        this.markers.clearLayers();
         this.map.removeLayer(this.polyline)
             .removeLayer(this.markers.clearLayers())
-            .off('click', this.mapOnClick);
+            .off('click', this.makeMarker);
         this.metroMap.contextMenu.items.set('measuredistance', this.contextMenuItem);
     }
 }

@@ -7,6 +7,8 @@ import * as util from '../util';
 export default class MapEditor {
     private metroMap: MetroMap;
 
+    private minZoom: number;
+
     private button: HTMLButtonElement;
 
     private _editMode: boolean;
@@ -18,19 +20,20 @@ export default class MapEditor {
     set editMode(val: boolean) {
         if (val) {
             this.button.textContent = lang.translate('Save map');;
-            this.button.onclick = this.saveMapClick.bind(this);
+            this.button.onclick = e => this.saveMapClick();
             const dummyCircles = document.getElementById('dummy-circles');
             dummyCircles.onmousedown = dummyCircles.onclick = null;
             this.metroMap.contextMenu.items.delete('platformadd');
         } else {
             this.button.textContent = lang.translate('Edit map');
-            this.button.onclick = this.editMapClick.bind(this);
+            this.button.onclick = e => this.editMapClick();
         }
         this._editMode = val;
     }
 
-    constructor(metroMap: MetroMap) {
+    constructor(metroMap: MetroMap, minZoom: number) {
         this.metroMap = metroMap;
+        this.minZoom = minZoom;
         const btn = document.createElement('button');
         btn.id = 'edit-map-button';
         btn.textContent = 'Edit Map';
@@ -45,16 +48,16 @@ export default class MapEditor {
             }
         });
     }
-    private editMapClick(event: MouseEvent) {
+    private editMapClick() {
         this.editMode = true;
         const map = this.metroMap.getMap();
-        if (map.getZoom() < 12) {
-            map.setZoom(12);
+        if (map.getZoom() < this.minZoom) {
+            map.setZoom(this.minZoom);
         }
         this.addMapListeners();
     }
 
-    private saveMapClick(event: MouseEvent) {
+    private saveMapClick() {
         util.downloadTextFile('graph.json', this.metroMap.getGraph().toJSON());
         this.editMode = false;
     }

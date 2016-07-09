@@ -34,7 +34,7 @@ export default class ContextMenu {
         this._extraItems = new Map();
         
         const map = metroMap.getMap();
-        const listener = this.handler.bind(this);
+        const listener = e => this.handler(e);
         const { mapPane, objectsPane } = map.getPanes();
         mapPane.addEventListener('contextmenu', listener, false);
         objectsPane.addEventListener('contextmenu', listener, true); // 'true' prevents propagation

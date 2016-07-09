@@ -16,7 +16,7 @@ import * as ui from './ui';
 
 L.Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images';
 
-const minZoom = 9, maxZoom = 18;
+const minZoom = 9, maxZoom = 18, startingZoom = 11, detailedZoom = 12;
 
 export default class MetroMap implements EventTarget {
     private map: L.Map;
@@ -70,9 +70,8 @@ export default class MetroMap implements EventTarget {
             .then(data => data.json());
 
         this.map = new L.Map(containerId, {
-            //layers: tileLayers[Object.keys(tileLayers)[0]],
             center: new L.LatLng(59.943556, 30.30452),
-            zoom: 11,
+            zoom: startingZoom,
             minZoom,
             maxZoom,
             inertia: true
@@ -115,11 +114,11 @@ export default class MetroMap implements EventTarget {
             this.redrawNetwork();
             // TODO: fix the kludge making the grey area disappear
             this.map.invalidateSize(false);
-            this.addMapListeners();
+            this.addMapMovementListeners();
             //this.routeWorker.postMessage(this.graph);
             //drawZones(this);
             if (!L.Browser.mobile) {
-                new ui.MapEditor(this);
+                new ui.MapEditor(this, detailedZoom);
             }
             new ui.FAQ(this, 'json/data.json');
             return contextMenuPromise;
@@ -127,7 +126,7 @@ export default class MetroMap implements EventTarget {
             this._contextMenu = new ui.ContextMenu(this, new Map<string, any>(contextMenuData));
             this.distanceMeasure = new ui.DistanceMeasure(this);
             this.resetMapView();
-            ui.loadIcons(this.map, [this.fromMarker, this.toMarker]);
+            ui.cacheIcons(this.map, [this.fromMarker, this.toMarker]);
             util.fixFontRendering(); // just in case
             tilePane.style.display = '';
             console.log(hints.verify(this.graph, this.hints));
@@ -138,23 +137,22 @@ export default class MetroMap implements EventTarget {
     removeEventListener(type: string, listener: EventListener) { }
 
     dispatchEvent(event: Event): boolean {
-        console.log('event target as seen from dispatcher', event.target);
-        console.log(event);
+        console.log('event as seen from the dispatcher', event);
         switch (event.type) {
-            case 'clearroute':
-                this.clearRoute();
-                break;
-            case 'showheatmap':
-                this.showHeatMap();
-                break;
             case 'measuredistance': {
                 this.distanceMeasure.measureDistance(util.mouseToLatLng(this.map, event as MouseEvent));
                 break;
             }
-            case 'deletemeasurements': {
+            case 'deletemeasurements':
                 this.distanceMeasure.deleteMeasurements();
                 break;
-            }
+            case 'routefrom':
+            case 'routeto':
+                this.handleMenuFromTo(event as MouseEvent);
+                break;
+            case 'clearroute':
+                this.clearRoute();
+                break;
             case 'platformrename': {
                 const me = event as MouseEvent;
                 const circle = me.relatedTarget as SVGCircleElement;
@@ -164,7 +162,7 @@ export default class MetroMap implements EventTarget {
                 break;
             }
             case 'platformdelete': {
-
+                break;
             }
             case 'platformadd':
                 const coor = util.mouseToLatLng(this.map, event as MouseEvent);
@@ -191,10 +189,9 @@ export default class MetroMap implements EventTarget {
                 this.graph.platforms.push(platform);
                 bind.platformToModel.call(this, platform, [circle, dummy])
                 break;
-            case 'routefrom':
-            case 'routeto':
-                this.handleMenuFromTo(event as MouseEvent);
-                break;
+            case 'showheatmap':
+                this.showHeatMap();
+                break;                
             default:
                 break;
         }
@@ -269,7 +266,7 @@ export default class MetroMap implements EventTarget {
         // }
     }
 
-    private addMapListeners(): void {
+    private addMapMovementListeners(): void {
         const mapPane = this.map.getPanes().mapPane;
         const overlayStyle = this.overlay.style;
         const overlayClassList = this.overlay.classList;
@@ -282,7 +279,7 @@ export default class MetroMap implements EventTarget {
             this.map.dragging.disable();
             fromZoom = e.target['_zoom'];
             if (scaleFactor !== 1) {
-                mousePos = e.target['scrollWheelZoom']['_lastMousePos'];
+                //mousePos = e.target['scrollWheelZoom']['_lastMousePos'];
                 console.log('mousepos:', mousePos);
                 util.scaleOverlay(this.overlay, scaleFactor, mousePos);
             }
@@ -304,28 +301,53 @@ export default class MetroMap implements EventTarget {
             // the secret of correct positioning is the movend transform check for corrent transform
             overlayStyle.transform = null;
         }).on('layeradd layerremove', util.fixFontRendering);
-        this.overlay.addEventListener('wheel', e => {
+        
+        const changeScaleFactor = (zoomedIn: () => boolean) => {
+            const oldZoom = this.map.getZoom();
+            scaleFactor = zoomedIn() ?
+                Math.min(scaleFactor * 2, 2 ** (maxZoom - oldZoom)) :
+                Math.max(scaleFactor / 2, 2 ** (minZoom - oldZoom));            
+        }
+
+        const onWheel = (e: WheelEvent) => {
+            mousePos = L.DomEvent.getMousePosition(e);
             //scaleFactor *= e.deltaY < 0 ? 2 : 0.5;
-            const zoom = this.map.getZoom();
-            scaleFactor = e.deltaY < 0 ?
-                Math.min(scaleFactor * 2, 2 ** (maxZoom - zoom)) :
-                Math.max(scaleFactor / 2, 2 ** (minZoom - zoom));
+            changeScaleFactor(() => e.deltaY < 0);
+            //this.map.setZoomAround(util.mouseToLatLng(this.map, e), e.deltaY < 0 ? zoom + 1 : zoom - 1);
+        };
+        mapPane.addEventListener('wheel', onWheel);
+        // controls are not a part of the map pane, so a special listener is for them
+        document.querySelector('.leaflet-control-container').addEventListener('wheel', onWheel);
+
+        // +/- button click
+        const zoomContainer = this.map.zoomControl.getContainer();
+        zoomContainer.addEventListener('mousedown', e => {
+            mousePos = new L.Point(innerWidth / 2, innerHeight / 2);
+            changeScaleFactor(() => e.target === zoomContainer.firstChild);
+        }, true);
+
+        // double click zoom
+        this.map.on('dblclick', (e: L.LeafletMouseEvent) => {
+            const o = e.originalEvent;
+            mousePos = L.DomEvent.getMousePosition(o);
+            changeScaleFactor(() => !o.shiftKey);
         });
-        // document.querySelector('.leaflet-control-zoom-in').addEventListener('mousedown', e => {
-        //     const we = new WheelEvent('wheel', { clientX: innerWidth / 2, clientY: innerHeight / 2, deltaY: -1 });
-        //     this.overlay.dispatchEvent(we); 
-        // });
-        // document.querySelector('.leaflet-control-zoom-out').addEventListener('mousedown', e => {
-        //     const zoom = this.map.getZoom();
-        //     scaleFactor = Math.max(scaleFactor / 2, 2 ** (minZoom - zoom));
-        // });
+
+        // keyboard zoom
+        document.addEventListener('keydown', e => {
+            mousePos = new L.Point(innerWidth / 2, innerHeight / 2);
+            const i = [189, 109, 54, 173, 187, 107, 61, 171].indexOf(e.keyCode);
+            if (i !== -1) {
+                changeScaleFactor(() => i > 3);
+            }
+        });
     }
 
 
     private resetMapView(): void {
         //const fitness = (points, pt) => points.reduce((prev, cur) => this.bounds., 0);
         //const center = geo.calculateGeoMean(this.graph.platforms.map(p => p.location), fitness, 0.1);
-        this.map.setView(this.bounds.getCenter(), 11, {
+        this.map.setView(this.bounds.getCenter(), startingZoom, {
             pan: { animate: false },
             zoom: { animate: false }
         });
@@ -429,8 +451,8 @@ export default class MetroMap implements EventTarget {
 
         //const lineWidth = 2 ** (zoom / 4 - 1.75);
         const lineWidth = (zoom - 7) * 0.5;
-        const circleRadius = zoom < 12 ? lineWidth * 1.25 : lineWidth;
-        const circleBorder = zoom < 12 ? circleRadius * 0.4 : circleRadius * 0.6;
+        const circleRadius = zoom < detailedZoom ? lineWidth * 1.25 : lineWidth;
+        const circleBorder = zoom < detailedZoom ? circleRadius * 0.4 : circleRadius * 0.6;
         const transferWidth = lineWidth * 0.9;
         const transferBorder = circleBorder * 1.25;
         const strokeWidths = {
@@ -478,7 +500,7 @@ export default class MetroMap implements EventTarget {
                 if (zoom > 9) {
                     const ci = svg.makeCircle(posOnSVG, circleRadius);
                     ci.id = 'p-' + platformIndex;
-                    if (zoom >= 12) {
+                    if (zoom >= detailedZoom) {
                         this.colorizePlatformCircle(ci, this.passingLines(platform));
                     }
                     // else {
@@ -512,7 +534,7 @@ export default class MetroMap implements EventTarget {
 
         // transfers
 
-        if (zoom > 11) {
+        if (zoom >= detailedZoom) {
             const transfersOuterFrag = docFrags.get('transfers-outer');
             const transfersInnerFrag = docFrags.get('transfers-inner');
             const defs = this.overlay.querySelector('defs');
@@ -589,7 +611,7 @@ export default class MetroMap implements EventTarget {
         const stationCenter = (s: g.Station) => geo.getCenter(s.platforms.map(i => graphPlatforms[i].location));
         const topLeftOverall = this.map.project(this.bounds.getNorthWest(), zoom).round();
         for (let station of this.graph.stations) {
-            const center = zoom < 12 ? stationCenter(station) : null;
+            const center = zoom < detailedZoom ? stationCenter(station) : null;
             for (let platformIndex of station.platforms) {
                 const projPt = this.map.project(center || graphPlatforms[platformIndex].location, zoom).round();
                 this.platformsOnSVG.set(platformIndex, projPt.subtract(topLeftOverall));
@@ -782,19 +804,28 @@ export default class MetroMap implements EventTarget {
             this.plate.hide();
             svg.Scale.unscaleAll();
         };
+        const zip = (prev, cur) => `${prev} / ${cur}`;
+        
+        const getNames = (platforms: g.Platform[]) => [0, 1, 2]
+            .map(no => util.uniquify(platforms.map(p => util.getPlatformNames(p)[no])).reduce(zip))
+            .filter(s => s !== undefined && s.length > 0);
         const dummyCircles = document.getElementById('dummy-circles');
         dummyCircles.addEventListener('mouseover', e => {
             const dummy = e.target as SVGCircleElement;
             const platform = this.graph.platforms[+dummy.id.slice(2)];
             const station = this.graph.stations[platform.station];
-            this.highlightStation(station);
+            const names = this.map.getZoom() < detailedZoom && station.platforms.length > 1 ? 
+                getNames(station.platforms.map(i => this.graph.platforms[i])) :
+                util.getPlatformNames(platform);
+            this.highlightStation(station, names);
         });
         dummyCircles.addEventListener('mouseout', onMouseOut);
         const onTransferOver = (e: MouseEvent) => {
             const el = e.target as SVGPathElement | SVGLineElement;
             const transfer = this.graph.transfers[+el.id.slice(3)];
-            const station = this.graph.stations[this.graph.platforms[transfer.source].station];
-            this.highlightStation(station);
+            const source = this.graph.platforms[transfer.source];
+            const station = this.graph.stations[source.station];
+            this.highlightStation(station, getNames([source, this.graph.platforms[transfer.target]]));
         };
         const transfersOuter = document.getElementById('transfers-outer'),
             transfersInner = document.getElementById('transfers-inner');
@@ -804,7 +835,7 @@ export default class MetroMap implements EventTarget {
         transfersInner.addEventListener('mouseout', onMouseOut);
     }
 
-    private highlightStation(station: g.Station) {
+    private highlightStation(station: g.Station, names: string[]) {
         const scaleFactor = 1.25,
             graphPlatforms = this.graph.platforms,
             stationPlatforms = station.platforms;
@@ -815,7 +846,7 @@ export default class MetroMap implements EventTarget {
             svg.Scale.scaleCircle(circle, scaleFactor, true);
             platform = graphPlatforms[stationPlatforms[0]];
         } else {
-            const transfers = this.map.getZoom() < 12 ? undefined : this.graph.transfers;
+            const transfers = this.map.getZoom() < detailedZoom ? undefined : this.graph.transfers;
             svg.Scale.scaleStation(graphPlatforms, station, scaleFactor, transfers);
 
             const idx2lat = (i: number) => graphPlatforms[i].location.lat;
@@ -823,7 +854,7 @@ export default class MetroMap implements EventTarget {
             circle = util.circleByIndex(topmostIndex);
             platform = graphPlatforms[topmostIndex];
         }
-        this.plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));
+        this.plate.show(svg.circleOffset(circle), names);
     }
 
     private visualizeShortestRoute(obj: L.LatLng[] | algorithm.ShortestRouteObject, animate = true) {

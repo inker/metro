@@ -13,6 +13,7 @@ import * as L from 'leaflet';
 import * as g from './graph';
 import * as geo from './geo';
 import * as lang from './lang';
+import * as svg from './svg';
 const tr = lang.translate;
 
 namespace Icons {
@@ -37,6 +38,29 @@ namespace Icons {
         shadowSize: [41, 41],
         shadowAnchor: [12, 41]
     });
+
+    export const circle = (() => {
+        const root = svg.createSVGElement('svg');
+        root.setAttribute('width', '100');
+        root.setAttribute('height', '100');
+        const ci = svg.makeCircle(new L.Point(50, 50), 40);
+        ci.style.stroke = 'red';
+        ci.style.strokeWidth = '20px';
+        ci.style.fill = 'white';
+        root.appendChild(ci);
+        const xml = new XMLSerializer().serializeToString(root);
+        const data = "data:image/svg+xml;base64," + btoa(xml);
+        const img = document.createElement('img');
+        img.src = data;
+        //document.body.appendChild(img)
+        const r = 5;
+        return L.icon({
+            iconUrl: data,
+            iconSize: [r * 2, r * 2],
+            iconAnchor: [r, r],
+            popupAnchor: [0, -r]        
+        });
+    })();
 }
 
 export function platformRenameDialog(graph: g.Graph, platform: g.Platform) {
@@ -98,7 +122,7 @@ export function drawZones(metroMap) {
 }
 
 
-export function loadIcons(map: L.Map, markers: L.Marker[]) {
+export function cacheIcons(map: L.Map, markers: L.Marker[]) {
     for (let marker of markers) {
         map.addLayer(marker).removeLayer(marker);
     }
