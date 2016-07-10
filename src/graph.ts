@@ -1,5 +1,4 @@
 /// <reference path="../typings/tsd.d.ts" />
-
 import * as L from 'leaflet';
 
 type AltNames = { 

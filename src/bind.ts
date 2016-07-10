@@ -1,3 +1,4 @@
+/// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 import * as svg from './svg';
 import * as math from './math';

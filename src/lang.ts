@@ -1,5 +1,3 @@
-/// <reference path="../typings/tsd.d.ts" />
-
 export const userLanguage = (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();
 
 export let dictionary = {};

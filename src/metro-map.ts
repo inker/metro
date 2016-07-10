@@ -81,18 +81,7 @@ export default class MetroMap implements EventTarget {
         tilePane.style.display = 'none';
 
         ui.addLayerSwitcher(this.map, [mapbox, mapnik, osmFrance, cartoDBNoLabels, wikimapia]);
-        addEventListener('keydown', e => {
-            if (e.altKey) {
-                switch (e.keyCode) {
-                    case 82: return this.redrawNetwork(); // r
-                    default: return;
-                }
-            }
-            switch (e.keyCode) {
-                case 27: return this.dispatchEvent(new Event('clearroute')); // esc
-                default: return;
-            }
-        });
+        this.addKeyboardListeners();
 
         this.overlay = svg.createSVGElement('svg') as SVGSVGElement;
         this.overlay.id = 'overlay';
@@ -266,18 +255,32 @@ export default class MetroMap implements EventTarget {
         // }
     }
 
+    private addKeyboardListeners(): void {
+        addEventListener('keydown', e => {
+            if (e.altKey) {
+                switch (e.keyCode) {
+                    case 82: return this.redrawNetwork(); // r
+                    default: return;
+                }
+            }
+            switch (e.keyCode) {
+                case 27: return this.dispatchEvent(new Event('clearroute')); // esc
+                default: return;
+            }
+        });
+    }
+
     private addMapMovementListeners(): void {
         const mapPane = this.map.getPanes().mapPane;
         const overlayStyle = this.overlay.style;
         const overlayClassList = this.overlay.classList;
         let scaleFactor = 1,
-            mousePos: L.Point,
-            fromZoom: number;
+            mousePos: L.Point;
         this.map.on('zoomstart', e => {
             overlayClassList.add('leaflet-zoom-animated');
             console.log('zoomstart', e);
             this.map.dragging.disable();
-            fromZoom = e.target['_zoom'];
+            //fromZoom = e.target['_zoom'];
             if (scaleFactor !== 1) {
                 //mousePos = e.target['scrollWheelZoom']['_lastMousePos'];
                 console.log('mousepos:', mousePos);
@@ -302,9 +305,9 @@ export default class MetroMap implements EventTarget {
             overlayStyle.transform = null;
         }).on('layeradd layerremove', util.fixFontRendering);
         
-        const changeScaleFactor = (zoomedIn: () => boolean) => {
+        const changeScaleFactor = (isZoomIn: () => boolean) => {
             const oldZoom = this.map.getZoom();
-            scaleFactor = zoomedIn() ?
+            scaleFactor = isZoomIn() ?
                 Math.min(scaleFactor * 2, 2 ** (maxZoom - oldZoom)) :
                 Math.max(scaleFactor / 2, 2 ** (minZoom - oldZoom));            
         }
@@ -392,7 +395,7 @@ export default class MetroMap implements EventTarget {
             bind.platformToModel.call(this, i, [circle, dummyCircle]);
         }
     }
-
+    
     private updateOverlayPositioning(): void {
         const nw = this.bounds.getNorthWest(),
             se = this.bounds.getSouthEast();
@@ -551,12 +554,7 @@ export default class MetroMap implements EventTarget {
                     : svg.makeTransfer(pos1, pos2);
                 paths[0].id = 'ot-' + transferIndex;
                 paths[1].id = 'it-' + transferIndex;
-                const gradientColors: string[] = [pl1, pl2].map(p => {
-                    const span = this.graph.spans[p.spans[0]];
-                    const routes = span.routes.map(n => this.graph.routes[n]);
-                    const [lineId, lineType, lineNum] = routes[0].line.match(/([MEL])(\d{0,2})/);
-                    return this.lineRules.get(lineType === 'L' ? lineType : lineId).stroke;
-                });
+                const gradientColors = [pl1, pl2].map(p => this.getPlatformColor(p));
                 // const colors = [transfer.source, transfer.target].map(i => getComputedStyle(stationCirclesFrag.childNodes[i] as Element, null).stroke);
                 // console.log(colors);
                 const circlePortion = fullCircleRadius / pos1.distanceTo(pos2);
@@ -589,8 +587,6 @@ export default class MetroMap implements EventTarget {
             pathsOuterFrag.appendChild(outer);
             if (inner) {
                 pathsInnerFrag.appendChild(inner);
-            } else if (outer.classList.contains('L')) {
-                //outer.style.strokeWidth = thinnerLineWidth + 'px';
             }
         }
 
@@ -627,6 +623,13 @@ export default class MetroMap implements EventTarget {
             }
         }
         return lines;
+    }
+
+    private getPlatformColor(platform: g.Platform){ 
+        const span = this.graph.spans[platform.spans[0]];
+        const routes = span.routes.map(n => this.graph.routes[n]);
+        const [lineId, lineType, lineNum] = routes[0].line.match(/([MEL])(\d{0,2})/);
+        return this.lineRules.get(lineType === 'L' ? lineType : lineId).stroke;        
     }
 
     private passingLinesStation(station: g.Station) {
@@ -758,15 +761,19 @@ export default class MetroMap implements EventTarget {
         const rarr: number[] = [];
         for (let t of this.graph.transfers) {
             if (t === transfer) continue;
-            if (t.source === transfer.source || t.source === transfer.target) rarr.push(t.target);
-            else if (t.target === transfer.source || t.target === transfer.target) rarr.push(t.source);
+            if (t.source === transfer.source || t.source === transfer.target) {
+                rarr.push(t.target);
+            } else if (t.target === transfer.source || t.target === transfer.target) {
+                rarr.push(t.source);
+            }
         }
         let thirdIndex: number;
+        console.log('arr', transfer.source, transfer.target, rarr);
         if (rarr.length === 2) {
             if (rarr[0] !== rarr[1]) throw Error("FFFFUC");
             thirdIndex = rarr[0];
         } else if (rarr.length === 3) {
-            thirdIndex = rarr.sort()[1];
+            thirdIndex = rarr[0] === rarr[1] ? rarr[2] : rarr[0] === rarr[2] ? rarr[1] : rarr[0];
         } else {
             throw new Error("111FUUFF");
         }

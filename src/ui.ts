@@ -1,5 +1,3 @@
-/// <reference path="../typings/tsd.d.ts" />
-
 const alertify = require('alertifyjs');
 import MapEditor from './ui/mapeditor';
 import FAQ from './ui/faq';
