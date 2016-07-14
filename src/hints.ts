@@ -1,5 +1,5 @@
 /// <reference path="../typings/tsd.d.ts" />
-import * as g from './graph';
+import * as nw from './network';
 
 type PlatformHint = {
     [line: string]: string|string[];
@@ -14,9 +14,9 @@ export type Hints = {
     elevationSegments: any;
 }
     
-export function verify(graph: g.Graph, hints: Hints): Promise<string> {
+export function verify(network: nw.Network, hints: Hints): Promise<string> {
     function checkExistence(val: string) {
-        if (graph.platforms.find(el => el.name === val) === undefined) {
+        if (network.platforms.find(el => el.name === val) === undefined) {
             throw new Error(`platform ${val} doesn't exist`);
         }
     }
@@ -33,7 +33,7 @@ export function verify(graph: g.Graph, hints: Hints): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         const crossPlatform = hints.crossPlatform;
         Object.keys(crossPlatform).forEach(platformName => {
-            if (graph.platforms.find(el => el.name === platformName) === undefined) {
+            if (network.platforms.find(el => el.name === platformName) === undefined) {
                 reject(`platform ${platformName} doesn't exist`);
             }
             const obj = crossPlatform[platformName];
@@ -52,10 +52,10 @@ export function verify(graph: g.Graph, hints: Hints): Promise<string> {
  * -1: is an object
  * >=0: is an array
  */
-export function hintContainsLine(graph: g.Graph, dirHints: CrossPlatformHint, platform: g.Platform): number {
-    const spans = platform.spans.map(i => graph.spans[i]);
-    const routes: g.Route[] = [];
-    spans.forEach(span => span.routes.forEach(i => routes.push(graph.routes[i])));
+export function hintContainsLine(network: nw.Network, dirHints: CrossPlatformHint, platform: nw.Platform): number {
+    const spans = platform.spans.map(i => network.spans[i]);
+    const routes: nw.Route[] = [];
+    spans.forEach(span => span.routes.forEach(i => routes.push(network.routes[i])));
     const lines = routes.map(r => r.line);
     const platformHints = dirHints[platform.name];
     if (platformHints) {

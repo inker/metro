@@ -39,7 +39,7 @@ export type Route = {
     branch: string;
 };
 
-export class Graph {
+export class Network {
     platforms: Platform[];
     stations: Station[];
     lines: {};
@@ -168,5 +168,27 @@ export class Graph {
             spans,
             routes
         }, (k, v) => k.startsWith('_') ? undefined : v);
+    }
+
+    passingLines(platform: Platform): Set<string> {
+        const lines = new Set<string>();
+        for (let spanIndex of platform.spans) {
+            for (let routeIndex of this.spans[spanIndex].routes) {
+                lines.add(this.routes[routeIndex].line);
+            }
+        }
+        return lines;
+    }
+
+    passingLinesStation(station: Station): Set<string> {
+        const lines = new Set<string>();
+        for (let platformIndex of station.platforms) {
+            for (let spanIndex of this.platforms[platformIndex].spans) {
+                for (let routeIndex of this.spans[spanIndex].routes) {
+                    lines.add(this.routes[routeIndex].line);
+                }
+            }
+        }
+        return lines;
     }
 };

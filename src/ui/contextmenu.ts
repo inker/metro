@@ -2,7 +2,7 @@
 import * as L from 'leaflet';
 import MetroMap from '../metro-map';
 import * as util from '../util';
-import * as lang from '../lang';
+import { translate as tr } from '../i18n';
 
 export type Item = { icon?: string; disabled?: boolean; text: string };
 export default class ContextMenu {
@@ -35,9 +35,9 @@ export default class ContextMenu {
         
         const map = metroMap.getMap();
         const listener = e => this.handler(e);
-        const { mapPane, objectsPane } = map.getPanes();
+        const { mapPane } = map.getPanes();
         mapPane.addEventListener('contextmenu', listener, false);
-        objectsPane.addEventListener('contextmenu', listener, true); // 'true' prevents propagation
+        //objectsPane.addEventListener('contextmenu', listener, true); // 'true' prevents propagation
         
         const container = map.getContainer();
         const cancelListener = e => this.state = false;
@@ -63,7 +63,7 @@ export default class ContextMenu {
             const cell: HTMLTableDataCellElement = (this.table.insertRow() as any).insertCell(0);
             const [attr, val] = item.disabled ? ['disabled', ''] : ['data-event', eventName];
             cell.setAttribute(attr, val);
-            cell.textContent = lang.translate(item.text);
+            cell.textContent = tr(item.text);
         }
         this._items.forEach(fillCell);
         this._extraItems.forEach((map, target) => {

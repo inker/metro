@@ -2,9 +2,9 @@
 import * as L from 'leaflet';
 import * as svg from './svg';
 import * as math from './math';
-import * as g from './graph';
+import * as nw from './network';
 
-export function transferToModel(transfer: g.Transfer, elements: Element[]) {
+export function transferToModel(transfer: nw.Transfer, elements: Element[]) {
     const cached =  [transfer.source, transfer.target];
     const props = ['source', 'target'];
     props.forEach((prop, pi) => {
@@ -21,16 +21,16 @@ export function transferToModel(transfer: g.Transfer, elements: Element[]) {
                         el.setAttribute('x' + n, pos.x.toString());
                         el.setAttribute('y' + n, pos.y.toString());
                     }
-                    const gradient: SVGLinearGradientElement = document.getElementById(`g-${this.graph.transfers.indexOf(transfer)}`) as any;
+                    const gradient: SVGLinearGradientElement = document.getElementById(`g-${this.network.transfers.indexOf(transfer)}`) as any;
                     const dir = prop === 'source' ? otherPos.subtract(pos) : pos.subtract(otherPos);
                     svg.Gradients.setDirection(gradient, dir);
                     const circlePortion = circleTotalRadius / pos.distanceTo(otherPos);
                     svg.Gradients.setOffset(gradient, circlePortion);
                 } else if (elements[0].tagName === 'path') {
-                    const transfers: g.Transfer[] = [];
+                    const transfers: nw.Transfer[] = [];
                     const transferIndices: number[] = [];
-                    for (let i = 0; i < this.graph.transfers.length; ++i) {
-                        const t = this.graph.transfers[i];
+                    for (let i = 0; i < this.network.transfers.length; ++i) {
+                        const t = this.network.transfers[i];
                         if (t.source === transfer.source
                             || t.target === transfer.target
                             || t.source === transfer.target
@@ -46,7 +46,7 @@ export function transferToModel(transfer: g.Transfer, elements: Element[]) {
                         circular.add(tr.source).add(tr.target);
                     }
                     // if (circular.size !== 3) {
-                    //     const name = this.graph.platforms[transfers[0].source].name;
+                    //     const name = this.network.platforms[transfers[0].source].name;
                     //     throw new Error(`circle size is ${circular.size}: ${name}`);
                     // }
 
@@ -79,17 +79,17 @@ export function transferToModel(transfer: g.Transfer, elements: Element[]) {
     });
 }
 
-export function platformToModel(platform: g.Platform|number, circles: Element[]) {
+export function platformToModel(platform: nw.Platform|number, circles: Element[]) {
     const [idx, obj] = typeof platform === 'number'
-        ? [platform, this.graph.platforms[platform]]
-        : [this.graph.platforms.indexOf(platform), platform];
+        ? [platform, this.network.platforms[platform]]
+        : [this.network.platforms.indexOf(platform), platform];
     const cached = obj.location;
     Object.defineProperty(obj, 'location', {
         get: () => obj['_location'],
         set: (location: L.LatLng) => {
             obj['_location'] = location;
             const locForPos = this.map.getZoom() < 12
-                ? this.graph.stations[obj.station].location
+                ? this.network.stations[obj.station].location
                 : location;
             const nw = this.bounds.getNorthWest();
             const pos = this.map.latLngToContainerPoint(locForPos).subtract(this.map.latLngToContainerPoint(nw));
@@ -101,14 +101,14 @@ export function platformToModel(platform: g.Platform|number, circles: Element[])
             this.platformsOnSVG.set(idx, pos);
             const spansToChange = new Set<number>(obj.spans);
             for (let spanIndex of obj.spans) {
-                const span = this.graph.spans[spanIndex];
+                const span = this.network.spans[spanIndex];
                 const srcN = span.source, trgN = span.target;
                 const neighborIndex = idx === srcN ? trgN : srcN;
                 this.whiskers.set(neighborIndex, this.makeWhiskers(neighborIndex));
-                this.graph.platforms[neighborIndex].spans.forEach(si => spansToChange.add(si));
+                this.network.platforms[neighborIndex].spans.forEach(si => spansToChange.add(si));
             }
             spansToChange.forEach(spanIndex => {
-                const span = this.graph.spans[spanIndex];
+                const span = this.network.spans[spanIndex];
                 const srcN = span.source, trgN = span.target;
                 const controlPoints = [this.platformsOnSVG.get(srcN), this.whiskers.get(srcN).get(spanIndex), this.whiskers.get(trgN).get(spanIndex), this.platformsOnSVG.get(trgN)];
                 svg.setBezierPath(document.getElementById(`op-${spanIndex}`), controlPoints);
@@ -116,7 +116,7 @@ export function platformToModel(platform: g.Platform|number, circles: Element[])
                 if (inner) svg.setBezierPath(inner, controlPoints);
             });
             let oo = 0;
-            for (let tr of this.graph.transfers) {
+            for (let tr of this.network.transfers) {
                 if (tr.source === idx) {
                     tr.source = idx;
                     ++oo;

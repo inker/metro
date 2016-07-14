@@ -1,6 +1,6 @@
 'use strict';
 
-import * as res from './res';
+import { dictionaryPromise } from './i18n';
 import { flashTitle } from './util';
 import * as L from 'leaflet';
 import MetroMap from './metro-map';
@@ -12,8 +12,8 @@ if (L.Browser.ie) {
 import polyfills from './polyfills';
 polyfills();
 
-res.dictionaryPromise.then(dict => {
-    const metroMap = new MetroMap('map-container', 'json/graph.json');
+dictionaryPromise.then(dict => {
+    const metroMap = new MetroMap('map-container');
     const englishTitle = 'St Petersburg metro plan proposal';
     const titles = dict[englishTitle];
     flashTitle(Object.keys(titles).map(key => titles[key]).concat([englishTitle]), 3000);

@@ -1,11 +1,7 @@
 /// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
-import * as lang from './lang';
 
-export const dictionaryPromise = fetch('json/dictionary.json')
-    .then(data => data.json())
-    .then(dict => lang.dictionary = dict)
-    .catch(err => console.error(err));
+export const dictionaryPromise = fetch('json/dictionary.json').then(data => data.json());
 
 export const lineRulesPromise = new Promise<CSSStyleSheet>(resolve => {
     const link = document.querySelector(`[href$="css/scheme.css"]`) as HTMLLinkElement;
@@ -28,4 +24,4 @@ export const lineRulesPromise = new Promise<CSSStyleSheet>(resolve => {
     }
     console.log(lineRules);
     return lineRules;
-}).catch(err => console.error(err));
+});

@@ -1,6 +1,15 @@
-export const userLanguage = (navigator.userLanguage || navigator.language).slice(0, 2).toLowerCase();
+import * as res from './res';
 
-export let dictionary = {};
+export const userLanguage = navigator.language.slice(0, 2).toLowerCase();
+
+type Dictionary = {
+    [phrase: string]: {
+        [language: string]: string
+    }
+}
+let dictionary: Dictionary;
+
+export const dictionaryPromise = res.dictionaryPromise.then(dict => dictionary = dict);
 
 export function translate(text: string): string {
     return text in dictionary && userLanguage in dictionary[text] ? dictionary[text][userLanguage] : text;

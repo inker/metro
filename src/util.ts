@@ -1,7 +1,7 @@
 /// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
-import * as g from './graph';
-import * as lang from './lang'
+import * as nw from './network';
+import * as i18n from './i18n'
 
 export function arrayEquals<T>(a: T[], b: T[]) {
     const n = a.length;
@@ -80,10 +80,10 @@ export function resetStyle() {
     }
 }
 
-export function getPlatformNames(platform: g.Platform): string[] {
+export function getPlatformNames(platform: nw.Platform): string[] {
     const ru = platform.name,
         { fi, en } = platform.altNames,
-        names = !fi ? [ru] : lang.userLanguage === 'fi' ? [fi, ru] : [ru, fi];
+        names = !fi ? [ru] : i18n.userLanguage === 'fi' ? [fi, ru] : [ru, fi];
     if (en) names.push(en);
     return names;
 }
@@ -96,8 +96,8 @@ export function circleByDummy(dummyCircle: Element): SVGCircleElement {
     return document.getElementById('p-' + dummyCircle.id.slice(2)) as any;
 }
 
-export function platformByCircle(circle: Element, graph: g.Graph) {
-    return graph.platforms[+circle.id.slice(2)];
+export function platformByCircle(circle: Element, network: nw.Network) {
+    return network.platforms[+circle.id.slice(2)];
 }
 
 export namespace CSSTransform {
@@ -173,9 +173,9 @@ export function removeAllChildren(el: Node) {
 /**
  * Fixes blurry font due to 'transform3d' CSS property. Changes everything to 'transform' when the map is not moving
  */
-export function fixFontRendering(): void {
-    const blurringStuff = document.querySelectorAll('[style*="translate3d"]');
-    console.log('fixing font', blurringStuff);
+export function fixFontRendering(parent: { querySelectorAll } = document): void {
+    const blurringStuff = parent.querySelectorAll('[style*="translate3d"]');
+    console.log('fixing font', parent, blurringStuff);
     for (let i = 0; i < blurringStuff.length; ++i) {
         CSSTransform.trim3d(blurringStuff[i] as HTMLElement&SVGStylable);
     }

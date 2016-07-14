@@ -1,6 +1,6 @@
 /// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
-import * as g from './graph';
+import * as nw from './network';
 import * as math from './math';
 import { Color } from './util';
 
@@ -148,16 +148,15 @@ export namespace Scale {
      
     const initialCircles = new Set<SVGCircleElement>();
     const initialTransfers = new Set<SVGPathElement|SVGLineElement>();
-    export function scaleStation(graphPlatforms: g.Platform[], station: g.Station, scaleFactor: number, graphTransfers?: g.Transfer[]) {
+    export function scaleStation(nwPlatforms: nw.Platform[], station: nw.Station, scaleFactor: number, nwTransfers?: nw.Transfer[]) {
         const transferOuterStrokeWidth = parseFloat(document.getElementById('transfers-outer').style.strokeWidth),
             transferInnerStrokeWidth = parseFloat(document.getElementById('transfers-inner').style.strokeWidth)
         for (let p of station.platforms) {
-            //const platform = graphPlatforms[p];
             const circle = document.getElementById('p-' + p) as any;
             scaleCircle(circle, scaleFactor, true);
-            if (graphTransfers === undefined || station.platforms.length < 2) continue;
-            for (let i = 0; i < graphTransfers.length; ++i) {
-                const tr = graphTransfers[i];
+            if (nwTransfers === undefined || station.platforms.length < 2) continue;
+            for (let i = 0; i < nwTransfers.length; ++i) {
+                const tr = nwTransfers[i];
                 if (tr.source === p || tr.target === p) {
                     const outer = document.getElementById('ot-' + i) as any;
                     const inner = document.getElementById('it-' + i) as any;
@@ -324,7 +323,7 @@ export namespace Animation {
         return currentAnimation;
     }
     
-    export function animateRoute(graph: g.Graph, platforms: number[], edges: string[], speed = 1) {
+    export function animateRoute(network: nw.Network, platforms: number[], edges: string[], speed = 1) {
         const pulsate = L.Browser.webkit && !L.Browser.mobile;
         currentAnimation = new Promise<boolean>((resolve, reject) => (function animateSpan(i: number) {
             if (!animationsAllowed) {
@@ -360,7 +359,7 @@ export namespace Animation {
             }
 
             const idParts = edges[i].split('-');
-            const edge: g.Transfer | g.Span = graph[idParts[0] === 'p' ? 'spans' : 'transfers'][+idParts[1]];
+            const edge: nw.Transfer | nw.Span = network[idParts[0] === 'p' ? 'spans' : 'transfers'][+idParts[1]];
             const initialOffset = edge.source === platforms[i] ? length : -length;
             const duration = length / speed;
             Shadows.applyDrop(outer);

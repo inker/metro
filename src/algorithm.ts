@@ -1,22 +1,22 @@
 /// <reference path="../typings/tsd.d.ts" />
-import * as g from './graph';
+import * as nw from './network';
 import { arrayEquals } from './util';
 import * as math from './math';
 import { findClosestObject } from './geo';
 
-export function findCircle(graph: g.Graph, station: g.Station): g.Platform[] {
+export function findCircle(network: nw.Network, station: nw.Station): nw.Platform[] {
     if (station.platforms.length < 3) return [];
     // TODO: if n=3, leave as it is; if n=4, metro has priority
-    const stationPlatforms = station.platforms.map(platformNum => graph.platforms[platformNum]);
+    const stationPlatforms = station.platforms.map(platformNum => network.platforms[platformNum]);
     if (stationPlatforms.length === 3) {
         for (var i of station.platforms) {
-            if (graph.transfers.filter(t => t.source === i || t.target === i).length !== 2) return [];
+            if (network.transfers.filter(t => t.source === i || t.target === i).length !== 2) return [];
         }
         return stationPlatforms;
     }
     if (stationPlatforms.length === 4) {
-        const gPls = graph.platforms, gTrs = graph.transfers;
-        const hasPlatform = (t: g.Transfer, p: number) => t.source === p || t.target === p;
+        const gPls = network.platforms, gTrs = network.transfers;
+        const hasPlatform = (t: nw.Transfer, p: number) => t.source === p || t.target === p;
         const toTuple = (i: number) => ({platform: gPls[i], degree: gTrs.filter(t => hasPlatform(t, i)).length});
         const psAndDegs = station.platforms.map(toTuple).sort((a, b) => a.degree - b.degree);
         const degs = psAndDegs.map(i => i.degree);
@@ -38,7 +38,7 @@ export type ShortestRouteObject = {
     edges?: string[];
     time: { walkTo: number, metro?: number, walkFrom?: number, total?: number };
 }
-export function shortestRoute(graph: g.Graph, p1: L.LatLng, p2: L.LatLng): ShortestRouteObject {
+export function shortestRoute(network: nw.Network, p1: L.LatLng, p2: L.LatLng): ShortestRouteObject {
     const walkingSpeed = 1.4,
         walkingWithObstacles = 1,
         maxTrainSpeed = 20,
@@ -48,13 +48,13 @@ export function shortestRoute(graph: g.Graph, p1: L.LatLng, p2: L.LatLng): Short
         // includes escalators
         metroWaitingTime = 240,
         eLineWaitingTime = 360;
-    const objects = graph.platforms;
+    const objects = network.platforms;
     // time to travel from station to the p1 location
     const currentTime: number[] = [],
         fromPlatformToDest: number[] = [];
     for (let o of objects) {
-        const hasE = o.spans.map(i => graph.spans[i].routes[0])
-            .map(i => graph.routes[i].line)
+        const hasE = o.spans.map(i => network.spans[i].routes[0])
+            .map(i => network.routes[i].line)
             .some(l => l.startsWith('E'));
         let distance = distanceBetween(p1, o.location),
             time = distance / walkingWithObstacles
@@ -83,36 +83,36 @@ export function shortestRoute(graph: g.Graph, p1: L.LatLng, p2: L.LatLng): Short
         // getting his previous
         var prevIndex = prev[currentIndex];
         const previous = objects[prevIndex];
-        const prevSpan = graph.spans.find(s => s.source === currentIndex && s.target === prevIndex || s.source === prevIndex && s.target === currentIndex);
+        const prevSpan = network.spans.find(s => s.source === currentIndex && s.target === prevIndex || s.source === prevIndex && s.target === currentIndex);
 
         const neighborIndices: number[] = [],
             timeToNeighbors: number[] = [];
         for (let i of currentNode.spans) {
-            const s = graph.spans[i];
+            const s = network.spans[i];
             const neighborIndex = currentIndex === s.source ? s.target : s.source;
             if (!objectSet.has(neighborIndex)) continue;
             neighborIndices.push(neighborIndex);
             const neighbor = objects[neighborIndex];
             const distance = distanceBetween(currentNode.location, neighbor.location);
             let lineChangePenalty = 0;
-            if (prevSpan && graph.routes[prevSpan.routes[0]] !== graph.routes[s.routes[0]]) {
+            if (prevSpan && network.routes[prevSpan.routes[0]] !== network.routes[s.routes[0]]) {
                 // doesn't seem to work
                 //lineChangePenalty = metroWaitingTime;
             }
             // TODO: lower priority for E-lines
-            const callTime = graph.routes[s.routes[0]].line.startsWith('E') ? eLineStopTime : metroStopTime;
+            const callTime = network.routes[s.routes[0]].line.startsWith('E') ? eLineStopTime : metroStopTime;
             const travelTime = math.timeToTravel(distance, maxTrainSpeed, trainAcceleration);
             timeToNeighbors.push(travelTime + callTime + lineChangePenalty);
         }
         // TODO: if transferring to an E-line, wait more
         // TODO: penalty for changing lines (cross-platform)
-        for (let neighborIndex of graph.stations[currentNode.station].platforms) {
+        for (let neighborIndex of network.stations[currentNode.station].platforms) {
             if (!objectSet.has(neighborIndex)) continue;
             neighborIndices.push(neighborIndex);
             const neighbor = objects[neighborIndex];
             const hasE = neighbor.spans
-                .map(i => graph.spans[i].routes[0])
-                .map(i => graph.routes[i].line)
+                .map(i => network.spans[i].routes[0])
+                .map(i => network.routes[i].line)
                 .some(l => l.startsWith('E'));
             const distance = distanceBetween(currentNode.location, neighbor.location) / 2;
             timeToNeighbors.push(distance / walkingWithObstacles + (hasE ? eLineWaitingTime : metroWaitingTime));
@@ -153,15 +153,15 @@ export function shortestRoute(graph: g.Graph, p1: L.LatLng, p2: L.LatLng): Short
         //console.log('prev', objects[prevIndex].name);
         let p = '';
         for (let i of currentNode.spans) {
-            const s = graph.spans[i];
+            const s = network.spans[i];
             if (s.source === currentIndex && s.target === prevIndex || s.target === currentIndex && s.source === prevIndex) {
                 p = 'p-' + i;
                 break;
             }
         }
         if (p === '') {
-            for (let i = 0, len = graph.transfers.length; i < len; ++i) {
-                const t = graph.transfers[i];
+            for (let i = 0, len = network.transfers.length; i < len; ++i) {
+                const t = network.transfers[i];
                 if (t.source === currentIndex && t.target === prevIndex || t.target === currentIndex && t.source === prevIndex) {
                     p = 't-' + i;
                     break;
@@ -169,7 +169,7 @@ export function shortestRoute(graph: g.Graph, p1: L.LatLng, p2: L.LatLng): Short
             }
         }
         if (p === '') {
-            const { transfers, midPlatforms } = shortestTransfer(graph, prevIndex, currentIndex);
+            const { transfers, midPlatforms } = shortestTransfer(network, prevIndex, currentIndex);
             path.push(...transfers.reverse().map(i => 't-' + i));
             platformPath.push(...midPlatforms);
         } else {
@@ -194,13 +194,13 @@ export function shortestRoute(graph: g.Graph, p1: L.LatLng, p2: L.LatLng): Short
     };
 }
 
-function shortestTransfer(graph: g.Graph, p1i: number, p2i: number) {
-    const p1 = graph.platforms[p1i],
-        p2 = graph.platforms[p2i];
+function shortestTransfer(network: nw.Network, p1i: number, p2i: number) {
+    const p1 = network.platforms[p1i],
+        p2 = network.platforms[p2i];
     if (p1.station !== p2.station) {
         throw new Error(`platforms (${p1.name} & ${p2.name} must be on the same station`);
     }
-    const station = graph.stations[p1.station];
+    const station = network.stations[p1.station];
     const platforms = station.platforms;
     const platformSet = new Set<number>(platforms);
     const dist: number[] = [],
@@ -220,15 +220,15 @@ function shortestTransfer(graph: g.Graph, p1i: number, p2i: number) {
             }
         });
         platformSet.delete(currentIndex);
-        const platform = graph.platforms[currentIndex];
+        const platform = network.platforms[currentIndex];
         const neighborIndices: number[] = [];
-        for (let t of graph.transfers) {
+        for (let t of network.transfers) {
             if (t.source === currentIndex) neighborIndices.push(t.target);
             else if (t.target === currentIndex) neighborIndices.push(t.source);
         }
         for (let neighborIndex of neighborIndices) {
             if (!platformSet.has(neighborIndex)) continue;
-            const distance = distanceBetween(platform.location, graph.platforms[neighborIndex].location),
+            const distance = distanceBetween(platform.location, network.platforms[neighborIndex].location),
                 alt = dist[currentIndex] + distance;
             if (alt < dist[neighborIndex]) {
                 dist[neighborIndex] = alt;
@@ -242,7 +242,7 @@ function shortestTransfer(graph: g.Graph, p1i: number, p2i: number) {
     for (; ;) {
         var prevIndex = prev[currentIndex];
         if (prevIndex === null) break;
-        const transferIndex = graph.transfers.findIndex(t => t.source === currentIndex && t.target === prevIndex || t.source === prevIndex && t.target === currentIndex);
+        const transferIndex = network.transfers.findIndex(t => t.source === currentIndex && t.target === prevIndex || t.source === prevIndex && t.target === currentIndex);
         transfers.push(transferIndex);
         currentIndex = prevIndex;
         midPlatforms.push(currentIndex);

@@ -10,9 +10,7 @@ export default class FAQ {
     private card: HTMLDivElement;
     private map: L.Map;
     constructor(map: MetroMap, faqDataUrl: string) {
-        const promise: Promise<FAQData> = fetch(faqDataUrl)
-            .catch(err => console.error(err))
-            .then(data => data.json());
+        const promise: Promise<FAQData> = fetch(faqDataUrl).then(data => data.json());
         this.map = map.getMap();
         const btn = document.createElement('button');
         btn.id = 'faq-button';

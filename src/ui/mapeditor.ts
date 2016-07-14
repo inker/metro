@@ -1,7 +1,7 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import MetroMap from '../metro-map';
 import * as svg from '../svg';
-import * as lang from '../lang';
+import { translate as tr } from '../i18n';
 import * as util from '../util';
 
 export default class MapEditor {
@@ -19,13 +19,13 @@ export default class MapEditor {
 
     set editMode(val: boolean) {
         if (val) {
-            this.button.textContent = lang.translate('Save map');;
+            this.button.textContent = tr('Save map');;
             this.button.onclick = e => this.saveMapClick();
             const dummyCircles = document.getElementById('dummy-circles');
             dummyCircles.onmousedown = dummyCircles.onclick = null;
             this.metroMap.contextMenu.items.delete('platformadd');
         } else {
-            this.button.textContent = lang.translate('Edit map');
+            this.button.textContent = tr('Edit map');
             this.button.onclick = e => this.editMapClick();
         }
         this._editMode = val;
@@ -58,7 +58,7 @@ export default class MapEditor {
     }
 
     private saveMapClick() {
-        util.downloadTextFile('graph.json', this.metroMap.getGraph().toJSON());
+        util.downloadTextFile('graph.json', this.metroMap.getNetwork().toJSON());
         this.editMode = false;
     }
 
@@ -70,7 +70,7 @@ export default class MapEditor {
         // drag line over the station to bind them
         const map = this.metroMap.getMap();
         const plate = this.metroMap.getPlate();
-        const graph = this.metroMap.getGraph();
+        const network = this.metroMap.getNetwork();
         const dummyCircles = document.getElementById('dummy-circles');
 
         const menu = this.metroMap.contextMenu;
@@ -78,7 +78,7 @@ export default class MapEditor {
 
         dummyCircles.onmousedown = de => {
             if (de.button === 0) {
-                const platform = util.platformByCircle(de.target as any, graph);
+                const platform = util.platformByCircle(de.target as any, network);
                 //const initialLocation = platform.location; // TODO: Ctrl+Z
                 map.dragging.disable();
                 map.on('mousemove', (le: L.LeafletMouseEvent) => {

@@ -8,11 +8,10 @@ import DistanceMeasure from './ui/distancemeasure';
 export { DistanceMeasure, MapEditor, FAQ, TextPlate, ContextMenu, Icons }
 
 import * as L from 'leaflet';
-import * as g from './graph';
+import * as nw from './network';
 import * as geo from './geo';
-import * as lang from './lang';
+import { translate as tr } from './i18n';
 import * as svg from './svg';
-const tr = lang.translate;
 
 namespace Icons {
     export const start = L.icon({
@@ -61,7 +60,7 @@ namespace Icons {
     })();
 }
 
-export function platformRenameDialog(graph: g.Graph, platform: g.Platform) {
+export function platformRenameDialog(network: nw.Network, platform: nw.Platform) {
     const ru = platform.name, {fi, en} = platform.altNames;
     const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru];
     const nameString = names.join('|');
@@ -74,11 +73,11 @@ export function platformRenameDialog(graph: g.Graph, platform: g.Platform) {
         const oldNamesStr = names.slice(1).join(', '),
             newNamesStr = newNames.slice(1).join(', ');
         alertify.success(`${ru} (${oldNamesStr}) ${tr('renamed to')} ${newNames[0]} (${newNamesStr})`);
-        const station = graph.stations[platform.station];
+        const station = network.stations[platform.station];
         if (station.platforms.length < 2) return;
         alertify.confirm(tr('Rename the entire station') + '?', () => {
             for (let i of station.platforms) {
-                const p = graph.platforms[i];
+                const p = network.platforms[i];
                 [p.name, p.altNames['fi'], p.altNames['en']] = newNames;
             }
             [station.name, station.altNames['fi'], station.altNames['en']] = newNames;
@@ -102,7 +101,7 @@ export function addLayerSwitcher(map: L.Map, layers: L.TileLayer[]): void {
 }
 
 export function drawZones(metroMap) {
-    this.graph = metroMap.getGraph();
+    this.network = metroMap.getGraph();
     this.map = metroMap.getMap();
     const metroPoints = this.graph.platforms.filter(p => this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('M')).map(p => p.location);
     const fitnessFunc = pt => metroPoints.reduce((prev, cur) => prev + pt.distanceTo(cur), 0);

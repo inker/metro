@@ -9,7 +9,7 @@ export default class DistanceMeasure {
     private metroMap: MetroMap;
     private map: L.Map;
     private polyline = new L.Polyline([], { color: 'red'});
-    private markers = new L.FeatureGroup().on('layeradd layerremove', util.fixFontRendering);
+    private markers = new L.FeatureGroup().on('layeradd layerremove', e => util.fixFontRendering());
     private contextMenuItem: ContextMenuItem;
     constructor(metroMap: MetroMap) {
         this.metroMap = metroMap;
