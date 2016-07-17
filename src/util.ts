@@ -38,12 +38,11 @@ export function callMeMaybe<ReturnType>(func: (...params: any[]) => ReturnType, 
     return func ? func(...params) : undefined;
 }
 
-export function once(el: EventTarget, eventType: string, listener: (e: Event) => any) {
-    const handler: typeof listener = e => {
+export function once(el: EventTarget, eventType: string, listener: EventListener) {
+    el.addEventListener(eventType, function handler(e: Event) {
         el.removeEventListener(eventType, handler);
         listener(e);
-    }
-    el.addEventListener(eventType, handler);
+    });
 }
 
 export function onceEscapePress(handler: (ev: KeyboardEvent) => any) {
@@ -69,15 +68,22 @@ export function onceEscapePress(handler: (ev: KeyboardEvent) => any) {
 }
 
 export function resetStyle() {
-    const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
+    const selector = ['paths-inner', 'paths-outer', 'transfers-inner', 'transfers-outer', 'station-circles']
+        .map(i => `#${i} > *`).join(', ');
     const els = document.querySelectorAll(selector);
     for (let i = 0; i < els.length; ++i) {
         const el = els[i] as HTMLElement;
         el.style.opacity = null;
-        if (el.id.charAt(1) !== 't') {
+        if (el.id[1] !== 't') {
             el.style.filter = null;
         }
     }
+}
+
+export function triggerMouseEvent(target: Node, eventType: string) {
+    const e = document.createEvent('MouseEvents');
+    e.initEvent(eventType, true, true);
+    target.dispatchEvent(e);    
 }
 
 export function getPlatformNames(platform: nw.Platform): string[] {
@@ -100,16 +106,8 @@ export function platformByCircle(circle: Element, network: nw.Network) {
     return network.platforms[+circle.id.slice(2)];
 }
 
-export namespace CSSTransform {
-    export function toPoint(val: string): L.Point {
-        if (val.length == 0) return new L.Point(0, 0);
-        const tokens = val.match(/translate(3d)?\((-?\d+).*?,\s?(-?\d+).*?(,\s?(-?\d+).*?)?\)/i);
-        return tokens && tokens[0] ? new L.Point(+tokens[2], +tokens[3]) : new L.Point(0, 0);
-    }
-
-    export function trim3d<T extends { style: CSSStyleDeclaration }>({ style }: T) {
-        style.transform = style.transform.replace(/translate3d\s*\((.+?,\s*.+?),\s*.+?\s*\)/i, 'translate($1)');
-    }
+export function trim3d<T extends { style: CSSStyleDeclaration }>({ style }: T) {
+    style.transform = style.transform.replace(/translate3d\s*\((.+?,\s*.+?),\s*.+?\s*\)/i, 'translate($1)');
 }
 
 export namespace Color {
@@ -139,7 +137,7 @@ export function downloadFile(title: string, blob: Blob) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a['download'] = title;
+    a.download = title;
     a.click();
     URL.revokeObjectURL(url);
 }
@@ -177,6 +175,6 @@ export function fixFontRendering(parent: { querySelectorAll } = document): void 
     const blurringStuff = parent.querySelectorAll('[style*="translate3d"]');
     console.log('fixing font', parent, blurringStuff);
     for (let i = 0; i < blurringStuff.length; ++i) {
-        CSSTransform.trim3d(blurringStuff[i] as HTMLElement&SVGStylable);
+        trim3d(blurringStuff[i] as HTMLElement&SVGStylable);
     }
 }

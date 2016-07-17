@@ -8567,6 +8567,8 @@ interface HTMLAnchorElement extends HTMLElement {
       * Sets or retrieves the coordinates of the object.
       */
     coords: string;
+    
+    download: string;
     /**
       * Contains the anchor portion of the URL including the hash sign (#).
       */

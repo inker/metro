@@ -1,5 +1,6 @@
 /// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
+import { getCenter } from './geo';
 
 type AltNames = { 
     old?: string;
@@ -19,20 +20,41 @@ export interface Platform extends Nameable {
     spans: number[];
 };
 
-export interface Station extends Nameable {
-    platforms: number[];
+export class Station implements Nameable {
+    constructor(public platforms: number[], public name: string, public altNames: AltNames) {}
 };
 
-interface Edge {
-    source: number;
-    target: number;
+class Edge {
+    public source: number;
+    public target: number;
+    constructor(source: number, target: number) {
+        if (source === target) {
+            throw new Error(`source is the same as target: ${source}`);
+        }
+        this.source = source;
+        this.target = target;
+    }
+    isOf(v1: number, v2: number) {
+        return this.source === v1 && this.target === v2 || this.source === v2 && this.target === v1;
+    }
+    has(vertex: number) {
+        return this.source === vertex || this.target === vertex;
+    }
+    other(vertex: number) {
+        return this.source === vertex ? this.target : this.target === vertex ? this.source : null;
+    }
+    isAdjacent(edge: Edge) {
+        return this.has(edge.source) || this.has(edge.target);
+    }
 }
 
-export type Transfer = Edge;
+export class Transfer extends Edge {}
 
-export interface Span extends Edge {
-    routes: number[];
-};
+export class Span extends Edge {
+    constructor(source: number, target: number, public routes: number[]) {
+        super(source, target);
+    }
+}
 
 export type Route = {
     line: string;
@@ -52,8 +74,8 @@ export class Network {
         this.platforms = newGraph.platforms;
         this.stations = [];
         this.lines = newGraph.lines;
-        this.transfers = newGraph.transfers;
-        this.spans = newGraph.spans;
+        this.transfers = newGraph.transfers.map(s => new Transfer(s.source, s.target));
+        this.spans = newGraph.spans.map(s => new Span(s.source, s.target, s.routes));
         this.routes = newGraph.routes;
         for (let platform of this.platforms) {
             platform['spans'] = [];
@@ -87,7 +109,8 @@ export class Network {
             }
             const plarr = Array.from(pls);
             const first = this.platforms[plarr[0]];
-            this.stations.push({ name: first.name, altNames: first.altNames, platforms: plarr });
+            this.stations.push(new Station(plarr, first.name, first.altNames));
+            //this.stations.push({ name: first.name, altNames: first.altNames, platforms: plarr });
             for (let p of plarr) {
                 this.platforms[p]['station'] = this.stations.length - 1;
             }
@@ -95,7 +118,8 @@ export class Network {
         for (let i = 0; i < platformsCopy.length; ++i) {
             const pl = platformsCopy[i];
             if (pl === undefined) continue;
-            this.stations.push({ name: pl.name, altNames: pl.altNames, platforms: [i] });
+            this.stations.push(new Station([i], pl.name, pl.altNames));
+            //this.stations.push({ name: pl.name, altNames: pl.altNames, platforms: [i] });
             this.platforms[i]['station'] = this.stations.length - 1;
         }
         console.timeEnd('restore');
@@ -190,5 +214,9 @@ export class Network {
             }
         }
         return lines;
+    }
+
+    getStationCenter(station: Station): L.LatLng {
+        return getCenter(station.platforms.map(i => this.platforms[i].location));
     }
 };

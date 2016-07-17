@@ -10,14 +10,13 @@ export function findCircle(network: nw.Network, station: nw.Station): nw.Platfor
     const stationPlatforms = station.platforms.map(platformNum => network.platforms[platformNum]);
     if (stationPlatforms.length === 3) {
         for (var i of station.platforms) {
-            if (network.transfers.filter(t => t.source === i || t.target === i).length !== 2) return [];
+            if (network.transfers.filter(t => t.has(i)).length !== 2) return [];
         }
         return stationPlatforms;
     }
     if (stationPlatforms.length === 4) {
         const gPls = network.platforms, gTrs = network.transfers;
-        const hasPlatform = (t: nw.Transfer, p: number) => t.source === p || t.target === p;
-        const toTuple = (i: number) => ({platform: gPls[i], degree: gTrs.filter(t => hasPlatform(t, i)).length});
+        const toTuple = (i: number) => ({platform: gPls[i], degree: gTrs.filter(t => t.has(i)).length});
         const psAndDegs = station.platforms.map(toTuple).sort((a, b) => a.degree - b.degree);
         const degs = psAndDegs.map(i => i.degree);
         const ps = psAndDegs.map(i => i.platform);
@@ -83,7 +82,7 @@ export function shortestRoute(network: nw.Network, p1: L.LatLng, p2: L.LatLng): 
         // getting his previous
         var prevIndex = prev[currentIndex];
         const previous = objects[prevIndex];
-        const prevSpan = network.spans.find(s => s.source === currentIndex && s.target === prevIndex || s.source === prevIndex && s.target === currentIndex);
+        const prevSpan = network.spans.find(s => s.isOf(currentIndex, prevIndex));
 
         const neighborIndices: number[] = [],
             timeToNeighbors: number[] = [];
@@ -145,24 +144,22 @@ export function shortestRoute(network: nw.Network, p1: L.LatLng, p2: L.LatLng): 
     const path: string[] = [],
         platformPath = [currentIndex];
     // remove later
-    for (; ;) {
+    for (let prevIndex = prev[currentIndex]; prevIndex !== null; prevIndex = prev[currentIndex]) {
         const currentNode = objects[currentIndex];
         //console.log('current', currentNode.name);
-        const prevIndex = prev[currentIndex];
+        //const prevIndex = prev[currentIndex];
         if (prevIndex === null) break;
         //console.log('prev', objects[prevIndex].name);
         let p = '';
         for (let i of currentNode.spans) {
-            const s = network.spans[i];
-            if (s.source === currentIndex && s.target === prevIndex || s.target === currentIndex && s.source === prevIndex) {
+            if (network.spans[i].isOf(currentIndex, prevIndex)) {
                 p = 'p-' + i;
                 break;
             }
         }
         if (p === '') {
             for (let i = 0, len = network.transfers.length; i < len; ++i) {
-                const t = network.transfers[i];
-                if (t.source === currentIndex && t.target === prevIndex || t.target === currentIndex && t.source === prevIndex) {
+                if (network.transfers[i].isOf(currentIndex, prevIndex)) {
                     p = 't-' + i;
                     break;
                 }
@@ -242,7 +239,7 @@ function shortestTransfer(network: nw.Network, p1i: number, p2i: number) {
     for (; ;) {
         var prevIndex = prev[currentIndex];
         if (prevIndex === null) break;
-        const transferIndex = network.transfers.findIndex(t => t.source === currentIndex && t.target === prevIndex || t.source === prevIndex && t.target === currentIndex);
+        const transferIndex = network.transfers.findIndex(t => t.isOf(currentIndex, prevIndex));
         transfers.push(transferIndex);
         currentIndex = prevIndex;
         midPlatforms.push(currentIndex);

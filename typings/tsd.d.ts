@@ -1,5 +1,4 @@
-/// <reference path="lib.es6.d.ts" />
-
+/// <reference path="./lib.es6.d.ts" />
 /// <reference path="leaflet/leaflet.d.ts" />
 /// <reference path="whatwg-fetch/whatwg-fetch.d.ts" />
 /// <reference path="express/express.d.ts" />

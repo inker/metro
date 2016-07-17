@@ -2,21 +2,21 @@
     [
         "routefrom",
         {
-            "icon": "add location",
+            "event": "add location",
             "text": "Route from here"
         }
     ],
     [
         "routeto",
         {
-            "icon": "directions",
+            "event": "directions",
             "text": "Route to here"
         }
     ],
     [
         "clearroute",
         {
-            "icon": "layers clear",
+            "event": "layers clear",
             "text": "Clear route"
         }
     ],
@@ -29,8 +29,9 @@
     [
         "showheatmap",
         {
-            "icon": "blur on",
-            "text": "Show heatmap"
+            "event": "blur on",
+            "text": "Show heatmap",
+            "disabled": true
         }
     ]
 ]

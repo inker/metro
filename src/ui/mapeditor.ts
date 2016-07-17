@@ -1,21 +1,15 @@
 /// <reference path="../../typings/tsd.d.ts" />
-import MetroMap from '../metro-map';
+import MetroMap from '../metromap';
 import * as svg from '../svg';
 import { translate as tr } from '../i18n';
 import * as util from '../util';
 
 export default class MapEditor {
     private metroMap: MetroMap;
-
-    private minZoom: number;
-
     private button: HTMLButtonElement;
-
     private _editMode: boolean;
 
-    get editMode() {
-        return this._editMode;
-    }
+    get editMode() { return this._editMode; }
 
     set editMode(val: boolean) {
         if (val) {
@@ -23,22 +17,22 @@ export default class MapEditor {
             this.button.onclick = e => this.saveMapClick();
             const dummyCircles = document.getElementById('dummy-circles');
             dummyCircles.onmousedown = dummyCircles.onclick = null;
-            this.metroMap.contextMenu.items.delete('platformadd');
+            this.metroMap.dispatchEvent(new Event("editmapstart"));
         } else {
             this.button.textContent = tr('Edit map');
             this.button.onclick = e => this.editMapClick();
+            this.metroMap.dispatchEvent(new Event("editmapend"));
         }
         this._editMode = val;
     }
 
     constructor(metroMap: MetroMap, minZoom: number) {
         this.metroMap = metroMap;
-        this.minZoom = minZoom;
         const btn = document.createElement('button');
         btn.id = 'edit-map-button';
         btn.textContent = 'Edit Map';
         btn.classList.add('leaflet-control');
-        btn.onclick = this.editMapClick.bind(this);
+        btn.onclick = e => this.editMapClick();
         document.querySelector('.leaflet-right.leaflet-top').appendChild(btn);
         this.button = btn;
         this.editMode = false;
@@ -50,10 +44,6 @@ export default class MapEditor {
     }
     private editMapClick() {
         this.editMode = true;
-        const map = this.metroMap.getMap();
-        if (map.getZoom() < this.minZoom) {
-            map.setZoom(this.minZoom);
-        }
         this.addMapListeners();
     }
 
@@ -69,11 +59,10 @@ export default class MapEditor {
         // create new station (create -> model)
         // drag line over the station to bind them
         const map = this.metroMap.getMap();
-        const plate = this.metroMap.getPlate();
         const network = this.metroMap.getNetwork();
         const dummyCircles = document.getElementById('dummy-circles');
 
-        const menu = this.metroMap.contextMenu;
+        const menu = this.metroMap.getContextMenu();
         menu.items.set('platformadd', { text: 'New station' });
 
         dummyCircles.onmousedown = de => {
@@ -83,13 +72,12 @@ export default class MapEditor {
                 map.dragging.disable();
                 map.on('mousemove', (le: L.LeafletMouseEvent) => {
                     platform.location = le.latlng;
-                    plate.disabled = true;
-                });
-                map.once('mouseup', (le: L.LeafletMouseEvent) => {
+                    this.metroMap.dispatchEvent(new MouseEvent('platformmove'));
+                }).once('mouseup', (le: L.LeafletMouseEvent) => {
                     map.off('mousemove').dragging.enable();
-                    plate.disabled = false;
                     const circle = le.originalEvent.target as SVGCircleElement;
-                    plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));
+                    const moveEndEvent = new MouseEvent('platformmoveend', {relatedTarget: circle as EventTarget});
+                    this.metroMap.dispatchEvent(moveEndEvent);
                 });
             } else if (de.button === 1) {
                 //

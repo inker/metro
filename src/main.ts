@@ -1,9 +1,11 @@
 'use strict';
 
-import { dictionaryPromise } from './i18n';
+import { getConfig } from './res';
+import { getDictionary } from './i18n';
 import { flashTitle } from './util';
-import * as L from 'leaflet';
-import MetroMap from './metro-map';
+import MetroMap from './metromap';
+
+L.Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images';
 
 if (L.Browser.ie) {
     alert("Does not work in IE (yet)");
@@ -12,12 +14,13 @@ if (L.Browser.ie) {
 import polyfills from './polyfills';
 polyfills();
 
-dictionaryPromise.then(dict => {
-    const metroMap = new MetroMap('map-container');
+const configPromise = getConfig();
+getDictionary().then(dict => {
     const englishTitle = 'St Petersburg metro plan proposal';
     const titles = dict[englishTitle];
     flashTitle(Object.keys(titles).map(key => titles[key]).concat([englishTitle]), 3000);
-});
+    return configPromise;
+}).then(config => new MetroMap(config));
 
 console.log('user: ' + navigator.userLanguage);
 console.log('language: ' + navigator.language);

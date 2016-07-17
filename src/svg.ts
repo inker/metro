@@ -325,7 +325,7 @@ export namespace Animation {
     
     export function animateRoute(network: nw.Network, platforms: number[], edges: string[], speed = 1) {
         const pulsate = L.Browser.webkit && !L.Browser.mobile;
-        currentAnimation = new Promise<boolean>((resolve, reject) => (function animateSpan(i: number) {
+        currentAnimation = terminateAnimations().then(current => new Promise<boolean>((resolve, reject) => (function animateSpan(i: number) {
             if (!animationsAllowed) {
                 return resolve(false);
             }
@@ -390,7 +390,7 @@ export namespace Animation {
             currentAnimation = null;
             animationsAllowed = true;
             return finished;
-        });
+        }));
         return currentAnimation;
     }
 

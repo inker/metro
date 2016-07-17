@@ -2,10 +2,11 @@ const alertify = require('alertifyjs');
 import MapEditor from './ui/mapeditor';
 import FAQ from './ui/faq';
 import TextPlate from './ui/textplate';
+import RoutePlanner from './ui/routeplanner';
 import ContextMenu from './ui/contextmenu';
 import DistanceMeasure from './ui/distancemeasure';
 
-export { DistanceMeasure, MapEditor, FAQ, TextPlate, ContextMenu, Icons }
+export { DistanceMeasure, MapEditor, FAQ, TextPlate, RoutePlanner, ContextMenu, Icons }
 
 import * as L from 'leaflet';
 import * as nw from './network';

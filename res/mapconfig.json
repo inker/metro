@@ -1,0 +1,8 @@
+{
+    "containerId": "map-container",
+    "center": [59.943556, 30.30452],
+    "minZoom": 7,
+    "maxZoom": 18,
+    "zoom": 11,
+    "detailedZoom": 12
+}

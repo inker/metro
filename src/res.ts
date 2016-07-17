@@ -1,9 +1,22 @@
 /// <reference path="../typings/tsd.d.ts" />
-import * as L from 'leaflet';
+import { Hints } from './hints';
 
-export const dictionaryPromise = fetch('json/dictionary.json').then(data => data.json());
+export type Config = {
+    containerId: string,
+    center: number[],
+    zoom: number,
+    minZoom: number,
+    maxZoom: number,
+    detailedZoom: number
+}
 
-export const lineRulesPromise = new Promise<CSSStyleSheet>(resolve => {
+export const getDictionary = () => fetch('res/dictionary.json').then(data => data.json());
+
+export const getConfig = () => fetch('res/mapconfig.json').then(data => data.json()) as Promise<Config>;
+
+export const getGraph = () => fetch('res/graph.json').then(data => data.text());
+
+export const getLineRules = () => new Promise<CSSStyleSheet>(resolve => {
     const link = document.querySelector(`[href$="css/scheme.css"]`) as HTMLLinkElement;
     const sheet = link.sheet as CSSStyleSheet;
     if (sheet && sheet.cssRules) {
@@ -25,3 +38,7 @@ export const lineRulesPromise = new Promise<CSSStyleSheet>(resolve => {
     console.log(lineRules);
     return lineRules;
 });
+
+export const getHints = () => fetch('res/hints.json').then(data => data.json()) as Promise<Hints>;
+
+export const getContextMenu = () => fetch('res/contextmenudata.json').then(data => data.json());

@@ -31,11 +31,7 @@ export function transferToModel(transfer: nw.Transfer, elements: Element[]) {
                     const transferIndices: number[] = [];
                     for (let i = 0; i < this.network.transfers.length; ++i) {
                         const t = this.network.transfers[i];
-                        if (t.source === transfer.source
-                            || t.target === transfer.target
-                            || t.source === transfer.target
-                            || t.target === transfer.source
-                        ) {
+                        if (transfer.isAdjacent(t)) {
                             transfers.push(t);
                             transferIndices.push(i);
                             if (transfers.length === 3) break;
@@ -71,7 +67,7 @@ export function transferToModel(transfer: nw.Transfer, elements: Element[]) {
                         svg.Gradients.setOffset(gradient, circlePortion);
                     }
                 } else {
-                    throw new Error('wrong element type for transfer');
+                    throw new TypeError('wrong element type for transfer');
                 }
             }
         });
@@ -91,8 +87,9 @@ export function platformToModel(platform: nw.Platform|number, circles: Element[]
             const locForPos = this.map.getZoom() < 12
                 ? this.network.stations[obj.station].location
                 : location;
-            const nw = this.bounds.getNorthWest();
-            const pos = this.map.latLngToContainerPoint(locForPos).subtract(this.map.latLngToContainerPoint(nw));
+            const pos = this.overlay.latLngToSvgPoint(locForPos);
+            // const nw = this.bounds.getNorthWest();
+            // const pos = this.map.latLngToContainerPoint(locForPos).subtract(this.map.latLngToContainerPoint(nw));
             for (let c of circles) {
                 c.setAttribute('cx', pos.x.toString());
                 c.setAttribute('cy', pos.y.toString());

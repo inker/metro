@@ -9,7 +9,9 @@ type Dictionary = {
 }
 let dictionary: Dictionary;
 
-export const dictionaryPromise = res.dictionaryPromise.then(dict => dictionary = dict);
+export function getDictionary() {
+    return res.getDictionary().then((dict: Dictionary) => dictionary = dict);
+}
 
 export function translate(text: string): string {
     return text in dictionary && userLanguage in dictionary[text] ? dictionary[text][userLanguage] : text;

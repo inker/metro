@@ -1,166 +1,130 @@
-/// <reference path="../typings/tsd.d.ts" />
+/// <reference path="../typings/tsd.d.ts" />;
 import * as L from 'leaflet';
-const alertify = require('alertifyjs');
-import { lineRulesPromise } from './res';
-import { mapbox, mapnik, osmFrance, cartoDBNoLabels, wikimapia } from './tilelayers';
-import * as util from './util';
-import * as math from './math';
-import * as algorithm from './algorithm';
-import { translate as tr, formatTime as ft } from './i18n';
-import * as svg from './svg';
 import * as nw from './network';
 import * as bind from './bind';
 import * as hints from './hints';
-import { getCenter } from './geo';
 import * as ui from './ui';
+import * as svg from './svg';
+import * as util from './util';
+import * as res from './res';
+import { getCenter } from './math';
+import { findCircle } from './algorithm';
+import { mapbox, mapnik, osmFrance, cartoDBNoLabels, wikimapia } from './tilelayers';
+import { translate as tr } from './i18n';
+import EventHandler from './eventhandler';
+import MapOverlay from './mapoverlay';
 
-L.Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images';
-
-const minZoom = 9, maxZoom = 18, startingZoom = 11, detailedZoom = 12;
-
-export default class MetroMap implements EventTarget {
+export default class MetroMap extends EventHandler {
+    private config: res.Config;
     private map: L.Map;
-    private overlay: SVGSVGElement;
-    private network: nw.Network;
-    private bounds: L.LatLngBounds;
-    private hints: hints.Hints;
+    private overlay: MapOverlay;
+    private contextMenu: ui.ContextMenu;
 
+    private network: nw.Network;
+    private hints: hints.Hints;
+    private lineRules: Map<string, CSSStyleDeclaration>;
     private whiskers = new Map<number, Map<number, L.Point>>();
     private platformsOnSVG = new Map<number, L.Point>();
-
     private plate: ui.TextPlate;
-    private distanceMeasure: ui.DistanceMeasure;
 
-    private fromMarker = new L.Marker([0, 0], { draggable: true, icon: ui.Icons.start });
-    private toMarker = new L.Marker([0, 0], { draggable: true, icon: ui.Icons.end });
     //private routeWorker = new Worker('js/routeworker.js');
 
-    private _contextMenu: ui.ContextMenu;
+    getContextMenu() { return this.contextMenu;}
+    getMap(): L.Map { return this.map; }
+    getNetwork(): nw.Network { return this.network; }  
 
-    private lineRules: Map<string, CSSStyleDeclaration>;
-
-    get contextMenu() {
-        return this._contextMenu;
-    }
-
-    getMap(): L.Map {
-        return this.map;
-    }
-
-    getOverlay(): SVGSVGElement {
-        return this.overlay;
-    }
-
-    getPlate(): ui.TextPlate {
-        return this.plate;
-    }
-
-    getNetwork(): nw.Network {
-        return this.network;
-    }
-
-    constructor(containerId: string) {
-        const networkPromise = fetch('json/graph.json')
-            .then(data => data.text())
+    constructor(config: res.Config) {
+        super();
+        const networkPromise = res.getGraph()
             .then(json => this.network = new nw.Network(json));
-        const hintsPromise = fetch('json/hints.json')
-            .then(data => data.json())
-            .then((hintsJSON: hints.Hints) => this.hints = hintsJSON);
-        const contextMenuPromise = fetch('json/contextmenudata.json')
-            .then(data => data.json());
+        const lineRulesPromise = res.getLineRules()
+            .then(lineRules => this.lineRules = lineRules);
+        const hintsPromise = Promise.all([res.getHints(), networkPromise] as any[])
+            .then(results => hints.verify(results[1], results[0]))
+            .catch(console.error)
+            .then(json => this.hints = json);
+        const contextMenuPromise = res.getContextMenu();
 
-        this.map = new L.Map(containerId, {
-            center: new L.LatLng(59.943556, 30.30452),
-            zoom: startingZoom,
-            minZoom,
-            maxZoom,
-            inertia: true,
-            wheelPxPerZoomLevel: 75,
-            inertiaMaxSpeed: 1500,
-            fadeAnimation: false
-        }).addControl(new L.Control.Scale({ imperial: false })).addLayer(mapbox);
-
-        const { tilePane, objectsPane, markerPane, mapPane } = this.map.getPanes();
+        this.config = config;
+        const mapOptions = Object.assign({}, config);
+        if (L.version[0] === '1') {
+            mapOptions['wheelPxPerZoomLevel'] = 75;
+            mapOptions['inertiaMaxSpeed'] = 1500;
+            mapOptions['fadeAnimation'] = false;
+        }
+        this.map = new L.Map(config.containerId, mapOptions)
+            .addControl(new L.Control.Scale({ imperial: false }))
+            .addLayer(mapbox);
+        
+        const { tilePane } = this.map.getPanes();
         tilePane.style.display = 'none';
 
         ui.addLayerSwitcher(this.map, [mapbox, mapnik, osmFrance, cartoDBNoLabels, wikimapia]);
+        this.addMapListeners();
         this.addKeyboardListeners();
-
-        this.overlay = svg.createSVGElement('svg') as SVGSVGElement;
-        this.overlay.id = 'overlay';
-        (L.version[0] === '1' ? mapPane : objectsPane).insertBefore(this.overlay, markerPane);
-
-        const defs = svg.createSVGElement('defs');
-        defs.appendChild(svg.Shadows.makeDrop());
-        defs.appendChild(svg.Shadows.makeGlow());
-        defs.appendChild(svg.Shadows.makeOpacity());
-        defs.appendChild(svg.Shadows.makeGray());
-        if (defs.textContent.length === 0) {
-            alert(tr("Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience."));
-        }
-        this.overlay.appendChild(defs);
-
-        networkPromise.then(g => hintsPromise).then(h => lineRulesPromise).then(lineRules => {
-            this.lineRules = lineRules;
-            this.bounds = new L.LatLngBounds(this.network.platforms.map(p => p.location));
+        networkPromise.then(network => {
+            this.overlay = new MapOverlay(this.map, new L.LatLngBounds(this.network.platforms.map(p => p.location)));
+            const { defs } = this.overlay;
+            defs.appendChild(svg.Shadows.makeDrop());
+            defs.appendChild(svg.Shadows.makeGlow());
+            defs.appendChild(svg.Shadows.makeOpacity());
+            defs.appendChild(svg.Shadows.makeGray());
+            if (defs.textContent.length === 0) {
+                alert(tr("Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience."));
+            }
+            return Promise.all([lineRulesPromise, hintsPromise] as any[]);
+        }).then(results => {
             this.redrawNetwork();
             // TODO: fix the kludge making the grey area disappear
             this.map.invalidateSize(false);
-            this.addMapMovementListeners();
-            this.addMarkerListeners();
+            this.overlay.onZoomChange(e => this.redrawNetwork());
+            return contextMenuPromise;
+        }).then(contextMenuData => {
+            this.contextMenu = new ui.ContextMenu(this, new Map<string, any>(contextMenuData));
+            new ui.RoutePlanner(this);
             //this.routeWorker.postMessage(this.network);
             //drawZones(this);
             if (!L.Browser.mobile) {
-                new ui.MapEditor(this, detailedZoom);
+                new ui.MapEditor(this, this.config.detailedZoom);
             }
-            new ui.FAQ(this, 'json/data.json');
-            return contextMenuPromise;
-        }).then(contextMenuData => {
-            this._contextMenu = new ui.ContextMenu(this, new Map<string, any>(contextMenuData));
-            this.distanceMeasure = new ui.DistanceMeasure(this);
+            new ui.FAQ(this, 'res/data.json');
+            new ui.DistanceMeasure(this);
             this.resetMapView();
-            ui.cacheIcons(this.map, [this.fromMarker, this.toMarker]);
             util.fixFontRendering(); // just in case
             tilePane.style.display = '';
             console.log(hints.verify(this.network, this.hints));
         });
     }
 
-    addEventListener(type: string, listener: EventListener) { }
-    removeEventListener(type: string, listener: EventListener) { }
-
-    dispatchEvent(event: Event): boolean {
-        console.log('event as seen from the dispatcher', event);
-        switch (event.type) {
-            case 'measuredistance': {
-                this.distanceMeasure.measureDistance(util.mouseToLatLng(this.map, event as MouseEvent));
-                break;
-            }
-            case 'deletemeasurements':
-                this.distanceMeasure.deleteMeasurements();
-                break;
-            case 'routefrom':
-            case 'routeto':
-                this.handleMenuFromTo(event as MouseEvent);
-                break;
-            case 'clearroute':
-                this.clearRoute();
-                break;
-            case 'platformrename': {
-                const me = event as MouseEvent;
-                const circle = me.relatedTarget as SVGCircleElement;
+    private addMapListeners() {
+        super.addListenersFromObject({
+            'measuredistance': (e: Event) => {
+                this.contextMenu.items.delete('measuredistance');
+                this.contextMenu.items.set('deletemeasurements', { text: 'Delete measurements' });
+            },
+            'deletemeasurements': (e: Event) => {
+                this.contextMenu.items.delete('deletemeasurements');
+                this.contextMenu.items.set('measuredistance', { text: 'Measure distance' });
+            },
+            'platformrename': (e: Event) => {
+                const circle = (e as MouseEvent).relatedTarget as SVGCircleElement;
                 const platform = util.platformByCircle(circle, this.network);
                 this.plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));
                 ui.platformRenameDialog(this.network, platform);
-                break;
-            }
-            case 'platformdelete': {
-                break;
-            }
-            case 'platformadd':
-                const coor = util.mouseToLatLng(this.map, event as MouseEvent);
-                const pos = this.map.latLngToContainerPoint(coor)
-                    .subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
+            },
+            'platformmove': (e: Event) => {
+                this.plate.disabled = true;
+            },
+            'platformmoveend': (e: Event) => {
+                const circle = (e as MouseEvent).relatedTarget as SVGCircleElement;
+                const platform = util.platformByCircle(circle, this.network);
+                this.plate.disabled = false;
+                this.plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));                
+            },
+            'platformadd': (e: Event) => {
+                //this.contextMenu.items.delete('platformadd');
+                const coor = util.mouseToLatLng(this.map, e as MouseEvent);
+                const pos = this.overlay.latLngToSvgPoint(coor);
                 const stationCircles = document.getElementById('station-circles'),
                     dummyCircles = document.getElementById('dummy-circles');
                 const circle = svg.makeCircle(pos, +stationCircles.firstElementChild.getAttribute('r')),
@@ -181,67 +145,25 @@ export default class MetroMap implements EventTarget {
                 };
                 this.network.platforms.push(platform);
                 bind.platformToModel.call(this, platform, [circle, dummy])
-                break;
-            case 'showheatmap':
-                this.showHeatMap();
-                break;                
-            default:
-                break;
-        }
-        return false;
-    }
+            },
+            'platformdelete': (e: Event) => {
 
-    private clearRoute() {
-        const terminate = svg.Animation.terminateAnimations();
-        this.map.removeLayer(this.fromMarker).removeLayer(this.toMarker);
-        this.fromMarker.off('drag').off('dragend');
-        this.toMarker.off('drag').off('dragend');
-        alertify.dismissAll();
-        terminate.then(util.resetStyle);
-    }
-
-    private handleMenuFromTo(e: MouseEvent) {
-        const coors = util.mouseToLatLng(this.map, e);
-        const marker = e.type === 'routefrom' ? this.fromMarker : this.toMarker;
-        marker.setLatLng(coors);
-        if (!this.map.hasLayer(marker)) {
-            this.map.addLayer(marker);
-        }
-        const otherMarker = marker === this.fromMarker ? this.toMarker : this.fromMarker;
-        if (this.map.hasLayer(otherMarker)) {
-            // fixing font rendering here boosts the performance
-            util.fixFontRendering();
-            this.visualizeRouteBetween(this.fromMarker.getLatLng(), this.toMarker.getLatLng());
-            //this.map.once('zoomend', e => this.visualizeShortestRoute(latLngArr));
-            //this.map.fitBounds(new L.LatLngBounds(latLngArr));
-        }
-
-    }
-
-    private showHeatMap() {
-        // if (this.map.hasLayer(this.fromMarker)) {
-        //     // draw time map from the marker                    
-        // } else {
-        //     // draw time map to the closest station from each point
-        //     const nw = this.bounds.getNorthWest();
-        //     const topLeft = this.map.latLngToContainerPoint(nw);
-        //     const se = this.bounds.getSouthEast();
-        //     const bottomRight = this.map.latLngToContainerPoint(se);
-        //     const step = bottomRight.subtract(topLeft).divideBy(200);
-        //     console.log(se.distanceTo(nw) / 200);
-        //     console.log('for ' + step);
-        //     console.time('checking');
-        //     for (let i = topLeft.x; i < bottomRight.x; i += step.x) {
-        //         for (let j = topLeft.y; j < bottomRight.y; j += step.y) {
-        //             const c = this.map.containerPointToLatLng(new L.Point(i, j));
-        //             //new L.Marker(c).addTo(this.map);
-        //             const closest = geo.findClosestObject(c, this.network.platforms).location;
-        //             L.LatLng.prototype.distanceTo.call(closest, c);
-        //             //util.shortestPath(this.network, c, closest);
-        //         }
-        //     }
-        //     console.timeEnd('checking');
-        // }
+            },
+            'editmapstart': (e: Event) => {
+                if (this.map.getZoom() < this.config.detailedZoom) {
+                    // const plusButton = this.map.zoomControl.getContainer().firstChild;
+                    // util.triggerMouseEvent(plusButton, 'mousedown');
+                    // util.triggerMouseEvent(plusButton, 'click');
+                    this.map.setZoom(this.config.detailedZoom);
+                }
+            },
+            'editmapend': (e: Event) => {
+                this.contextMenu.items.delete('platformadd');
+            },
+            'showheatmap': (e: Event) => {
+                //this.showHeatMap();
+            }
+        });
     }
 
     private addKeyboardListeners(): void {
@@ -259,132 +181,25 @@ export default class MetroMap implements EventTarget {
         });
     }
 
-    private addMarkerListeners(): void {
-        for (let marker of [this.fromMarker, this.toMarker]) {
-            marker.on('drag', e => {
-                if (!this.map.hasLayer(this.fromMarker) || !this.map.hasLayer(this.toMarker)) return;
-                this.visualizeRouteBetween(this.fromMarker.getLatLng(), this.toMarker.getLatLng(), false);
-            }).on('dragend', e => {
-                util.fixFontRendering();
-                if (!this.map.hasLayer(this.fromMarker) || !this.map.hasLayer(this.toMarker)) return;
-                this.visualizeRouteBetween(this.fromMarker.getLatLng(), this.toMarker.getLatLng());
-            });
-        }
-
-    }
-
-    private addMapMovementListeners(): void {
-        const { mapPane, tilePane } = this.map.getPanes();
-        const tilePaneContainer = tilePane.firstElementChild as HTMLElement;
-        const overlayStyle = this.overlay.style;
-        const overlayClassList = this.overlay.classList;
-        let scaleFactor = 1,
-            mousePos: L.Point;
-        this.map.on('zoomstart', e => {
-            overlayClassList.add('leaflet-zoom-animated');
-            console.log('zoomstart', e);
-            this.map.dragging.disable();
-            //fromZoom = e.target['_zoom'];
-            if (scaleFactor !== 1) {
-                //mousePos = e.target['scrollWheelZoom']['_lastMousePos'];
-                console.log('mousepos:', mousePos);
-                util.scaleOverlay(this.overlay, scaleFactor, mousePos);
-            }
-            scaleFactor = 1;
-        }).on('zoomanim', e => {
-            // const toZoom: number = e['zoom'];
-            // scaleFactor = 2 ** (toZoom - fromZoom);
-            // util.scaleOverlay(this.overlay, scaleFactor, mousePos);
-        }).on('zoomend', e => {
-            scaleFactor = 1;
-            console.log('zoomend', e);
-            //console.log(this.map.project(this.network.platforms[69].location, this.map.getZoom()).divideBy(2 ** this.map.getZoom()));
-            overlayStyle.transformOrigin = null;
-            overlayClassList.remove('leaflet-zoom-animated' );
-            this.redrawNetwork();
-            this.map.dragging.enable();
-        }).on('moveend', e => {
-            util.fixFontRendering();
-            if (L.version[0] === '1') {
-                setTimeout(() => {
-                    util.CSSTransform.trim3d(tilePaneContainer.firstElementChild as HTMLElement);
-                    const second = tilePaneContainer.lastElementChild as HTMLElement;
-                    if (!second) return;
-                    util.CSSTransform.trim3d(second);
-                }, 250);
-            }
-            // the secret of correct positioning is the movend transform check for corrent transform
-            overlayStyle.transform = null;
-        }).on('layeradd layerremove', () => util.fixFontRendering());
-        
-        const changeScaleFactor = (isZoomIn: boolean) => {
-            const oldZoom = this.map.getZoom();
-            scaleFactor = isZoomIn ?
-                Math.min(scaleFactor * 2, 2 ** (maxZoom - oldZoom)) :
-                Math.max(scaleFactor / 2, 2 ** (minZoom - oldZoom));            
-        }
-
-        const onWheel = (e: WheelEvent) => {
-            mousePos = L.DomEvent.getMousePosition(e);
-            //scaleFactor *= e.deltaY < 0 ? 2 : 0.5;
-            changeScaleFactor(e.deltaY < 0);
-            //this.map.setZoomAround(util.mouseToLatLng(this.map, e), e.deltaY < 0 ? zoom + 1 : zoom - 1);
-        };
-        mapPane.addEventListener('wheel', onWheel);
-        // controls are not a part of the map pane, so a special listener is for them
-        document.querySelector('.leaflet-control-container').addEventListener('wheel', onWheel);
-
-        // +/- button click
-        const zoomContainer = this.map.zoomControl.getContainer();
-        zoomContainer.addEventListener('mousedown', e => {
-            mousePos = new L.Point(innerWidth / 2, innerHeight / 2);
-            changeScaleFactor(e.target === zoomContainer.firstChild);
-        }, true);
-
-        // double click zoom
-        this.map.on('dblclick', (e: L.LeafletMouseEvent) => {
-            const o = e.originalEvent;
-            mousePos = L.DomEvent.getMousePosition(o);
-            changeScaleFactor(!o.shiftKey);
-        });
-
-        // keyboard zoom
-        document.addEventListener('keydown', e => {
-            mousePos = new L.Point(innerWidth / 2, innerHeight / 2);
-            const i = [189, 109, 54, 173, 187, 107, 61, 171].indexOf(e.keyCode);
-            if (i !== -1) {
-                changeScaleFactor(i > 3);
-            }
-        });
-    }
-
-
     private resetMapView(): void {
         //const fitness = (points, pt) => points.reduce((prev, cur) => this.bounds., 0);
         //const center = geo.calculateGeoMean(this.network.platforms.map(p => p.location), fitness, 0.1);
-        this.map.setView(this.bounds.getCenter(), startingZoom, {
+        this.map.setView(this.config.center, this.config.zoom, {
             pan: { animate: false },
             zoom: { animate: false }
         });
     }
 
     private resetNetwork(): void {
-        const networkPromise = fetch('json/graph.json').then(data => data.text()).then(json => {
+       	res.getGraph().then(json => {
             this.network = new nw.Network(json);
             this.redrawNetwork();
         });
-        
     }
 
     private resetOverlayStructure(): void {
-        let origin: SVGGElement = document.getElementById('origin') as any;
-        if (origin === null) {
-            origin = svg.createSVGElement('g') as SVGGElement;
-            origin.id = 'origin';
-            this.overlay.appendChild(origin);
-        } else {
-            util.removeAllChildren(origin);
-        }
+        let { origin } = this.overlay;
+        util.removeAllChildren(origin);
 
         const groupIds = [
             'paths-outer',
@@ -415,69 +230,25 @@ export default class MetroMap implements EventTarget {
             bind.platformToModel.call(this, i, [circle, dummyCircle]);
         }
     }
-    
-    private updateOverlayPositioning(): void {
-        const nw = this.bounds.getNorthWest(),
-            se = this.bounds.getSouthEast();
-        // svg bounds in pixels relative to container 
 
-        const overlayStyle = this.overlay.style;
-        const pixelBounds = new L.Bounds(this.map.latLngToLayerPoint(nw), this.map.latLngToLayerPoint(se));
-
-        const margin = new L.Point(100, 100);
-        const topLeft = pixelBounds.min.subtract(margin);
-        overlayStyle.left = topLeft.x + 'px';
-        overlayStyle.top = topLeft.y + 'px';
-        const origin = document.getElementById('origin');
-        //TODO: test which one is faster
-        // transform may not work with svg elements
-        //origin.setAttribute('x', margin.x + 'px');
-        //origin.setAttribute('y', margin.y + 'px');
-        origin.setAttribute('transform', `translate(${margin.x}, ${margin.y})`);
-        //origin.style.transform = `translate(${margin.x}px, ${margin.y}px)`;
-        //origin.style.left = margin.x + 'px';
-        //origin.style.top = margin.y + 'px';
-
-        const overlaySize = pixelBounds.getSize().add(margin).add(margin);
-        overlayStyle.width = overlaySize.x + 'px';
-        overlayStyle.height = overlaySize.y + 'px';
-    }
-
-    /**
-     * circles, paths without specified coordinates
-     */
-    private sketchNetwork() {
-        this.resetOverlayStructure();
-
-        for (let station of this.network.stations) {
-
-        }
-    }
-
-    /**
-     *  lineWidth = (zoom - 7) * 0.5
-     *  9 - only lines (1px)
-     *  10 - lines (1.5px) & roundels (2+1px)
-     *  11 - lines (2px) & roundels (2+2px)
-     *  12 - lines (2.5px), platforms (2+1px) & transfers (2px)
-     *  ...
-     */
     private redrawNetwork() {
-
         console.time('pre');
         this.resetOverlayStructure();
-        this.updateOverlayPositioning();
         this.updatePlatformsPositionOnOverlay();
         console.timeEnd('pre');
         console.time('preparation');
-        const zoom = this.map.getZoom();
+        const { detailedZoom } = this.config;
+        const zoom = this.map.getZoom(),
+            coef = zoom > 9 ? zoom : zoom > 8 ? 9.5 : 9,
+            //lineWidth = 2 ** (zoom / 4 - 1.75);
+        	lineWidth = (coef - 7) * 0.5,
+            lightLineWidth = lineWidth * 0.75,
+        	circleRadius = coef < detailedZoom ? lineWidth * 1.25 : lineWidth,
+        	circleBorder = coef < detailedZoom ? circleRadius * 0.4 : circleRadius * 0.6,
+            dummyCircleRadius = circleRadius * 2, 
+        	transferWidth = lineWidth * 0.9,
+        	transferBorder = circleBorder * 1.25;
 
-        //const lineWidth = 2 ** (zoom / 4 - 1.75);
-        const lineWidth = (zoom - 7) * 0.5;
-        const circleRadius = zoom < detailedZoom ? lineWidth * 1.25 : lineWidth;
-        const circleBorder = zoom < detailedZoom ? circleRadius * 0.4 : circleRadius * 0.6;
-        const transferWidth = lineWidth * 0.9;
-        const transferBorder = circleBorder * 1.25;
         const strokeWidths = {
             'station-circles': circleBorder,
             'dummy-circles': 0,
@@ -487,14 +258,14 @@ export default class MetroMap implements EventTarget {
             'paths-inner': lineWidth / 2
         };
         const fullCircleRadius = circleRadius + circleBorder / 2;
-        //const thinnerLineWidth = lineWidth * 0.75;
-        this.lineRules.get('light-rail-path').strokeWidth = lineWidth * 0.75 + 'px';
 
         const docFrags = new Map<string, DocumentFragment>();
         for (let id of Object.keys(strokeWidths)) {
             docFrags.set(id, document.createDocumentFragment());
             document.getElementById(id).style.strokeWidth = strokeWidths[id] + 'px';
         }
+
+        this.lineRules.get('light-rail-path').strokeWidth = lightLineWidth + 'px';
 
         // 11 - 11, 12 - 11.5, 13 - 12, 14 - 12.5
         const fontSize = Math.max((zoom + 10) * 0.5, 11);
@@ -529,7 +300,7 @@ export default class MetroMap implements EventTarget {
                     // else {
                     //     ci.style.stroke = stationMeanColor;
                     // }
-                    const dummyCircle = svg.makeCircle(posOnSVG, circleRadius * 2);
+                    const dummyCircle = svg.makeCircle(posOnSVG, dummyCircleRadius);
                     dummyCircle.id = 'd-' + platformIndex;
 
                     stationCirclesFrag.appendChild(ci);
@@ -539,7 +310,7 @@ export default class MetroMap implements EventTarget {
                 this.whiskers.set(platformIndex, this.makeWhiskers(platformIndex));
             }
 
-            const circular = algorithm.findCircle(this.network, station);
+            const circular = findCircle(this.network, station);
             if (circular.length > 0) {
                 for (let platformIndex of station.platforms) {
                     const platform = this.network.platforms[platformIndex];
@@ -560,7 +331,7 @@ export default class MetroMap implements EventTarget {
         if (zoom >= detailedZoom) {
             const transfersOuterFrag = docFrags.get('transfers-outer');
             const transfersInnerFrag = docFrags.get('transfers-inner');
-            const defs = this.overlay.querySelector('defs');
+            const { defs } = this.overlay;
             const nwTransfers = this.network.transfers, nTransfers = nwTransfers.length;
             for (let transferIndex = 0; transferIndex < nTransfers; ++transferIndex) {
                 const transfer = nwTransfers[transferIndex];
@@ -624,13 +395,12 @@ export default class MetroMap implements EventTarget {
 
     private updatePlatformsPositionOnOverlay(zoom = this.map.getZoom()) {
         const nwPlatforms = this.network.platforms;
-        const stationCenter = (s: nw.Station) => getCenter(s.platforms.map(i => nwPlatforms[i].location));
-        const topLeftOverall = this.map.project(this.bounds.getNorthWest(), zoom).round();
+        const detailed = zoom < this.config.detailedZoom;
         for (let station of this.network.stations) {
-            const center = zoom < detailedZoom ? stationCenter(station) : null;
+            const center = detailed ? this.overlay.latLngToSvgPoint(this.network.getStationCenter(station)) : undefined;
             for (let platformIndex of station.platforms) {
-                const projPt = this.map.project(center || nwPlatforms[platformIndex].location, zoom).round();
-                this.platformsOnSVG.set(platformIndex, projPt.subtract(topLeftOverall));
+                const pos = center || this.overlay.latLngToSvgPoint(nwPlatforms[platformIndex].location);
+                this.platformsOnSVG.set(platformIndex, pos);
             }
         }
     }
@@ -653,7 +423,7 @@ export default class MetroMap implements EventTarget {
         if (lines.size === 1) {
             const line = lines.values().next().value;
             ci.classList.add(line[0] === 'M' ? line : line[0]);
-            return
+            return;
         }
         ci.style.stroke = util.Color.mean(this.linesToColors(lines));
     }
@@ -695,7 +465,7 @@ export default class MetroMap implements EventTarget {
                 }
             }
             const midPts = points.map(pts => posOnSVG
-                .add(pts.length === 1 ? pts[0] : pts.length === 0 ? posOnSVG : math.getCenter(pts))
+                .add(pts.length === 1 ? pts[0] : pts.length === 0 ? posOnSVG : getCenter(pts))
                 .divideBy(2)
             );
             const lens = midPts.map(midPt => posOnSVG.distanceTo(midPt));
@@ -707,31 +477,27 @@ export default class MetroMap implements EventTarget {
             return wh;
         }
 
-        const lines = platform.spans.map(i => this.network.routes[this.network.spans[i].routes[0]].line);
         // TODO: refactor this stuff, unify 2-span & >2-span platforms
-        if (lines[0] !== lines[1]) {
-            return wh.set(platform.spans[0], posOnSVG)
-                .set(platform.spans[1], posOnSVG);
+        if (this.network.passingLines(platform).size === 2) {
+            return wh.set(platform.spans[0], posOnSVG).set(platform.spans[1], posOnSVG);
         }
 
-        const midPts = [posOnSVG, posOnSVG];
-        const lens = [0, 0];
-        const firstSpan = this.network.spans[platform.spans[0]];
-        if (firstSpan.source === platformIndex) {
-            platform.spans.reverse();
-        }
+        // const firstSpan = this.network.spans[platform.spans[0]];
+        // if (firstSpan.source === platformIndex) {
+        //     platform.spans.reverse();
+        // }
         // previous node should come first
+        const midPts = [posOnSVG, posOnSVG], lens = [0, 0];
         for (let i = 0; i < 2; ++i) {
             const span = this.network.spans[platform.spans[i]];
-            const neighborOnSVG = this.platformsOnSVG.get(span.source === platformIndex ? span.target : span.source);
+            const neighborOnSVG = this.platformsOnSVG.get(span.other(platformIndex));
             lens[i] = posOnSVG.distanceTo(neighborOnSVG);
             midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
         }
-        const mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1]));
-        const mm = midPts[0].add(mdiff);
-        const diff = posOnSVG.subtract(mm);
-        return wh.set(platform.spans[0], midPts[0].add(diff))
-            .set(platform.spans[1], midPts[1].add(diff));
+        const mdiff = midPts[1].subtract(midPts[0]).multiplyBy(lens[0] / (lens[0] + lens[1])),
+            mm = midPts[0].add(mdiff),
+            diff = posOnSVG.subtract(mm);
+        return wh.set(platform.spans[0], midPts[0].add(diff)).set(platform.spans[1], midPts[1].add(diff));
     }
 
     private makeTransferArc(transfer: nw.Transfer, cluster: nw.Platform[]): (SVGLineElement | SVGPathElement)[] {
@@ -753,9 +519,9 @@ export default class MetroMap implements EventTarget {
         const rarr: number[] = [];
         for (let t of this.network.transfers) {
             if (t === transfer) continue;
-            if (t.source === transfer.source || t.source === transfer.target) {
+            if (transfer.has(t.source)) {
                 rarr.push(t.target);
-            } else if (t.target === transfer.source || t.target === transfer.target) {
+            } else if (transfer.has(t.target)) {
                 rarr.push(t.source);
             }
         }
@@ -812,7 +578,7 @@ export default class MetroMap implements EventTarget {
             const dummy = e.target as SVGCircleElement;
             const platform = this.network.platforms[+dummy.id.slice(2)];
             const station = this.network.stations[platform.station];
-            const names = this.map.getZoom() < detailedZoom && station.platforms.length > 1 ? 
+            const names = this.map.getZoom() < this.config.detailedZoom && station.platforms.length > 1 ? 
                 getNames(station.platforms.map(i => this.network.platforms[i])) :
                 util.getPlatformNames(platform);
             this.highlightStation(station, names);
@@ -844,7 +610,7 @@ export default class MetroMap implements EventTarget {
             svg.Scale.scaleCircle(circle, scaleFactor, true);
             platform = nwPlatforms[stationPlatforms[0]];
         } else {
-            const transfers = this.map.getZoom() < detailedZoom ? undefined : this.network.transfers;
+            const transfers = this.map.getZoom() < this.config.detailedZoom ? undefined : this.network.transfers;
             svg.Scale.scaleStation(nwPlatforms, station, scaleFactor, transfers);
 
             const idx2lat = (i: number) => nwPlatforms[i].location.lat;
@@ -853,50 +619,6 @@ export default class MetroMap implements EventTarget {
             platform = nwPlatforms[topmostIndex];
         }
         this.plate.show(svg.circleOffset(circle), names);
-    }
+    } 
 
-    private visualizeRouteBetween(from: L.LatLng, to: L.LatLng, animate = true) {
-        util.resetStyle();
-        alertify.dismissAll();
-        this.visualizeRoute(algorithm.shortestRoute(this.network, from, to), animate);
-    }
-
-    private visualizeRoute(obj: algorithm.ShortestRouteObject, animate = true) {
-        const { platforms, edges, time } = obj;
-        const onFoot = tr('on foot');
-        const walkTo = ft(time.walkTo);
-        if (edges === undefined) {
-            return alertify.success(`${walkTo} ${onFoot}!`);
-        }
-        const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
-        svg.Animation.terminateAnimations().then(() => {
-            for (let { style } of this.overlay.querySelectorAll(selector) as any) {
-                //style['-webkit-filter'] = 'grayscale(1)';
-                style.filter = null;
-                style.opacity = '0.25';
-            }
-            if (animate) {
-                return svg.Animation.animateRoute(this.network, platforms, edges, 1);
-            }
-            for (let edgeIdTail of edges) {
-                const outer = document.getElementById('o' + edgeIdTail);
-                if (outer === null) continue;
-                outer.style.opacity = null;
-                const inner = document.getElementById('i' + edgeIdTail);
-                if (inner !== null) {
-                    inner.style.opacity = null;
-                }
-                if (outer.id.charAt(1) !== 't') {
-                    svg.Shadows.applyDrop(outer);
-                }
-            }
-            for (let platformNum of platforms) {
-                document.getElementById('p-' + platformNum).style.opacity = null;
-            }      
-        }).then(finished => {
-            // finished is undefined if not animated, false if animation is still running or true if otherwise
-            if (!finished) return;
-            alertify.message(`${tr('time').toUpperCase()}:<br>${walkTo} ${onFoot}<br>${ft(time.metro)} ${tr('by metro')}<br>${ft(time.walkFrom)} ${onFoot}<br>${tr('TOTAL')}: ${ft(time.total)}`, 10)
-        });
-    }
 }

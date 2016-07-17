@@ -1,24 +1,20 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
-import MetroMap from '../metro-map';
+import MetroMap from '../metromap';
 import * as util from '../util';
 import { translate as tr } from '../i18n';
 
-export type Item = { icon?: string; disabled?: boolean; text: string };
+// TODO: merge items & extra items, introduce item index
+
+export type Item = { disabled?: boolean; text: string };
 export default class ContextMenu {
     private metroMap: MetroMap;
     private _items: Map<string, Item>;
     private _extraItems: Map<EventTarget, Map<string, Item>>;
     private table: HTMLTableElement;
-    get items() {
-        return this._items;
-    }
-    get extraItems() {
-        return this._extraItems;
-    }
-    get state() {
-        return this.table.style.display !== 'none';
-    }
+    get items() { return this._items; }
+    get extraItems() { return this._extraItems; }
+    get state() { return this.table.style.display !== 'none'; }
     set state(val: boolean) {
         this.table.style.display = val ? null : 'none';
         if (L.Browser.mobile) {
@@ -61,8 +57,11 @@ export default class ContextMenu {
         this.table.innerHTML = '';
         const fillCell = (item: Item, eventName: string) => {
             const cell: HTMLTableDataCellElement = (this.table.insertRow() as any).insertCell(0);
-            const [attr, val] = item.disabled ? ['disabled', ''] : ['data-event', eventName];
-            cell.setAttribute(attr, val);
+            if (item.disabled) {
+                cell.setAttribute('disabled', '');
+            } else {
+                cell.setAttribute('data-event', eventName);
+            }
             cell.textContent = tr(item.text);
         }
         this._items.forEach(fillCell);

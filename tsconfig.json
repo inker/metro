@@ -9,5 +9,5 @@
         "lib": ["es5", "es6"],
         "noLib": true
     },
-    "exclude": [ "node_modules"]
+    "exclude": [ "node_modules" ]
 }

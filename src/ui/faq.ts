@@ -1,6 +1,6 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import * as Hammer from 'hammerjs';
-import MetroMap from '../metro-map';
+import MetroMap from '../metromap';
 import { once } from '../util';
 
 type FAQData = { faq: { q: string, a: string }[] };

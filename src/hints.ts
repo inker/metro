@@ -14,7 +14,7 @@ export type Hints = {
     elevationSegments: any;
 }
     
-export function verify(network: nw.Network, hints: Hints): Promise<string> {
+export function verify(network: nw.Network, hints: Hints) {
     function checkExistence(val: string) {
         if (network.platforms.find(el => el.name === val) === undefined) {
             throw new Error(`platform ${val} doesn't exist`);
@@ -30,7 +30,7 @@ export function verify(network: nw.Network, hints: Hints): Promise<string> {
             }
         }
     }
-    return new Promise<string>((resolve, reject) => {
+    return new Promise<Hints>((resolve, reject) => {
         const crossPlatform = hints.crossPlatform;
         Object.keys(crossPlatform).forEach(platformName => {
             if (network.platforms.find(el => el.name === platformName) === undefined) {
@@ -43,7 +43,7 @@ export function verify(network: nw.Network, hints: Hints): Promise<string> {
                 checkPlatformHintObject(obj as PlatformHint);
             }
         });
-        resolve('hints json seems okay');
+        resolve(hints);
     });
 }
 
