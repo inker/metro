@@ -14,8 +14,8 @@ export default class DistanceMeasure {
         this.metroMap = metroMap;
         const map = metroMap.getMap();
         const measureListener = (e: MouseEvent) => this.measureDistance(util.mouseToLatLng(map, e));
-        metroMap.addEventListener('measuredistance', measureListener);
-        metroMap.addEventListener('deletemeasurements', e => this.deleteMeasurements());
+        metroMap.addListener('measuredistance', measureListener);
+        metroMap.addListener('deletemeasurements', e => this.deleteMeasurements());
     }
 
     private updateDistances() {
@@ -35,7 +35,6 @@ export default class DistanceMeasure {
             latlngs.length = nMarkers;
         }
         this.dashedLine.getLatLngs()[0] = latlngs[latlngs.length - 1];
-        //this.dashedLine.redraw();
         this.polyline.redraw();
         if (nMarkers > 1) {
             markers[nMarkers - 1].openPopup();
@@ -54,7 +53,7 @@ export default class DistanceMeasure {
                 if (this.markers.getLayers().length > 0) {
                     this.updateDistances();
                 } else {
-                    this.metroMap.dispatchEvent(new MouseEvent('deletemeasurements'));
+                    this.metroMap.receiveEvent(new MouseEvent('deletemeasurements'));
                 }
 
                 //L.DomEvent.stopPropagation(e.originalEvent);
@@ -62,15 +61,15 @@ export default class DistanceMeasure {
             });
         // const el = { lang: { ru: 'Udaliť izmerenia', en: 'Delete measurements' } };
         //this.metroMap.contextMenu.extraItems.set(circle, new Map().set('deletemeasurements', el));
-        marker.setIcon(Icons.circle);
+        marker.setIcon(Icons.Circle);
         this.markers.addLayer(marker);
         this.updateDistances();
     };
 
-    private onMouseMove = (e: L.LeafletMouseEvent) => {
+    private resetDashedLine = (e: L.LeafletMouseEvent) => {
         this.dashedLine.getLatLngs()[1] = e.latlng;
         this.dashedLine.redraw();
-    }
+    };
 
     measureDistance(initialCoordinate: L.LatLng) {
         this.dashedLine.addLatLng(initialCoordinate).addLatLng(initialCoordinate);
@@ -79,9 +78,9 @@ export default class DistanceMeasure {
             .addLayer(this.markers)
             .addLayer(this.dashedLine.setLatLngs([]))
             .on('click', this.makeMarker)
-            .on('mousemove', this.onMouseMove)
+            .on('mousemove', this.resetDashedLine)
             .fire('click', { latlng: initialCoordinate, originalEvent: { button: 0 } });
-        util.onceEscapePress(e => this.metroMap.dispatchEvent(new MouseEvent('deletemeasurements')));
+        util.onceEscapePress(e => this.metroMap.receiveEvent(new MouseEvent('deletemeasurements')));
     }
 
     deleteMeasurements() {
@@ -89,7 +88,7 @@ export default class DistanceMeasure {
             .removeLayer(this.polyline)
             .removeLayer(this.markers.clearLayers())
             .removeLayer(this.dashedLine)
-            .off('mousemove', this.onMouseMove)
+            .off('mousemove', this.resetDashedLine)
             .off('click', this.makeMarker);
     }
 }

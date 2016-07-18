@@ -17,12 +17,12 @@ export default class RoutePlanner {
         this.metroMap = metroMap;
         const map = metroMap.getMap();
         const center = map.getCenter();
-        this.fromMarker = new L.Marker(center, { draggable: true, icon: Icons.start });
-        this.toMarker = new L.Marker(center, { draggable: true, icon: Icons.end });
+        this.fromMarker = new L.Marker(center, { draggable: true, icon: Icons.Start });
+        this.toMarker = new L.Marker(center, { draggable: true, icon: Icons.End });
         cacheIcons(metroMap.getMap(), [this.fromMarker, this.toMarker]);
         this.addMarkerListeners();
-        metroMap.addEventListener('routefrom routeto', this.handleFromTo.bind(this));
-        metroMap.addEventListener('clearroute', e => this.clearRoute());
+        metroMap.addListener('routefrom routeto', this.handleFromTo.bind(this));
+        metroMap.addListener('clearroute', e => this.clearRoute());
         map.on('zoomstart', e => Animation.terminateAnimations());
     }
 

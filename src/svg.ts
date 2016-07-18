@@ -2,7 +2,6 @@
 import * as L from 'leaflet';
 import * as nw from './network';
 import * as math from './math';
-import { Color } from './util';
 
 export function createSVGElement(tagName: string) {
     return document.createElementNS('http://www.w3.org/2000/svg', tagName);
@@ -31,7 +30,7 @@ export function makeArc(start: L.Point, end: L.Point, third: L.Point): SVGPathEl
     return path;
 }
 
-export function getBezierPath(path: Element) {
+export function getBezierPathPoints(path: Element) {
     const points: L.Point[] = [],
         re = /\D([\d\.]+).*?,.*?([\d\.]+)/g,
         d = path.getAttribute('d');
@@ -104,7 +103,7 @@ export function makeTransferArc(start: L.Point, end: L.Point, third: L.Point) {
     return [outer, inner];
 }
 
-export function makeTransfer(start: L.Point, end: L.Point): SVGLineElement[] {
+export function makeTransferLine(start: L.Point, end: L.Point): SVGLineElement[] {
     // gradient disappearing fix (maybe use rectangle?)
     let tg = end.clone();
     if (start.x === end.x) {
@@ -112,15 +111,7 @@ export function makeTransfer(start: L.Point, end: L.Point): SVGLineElement[] {
     } else if (start.y === end.y) {
         tg.y += 0.01;
     }
-    return ['transfer-outer', 'transfer-inner'].map(cls => {
-        const line = createSVGElement('line') as SVGLineElement;
-        line.setAttribute('x1', start.x.toString());
-        line.setAttribute('y1', start.y.toString());
-        line.setAttribute('x2', tg.x.toString());
-        line.setAttribute('y2', tg.y.toString());
-        line.classList.add(cls);
-        return line;
-    });
+    return [makeLine(start, tg), makeLine(start, tg)];
 }
 
 export function circleOffset(circle: SVGCircleElement): L.Point {

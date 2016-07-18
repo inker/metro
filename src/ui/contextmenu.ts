@@ -1,94 +1,133 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 import MetroMap from '../metromap';
+import Widget from './widget';
 import * as util from '../util';
+import { getContextMenu } from '../res';
 import { translate as tr } from '../i18n';
 
 // TODO: merge items & extra items, introduce item index
 
-export type Item = { disabled?: boolean; text: string };
-export default class ContextMenu {
+export type ContextMenuItem = {
+    text: string,
+    predicate?: (target: EventTarget) => boolean,
+    event?: string,
+    icon?: string, 
+    disabled?: boolean;
+}
+
+export default class ContextMenu extends Widget {
     private metroMap: MetroMap;
-    private _items: Map<string, Item>;
-    private _extraItems: Map<EventTarget, Map<string, Item>>;
-    private table: HTMLTableElement;
-    get items() { return this._items; }
-    get extraItems() { return this._extraItems; }
-    get state() { return this.table.style.display !== 'none'; }
-    set state(val: boolean) {
-        this.table.style.display = val ? null : 'none';
-        if (L.Browser.mobile) {
-            const dragging = this.metroMap.getMap().dragging;
-            (val ? dragging.disable : dragging.enable)();
-        }
+    private items: ContextMenuItem[];
+    private container: HTMLDivElement;
+
+    constructor() {
+        super();
+        this._whenAvailable = getContextMenu().then(json => {
+            console.log('adding context menu');
+
+            this.items = json;
+            //this._extraItems = new Map();
+            
+            this.container = document.createElement('div');
+            this.container.id = 'contextmenu';
+            this.container.addEventListener('contextmenu', e => {
+                e.preventDefault();
+                (e.target as HTMLElement).click();
+            });
+
+            console.log('context menu ready');
+            return this;
+        });
     }
 
-    constructor(metroMap: MetroMap, items: Map<string, Item>) {
-        console.log('adding context menu');
+    addTo(metroMap: MetroMap) {
         this.metroMap = metroMap;
-        this._items = items;
-        this._extraItems = new Map();
-        
-        const map = metroMap.getMap();
-        const listener = e => this.handler(e);
-        const { mapPane } = map.getPanes();
-        mapPane.addEventListener('contextmenu', listener, false);
-        //objectsPane.addEventListener('contextmenu', listener, true); // 'true' prevents propagation
-        
-        const container = map.getContainer();
-        const cancelListener = e => this.state = false;
-        container.addEventListener('mousedown', cancelListener);
-        container.addEventListener('touchstart', cancelListener);
-        if (!L.Browser.mobile) {
-            map.on('movestart', cancelListener);
-        }
-        this.table = document.createElement('table');
-        this.table.id = 'contextmenu';
-        this.table.addEventListener('contextmenu', e => {
-            e.preventDefault();
-            (e.target as HTMLElement).click();
+        const map = metroMap.getMap(),
+            { mapPane } = map.getPanes(),
+            mapContainer = map.getContainer(),
+            listener = e => this.handler(e),
+            cancelListener = e => this.hide();
+        this._whenAvailable.then(menu => {
+            mapPane.addEventListener('contextmenu', listener, false);
+            //objectsPane.addEventListener('contextmenu', listener, true); // 'true' prevents propagation
+            mapContainer.addEventListener('mousedown', cancelListener);
+            mapContainer.addEventListener('touchstart', cancelListener);
+            if (!L.Browser.mobile) {
+                map.on('movestart', cancelListener);
+            }
+            document.body.appendChild(this.container);   
         });
-        document.body.appendChild(this.table);
     }
 
     private handler(event: MouseEvent) {
         event.preventDefault();
-        console.log('target', event.target);
-        this.table.innerHTML = '';
-        const fillCell = (item: Item, eventName: string) => {
-            const cell: HTMLTableDataCellElement = (this.table.insertRow() as any).insertCell(0);
+        console.log('target', event.target, event.target['parentNode']);
+        util.removeAllChildren(this.container);
+        for (let item of this.items) {
+            if (item.predicate !== undefined && !item.predicate(event.target)) {
+                console.log(item.predicate(event.target));
+                continue;
+            }
+            const cell = document.createElement('div');
             if (item.disabled) {
                 cell.setAttribute('disabled', '');
             } else {
-                cell.setAttribute('data-event', eventName);
+                cell.setAttribute('data-event', item.event);
             }
             cell.textContent = tr(item.text);
+            this.container.appendChild(cell);            
         }
-        this._items.forEach(fillCell);
-        this._extraItems.forEach((map, target) => {
-            if (target === event.target) {
-                console.log(event.target, target);
-                map.forEach(fillCell);
-            }
-            this._extraItems.delete(target);
-        });
+
         // defined here so that the marker gets set here (TODO: fix later)
-        this.table.onclick = e => {
+        this.container.onclick = e => {
             console.log(e);
-            const cell = e.target as HTMLTableCellElement;
+            const cell = e.target as HTMLDivElement;
             const eventType = cell.getAttribute('data-event');
             if (eventType) {
-                this.state = false;
+                this.hide();
                 const me = new MouseEvent(eventType, { clientX, clientY, relatedTarget: event.target });
-                this.metroMap.dispatchEvent(me)
+                this.metroMap.receiveEvent(me)
             }
         };
-        const { width, height } = this.table.getBoundingClientRect();
-        const { clientWidth, clientHeight } = document.documentElement;
-        const { clientX, clientY } = event;
-        const tx = clientX + width > clientWidth ? clientWidth - width : clientX,
-            ty = clientY + height > clientHeight ? clientY - height : clientY
-        this.table.style.transform = `translate(${tx}px, ${ty}px)`;
-        this.state = true;
+        const { width, height } = this.container.getBoundingClientRect(),
+            { clientWidth, clientHeight } = document.documentElement,
+            { clientX, clientY } = event,
+            tx = clientX + width > clientWidth ? clientWidth - width : clientX,
+            ty = clientY + height > clientHeight ? clientY - height : clientY;
+        this.container.style.transform = `translate(${tx}px, ${ty}px)`;
+        this.show();
+    }
+
+    insertItem(item: ContextMenuItem, index?: number) {
+        if (index === undefined || index < 0) {
+            this.items.push(item);
+        } else {
+            this.items.splice(index, 0, item);
+        }
+    }
+
+    removeItem(event: string, all = false) {
+        if (all) {
+            this.items = this.items.filter(item => item.event !== event);
+            return;
+        } 
+        const index = this.items.findIndex(item => item.event === event);
+        if (index === undefined || index < 0) return;
+        this.items.splice(index, 1);
+    }
+
+    private show() {
+        this.container.style.visibility = null;
+        if (L.Browser.mobile) {
+            this.metroMap.getMap().dragging.disable();
+        }
+    }
+    
+    private hide() {
+        this.container.style.visibility = 'hidden';
+        if (L.Browser.mobile) {
+            this.metroMap.getMap().dragging.enable();
+        }
     }
 }

@@ -11,10 +11,10 @@ import { getCenter } from './math';
 import { findCircle } from './algorithm';
 import { mapbox, mapnik, osmFrance, cartoDBNoLabels, wikimapia } from './tilelayers';
 import { translate as tr } from './i18n';
-import EventHandler from './eventhandler';
+import Mediator from './mediator';
 import MapOverlay from './mapoverlay';
 
-export default class MetroMap extends EventHandler {
+export default class MetroMap extends Mediator {
     private config: res.Config;
     private map: L.Map;
     private overlay: MapOverlay;
@@ -29,7 +29,6 @@ export default class MetroMap extends EventHandler {
 
     //private routeWorker = new Worker('js/routeworker.js');
 
-    getContextMenu() { return this.contextMenu;}
     getMap(): L.Map { return this.map; }
     getNetwork(): nw.Network { return this.network; }  
 
@@ -43,7 +42,6 @@ export default class MetroMap extends EventHandler {
             .then(results => hints.verify(results[1], results[0]))
             .catch(console.error)
             .then(json => this.hints = json);
-        const contextMenuPromise = res.getContextMenu();
 
         this.config = config;
         const mapOptions = Object.assign({}, config);
@@ -75,36 +73,36 @@ export default class MetroMap extends EventHandler {
             return Promise.all([lineRulesPromise, hintsPromise] as any[]);
         }).then(results => {
             this.redrawNetwork();
+            this.overlay.onZoomChange = e => this.redrawNetwork();
             // TODO: fix the kludge making the grey area disappear
             this.map.invalidateSize(false);
-            this.overlay.onZoomChange(e => this.redrawNetwork());
-            return contextMenuPromise;
-        }).then(contextMenuData => {
-            this.contextMenu = new ui.ContextMenu(this, new Map<string, any>(contextMenuData));
+            this.contextMenu = new ui.ContextMenu();
             new ui.RoutePlanner(this);
+            new ui.DistanceMeasure(this);
+            new ui.FAQ('res/data.json').whenAvailable.then(faq => faq.addTo(this));
             //this.routeWorker.postMessage(this.network);
             //drawZones(this);
+            this.resetMapView();
+            tilePane.style.display = '';
+            return this.contextMenu.whenAvailable;
+        }).then(menu => {
+            menu.addTo(this);
             if (!L.Browser.mobile) {
                 new ui.MapEditor(this, this.config.detailedZoom);
             }
-            new ui.FAQ(this, 'res/data.json');
-            new ui.DistanceMeasure(this);
-            this.resetMapView();
             util.fixFontRendering(); // just in case
-            tilePane.style.display = '';
-            console.log(hints.verify(this.network, this.hints));
         });
     }
 
     private addMapListeners() {
         super.addListenersFromObject({
             'measuredistance': (e: Event) => {
-                this.contextMenu.items.delete('measuredistance');
-                this.contextMenu.items.set('deletemeasurements', { text: 'Delete measurements' });
+                this.contextMenu.removeItem('measuredistance');
+                this.contextMenu.insertItem({event: 'deletemeasurements', text: 'Delete measurements'});
             },
             'deletemeasurements': (e: Event) => {
-                this.contextMenu.items.delete('deletemeasurements');
-                this.contextMenu.items.set('measuredistance', { text: 'Measure distance' });
+                this.contextMenu.removeItem('deletemeasurements');
+                this.contextMenu.insertItem({event: 'measuredistance', text: 'Measure distance'});
             },
             'platformrename': (e: Event) => {
                 const circle = (e as MouseEvent).relatedTarget as SVGCircleElement;
@@ -156,9 +154,15 @@ export default class MetroMap extends EventHandler {
                     // util.triggerMouseEvent(plusButton, 'click');
                     this.map.setZoom(this.config.detailedZoom);
                 }
+                this.contextMenu.insertItem({text: 'New station', event: 'platformadd'});
+                const predicate = (target: EventTarget) => (target as SVGElement).parentElement.id === 'dummy-circles';
+                this.contextMenu.insertItem({text: 'Rename station', predicate, event: 'platformrename'});
+                this.contextMenu.insertItem({text: 'Delete station', predicate, event: 'platformdelete'});
             },
             'editmapend': (e: Event) => {
-                this.contextMenu.items.delete('platformadd');
+                this.contextMenu.removeItem('platformadd');
+                this.contextMenu.removeItem('platformrename');
+                this.contextMenu.removeItem('platformdelete');
             },
             'showheatmap': (e: Event) => {
                 //this.showHeatMap();
@@ -175,7 +179,7 @@ export default class MetroMap extends EventHandler {
                 }
             }
             switch (e.keyCode) {
-                case 27: return this.dispatchEvent(new Event('clearroute')); // esc
+                case 27: return this.receiveEvent(new Event('clearroute')); // esc
                 default: return;
             }
         });
@@ -342,7 +346,7 @@ export default class MetroMap extends EventHandler {
                 const scp = stationCircumpoints.get(this.network.stations[pl1.station]);
                 const paths = scp !== undefined && scp.indexOf(pl1) > -1 && scp.indexOf(pl2) > -1
                     ? this.makeTransferArc(transfer, scp)
-                    : svg.makeTransfer(pos1, pos2);
+                    : svg.makeTransferLine(pos1, pos2);
                 paths[0].id = 'ot-' + transferIndex;
                 paths[1].id = 'it-' + transferIndex;
                 const gradientColors = [pl1, pl2].map(p => this.getPlatformColor(p));
@@ -511,7 +515,7 @@ export default class MetroMap extends EventHandler {
             const third = cluster.find(p => p !== pl1 && p !== pl2);
             return makeArc(nwPlatforms.indexOf(third));
         } else if (pl1 === cluster[2] && pl2 === cluster[3] || pl1 === cluster[3] && pl2 === cluster[2]) {
-            return svg.makeTransfer(pos1, pos2);
+            return svg.makeTransferLine(pos1, pos2);
         }
         //const s = transfer.source;
         //const pl1neighbors = this.network.transfers.filter(t => t.source === s || t.target === s);

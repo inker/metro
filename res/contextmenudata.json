@@ -1,37 +1,23 @@
 [
-    [
-        "routefrom",
-        {
-            "event": "add location",
-            "text": "Route from here"
-        }
-    ],
-    [
-        "routeto",
-        {
-            "event": "directions",
-            "text": "Route to here"
-        }
-    ],
-    [
-        "clearroute",
-        {
-            "event": "layers clear",
-            "text": "Clear route"
-        }
-    ],
-    [
-        "measuredistance",
-        {
-            "text": "Measure distance"
-        }
-    ],
-    [
-        "showheatmap",
-        {
-            "event": "blur on",
-            "text": "Show heatmap",
-            "disabled": true
-        }
-    ]
+    {
+        "event": "routefrom",
+        "text": "Route from here"
+    },
+    {
+        "event": "routeto",
+        "text": "Route to here"
+    },
+    {
+        "event": "clearroute",
+        "text": "Clear route"
+    },
+    {
+        "event": "measuredistance",
+        "text": "Measure distance"
+    },
+    {
+        "event": "showheatmap",
+        "text": "Show heatmap",
+        "disabled": true
+    }
 ]

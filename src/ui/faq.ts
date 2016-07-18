@@ -1,23 +1,25 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import * as Hammer from 'hammerjs';
 import MetroMap from '../metromap';
+import Widget from './widget';
 import { once } from '../util';
 
 type FAQData = { faq: { q: string, a: string }[] };
 
-export default class FAQ {
+export default class FAQ extends Widget {
     private button: HTMLButtonElement;
     private card: HTMLDivElement;
     private map: L.Map;
-    constructor(map: MetroMap, faqDataUrl: string) {
+
+    constructor(faqDataUrl: string) {
+        super();
         const promise: Promise<FAQData> = fetch(faqDataUrl).then(data => data.json());
-        this.map = map.getMap();
+        
         const btn = document.createElement('button');
         btn.id = 'faq-button';
         btn.textContent = 'FAQ';
         btn.classList.add('leaflet-control');
         btn.addEventListener('click', e => this.showFAQ());
-        document.querySelector('.leaflet-right.leaflet-top').appendChild(btn);
         this.button = btn;
         this.card = document.createElement('div');
         this.card.id = 'faq-card';
@@ -25,11 +27,22 @@ export default class FAQ {
         if (L.Browser.mobile) {
             new Hammer(this.card).on('swipeleft swiperight', e => this.hideFAQ());
         }
-        document.body.appendChild(this.card);
+        
         const urlRe = /\[\[(.+?)\|(.*?)\]\]/g;
         const replacement = '<a href=\"$1\" target=\"_blank\">$2</a>';
         const qa2html = qa => `<div><span class="question">${qa.q}</span><span class="answer">${qa.a}</span></div>`;
-        promise.then(data => this.card.innerHTML += data.faq.map(qa2html).join('').replace(urlRe, replacement));
+        this._whenAvailable = promise.then(data => {
+            this.card.innerHTML += data.faq.map(qa2html).join('').replace(urlRe, replacement);
+            return this;
+        });
+    }
+
+    addTo(metroMap: MetroMap) {
+        this.map = metroMap.getMap();
+        this._whenAvailable.then(faq => {
+            document.querySelector('.leaflet-right.leaflet-top').appendChild(this.button);
+            document.body.appendChild(this.card);
+        });
     }
 
     showFAQ() {

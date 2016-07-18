@@ -17,11 +17,11 @@ export default class MapEditor {
             this.button.onclick = e => this.saveMapClick();
             const dummyCircles = document.getElementById('dummy-circles');
             dummyCircles.onmousedown = dummyCircles.onclick = null;
-            this.metroMap.dispatchEvent(new Event("editmapstart"));
+            this.metroMap.receiveEvent(new Event("editmapstart"));
         } else {
             this.button.textContent = tr('Edit map');
             this.button.onclick = e => this.editMapClick();
-            this.metroMap.dispatchEvent(new Event("editmapend"));
+            this.metroMap.receiveEvent(new Event("editmapend"));
         }
         this._editMode = val;
     }
@@ -62,9 +62,6 @@ export default class MapEditor {
         const network = this.metroMap.getNetwork();
         const dummyCircles = document.getElementById('dummy-circles');
 
-        const menu = this.metroMap.getContextMenu();
-        menu.items.set('platformadd', { text: 'New station' });
-
         dummyCircles.onmousedown = de => {
             if (de.button === 0) {
                 const platform = util.platformByCircle(de.target as any, network);
@@ -72,27 +69,15 @@ export default class MapEditor {
                 map.dragging.disable();
                 map.on('mousemove', (le: L.LeafletMouseEvent) => {
                     platform.location = le.latlng;
-                    this.metroMap.dispatchEvent(new MouseEvent('platformmove'));
+                    this.metroMap.receiveEvent(new MouseEvent('platformmove'));
                 }).once('mouseup', (le: L.LeafletMouseEvent) => {
                     map.off('mousemove').dragging.enable();
                     const circle = le.originalEvent.target as SVGCircleElement;
                     const moveEndEvent = new MouseEvent('platformmoveend', {relatedTarget: circle as EventTarget});
-                    this.metroMap.dispatchEvent(moveEndEvent);
+                    this.metroMap.receiveEvent(moveEndEvent);
                 });
             } else if (de.button === 1) {
                 //
-            }
-            
-            dummyCircles.oncontextmenu = de => {
-                 console.log('circle right-clicked');
-                const el = de.target as HTMLElement;
-                if (el.hasAttribute('cy')) {
-                    // come up with a better solution
-                    const item = new Map()
-                        .set('platformrename', { text: "Rename station" })
-                        .set('platformdelete', { text: "Delete station" });
-                    menu.extraItems.set(el, item);
-                }               
             }
         };
     }

@@ -5,61 +5,14 @@ import TextPlate from './ui/textplate';
 import RoutePlanner from './ui/routeplanner';
 import ContextMenu from './ui/contextmenu';
 import DistanceMeasure from './ui/distancemeasure';
+import * as Icons from './ui/icons';
 
 export { DistanceMeasure, MapEditor, FAQ, TextPlate, RoutePlanner, ContextMenu, Icons }
 
 import * as L from 'leaflet';
 import * as nw from './network';
-import * as geo from './geo';
+import { calculateGeoMean } from './geo';
 import { translate as tr } from './i18n';
-import * as svg from './svg';
-
-namespace Icons {
-    export const start = L.icon({
-        iconUrl: 'http://map.project-osrm.org/images/marker-start-icon-2x.png',
-        iconSize: [20, 56],
-        iconAnchor: [10, 28],
-    });
-    export const end = L.icon({
-        iconUrl: 'http://map.project-osrm.org/images/marker-end-icon-2x.png',
-        iconSize: [20, 56],
-        iconAnchor: [10, 28],
-    });
-    export const red = L.icon({
-        iconUrl: 'http://harrywood.co.uk/maps/examples/leaflet/marker-icon-red.png',
-        //iconRetinaUrl: 'my-icon@2x.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowUrl: 'http://cdn.leafletjs.com/leaflet/v0.7.7/images/marker-shadow.png',
-        shadowRetinaUrl: 'marker-shadow-@2x.png',
-        shadowSize: [41, 41],
-        shadowAnchor: [12, 41]
-    });
-
-    export const circle = (() => {
-        const root = svg.createSVGElement('svg');
-        root.setAttribute('width', '100');
-        root.setAttribute('height', '100');
-        const ci = svg.makeCircle(new L.Point(50, 50), 40);
-        ci.style.stroke = 'red';
-        ci.style.strokeWidth = '20px';
-        ci.style.fill = 'white';
-        root.appendChild(ci);
-        const xml = new XMLSerializer().serializeToString(root);
-        const data = "data:image/svg+xml;base64," + btoa(xml);
-        const img = document.createElement('img');
-        img.src = data;
-        //document.body.appendChild(img)
-        const r = 5;
-        return L.icon({
-            iconUrl: data,
-            iconSize: [r * 2, r * 2],
-            iconAnchor: [r, r],
-            popupAnchor: [0, -r]        
-        });
-    })();
-}
 
 export function platformRenameDialog(network: nw.Network, platform: nw.Platform) {
     const ru = platform.name, {fi, en} = platform.altNames;
@@ -107,7 +60,7 @@ export function drawZones(metroMap) {
     const metroPoints = this.graph.platforms.filter(p => this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('M')).map(p => p.location);
     const fitnessFunc = pt => metroPoints.reduce((prev, cur) => prev + pt.distanceTo(cur), 0);
     const poly = L.polyline([]);
-    const metroMean = geo.calculateGeoMean(metroPoints, fitnessFunc, poly.addLatLng.bind(poly));
+    const metroMean = calculateGeoMean(metroPoints, fitnessFunc, poly.addLatLng.bind(poly));
     this.map.addLayer(poly);
     for (let i = 5000; i < 20000; i += 5000) {
         L.circle(metroMean, i - 250, { weight: 1 }).addTo(this.map);

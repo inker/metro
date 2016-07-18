@@ -8,12 +8,13 @@ export default class MapOverlay {
     private _bounds: L.LatLngBounds;
     private minZoom: number;
     private maxZoom: number;
-    private zoomChangeListener: (e: L.LeafletEvent) => void;
     private _overlayContainer: SVGSVGElement;
     private _defs: SVGDefsElement;
     private _origin: SVGGElement;
     private topLeft: L.Point;
     private margin: L.Point;
+
+    onZoomChange: (e: L.LeafletEvent) => void;
 
     get origin() { return this._origin; }
     get defs() { return this._defs; }
@@ -81,7 +82,7 @@ export default class MapOverlay {
             classList.remove('leaflet-zoom-animated' );
 
             this.updateOverlayPositioning();
-            this.zoomChangeListener(e);
+            this.onZoomChange(e);
             this.map.dragging.enable();
         }).on('moveend', e => {
             util.fixFontRendering();
@@ -160,17 +161,12 @@ export default class MapOverlay {
         style.height = overlaySize.y + 'px';
     }
 
-    onZoomChange(listener: (e: L.LeafletEvent) => void): void {
-        this.zoomChangeListener = listener;
-    }
-
     latLngToSvgPoint(location: L.LatLng): L.Point {
         // return this.map.latLngToContainerPoint(location)
         //             .subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
         return this.map
             .project(location)
             .round()
-            .subtract(this.topLeft)
-            .round();
+            .subtract(this.topLeft);
     }
 }

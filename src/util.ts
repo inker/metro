@@ -146,8 +146,17 @@ export function downloadTextFile(title: string, content: string) {
     downloadFile(title, new Blob([content], { type: 'octet/stream' }));
 }
 
+export function svgToData(root: SVGSVGElement): string {
+    return "data:image/svg+xml;base64," + btoa(new XMLSerializer().serializeToString(root));
+}
+
+export function svgToImg(root: SVGSVGElement): HTMLImageElement {
+    const img = document.createElement('img');
+    img.src = svgToData(root);
+    return img;
+}
+
 export function scaleOverlay(overlay: SVGSVGElement, scaleFactor: number, mousePos?: L.Point) {
-    const overlayStyle = overlay.style;
     const box = overlay.getBoundingClientRect();
     if (!mousePos) {
         const el = document.documentElement;
@@ -155,6 +164,7 @@ export function scaleOverlay(overlay: SVGSVGElement, scaleFactor: number, mouseP
     }
     const clickOffset = new L.Point(mousePos.x - box.left, mousePos.y - box.top);
     const ratio = new L.Point(clickOffset.x / box.width, clickOffset.y / box.height);
+    const overlayStyle = overlay.style;
     // overlayStyle.left = '0';
     // overlayStyle.top = '0';
     overlayStyle.transformOrigin = `${ratio.x * 100}% ${ratio.y * 100}%`;

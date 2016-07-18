@@ -10,6 +10,8 @@ export type Config = {
     detailedZoom: number
 }
 
+export const getJSON = (url: string) => fetch(url).then(data => data.json());
+
 export const getDictionary = () => fetch('res/dictionary.json').then(data => data.json());
 
 export const getConfig = () => fetch('res/mapconfig.json').then(data => data.json()) as Promise<Config>;

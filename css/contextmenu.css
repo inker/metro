@@ -23,17 +23,17 @@
     }
 } 
 
-#contextmenu tr td {
+#contextmenu div {
     padding: 5px;
     cursor: default;
 }
 
-#contextmenu tr td[disabled] {
+#contextmenu div[disabled] {
     color: grey;
     /*cursor: not-allowed*/
 }
 
-#contextmenu tr td:not([disabled]):hover {
+#contextmenu div:not([disabled]):hover {
     background-color: #82B1FF;
     /*color: #ffffff;*/
 }
