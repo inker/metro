@@ -1,8 +1,8 @@
 'use strict';
 
 import { getConfig } from './res';
-import { getDictionary } from './i18n';
-import { flashTitle } from './util';
+import { updateDictionary } from './i18n';
+import { translate } from './i18n';
 import MetroMap from './metromap';
 
 L.Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images';
@@ -14,13 +14,10 @@ if (L.Browser.ie) {
 import polyfills from './polyfills';
 polyfills();
 
-const configPromise = getConfig();
-getDictionary().then(dict => {
-    const englishTitle = 'St Petersburg metro plan proposal';
-    const titles = dict[englishTitle];
-    flashTitle(Object.keys(titles).map(key => titles[key]).concat([englishTitle]), 3000);
-    return configPromise;
-}).then(config => new MetroMap(config));
+getConfig().then(config => updateDictionary(config.url['dictionary']).then(() => {
+    document.title = translate(document.title);
+    new MetroMap(config);
+}));
 
 console.log('user: ' + navigator.userLanguage);
 console.log('language: ' + navigator.language);

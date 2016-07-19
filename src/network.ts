@@ -2,9 +2,7 @@
 import * as L from 'leaflet';
 import { getCenter } from './geo';
 
-type AltNames = { 
-    old?: string;
-    en?: string;
+type AltNames = {
     [lang: string]: string;
  };
 

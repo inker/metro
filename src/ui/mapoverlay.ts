@@ -1,9 +1,9 @@
-/// <reference path="../typings/tsd.d.ts" />
+/// <reference path="../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
-import * as util from './util';
-import { createSVGElement } from './svg';
+import * as util from '../util';
+import { createSVGElement } from '../svg';
 
-export default class MapOverlay {
+export default class MapOverlay implements L.ILayer {
     private map: L.Map;
     private _bounds: L.LatLngBounds;
     private minZoom: number;
@@ -24,25 +24,9 @@ export default class MapOverlay {
         this.updateOverlayPositioning();
     }
 
-    constructor(map: L.Map, bounds?: L.LatLngBounds, margin = new L.Point(100, 100)) {
-        this.map = map;
-        this.minZoom = map.getMinZoom();
-        this.maxZoom = map.getMaxZoom();
+    constructor(bounds?: L.LatLngBounds, margin = new L.Point(100, 100)) {
         this.margin = margin.round();
 
-        this.makeAndFillContainer();
-
-        if (bounds !== undefined) {
-            this.bounds = bounds;
-        }
-
-        const { objectsPane, markerPane, mapPane } = this.map.getPanes();
-        (L.version[0] === '1' ? mapPane : objectsPane).insertBefore(this._overlayContainer, markerPane);
-        
-        this.addMapMovementListeners();
-    }
-
-    private makeAndFillContainer(): void {
         this._overlayContainer = createSVGElement('svg') as SVGSVGElement;
         this._overlayContainer.id = 'overlay';
 
@@ -52,6 +36,33 @@ export default class MapOverlay {
         this._origin = createSVGElement('g') as SVGGElement;
         this._origin.id = 'origin';
         this._overlayContainer.appendChild(this._origin);
+
+        this._bounds = bounds;
+    }
+
+    addTo(map: L.Map) {
+        this.onAdd(map);
+        return this;
+    }
+
+    onAdd(map: L.Map) {
+        this.map = map;
+        this.minZoom = map.getMinZoom();
+        this.maxZoom = map.getMaxZoom();
+
+        this.updateOverlayPositioning();
+        
+        const { objectsPane, markerPane, mapPane } = map.getPanes();
+        (L.version[0] === '1' ? mapPane : objectsPane).insertBefore(this._overlayContainer, markerPane);
+        
+        this.addMapMovementListeners();
+    }
+
+    onRemove(map: L.Map) {
+        this.map = this.minZoom = this.maxZoom = undefined;
+        const { objectsPane, markerPane, mapPane } = map.getPanes();
+        (L.version[0] === '1' ? mapPane : objectsPane).removeChild(this._overlayContainer);
+        this.map.clearAllEventListeners(); // fix later
     }
 
     private addMapMovementListeners(): void {

@@ -58,13 +58,14 @@
         "ru": "na metro",
         "fi": "metrolla"
     },
-    "h": {
+    "%hour%": {
+        "en": "h",
         "ru": "č",
         "fi": "t"
     },
-    "TOTAL": {
-        "ru": "ITOGO",
-        "fi": "YHTEENSÄ"
+    "total": {
+        "ru": "itogo",
+        "fi": "yhteensä"
     },
     
     "New name": {

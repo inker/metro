@@ -1,12 +1,12 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import * as Hammer from 'hammerjs';
 import MetroMap from '../metromap';
-import Widget from './widget';
+import { DeferredWidget } from './widget';
 import { once } from '../util';
 
 type FAQData = { faq: { q: string, a: string }[] };
 
-export default class FAQ extends Widget {
+export default class FAQ extends DeferredWidget {
     private button: HTMLButtonElement;
     private card: HTMLDivElement;
     private map: L.Map;
@@ -33,7 +33,6 @@ export default class FAQ extends Widget {
         const qa2html = qa => `<div><span class="question">${qa.q}</span><span class="answer">${qa.a}</span></div>`;
         this._whenAvailable = promise.then(data => {
             this.card.innerHTML += data.faq.map(qa2html).join('').replace(urlRe, replacement);
-            return this;
         });
     }
 

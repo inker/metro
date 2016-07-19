@@ -169,32 +169,6 @@ export namespace Scale {
     }
 }
 
-
-
-export namespace SVGDataset {
-    export function get(el: Element): any {
-        // for webkit-based browsers
-        if ('dataset' in el) {
-            return el['dataset'];
-        }
-        // for the rest
-        const attrs: Attr[] = el.attributes as any;
-        const dataset = {};
-        for (let { name } of attrs) {
-            if (name.startsWith('data-')) {
-                dataset[name.slice(5)] = el.getAttribute(name);
-            }
-        }
-        return dataset;
-    }
-
-    export function set(el: Element, dataset: any): void {
-        for (let key of Object.keys(dataset)) {
-            el.setAttribute('data-' + key, dataset[key]);
-        }
-    }
-}
-
 export namespace Shadows {
     export function makeDrop(): SVGFilterElement {
         const filter = createSVGElement('filter');

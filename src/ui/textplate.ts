@@ -33,7 +33,7 @@ export default class TextPlate {
     }
 
     set disabled(val: boolean) {
-        (val ? this.hide : getSelection().removeAllRanges)();
+        val ? this.hide() : getSelection().removeAllRanges();
         this._disabled = val;
     }
 

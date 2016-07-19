@@ -5,40 +5,41 @@ import TextPlate from './ui/textplate';
 import RoutePlanner from './ui/routeplanner';
 import ContextMenu from './ui/contextmenu';
 import DistanceMeasure from './ui/distancemeasure';
+import MapOverlay from './ui/mapoverlay';
 import * as Icons from './ui/icons';
 
-export { DistanceMeasure, MapEditor, FAQ, TextPlate, RoutePlanner, ContextMenu, Icons }
+export { DistanceMeasure, MapEditor, FAQ, TextPlate, RoutePlanner, ContextMenu, Icons, MapOverlay }
 
 import * as L from 'leaflet';
 import * as nw from './network';
 import { calculateGeoMean } from './geo';
-import { translate as tr } from './i18n';
+import { tr } from './i18n';
 
 export function platformRenameDialog(network: nw.Network, platform: nw.Platform) {
     const ru = platform.name, {fi, en} = platform.altNames;
     const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru];
     const nameString = names.join('|');
-    alertify.prompt(tr('New name'), nameString, (okevt, val: string) => {
+    alertify.prompt(tr`New name`, nameString, (okev, val: string) => {
         const newNames = val.split('|');
         [platform.name, platform.altNames['fi'], platform.altNames['en']] = newNames;
         if (val === nameString) {
-            return alertify.warning(tr('Name was not changed'));
+            return alertify.warning(tr`Name was not changed`);
         }
         const oldNamesStr = names.slice(1).join(', '),
             newNamesStr = newNames.slice(1).join(', ');
-        alertify.success(`${ru} (${oldNamesStr}) ${tr('renamed to')} ${newNames[0]} (${newNamesStr})`);
+        alertify.success(tr`${ru} (${oldNamesStr}) renamed to ${newNames[0]} (${newNamesStr})`)
         const station = network.stations[platform.station];
         if (station.platforms.length < 2) return;
-        alertify.confirm(tr('Rename the entire station') + '?', () => {
+        alertify.confirm(tr`Rename the entire station?`, () => {
             for (let i of station.platforms) {
                 const p = network.platforms[i];
                 [p.name, p.altNames['fi'], p.altNames['en']] = newNames;
             }
             [station.name, station.altNames['fi'], station.altNames['en']] = newNames;
-            alertify.success(`${tr('The entire station was renamed to')} ${val}`);
+            alertify.success(tr`The entire station was renamed to ${val}`);
         });
 
-    }, () => alertify.warning(tr('Name change cancelled')));
+    }, () => alertify.warning(tr`Name change cancelled`));
 }
 
 export function addLayerSwitcher(map: L.Map, layers: L.TileLayer[]): void {

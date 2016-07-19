@@ -1,10 +1,10 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 import MetroMap from '../metromap';
-import Widget from './widget';
+import { DeferredWidget } from './widget';
 import * as util from '../util';
-import { getContextMenu } from '../res';
-import { translate as tr } from '../i18n';
+import { getJSON } from '../res';
+import { translate } from '../i18n';
 
 // TODO: merge items & extra items, introduce item index
 
@@ -16,14 +16,14 @@ export type ContextMenuItem = {
     disabled?: boolean;
 }
 
-export default class ContextMenu extends Widget {
+export default class ContextMenu extends DeferredWidget {
     private metroMap: MetroMap;
     private items: ContextMenuItem[];
     private container: HTMLDivElement;
 
-    constructor() {
+    constructor(url: string) {
         super();
-        this._whenAvailable = getContextMenu().then(json => {
+        this._whenAvailable = getJSON(url).then(json => {
             console.log('adding context menu');
 
             this.items = json;
@@ -37,7 +37,6 @@ export default class ContextMenu extends Widget {
             });
 
             console.log('context menu ready');
-            return this;
         });
     }
 
@@ -75,7 +74,7 @@ export default class ContextMenu extends Widget {
             } else {
                 cell.setAttribute('data-event', item.event);
             }
-            cell.textContent = tr(item.text);
+            cell.textContent = translate(item.text);
             this.container.appendChild(cell);            
         }
 

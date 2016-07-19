@@ -10,14 +10,13 @@ import * as res from './res';
 import { getCenter } from './math';
 import { findCircle } from './algorithm';
 import { mapbox, mapnik, osmFrance, cartoDBNoLabels, wikimapia } from './tilelayers';
-import { translate as tr } from './i18n';
+import { tr } from './i18n';
 import Mediator from './mediator';
-import MapOverlay from './mapoverlay';
 
 export default class MetroMap extends Mediator {
     private config: res.Config;
     private map: L.Map;
-    private overlay: MapOverlay;
+    private overlay: ui.MapOverlay;
     private contextMenu: ui.ContextMenu;
 
     private network: nw.Network;
@@ -34,15 +33,17 @@ export default class MetroMap extends Mediator {
 
     constructor(config: res.Config) {
         super();
-        const networkPromise = res.getGraph()
+        const networkPromise = res.getContent(config.url['graph'])
             .then(json => this.network = new nw.Network(json));
         const lineRulesPromise = res.getLineRules()
             .then(lineRules => this.lineRules = lineRules);
-        const hintsPromise = Promise.all([res.getHints(), networkPromise] as any[])
+        const hintsPromise = Promise.all([res.getJSON(config.url['hints']), networkPromise] as any[])
             .then(results => hints.verify(results[1], results[0]))
             .catch(console.error)
             .then(json => this.hints = json);
-
+        const contextMenu = new ui.ContextMenu(config.url['contextMenu']);
+        const faq = new ui.FAQ(config.url['data']);
+        
         this.config = config;
         const mapOptions = Object.assign({}, config);
         if (L.version[0] === '1') {
@@ -61,14 +62,15 @@ export default class MetroMap extends Mediator {
         this.addMapListeners();
         this.addKeyboardListeners();
         networkPromise.then(network => {
-            this.overlay = new MapOverlay(this.map, new L.LatLngBounds(this.network.platforms.map(p => p.location)));
+            const bounds = new L.LatLngBounds(this.network.platforms.map(p => p.location));
+            this.overlay = new ui.MapOverlay(bounds).addTo(this.map);
             const { defs } = this.overlay;
             defs.appendChild(svg.Shadows.makeDrop());
             defs.appendChild(svg.Shadows.makeGlow());
             defs.appendChild(svg.Shadows.makeOpacity());
             defs.appendChild(svg.Shadows.makeGray());
             if (defs.textContent.length === 0) {
-                alert(tr("Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience."));
+                alert(tr`Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience.`);
             }
             return Promise.all([lineRulesPromise, hintsPromise] as any[]);
         }).then(results => {
@@ -76,20 +78,22 @@ export default class MetroMap extends Mediator {
             this.overlay.onZoomChange = e => this.redrawNetwork();
             // TODO: fix the kludge making the grey area disappear
             this.map.invalidateSize(false);
-            this.contextMenu = new ui.ContextMenu();
             new ui.RoutePlanner(this);
             new ui.DistanceMeasure(this);
-            new ui.FAQ('res/data.json').whenAvailable.then(faq => faq.addTo(this));
             //this.routeWorker.postMessage(this.network);
             //drawZones(this);
             this.resetMapView();
             tilePane.style.display = '';
-            return this.contextMenu.whenAvailable;
-        }).then(menu => {
-            menu.addTo(this);
+            return contextMenu.whenAvailable;
+        }).then(() => {
+            contextMenu.addTo(this);
+            this.contextMenu = contextMenu;
             if (!L.Browser.mobile) {
-                new ui.MapEditor(this, this.config.detailedZoom);
+                new ui.MapEditor(this.config.detailedZoom).addTo(this);
             }
+            return faq.whenAvailable;
+        }).then(() => {
+            faq.addTo(this);
             util.fixFontRendering(); // just in case
         });
     }
@@ -134,7 +138,7 @@ export default class MetroMap extends Mediator {
                 stationCircles.appendChild(circle);
                 dummyCircles.appendChild(dummy);
                 const platform: nw.Platform = {
-                    name: tr('New station'),
+                    name: tr`New station`,
                     altNames: {},
                     station: null,
                     spans: [],
@@ -195,7 +199,7 @@ export default class MetroMap extends Mediator {
     }
 
     private resetNetwork(): void {
-       	res.getGraph().then(json => {
+       	res.getContent(this.config.url['graph']).then(json => {
             this.network = new nw.Network(json);
             this.redrawNetwork();
         });

@@ -1,10 +1,11 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import MetroMap from '../metromap';
 import * as svg from '../svg';
-import { translate as tr } from '../i18n';
+import { tr } from '../i18n';
+import { Widget } from './widget';
 import * as util from '../util';
 
-export default class MapEditor {
+export default class MapEditor implements Widget {
     private metroMap: MetroMap;
     private button: HTMLButtonElement;
     private _editMode: boolean;
@@ -13,35 +14,43 @@ export default class MapEditor {
 
     set editMode(val: boolean) {
         if (val) {
-            this.button.textContent = tr('Save map');;
+            this.button.textContent = tr`Save map`;
             this.button.onclick = e => this.saveMapClick();
             const dummyCircles = document.getElementById('dummy-circles');
             dummyCircles.onmousedown = dummyCircles.onclick = null;
             this.metroMap.receiveEvent(new Event("editmapstart"));
         } else {
-            this.button.textContent = tr('Edit map');
+            this.button.textContent = tr`Edit map`;
             this.button.onclick = e => this.editMapClick();
             this.metroMap.receiveEvent(new Event("editmapend"));
         }
         this._editMode = val;
     }
 
-    constructor(metroMap: MetroMap, minZoom: number) {
-        this.metroMap = metroMap;
+    constructor(minZoom: number) {
         const btn = document.createElement('button');
         btn.id = 'edit-map-button';
         btn.textContent = 'Edit Map';
         btn.classList.add('leaflet-control');
         btn.onclick = e => this.editMapClick();
-        document.querySelector('.leaflet-right.leaflet-top').appendChild(btn);
         this.button = btn;
+    }
+
+    addTo(metroMap: MetroMap) {
+        const map = metroMap.getMap();
+        if (map === undefined || metroMap.getNetwork() === undefined) {
+            throw new Error('cannot add map editor to metro map: map or network is missing');
+        }
+        this.metroMap = metroMap;
+        document.querySelector('.leaflet-right.leaflet-top').appendChild(this.button);
         this.editMode = false;
-        this.metroMap.getMap().on('zoomend', e => {
+        map.on('zoomend', e => {
             if (this.editMode) {
                 this.addMapListeners();
             }
         });
     }
+
     private editMapClick() {
         this.editMode = true;
         this.addMapListeners();

@@ -7,16 +7,15 @@ export type Config = {
     zoom: number,
     minZoom: number,
     maxZoom: number,
-    detailedZoom: number
+    detailedZoom: number,
+    url: { [resource: string]: string }
 }
 
 export const getJSON = (url: string) => fetch(url).then(data => data.json());
 
-export const getDictionary = () => fetch('res/dictionary.json').then(data => data.json());
+export const getContent = (url: string) => fetch(url).then(data => data.text());
 
 export const getConfig = () => fetch('res/mapconfig.json').then(data => data.json()) as Promise<Config>;
-
-export const getGraph = () => fetch('res/graph.json').then(data => data.text());
 
 export const getLineRules = () => new Promise<CSSStyleSheet>(resolve => {
     const link = document.querySelector(`[href$="css/scheme.css"]`) as HTMLLinkElement;
@@ -40,7 +39,3 @@ export const getLineRules = () => new Promise<CSSStyleSheet>(resolve => {
     console.log(lineRules);
     return lineRules;
 });
-
-export const getHints = () => fetch('res/hints.json').then(data => data.json()) as Promise<Hints>;
-
-export const getContextMenu = () => fetch('res/contextmenudata.json').then(data => data.json());

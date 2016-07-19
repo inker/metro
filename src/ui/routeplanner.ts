@@ -6,7 +6,7 @@ import * as util from '../util';
 import { Animation, Shadows } from '../svg';
 import { shortestRoute, ShortestRouteObject } from '../algorithm';
 import { Icons, cacheIcons } from '../ui';
-import { translate as tr, formatTime as ft } from '../i18n';
+import { tr, formatTime as ft } from '../i18n';
 
 export default class RoutePlanner {
     private metroMap: MetroMap;
@@ -67,10 +67,9 @@ export default class RoutePlanner {
 
     private visualizeRoute(obj: ShortestRouteObject, animate = true) {
         const { platforms, edges, time } = obj;
-        const onFoot = tr('on foot');
         const walkTo = ft(time.walkTo);
         if (edges === undefined) {
-            return alertify.success(`${walkTo} ${onFoot}!`);
+            return alertify.success(tr`${walkTo} on foot!`);
         }
         const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
         Animation.terminateAnimations().then(() => {
@@ -100,7 +99,7 @@ export default class RoutePlanner {
         }).then(finished => {
             // finished is undefined if not animated, false if animation is still running or true if otherwise
             if (!finished) return;
-            alertify.message(`${tr('time').toUpperCase()}:<br>${walkTo} ${onFoot}<br>${ft(time.metro)} ${tr('by metro')}<br>${ft(time.walkFrom)} ${onFoot}<br>${tr('TOTAL')}: ${ft(time.total)}`, 10)
+            alertify.message(tr`TIME:<br>${walkTo} on foot<br>${ft(time.metro)} by metro<br>${ft(time.walkFrom)} on foot<br>TOTAL: ${ft(time.total)}`, 10)
         });
     }
 

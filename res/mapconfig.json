@@ -4,5 +4,12 @@
     "minZoom": 7,
     "maxZoom": 18,
     "zoom": 11,
-    "detailedZoom": 12
+    "detailedZoom": 12,
+    "url": {
+        "dictionary": "res/dictionary.json",
+        "graph": "res/graph.json",
+        "hints": "res/hints.json",
+        "contextMenu": "res/contextmenudata.json",
+        "data": "res/data.json"
+    }
 }
