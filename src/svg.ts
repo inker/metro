@@ -169,7 +169,7 @@ export namespace Scale {
     }
 }
 
-export namespace Shadows {
+export namespace Filters {
     export function makeDrop(): SVGFilterElement {
         const filter = createSVGElement('filter');
         filter.id = 'shadow';
@@ -223,6 +223,13 @@ export namespace Shadows {
                        0.2126 0.7152 0.0722 0 0
                        0 0 0 1 0"/>`;
         return filter as any;
+    }
+
+    export function appendAll(defs: SVGDefsElement) {
+        defs.appendChild(makeDrop());
+        defs.appendChild(makeGlow());
+        defs.appendChild(makeOpacity());
+        defs.appendChild(makeGray());
     }
     
     export function applyDrop(path: Element & SVGStylable) {
@@ -327,7 +334,7 @@ export namespace Animation {
             const edge: nw.Transfer | nw.Span = network[idParts[0] === 'p' ? 'spans' : 'transfers'][+idParts[1]];
             const initialOffset = edge.source === platforms[i] ? length : -length;
             const duration = length / speed;
-            Shadows.applyDrop(outer);
+            Filters.applyDrop(outer);
             for (let path of (inner === null ? [outer] : [outer, inner])) {
                 const pathStyle = path.style;
                 pathStyle.transition = null;
@@ -341,7 +348,7 @@ export namespace Animation {
             outer.addEventListener('transitionend', e => {
                 outerOld.style.opacity = null;
                 if (outer.id.charAt(1) !== 't') {
-                    Shadows.applyDrop(outerOld);
+                    Filters.applyDrop(outerOld);
                 }
                 outer.parentNode.removeChild(outer);
                 if (inner) {

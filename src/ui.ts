@@ -6,6 +6,7 @@ import RoutePlanner from './ui/routeplanner';
 import ContextMenu from './ui/contextmenu';
 import DistanceMeasure from './ui/distancemeasure';
 import MapOverlay from './ui/mapoverlay';
+import MetroMap from './metromap';
 import * as Icons from './ui/icons';
 
 export { DistanceMeasure, MapEditor, FAQ, TextPlate, RoutePlanner, ContextMenu, Icons, MapOverlay }
@@ -55,22 +56,22 @@ export function addLayerSwitcher(map: L.Map, layers: L.TileLayer[]): void {
     });
 }
 
-export function drawZones(metroMap) {
-    this.network = metroMap.getGraph();
-    this.map = metroMap.getMap();
-    const metroPoints = this.graph.platforms.filter(p => this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('M')).map(p => p.location);
+export function drawZones(metroMap: MetroMap) {
+    const network = metroMap.getNetwork();
+    const map = metroMap.getMap();
+    const metroPoints = network.platforms.filter(p => network.routes[network.spans[p.spans[0]].routes[0]].line.startsWith('M')).map(p => p.location);
     const fitnessFunc = pt => metroPoints.reduce((prev, cur) => prev + pt.distanceTo(cur), 0);
-    const poly = L.polyline([]);
-    const metroMean = calculateGeoMean(metroPoints, fitnessFunc, poly.addLatLng.bind(poly));
-    this.map.addLayer(poly);
+    const poly = L.polyline([], { color: 'red'});
+    const metroMean = calculateGeoMean(metroPoints, fitnessFunc, 1, cur => poly.addLatLng(cur));
+    map.addLayer(poly);
     for (let i = 5000; i < 20000; i += 5000) {
-        L.circle(metroMean, i - 250, { weight: 1 }).addTo(this.map);
-        L.circle(metroMean, i + 250, { weight: 1 }).addTo(this.map);
+        L.circle(metroMean, i - 250, { weight: 1 }).addTo(map);
+        L.circle(metroMean, i + 250, { weight: 1 }).addTo(map);
     }
-    const ePoints = this.graph.platforms.filter(p => this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('E')).map(p => p.location);
-    const eMean = this.graph.platforms.find(p => p.name === 'Glavnyj voxal' && this.graph.routes[this.graph.spans[p.spans[0]].routes[0]].line.startsWith('E')).location;
-    L.circle(eMean, 30000).addTo(this.map);
-    L.circle(eMean, 45000).addTo(this.map);
+    const ePoints = network.platforms.filter(p => network.routes[network.spans[p.spans[0]].routes[0]].line.startsWith('E')).map(p => p.location);
+    const eMean = network.platforms.find(p => p.name === 'Glavnyj voxal' && network.routes[network.spans[p.spans[0]].routes[0]].line.startsWith('E')).location;
+    L.circle(eMean, 30000).addTo(map);
+    L.circle(eMean, 45000).addTo(map);
 }
 
 

@@ -8,7 +8,7 @@ export default class DistanceMeasure {
     private metroMap: MetroMap;
     private polyline = new L.Polyline([], { color: 'red'});
     private markers = new L.FeatureGroup().on('layeradd layerremove', e => util.fixFontRendering());
-    private dashedLine = new L.Polyline([], { color: 'red', opacity: 0.25, dashArray: '0,9' });
+    private dashedLine = new L.Polyline([], { color: 'red', opacity: 0.5, dashArray: '0,9' });
 
     constructor(metroMap: MetroMap) {
         this.metroMap = metroMap;
@@ -41,27 +41,41 @@ export default class DistanceMeasure {
         }
     }
 
+    private addDashedLine() {
+        this.metroMap.getMap()
+            .addLayer(this.dashedLine)
+            .on('mousemove', this.resetDashedLine);
+    }
+
+    private removeDashedLine() {
+        this.metroMap.getMap()
+            .off('mousemove', this.resetDashedLine)
+            .removeLayer(this.dashedLine);
+    }
+
     private makeMarker = (e: L.LeafletMouseEvent) => {
         if (e.originalEvent.button !== 0) return;
+        const map = this.metroMap.getMap();
         const marker = new L.Marker(e.latlng, { draggable: true })
+            .setIcon(Icons.Circle)
             .bindPopup('')
+            .on('mouseover', e => this.removeDashedLine())
+            .on('mouseout', e => this.addDashedLine())
             .on('drag', e => this.updateDistances())
             .on('click', (e: L.LeafletMouseEvent) => {
-                if (e.originalEvent.button !== 1) return;
-                //L.DomEvent.preventDefault(e.originalEvent);
+                if (e.originalEvent.button !== 0) return;
                 this.markers.removeLayer(marker);
-                if (this.markers.getLayers().length > 0) {
-                    this.updateDistances();
-                } else {
+                if (this.markers.getLayers().length === 0) {
                     this.metroMap.receiveEvent(new MouseEvent('deletemeasurements'));
+                    return;
                 }
-
-                //L.DomEvent.stopPropagation(e.originalEvent);
-                //return false;
+                this.updateDistances();
+                if (!map.hasLayer(this.dashedLine)) {
+                    this.addDashedLine();
+                }
             });
         // const el = { lang: { ru: 'Udaliť izmerenia', en: 'Delete measurements' } };
         //this.metroMap.contextMenu.extraItems.set(circle, new Map().set('deletemeasurements', el));
-        marker.setIcon(Icons.Circle);
         this.markers.addLayer(marker);
         this.updateDistances();
     };
@@ -71,7 +85,7 @@ export default class DistanceMeasure {
         this.dashedLine.redraw();
     };
 
-    measureDistance(initialCoordinate: L.LatLng) {
+    private measureDistance(initialCoordinate: L.LatLng) {
         this.dashedLine.addLatLng(initialCoordinate).addLatLng(initialCoordinate);
         this.metroMap.getMap()
             .addLayer(this.polyline.setLatLngs([]))
@@ -83,7 +97,7 @@ export default class DistanceMeasure {
         util.onceEscapePress(e => this.metroMap.receiveEvent(new MouseEvent('deletemeasurements')));
     }
 
-    deleteMeasurements() {
+    private deleteMeasurements() {
         this.metroMap.getMap()
             .removeLayer(this.polyline)
             .removeLayer(this.markers.clearLayers())

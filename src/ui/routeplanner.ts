@@ -3,7 +3,7 @@ const alertify = require('alertifyjs');
 import * as L from 'leaflet';
 import MetroMap from '../metromap';
 import * as util from '../util';
-import { Animation, Shadows } from '../svg';
+import { Animation, Filters } from '../svg';
 import { shortestRoute, ShortestRouteObject } from '../algorithm';
 import { Icons, cacheIcons } from '../ui';
 import { tr, formatTime as ft } from '../i18n';
@@ -90,7 +90,7 @@ export default class RoutePlanner {
                     inner.style.opacity = null;
                 }
                 if (outer.id.charAt(1) !== 't') {
-                    Shadows.applyDrop(outer);
+                    Filters.applyDrop(outer);
                 }
             }
             for (let platformNum of platforms) {

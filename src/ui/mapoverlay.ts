@@ -2,6 +2,7 @@
 import * as L from 'leaflet';
 import * as util from '../util';
 import { createSVGElement } from '../svg';
+import { MemoizeWithParameters } from '../decorators';
 
 export default class MapOverlay implements L.ILayer {
     private map: L.Map;
@@ -173,11 +174,30 @@ export default class MapOverlay implements L.ILayer {
     }
 
     latLngToSvgPoint(location: L.LatLng): L.Point {
-        // return this.map.latLngToContainerPoint(location)
-        //             .subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
         return this.map
             .project(location)
             .round()
             .subtract(this.topLeft);
-    }
+    }    
+
+    // latLngToSvgPoint(location: L.LatLng): L.Point {
+    //     // return this.map.latLngToContainerPoint(location)
+    //     //             .subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
+    //     // return this.map
+    //     //     .project(location)
+    //     //     .round()
+    //     //     .subtract(this.topLeft);
+    //     return this._latLngToSvgPoint(location, this.map.getZoom());
+    // }
+
+    // @MemoizeWithParameters
+    // private _latLngToSvgPoint(location: L.LatLng, zoom: number): L.Point {
+    //     console.time('func');
+    //     const pt = this.map
+    //         .project(location, zoom)
+    //         .round()
+    //         .subtract(this.topLeft);
+    //     console.timeEnd('func');
+    //     return pt;
+    // }
 }

@@ -1,7 +1,6 @@
 /// <reference path="../typings/tsd.d.ts" />;
 import * as L from 'leaflet';
 import * as nw from './network';
-import * as bind from './bind';
 import * as hints from './hints';
 import * as ui from './ui';
 import * as svg from './svg';
@@ -43,6 +42,7 @@ export default class MetroMap extends Mediator {
             .then(json => this.hints = json);
         const contextMenu = new ui.ContextMenu(config.url['contextMenu']);
         const faq = new ui.FAQ(config.url['data']);
+        const tileLoadPromise = new Promise(resolve => mapbox.once('load', e => resolve()));
         
         this.config = config;
         const mapOptions = Object.assign({}, config);
@@ -55,8 +55,8 @@ export default class MetroMap extends Mediator {
             .addControl(new L.Control.Scale({ imperial: false }))
             .addLayer(mapbox);
         
-        const { tilePane } = this.map.getPanes();
-        tilePane.style.display = 'none';
+        const mapPaneStyle = this.map.getPanes().mapPane.style;
+        mapPaneStyle.visibility = 'hidden';
 
         ui.addLayerSwitcher(this.map, [mapbox, mapnik, osmFrance, cartoDBNoLabels, wikimapia]);
         this.addMapListeners();
@@ -65,10 +65,7 @@ export default class MetroMap extends Mediator {
             const bounds = new L.LatLngBounds(this.network.platforms.map(p => p.location));
             this.overlay = new ui.MapOverlay(bounds).addTo(this.map);
             const { defs } = this.overlay;
-            defs.appendChild(svg.Shadows.makeDrop());
-            defs.appendChild(svg.Shadows.makeGlow());
-            defs.appendChild(svg.Shadows.makeOpacity());
-            defs.appendChild(svg.Shadows.makeGray());
+            svg.Filters.appendAll(defs);
             if (defs.textContent.length === 0) {
                 alert(tr`Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience.`);
             }
@@ -81,9 +78,8 @@ export default class MetroMap extends Mediator {
             new ui.RoutePlanner(this);
             new ui.DistanceMeasure(this);
             //this.routeWorker.postMessage(this.network);
-            //drawZones(this);
+            //ui.drawZones(this);
             this.resetMapView();
-            tilePane.style.display = '';
             return contextMenu.whenAvailable;
         }).then(() => {
             contextMenu.addTo(this);
@@ -94,7 +90,10 @@ export default class MetroMap extends Mediator {
             return faq.whenAvailable;
         }).then(() => {
             faq.addTo(this);
-            util.fixFontRendering(); // just in case
+            return tileLoadPromise;
+        }).then(() => {
+            util.fixFontRendering();
+            mapPaneStyle.visibility = '';
         });
     }
 
@@ -146,7 +145,7 @@ export default class MetroMap extends Mediator {
                     location: coor
                 };
                 this.network.platforms.push(platform);
-                bind.platformToModel.call(this, platform, [circle, dummy])
+                this.platformToModel(platform, [circle, dummy]);
             },
             'platformdelete': (e: Event) => {
 
@@ -220,9 +219,9 @@ export default class MetroMap extends Mediator {
         for (let groupId of groupIds) {
             const g = svg.createSVGElement('g');
             g.id = groupId;
-            if (groupId.startsWith('transfers-')) {
-                g.setAttribute('fill', 'none');
-            }
+            // if (groupId.startsWith('transfers-')) {
+            //     g.setAttribute('fill', 'none');
+            // }
             origin.appendChild(g);
         }
 
@@ -235,7 +234,7 @@ export default class MetroMap extends Mediator {
         for (let i = 0; i < nPlatforms; ++i) {
             const circle = document.getElementById('p-' + i);
             const dummyCircle = document.getElementById('d-' + i);
-            bind.platformToModel.call(this, i, [circle, dummyCircle]);
+            this.platformToModel(i, [circle, dummyCircle]);
         }
     }
 
@@ -299,6 +298,7 @@ export default class MetroMap extends Mediator {
             for (let platformIndex of station.platforms) {
                 const platform = this.network.platforms[platformIndex];
                 const posOnSVG = this.platformsOnSVG.get(platformIndex);
+                //const posOnSVG = this.overlay.latLngToSvgPoint(platform.location);
                 if (zoom > 9) {
                     const ci = svg.makeCircle(posOnSVG, circleRadius);
                     ci.id = 'p-' + platformIndex;
@@ -371,7 +371,7 @@ export default class MetroMap extends Mediator {
 
                 transfersOuterFrag.appendChild(paths[0]);
                 transfersInnerFrag.appendChild(paths[1]);
-                bind.transferToModel.call(this, transfer, paths);
+                this.transferToModel(transfer, paths);
             }
         }
 
@@ -627,6 +627,126 @@ export default class MetroMap extends Mediator {
             platform = nwPlatforms[topmostIndex];
         }
         this.plate.show(svg.circleOffset(circle), names);
-    } 
+    }
+
+    private platformToModel(platform: nw.Platform|number, circles: Element[]) {
+        const [idx, obj] = typeof platform === 'number'
+            ? [platform, this.network.platforms[platform]]
+            : [this.network.platforms.indexOf(platform), platform];
+        const cached = obj.location;
+        Object.defineProperty(obj, 'location', {
+            get: () => obj['_location'],
+            set: (location: L.LatLng) => {
+                obj['_location'] = location;
+                const locForPos = this.map.getZoom() < this.config.detailedZoom
+                    ? this.network.getStationCenter(this.network.stations[obj.station])
+                    : location;
+                const pos = this.overlay.latLngToSvgPoint(locForPos);
+                // const nw = this.bounds.getNorthWest();
+                // const pos = this.map.latLngToContainerPoint(locForPos).subtract(this.map.latLngToContainerPoint(nw));
+                for (let c of circles) {
+                    c.setAttribute('cx', pos.x.toString());
+                    c.setAttribute('cy', pos.y.toString());
+                }
+                this.whiskers.set(idx, this.makeWhiskers(idx));
+                this.platformsOnSVG.set(idx, pos);
+                const spansToChange = new Set<number>(obj.spans);
+                for (let spanIndex of obj.spans) {
+                    const span = this.network.spans[spanIndex];
+                    const srcN = span.source, trgN = span.target;
+                    const neighborIndex = idx === srcN ? trgN : srcN;
+                    this.whiskers.set(neighborIndex, this.makeWhiskers(neighborIndex));
+                    this.network.platforms[neighborIndex].spans.forEach(si => spansToChange.add(si));
+                }
+                spansToChange.forEach(spanIndex => {
+                    const span = this.network.spans[spanIndex];
+                    const srcN = span.source, trgN = span.target;
+                    const controlPoints = [this.platformsOnSVG.get(srcN), this.whiskers.get(srcN).get(spanIndex), this.whiskers.get(trgN).get(spanIndex), this.platformsOnSVG.get(trgN)];
+                    svg.setBezierPath(document.getElementById(`op-${spanIndex}`), controlPoints);
+                    const inner = document.getElementById(`ip-${spanIndex}`);
+                    if (inner) svg.setBezierPath(inner, controlPoints);
+                });
+                let oo = 0;
+                for (let tr of this.network.transfers) {
+                    if (tr.source === idx) {
+                        tr.source = idx;
+                        ++oo;
+                    } else if (tr.target === idx) {
+                        tr.target = idx;
+                        ++oo;
+                    }
+                }
+                console.log(oo);
+            }
+        });
+        obj['_location'] = cached;
+    }
+
+    private transferToModel(transfer: nw.Transfer, elements: Element[]) {
+        const cached =  [transfer.source, transfer.target];
+        const transferIndex = this.network.transfers.indexOf(transfer);
+        ['source', 'target'].forEach((prop, pi) => {
+            Object.defineProperty(transfer, prop, {
+                get: () => transfer['_' + prop],
+                set: (platformIndex: number) => {
+                    const circle: SVGCircleElement = document.getElementById('p-' + platformIndex) as any;
+                    const circleTotalRadius = +circle.getAttribute('r') / 2 + parseFloat(getComputedStyle(circle).strokeWidth);
+                    const pos = this.platformsOnSVG.get(platformIndex);
+                    if (elements[0].tagName === 'line') {
+                        const n = pi + 1;
+                        const otherPos = this.platformsOnSVG.get(transfer.other(platformIndex));
+                        for (let el of elements) {
+                            el.setAttribute('x' + n, pos.x.toString());
+                            el.setAttribute('y' + n, pos.y.toString());
+                        }
+                        const gradient: SVGLinearGradientElement = document.getElementById(`g-${transferIndex}`) as any;
+                        const dir = prop === 'source' ? otherPos.subtract(pos) : pos.subtract(otherPos);
+                        svg.Gradients.setDirection(gradient, dir);
+                        const circlePortion = circleTotalRadius / pos.distanceTo(otherPos);
+                        svg.Gradients.setOffset(gradient, circlePortion);
+                    } else if (elements[0].tagName === 'path') {
+                        const transfers: nw.Transfer[] = [];
+                        const transferIndices: number[] = [];
+                        for (let i = 0, len = this.network.transfers.length; i < len; ++i) {
+                            const t = this.network.transfers[i];
+                            if (transfer.isAdjacent(t)) {
+                                transfers.push(t);
+                                transferIndices.push(i);
+                                if (transfers.length === 3) break;
+                            }
+                        }
+
+                        const circular = new Set<number>();
+                        for (let tr of transfers) {
+                            circular.add(tr.source).add(tr.target);
+                        }
+
+                        const circumpoints = Array.from(circular).map(i => this.platformsOnSVG.get(i));
+                        circular.forEach(i => circumpoints.push(this.platformsOnSVG.get(i)));
+
+                        const outerArcs = transferIndices.map(i => document.getElementById('ot-' + i));
+                        const innerArcs = transferIndices.map(i => document.getElementById('it-' + i));
+                        for (let i = 0; i < 3; ++i) {
+                            const tr = transfers[i],
+                                outer = outerArcs[i],
+                                inner = innerArcs[i];
+                            var pos1 = this.platformsOnSVG.get(tr.source),
+                                pos2 = this.platformsOnSVG.get(tr.target);
+                            const thirdPos = circumpoints.find(pos => pos !== pos1 && pos !== pos2);
+                            svg.setCircularPath(outer, pos1, pos2, thirdPos);
+                            inner.setAttribute('d', outer.getAttribute('d'));
+                            const gradient = document.getElementById(`g-${transferIndices[i]}`);
+                            svg.Gradients.setDirection(gradient, pos2.subtract(pos1));
+                            const circlePortion = circleTotalRadius / pos1.distanceTo(pos2);
+                            svg.Gradients.setOffset(gradient, circlePortion);
+                        }
+                    } else {
+                        throw new TypeError('wrong element type for transfer');
+                    }
+                }
+            });
+            transfer['_' + prop] = cached[pi];
+        });
+    }
 
 }

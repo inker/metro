@@ -72,17 +72,6 @@ circle {
     }
 }
 
-.measure-line {
-    stroke: #ff0000;
-    stroke-width: 4px;
-    opacity: 0.5;
-}
-
-.measure-circle {
-    stroke: black;
-    fill: red;
-}
-
 button {
     background-color: white;
     border: none;

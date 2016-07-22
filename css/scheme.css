@@ -13,18 +13,20 @@ path {
     stroke-width: 0.5px;
 }
 
+#paths-outer, #paths-inner, #transfers-outer, #transfers-inner {
+    fill: none;
+}
+
 #transfers-outer {
-    fill-opacity: 0;
     stroke: #404040;
-    stroke-opacity: 1;
-    position: absolute;
+    /*stroke-opacity: 1;*/
+    /*position: absolute;*/
 }
 
 #transfers-inner {
-    fill-opacity: 0;
     stroke: #FFFFFF;
-    stroke-opacity: 1;
-    position: absolute;
+    /*stroke-opacity: 1;*/
+    /*position: absolute;*/
 }
 
 .M-line {
