@@ -1,25 +1,29 @@
 /// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 import { getCenter } from './geo';
+import { getPlatformNamesZipped } from './util';
 
 type AltNames = {
     [lang: string]: string;
  };
 
-interface Nameable {
+export class Platform {
     name: string;
     altNames: AltNames;
-}
-
-export interface Platform extends Nameable {
-    station: number;
     location: L.LatLng;
+    spans: number[] = [];
+    station: number;
     elevation: number;
-    spans: number[];
+    constructor(name: string, location: L.LatLng, altNames: AltNames = {}, elevation?: number) {
+        this.name = name;
+        this.altNames = altNames;
+        this.location = location;
+        this.elevation = elevation;
+    }
 };
 
-export class Station implements Nameable {
-    constructor(public platforms: number[], public name: string, public altNames: AltNames) {}
+export class Station {
+    constructor(public platforms: number[]) {}
 };
 
 class Edge {
@@ -69,15 +73,12 @@ export class Network {
     hints: any;
     constructor(json: string) {
         const newGraph = JSON.parse(json);
-        this.platforms = newGraph.platforms;
+        this.platforms = newGraph.platforms.map(p => new Platform(p.name, p.location, p.altNames, p.elevation));
         this.stations = [];
         this.lines = newGraph.lines;
         this.transfers = newGraph.transfers.map(s => new Transfer(s.source, s.target));
         this.spans = newGraph.spans.map(s => new Span(s.source, s.target, s.routes));
         this.routes = newGraph.routes;
-        for (let platform of this.platforms) {
-            platform['spans'] = [];
-        }
         for (let i = 0, len = this.spans.length; i < len; ++i) {
             const span = this.spans[i];
             this.platforms[span.source].spans.push(i);
@@ -106,19 +107,16 @@ export class Network {
                 platformsCopy[p] = undefined;
             }
             const plarr = Array.from(pls);
-            const first = this.platforms[plarr[0]];
-            this.stations.push(new Station(plarr, first.name, first.altNames));
-            //this.stations.push({ name: first.name, altNames: first.altNames, platforms: plarr });
+            this.stations.push(new Station(plarr));
             for (let p of plarr) {
-                this.platforms[p]['station'] = this.stations.length - 1;
+                this.platforms[p].station = this.stations.length - 1;
             }
         }
         for (let i = 0; i < platformsCopy.length; ++i) {
             const pl = platformsCopy[i];
             if (pl === undefined) continue;
-            this.stations.push(new Station([i], pl.name, pl.altNames));
-            //this.stations.push({ name: pl.name, altNames: pl.altNames, platforms: [i] });
-            this.platforms[i]['station'] = this.stations.length - 1;
+            this.stations.push(new Station([i]));
+            this.platforms[i].station = this.stations.length - 1;
         }
         console.timeEnd('restore');
 
@@ -216,5 +214,9 @@ export class Network {
 
     getStationCenter(station: Station): L.LatLng {
         return getCenter(station.platforms.map(i => this.platforms[i].location));
+    }
+
+    getStationNames(station: Station): string[] {
+        return getPlatformNamesZipped(station.platforms.map(i => this.platforms[i]));      
     }
 };

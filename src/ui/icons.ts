@@ -1,16 +1,18 @@
 import * as svg from '../svg';
-import { svgToData } from '../util';
+import { File } from '../util';
 
 export const Start = L.icon({
     iconUrl: 'http://map.project-osrm.org/images/marker-start-icon-2x.png',
     iconSize: [20, 56],
     iconAnchor: [10, 28],
 });
+
 export const End = L.icon({
     iconUrl: 'http://map.project-osrm.org/images/marker-end-icon-2x.png',
     iconSize: [20, 56],
     iconAnchor: [10, 28],
 });
+
 export const Red = L.icon({
     iconUrl: 'http://harrywood.co.uk/maps/examples/leaflet/marker-icon-red.png',
     //iconRetinaUrl: 'my-icon@2x.png',
@@ -34,7 +36,7 @@ export const Circle = (() => {
     root.appendChild(ci);
     const r = 5;
     return L.icon({
-        iconUrl: svgToData(root),
+        iconUrl: File.svgToData(root),
         iconSize: [r * 2, r * 2],
         iconAnchor: [r, r],
         popupAnchor: [0, -r]        

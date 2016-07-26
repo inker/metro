@@ -17,6 +17,26 @@ export const getContent = (url: string) => fetch(url).then(data => data.text());
 
 export const getConfig = () => fetch('res/mapconfig.json').then(data => data.json()) as Promise<Config>;
 
+export function getStyleRulesAsText(): string {
+    const styles = document.styleSheets;
+    let text = '';
+    for (let i = 0, len = styles.length; i < len; ++i) {
+        const sheet = styles[i] as CSSStyleSheet;
+        console.log(sheet.cssText);
+        const rules = sheet.cssRules;
+        // cross-origin style sheets don't have rules
+        if (!rules) {
+            console.log(sheet);
+            continue;
+        }
+        for (let i = 0; i < rules.length; ++i) {
+            text += rules[i].cssText;
+        }
+    }
+    console.log('css text ready');
+    return text;
+}
+
 export const getLineRules = () => new Promise<CSSStyleSheet>(resolve => {
     const link = document.querySelector(`[href$="css/scheme.css"]`) as HTMLLinkElement;
     const sheet = link.sheet as CSSStyleSheet;

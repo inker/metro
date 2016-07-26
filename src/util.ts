@@ -1,7 +1,8 @@
 /// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 import * as nw from './network';
-import * as i18n from './i18n'
+import * as i18n from './i18n';
+import { getStyleRulesAsText } from './res';
 
 export function arrayEquals<T>(a: T[], b: T[]) {
     const n = a.length;
@@ -14,7 +15,7 @@ export function arrayEquals<T>(a: T[], b: T[]) {
 
 export function uniquify<T>(arr: T[]) {
     return Array.from(new Set(arr));
-} 
+}
 
 export function formatInteger(integer: number): string {
     const s = integer.toString();
@@ -26,6 +27,10 @@ export function formatInteger(integer: number): string {
     }
     console.log(arr);
     return arr.join("'");
+}
+
+export function roundPoint(point: L.Point, precision: number): L.Point {
+    return (point.multiplyBy(precision) as any)._round()._divideBy(precision);
 }
 
 export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {
@@ -48,12 +53,12 @@ export function once(el: EventTarget, eventType: string, listener: EventListener
 export function onceEscapePress(handler: (ev: KeyboardEvent) => any) {
     const keydownListener = (e: KeyboardEvent) => {
         if (e.keyCode !== 27) return;
-        handler(e);
         removeListener();
+        handler(e);
     };
     const backbuttonListener = e => {
-        handler(e);
         removeListener();
+        handler(e);
     }
     function removeListener() {
         removeEventListener('keydown', keydownListener);
@@ -83,7 +88,7 @@ export function resetStyle() {
 export function triggerMouseEvent(target: Node, eventType: string) {
     const e = document.createEvent('MouseEvents');
     e.initEvent(eventType, true, true);
-    target.dispatchEvent(e);    
+    target.dispatchEvent(e);
 }
 
 export function getPlatformNames(platform: nw.Platform): string[] {
@@ -92,6 +97,15 @@ export function getPlatformNames(platform: nw.Platform): string[] {
         names = !fi ? [ru] : i18n.userLanguage === 'fi' ? [fi, ru] : [ru, fi];
     if (en) names.push(en);
     return names;
+}
+
+export function getPlatformNamesZipped(platforms: nw.Platform[]) {
+    const platformNames = platforms.map(getPlatformNames);
+    return [0, 1, 2]
+        .map(no => platforms.map((p, i) => platformNames[i][no]))
+        .map(uniquify)
+        .map(arr => arr.reduce((prev, cur) => `${prev} / ${cur}`))
+        .filter(s => s !== undefined);
 }
 
 export function circleByIndex(index: number): SVGCircleElement {
@@ -128,32 +142,81 @@ export namespace Color {
     }
 }
 
+export namespace File {
+    export function download(title: string, dataURL: string) {
+        const a = document.createElement('a');
+        a.href = dataURL;
+        a.download = title;
+        a.click();
+    }
+
+    export function downloadBlob(title: string, blob: Blob) {
+        const url = URL.createObjectURL(blob);
+        download(title, url);
+        URL.revokeObjectURL(url);
+    }
+
+    export function downloadText(title: string, content: string) {
+        downloadBlob(title, new Blob([content], { type: 'octet/stream' }));
+    }
+
+    export function downloadSvgAsPicture(title: string, root: SVGSVGElement, format: 'png' | 'jpeg') {
+        svgToPictureDataUrl(root, format).then(dataURL => download(title, dataURL));
+    }
+
+    export function svgToPictureDataUrl(root: SVGSVGElement, format: 'png' | 'jpeg'): Promise<string> {
+        return svgToCanvas(root).then(canvas => canvas.toDataURL('image/' + format));
+    }
+
+    export function svgToCanvas(root: SVGSVGElement): Promise<HTMLCanvasElement> {
+        return new Promise<HTMLCanvasElement>(resolve => {
+            const img = svgToImg(root, true);
+            img.onload = e => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                canvas.getContext('2d').drawImage(img, 0, 0);
+                resolve(canvas);
+            };
+        })
+    }
+
+    export function svgToImg(root: SVGSVGElement, appendExternalStyles = false): HTMLImageElement {
+        if (appendExternalStyles) {
+            root = optimizeSvg(root);
+        }
+        const img = document.createElement('img');
+        img.width = parseInt(root.getAttribute('width')) || parseInt(root.style.width);
+        img.height = parseInt(root.getAttribute('height')) || parseInt(root.style.height);
+        img.src = svgToDataUrl(root);
+        return img;
+    }
+
+    export function svgToDataUrl(root: SVGSVGElement): string {
+        return 'data:image/svg+xml;base64,' + btoa(new XMLSerializer().serializeToString(root));
+    }
+
+    function optimizeSvg(root: SVGSVGElement): SVGSVGElement {
+        const optimized = root.cloneNode(true) as SVGSVGElement;
+        const dummy = optimized.querySelectorAll('[id^=dummy]');
+        for (let i = 0, len = dummy.length; i < len; ++i) {
+            dummy[i].parentNode.removeChild(dummy[i]);
+        }
+        optimized.style.left = optimized.style.top = '';
+        const plate = optimized.querySelector('#station-plate');
+        plate.parentNode.removeChild(plate);
+        const defs = optimized.querySelector('defs');
+        const styleElement = document.createElement('style');
+        styleElement.textContent = getStyleRulesAsText();
+        defs.insertBefore(styleElement, defs.firstChild);
+        return optimized;
+    }
+
+}
+
 export function flashTitle(titles: string[], duration: number) {
     let i = 0;
     setInterval(() => document.title = titles[++i % titles.length], duration);
-}
-
-export function downloadFile(title: string, blob: Blob) {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = title;
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
-export function downloadTextFile(title: string, content: string) {
-    downloadFile(title, new Blob([content], { type: 'octet/stream' }));
-}
-
-export function svgToData(root: SVGSVGElement): string {
-    return "data:image/svg+xml;base64," + btoa(new XMLSerializer().serializeToString(root));
-}
-
-export function svgToImg(root: SVGSVGElement): HTMLImageElement {
-    const img = document.createElement('img');
-    img.src = svgToData(root);
-    return img;
 }
 
 export function scaleOverlay(overlay: SVGSVGElement, scaleFactor: number, mousePos?: L.Point) {
@@ -185,6 +248,6 @@ export function fixFontRendering(parent: { querySelectorAll } = document): void 
     const blurringStuff = parent.querySelectorAll('[style*="translate3d"]');
     console.log('fixing font', parent, blurringStuff);
     for (let i = 0; i < blurringStuff.length; ++i) {
-        trim3d(blurringStuff[i] as HTMLElement&SVGStylable);
+        trim3d(blurringStuff[i] as HTMLElement & SVGStylable);
     }
 }

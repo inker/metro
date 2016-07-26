@@ -57,7 +57,7 @@ export default class MapEditor implements Widget {
     }
 
     private saveMapClick() {
-        util.downloadTextFile('graph.json', this.metroMap.getNetwork().toJSON());
+        util.File.downloadText('graph.json', this.metroMap.getNetwork().toJSON());
         this.editMode = false;
     }
 

@@ -61,11 +61,11 @@ export function hintContainsLine(network: nw.Network, dirHints: CrossPlatformHin
     if (platformHints) {
         if ('forEach' in platformHints) {
             for (let idx = 0, len: number = platformHints['length'] as any; idx < len; ++idx) {
-                if (Object.keys(platformHints[idx]).some(key => lines.indexOf(key) > -1)) {
+                if (Object.keys(platformHints[idx]).some(key => lines.includes(key))) {
                     return idx;
                 }
             }
-        } else if (Object.keys(platformHints).some(key => lines.indexOf(key) > -1)) {
+        } else if (Object.keys(platformHints).some(key => lines.includes(key))) {
             return -1;
         }
     }

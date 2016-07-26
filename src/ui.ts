@@ -36,7 +36,6 @@ export function platformRenameDialog(network: nw.Network, platform: nw.Platform)
                 const p = network.platforms[i];
                 [p.name, p.altNames['fi'], p.altNames['en']] = newNames;
             }
-            [station.name, station.altNames['fi'], station.altNames['en']] = newNames;
             alertify.success(tr`The entire station was renamed to ${val}`);
         });
 

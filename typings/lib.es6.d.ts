@@ -348,6 +348,8 @@ interface Array<T> {
       */
     findIndex(predicate: (value: T) => boolean, thisArg?: any): number;
 
+    includes(value: T): boolean;
+
     /**
       * Returns the this object after filling the section identified by start and end with value
       * @param value value to fill array section with

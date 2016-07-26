@@ -42,8 +42,11 @@ export default class ContextMenu extends DeferredWidget {
 
     addTo(metroMap: MetroMap) {
         this.metroMap = metroMap;
-        const map = metroMap.getMap(),
-            { mapPane } = map.getPanes(),
+        const map = metroMap.getMap();
+        if (map === undefined) {
+            throw new Error('cannot add map editor to metro map: leaflet map is missing');
+        }
+        const { mapPane } = map.getPanes(),
             mapContainer = map.getContainer(),
             listener = e => this.handler(e),
             cancelListener = e => this.hide();

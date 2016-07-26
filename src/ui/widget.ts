@@ -9,7 +9,5 @@ export abstract class DeferredWidget implements Widget {
     protected _whenAvailable: Promise<void>;
     get whenAvailable() { return this._whenAvailable; }
 
-    constructor() {}
-
     addTo(metroMap: MetroMap) {}
 }

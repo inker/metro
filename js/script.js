@@ -1,9 +1,21006 @@
-!function t(e,n,i){function o(s,a){if(!n[s]){if(!e[s]){var l="function"==typeof require&&require;if(!a&&l)return l(s,!0);if(r)return r(s,!0);var u=new Error("Cannot find module '"+s+"'");throw u.code="MODULE_NOT_FOUND",u}var h=n[s]={exports:{}};e[s][0].call(h.exports,function(t){var n=e[s][1][t];return o(n?n:t)},h,h.exports,t,e,n,i)}return n[s].exports}for(var r="function"==typeof require&&require,s=0;s<i.length;s++)o(i[s]);return o}({1:[function(t,e,n){!function(t){"use strict";function n(t,e){t.className+=" "+e}function i(t,e){for(var n=e.split(" "),i=0;i<n.length;i+=1)t.className=t.className.replace(" "+n[i],"")}function o(){return"rtl"===t.getComputedStyle(document.body).direction}function r(){return document.documentElement&&document.documentElement.scrollTop||document.body.scrollTop}function s(){return document.documentElement&&document.documentElement.scrollLeft||document.body.scrollLeft}function a(t){for(;t.lastChild;)t.removeChild(t.lastChild)}function l(t){if(null===t)return t;var e;if(Array.isArray(t)){e=[];for(var n=0;n<t.length;n+=1)e.push(l(t[n]));return e}if(t instanceof Date)return new Date(t.getTime());if(t instanceof RegExp)return e=new RegExp(t.source),e.global=t.global,e.ignoreCase=t.ignoreCase,e.multiline=t.multiline,e.lastIndex=t.lastIndex,e;if("object"==typeof t){e={};for(var i in t)t.hasOwnProperty(i)&&(e[i]=l(t[i]));return e}return t}function u(t,e){var n=t.elements.root;n.parentNode.removeChild(n),delete t.elements,t.settings=l(t.__settings),t.__init=e,delete t.__internal}function h(t,e){return function(){if(arguments.length>0){for(var n=[],i=0;i<arguments.length;i+=1)n.push(arguments[i]);return n.push(t),e.apply(t,n)}return e.apply(t,[null,t])}}function c(t,e){return{index:t,button:e,cancel:!1}}function d(){function t(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n]);return t}function e(t){var e=i[t].dialog;return e&&"function"==typeof e.__init&&e.__init(e),e}function n(e,n,o,r){var s={dialog:null,factory:n};return void 0!==r&&(s.factory=function(){return t(new i[r].factory,new n)}),o||(s.dialog=t(new s.factory,y)),i[e]=s}var i={};return{defaults:f,dialog:function(i,o,r,s){if("function"!=typeof o)return e(i);if(this.hasOwnProperty(i))throw new Error("alertify.dialog: name already exists");var a=n(i,o,r,s);r?this[i]=function(){if(0===arguments.length)return a.dialog;var e=t(new a.factory,y);return e&&"function"==typeof e.__init&&e.__init(e),e.main.apply(e,arguments),e.show.apply(e)}:this[i]=function(){if(a.dialog&&"function"==typeof a.dialog.__init&&a.dialog.__init(a.dialog),0===arguments.length)return a.dialog;var t=a.dialog;return t.main.apply(a.dialog,arguments),t.show.apply(a.dialog)}},closeAll:function(t){for(var e=m.slice(0),n=0;n<e.length;n+=1){var i=e[n];void 0!==t&&t===i||i.close()}},setting:function(t,n,i){if("notifier"===t)return b.setting(n,i);var o=e(t);return o?o.setting(n,i):void 0},set:function(t,e,n){return this.setting(t,e,n)},get:function(t,e){return this.setting(t,e)},notify:function(t,e,n,i){return b.create(e,i).push(t,n)},message:function(t,e,n){return b.create(null,n).push(t,e)},success:function(t,e,n){return b.create("success",n).push(t,e)},error:function(t,e,n){return b.create("error",n).push(t,e)},warning:function(t,e,n){return b.create("warning",n).push(t,e)},dismissAll:function(){b.dismissAll()}}}var p={ENTER:13,ESC:27,F1:112,F12:123,LEFT:37,RIGHT:39},f={modal:!0,basic:!1,frameless:!1,movable:!0,moveBounded:!1,resizable:!0,closable:!0,closableByDimmer:!0,maximizable:!0,startMaximized:!1,pinnable:!0,pinned:!0,padding:!0,overflow:!0,maintainFocus:!0,transition:"pulse",autoReset:!0,notifier:{delay:5,position:"bottom-right"},glossary:{title:"AlertifyJS",ok:"OK",cancel:"Cancel",acccpt:"Accept",deny:"Deny",confirm:"Confirm",decline:"Decline",close:"Close",maximize:"Maximize",restore:"Restore"},theme:{input:"ajs-input",ok:"ajs-ok",cancel:"ajs-cancel"}},m=[],_=function(){return document.addEventListener?function(t,e,n,i){t.addEventListener(e,n,i===!0)}:document.attachEvent?function(t,e,n){t.attachEvent("on"+e,n)}:void 0}(),g=function(){return document.removeEventListener?function(t,e,n,i){t.removeEventListener(e,n,i===!0)}:document.detachEvent?function(t,e,n){t.detachEvent("on"+e,n)}:void 0}(),v=function(){var t,e,n=!1,i={animation:"animationend",OAnimation:"oAnimationEnd oanimationend",msAnimation:"MSAnimationEnd",MozAnimation:"animationend",WebkitAnimation:"webkitAnimationEnd"};for(t in i)if(void 0!==document.documentElement.style[t]){e=i[t],n=!0;break}return{type:e,supported:n}}(),y=function(){function e(t){if(!t.__internal){delete t.__init,t.__settings||(t.__settings=l(t.settings)),null===Lt&&document.body.setAttribute("tabindex","0");var e;"function"==typeof t.setup?(e=t.setup(),e.options=e.options||{},e.focus=e.focus||{}):e={buttons:[],focus:{element:null,select:!1},options:{}},"object"!=typeof t.hooks&&(t.hooks={});var i=[];if(Array.isArray(e.buttons))for(var o=0;o<e.buttons.length;o+=1){var r=e.buttons[o],s={};for(var a in r)r.hasOwnProperty(a)&&(s[a]=r[a]);i.push(s)}var u=t.__internal={isOpen:!1,activeElement:document.body,timerIn:void 0,timerOut:void 0,buttons:i,focus:e.focus,options:{title:void 0,modal:void 0,basic:void 0,frameless:void 0,pinned:void 0,movable:void 0,moveBounded:void 0,resizable:void 0,autoReset:void 0,closable:void 0,closableByDimmer:void 0,maximizable:void 0,startMaximized:void 0,pinnable:void 0,transition:void 0,padding:void 0,overflow:void 0,onshow:void 0,onclose:void 0,onfocus:void 0},resetHandler:void 0,beginMoveHandler:void 0,beginResizeHandler:void 0,bringToFrontHandler:void 0,modalClickHandler:void 0,buttonsClickHandler:void 0,commandsClickHandler:void 0,transitionInHandler:void 0,transitionOutHandler:void 0,destroy:void 0},c={};c.root=document.createElement("div"),c.root.className=Tt.base+" "+Tt.hidden+" ",c.root.innerHTML=Et.dimmer+Et.modal,c.dimmer=c.root.firstChild,c.modal=c.root.lastChild,c.modal.innerHTML=Et.dialog,c.dialog=c.modal.firstChild,c.dialog.innerHTML=Et.reset+Et.commands+Et.header+Et.body+Et.footer+Et.resizeHandle+Et.reset,c.reset=[],c.reset.push(c.dialog.firstChild),c.reset.push(c.dialog.lastChild),c.commands={},c.commands.container=c.reset[0].nextSibling,c.commands.pin=c.commands.container.firstChild,c.commands.maximize=c.commands.pin.nextSibling,c.commands.close=c.commands.maximize.nextSibling,c.header=c.commands.container.nextSibling,c.body=c.header.nextSibling,c.body.innerHTML=Et.content,c.content=c.body.firstChild,c.footer=c.body.nextSibling,c.footer.innerHTML=Et.buttons.auxiliary+Et.buttons.primary,c.resizeHandle=c.footer.nextSibling,c.buttons={},c.buttons.auxiliary=c.footer.firstChild,c.buttons.primary=c.buttons.auxiliary.nextSibling,c.buttons.primary.innerHTML=Et.button,c.buttonTemplate=c.buttons.primary.firstChild,c.buttons.primary.removeChild(c.buttonTemplate);for(var d=0;d<t.__internal.buttons.length;d+=1){var p=t.__internal.buttons[d];xt.indexOf(p.key)<0&&xt.push(p.key),p.element=c.buttonTemplate.cloneNode(),p.element.innerHTML=p.text,"string"==typeof p.className&&""!==p.className&&n(p.element,p.className);for(var f in p.attrs)"className"!==f&&p.attrs.hasOwnProperty(f)&&p.element.setAttribute(f,p.attrs[f]);"auxiliary"===p.scope?c.buttons.auxiliary.appendChild(p.element):c.buttons.primary.appendChild(p.element)}t.elements=c,u.resetHandler=h(t,q),u.beginMoveHandler=h(t,Q),u.beginResizeHandler=h(t,ot),u.bringToFrontHandler=h(t,E),u.modalClickHandler=h(t,H),u.buttonsClickHandler=h(t,F),u.commandsClickHandler=h(t,C),u.transitionInHandler=h(t,J),u.transitionOutHandler=h(t,X),t.set("title",void 0===e.options.title?w.defaults.glossary.title:e.options.title),t.set("modal",void 0===e.options.modal?w.defaults.modal:e.options.modal),t.set("basic",void 0===e.options.basic?w.defaults.basic:e.options.basic),t.set("frameless",void 0===e.options.frameless?w.defaults.frameless:e.options.frameless),t.set("movable",void 0===e.options.movable?w.defaults.movable:e.options.movable),t.set("moveBounded",void 0===e.options.moveBounded?w.defaults.moveBounded:e.options.moveBounded),t.set("resizable",void 0===e.options.resizable?w.defaults.resizable:e.options.resizable),t.set("autoReset",void 0===e.options.autoReset?w.defaults.autoReset:e.options.autoReset),t.set("closable",void 0===e.options.closable?w.defaults.closable:e.options.closable),t.set("closableByDimmer",void 0===e.options.closableByDimmer?w.defaults.closableByDimmer:e.options.closableByDimmer),t.set("maximizable",void 0===e.options.maximizable?w.defaults.maximizable:e.options.maximizable),t.set("startMaximized",void 0===e.options.startMaximized?w.defaults.startMaximized:e.options.startMaximized),t.set("pinnable",void 0===e.options.pinnable?w.defaults.pinnable:e.options.pinnable),t.set("pinned",void 0===e.options.pinned?w.defaults.pinned:e.options.pinned),t.set("transition",void 0===e.options.transition?w.defaults.transition:e.options.transition),t.set("padding",void 0===e.options.padding?w.defaults.padding:e.options.padding),t.set("overflow",void 0===e.options.overflow?w.defaults.overflow:e.options.overflow),"function"==typeof t.build&&t.build()}document.body.appendChild(t.elements.root)}function d(){bt=s(),wt=r()}function f(){t.scrollTo(bt,wt)}function y(){for(var t=0,e=0;e<m.length;e+=1){var o=m[e];(o.isModal()||o.isMaximized())&&(t+=1)}0===t?i(document.body,Tt.noOverflow):t>0&&document.body.className.indexOf(Tt.noOverflow)<0&&n(document.body,Tt.noOverflow)}function b(t,e,o){"string"==typeof o&&i(t.elements.root,Tt.prefix+o),n(t.elements.root,Tt.prefix+e),Lt=t.elements.root.offsetWidth}function x(t){t.get("modal")?(i(t.elements.root,Tt.modeless),t.isOpen()&&(pt(t),N(t),y())):(n(t.elements.root,Tt.modeless),t.isOpen()&&(dt(t),N(t),y()))}function L(t){t.get("basic")?n(t.elements.root,Tt.basic):i(t.elements.root,Tt.basic)}function P(t){t.get("frameless")?n(t.elements.root,Tt.frameless):i(t.elements.root,Tt.frameless)}function E(t,e){for(var n=m.indexOf(e),i=n+1;i<m.length;i+=1)if(m[i].isModal())return;return document.body.lastChild!==e.elements.root&&(document.body.appendChild(e.elements.root),m.splice(m.indexOf(e),1),m.push(e),V(e)),!1}function T(t,e,o,r){switch(e){case"title":t.setHeader(r);break;case"modal":x(t);break;case"basic":L(t);break;case"frameless":P(t);break;case"pinned":j(t);break;case"closable":U(t);break;case"maximizable":R(t);break;case"pinnable":I(t);break;case"movable":nt(t);break;case"resizable":lt(t);break;case"transition":b(t,r,o);break;case"padding":r?i(t.elements.root,Tt.noPadding):t.elements.root.className.indexOf(Tt.noPadding)<0&&n(t.elements.root,Tt.noPadding);break;case"overflow":r?i(t.elements.root,Tt.noOverflow):t.elements.root.className.indexOf(Tt.noOverflow)<0&&n(t.elements.root,Tt.noOverflow);break;case"transition":b(t,r,o)}"function"==typeof t.hooks.onupdate&&t.hooks.onupdate.call(t,e,o,r)}function M(t,e,n,i,o){var r={op:void 0,items:[]};if("undefined"==typeof o&&"string"==typeof i)r.op="get",e.hasOwnProperty(i)?(r.found=!0,r.value=e[i]):(r.found=!1,r.value=void 0);else{var s;if(r.op="set","object"==typeof i){var a=i;for(var l in a)e.hasOwnProperty(l)?(e[l]!==a[l]&&(s=e[l],e[l]=a[l],n.call(t,l,s,a[l])),r.items.push({key:l,value:a[l],found:!0})):r.items.push({key:l,value:a[l],found:!1})}else{if("string"!=typeof i)throw new Error("args must be a string or object");e.hasOwnProperty(i)?(e[i]!==o&&(s=e[i],e[i]=o,n.call(t,i,s,o)),r.items.push({key:i,value:o,found:!0})):r.items.push({key:i,value:o,found:!1})}}return r}function k(t){var e;Z(t,function(t){return e=t.invokeOnClose===!0}),!e&&t.isOpen()&&t.close()}function C(t,e){var n=t.srcElement||t.target;switch(n){case e.elements.commands.pin:e.isPinned()?O(e):S(e);break;case e.elements.commands.maximize:e.isMaximized()?A(e):D(e);break;case e.elements.commands.close:k(e)}return!1}function S(t){t.set("pinned",!0)}function O(t){t.set("pinned",!1)}function D(t){n(t.elements.root,Tt.maximized),t.isOpen()&&y()}function A(t){i(t.elements.root,Tt.maximized),t.isOpen()&&y()}function I(t){t.get("pinnable")?n(t.elements.root,Tt.pinnable):i(t.elements.root,Tt.pinnable)}function z(t){var e=s();t.elements.modal.style.marginTop=r()+"px",t.elements.modal.style.marginLeft=e+"px",t.elements.modal.style.marginRight=-e+"px"}function B(t){var e=parseInt(t.elements.modal.style.marginTop,10),n=parseInt(t.elements.modal.style.marginLeft,10);if(t.elements.modal.style.marginTop="",t.elements.modal.style.marginLeft="",t.elements.modal.style.marginRight="",t.isOpen()){var i=0,o=0;""!==t.elements.dialog.style.top&&(i=parseInt(t.elements.dialog.style.top,10)),t.elements.dialog.style.top=i+(e-r())+"px",""!==t.elements.dialog.style.left&&(o=parseInt(t.elements.dialog.style.left,10)),t.elements.dialog.style.left=o+(n-s())+"px"}}function N(t){t.get("modal")||t.get("pinned")?B(t):z(t)}function j(t){t.get("pinned")?(i(t.elements.root,Tt.unpinned),t.isOpen()&&B(t)):(n(t.elements.root,Tt.unpinned),t.isOpen()&&!t.isModal()&&z(t))}function R(t){t.get("maximizable")?n(t.elements.root,Tt.maximizable):i(t.elements.root,Tt.maximizable)}function U(t){t.get("closable")?(n(t.elements.root,Tt.closable),vt(t)):(i(t.elements.root,Tt.closable),yt(t))}function H(t,e){var n=t.srcElement||t.target;return Mt||n!==e.elements.modal||e.get("closableByDimmer")!==!0||k(e),Mt=!1,!1}function Z(t,e){for(var n=0;n<t.__internal.buttons.length;n+=1){var i=t.__internal.buttons[n];if(!i.element.disabled&&e(i)){var o=c(n,i);"function"==typeof t.callback&&t.callback.apply(t,[o]),o.cancel===!1&&t.close();break}}}function F(t,e){var n=t.srcElement||t.target;Z(e,function(t){return t.element===n&&(kt=!0)})}function W(t){if(kt)return void(kt=!1);var e=m[m.length-1],n=t.keyCode;return 0===e.__internal.buttons.length&&n===p.ESC&&e.get("closable")===!0?(k(e),!1):xt.indexOf(n)>-1?(Z(e,function(t){return t.key===n}),!1):void 0}function G(t){var e=m[m.length-1],n=t.keyCode;if(n===p.LEFT||n===p.RIGHT){for(var i=e.__internal.buttons,o=0;o<i.length;o+=1)if(document.activeElement===i[o].element)switch(n){case p.LEFT:return void i[(o||i.length)-1].element.focus();case p.RIGHT:return void i[(o+1)%i.length].element.focus()}}else if(n<p.F12+1&&n>p.F1-1&&xt.indexOf(n)>-1)return t.preventDefault(),t.stopPropagation(),Z(e,function(t){return t.key===n}),!1}function V(t,e){if(e)e.focus();else{var n=t.__internal.focus,i=n.element;switch(typeof n.element){case"number":t.__internal.buttons.length>n.element&&(i=t.get("basic")===!0?t.elements.reset[0]:t.__internal.buttons[n.element].element);break;case"string":i=t.elements.body.querySelector(n.element);break;case"function":i=n.element.call(t)}"undefined"!=typeof i&&null!==i||0!==t.__internal.buttons.length||(i=t.elements.reset[0]),i&&i.focus&&(i.focus(),n.select&&i.select&&i.select())}}function q(t,e){if(!e)for(var n=m.length-1;n>-1;n-=1)if(m[n].isModal()){e=m[n];break}if(e&&e.isModal()){var i,o=t.srcElement||t.target,r=o===e.elements.reset[1]||0===e.__internal.buttons.length&&o===document.body;r&&(e.get("maximizable")?i=e.elements.commands.maximize:e.get("closable")&&(i=e.elements.commands.close)),void 0===i&&("number"==typeof e.__internal.focus.element?o===e.elements.reset[0]?i=e.elements.buttons.auxiliary.firstChild||e.elements.buttons.primary.firstChild:r&&(i=e.elements.reset[0]):o===e.elements.reset[0]&&(i=e.elements.buttons.primary.lastChild||e.elements.buttons.auxiliary.lastChild)),V(e,i)}}function J(t,e){clearTimeout(e.__internal.timerIn),V(e),f(),kt=!1,"function"==typeof e.get("onfocus")&&e.get("onfocus").call(e),g(e.elements.dialog,v.type,e.__internal.transitionInHandler),i(e.elements.root,Tt.animationIn)}function X(t,e){clearTimeout(e.__internal.timerOut),g(e.elements.dialog,v.type,e.__internal.transitionOutHandler),et(e),at(e),e.isMaximized()&&!e.get("startMaximized")&&A(e),w.defaults.maintainFocus&&e.__internal.activeElement&&(e.__internal.activeElement.focus(),e.__internal.activeElement=null),"function"==typeof e.__internal.destroy&&e.__internal.destroy.apply(e)}function Y(t,e){var n=t[Dt]-St,i=t[At]-Ot;zt&&(i-=document.body.scrollTop),e.style.left=n+"px",e.style.top=i+"px"}function K(t,e){var n=t[Dt]-St,i=t[At]-Ot;zt&&(i-=document.body.scrollTop),e.style.left=Math.min(It.maxLeft,Math.max(It.minLeft,n))+"px",zt?e.style.top=Math.min(It.maxTop,Math.max(It.minTop,i))+"px":e.style.top=Math.max(It.minTop,i)+"px"}function Q(t,e){if(null===Nt&&!e.isMaximized()&&e.get("movable")){var i,o=0,r=0;if("touchstart"===t.type?(t.preventDefault(),i=t.targetTouches[0],Dt="clientX",At="clientY"):0===t.button&&(i=t),i){var s=e.elements.dialog;if(n(s,Tt.capture),s.style.left&&(o=parseInt(s.style.left,10)),s.style.top&&(r=parseInt(s.style.top,10)),St=i[Dt]-o,Ot=i[At]-r,e.isModal()?Ot+=e.elements.modal.scrollTop:e.isPinned()&&(Ot-=document.body.scrollTop),e.get("moveBounded")){var a=s,l=-o,u=-r;do l+=a.offsetLeft,u+=a.offsetTop;while(a=a.offsetParent);It={maxLeft:l,minLeft:-l,maxTop:document.documentElement.clientHeight-s.clientHeight-u,minTop:-u},Bt=K}else It=null,Bt=Y;return zt=!e.isModal()&&e.isPinned(),Ct=e,Bt(i,s),n(document.body,Tt.noSelection),!1}}}function $(t){if(Ct){var e;"touchmove"===t.type?(t.preventDefault(),e=t.targetTouches[0]):0===t.button&&(e=t),e&&Bt(e,Ct.elements.dialog)}}function tt(){if(Ct){var t=Ct.elements.dialog;Ct=It=null,i(document.body,Tt.noSelection),i(t,Tt.capture)}}function et(t){Ct=null;var e=t.elements.dialog;e.style.left=e.style.top=""}function nt(t){t.get("movable")?(n(t.elements.root,Tt.movable),t.isOpen()&&ft(t)):(et(t),i(t.elements.root,Tt.movable),t.isOpen()&&mt(t))}function it(t,e,n){var i=e,r=0,s=0;do r+=i.offsetLeft,s+=i.offsetTop;while(i=i.offsetParent);var a,l;n===!0?(a=t.pageX,l=t.pageY):(a=t.clientX,l=t.clientY);var u=o();if(u&&(a=document.body.offsetWidth-a,isNaN(jt)||(r=document.body.offsetWidth-r-e.offsetWidth)),e.style.height=l-s+Ht+"px",e.style.width=a-r+Ht+"px",!isNaN(jt)){var h=.5*Math.abs(e.offsetWidth-Rt);u&&(h*=-1),e.offsetWidth>Rt?e.style.left=jt+h+"px":e.offsetWidth>=Ut&&(e.style.left=jt-h+"px")}}function ot(t,e){if(!e.isMaximized()){var i;if("touchstart"===t.type?(t.preventDefault(),i=t.targetTouches[0]):0===t.button&&(i=t),i){Nt=e,Ht=e.elements.resizeHandle.offsetHeight/2;var o=e.elements.dialog;return n(o,Tt.capture),jt=parseInt(o.style.left,10),o.style.height=o.offsetHeight+"px",o.style.minHeight=e.elements.header.offsetHeight+e.elements.footer.offsetHeight+"px",o.style.width=(Rt=o.offsetWidth)+"px","none"!==o.style.maxWidth&&(o.style.minWidth=(Ut=o.offsetWidth)+"px"),o.style.maxWidth="none",n(document.body,Tt.noSelection),!1}}}function rt(t){if(Nt){var e;"touchmove"===t.type?(t.preventDefault(),e=t.targetTouches[0]):0===t.button&&(e=t),e&&it(e,Nt.elements.dialog,!Nt.get("modal")&&!Nt.get("pinned"))}}function st(){if(Nt){var t=Nt.elements.dialog;Nt=null,i(document.body,Tt.noSelection),i(t,Tt.capture),Mt=!0}}function at(t){Nt=null;var e=t.elements.dialog;"none"===e.style.maxWidth&&(e.style.maxWidth=e.style.minWidth=e.style.width=e.style.height=e.style.minHeight=e.style.left="",jt=Number.Nan,Rt=Ut=Ht=0)}function lt(t){t.get("resizable")?(n(t.elements.root,Tt.resizable),t.isOpen()&&_t(t)):(at(t),i(t.elements.root,Tt.resizable),t.isOpen()&&gt(t))}function ut(){for(var t=0;t<m.length;t+=1){var e=m[t];e.get("autoReset")&&(et(e),at(e))}}function ht(e){1===m.length&&(_(t,"resize",ut),_(document.body,"keyup",W),_(document.body,"keydown",G),_(document.body,"focus",q),_(document.documentElement,"mousemove",$),_(document.documentElement,"touchmove",$),_(document.documentElement,"mouseup",tt),_(document.documentElement,"touchend",tt),_(document.documentElement,"mousemove",rt),_(document.documentElement,"touchmove",rt),_(document.documentElement,"mouseup",st),_(document.documentElement,"touchend",st)),_(e.elements.commands.container,"click",e.__internal.commandsClickHandler),_(e.elements.footer,"click",e.__internal.buttonsClickHandler),_(e.elements.reset[0],"focus",e.__internal.resetHandler),_(e.elements.reset[1],"focus",e.__internal.resetHandler),kt=!0,_(e.elements.dialog,v.type,e.__internal.transitionInHandler),e.get("modal")||dt(e),e.get("resizable")&&_t(e),e.get("movable")&&ft(e)}function ct(e){1===m.length&&(g(t,"resize",ut),g(document.body,"keyup",W),g(document.body,"keydown",G),g(document.body,"focus",q),g(document.documentElement,"mousemove",$),g(document.documentElement,"mouseup",tt),g(document.documentElement,"mousemove",rt),g(document.documentElement,"mouseup",st)),g(e.elements.commands.container,"click",e.__internal.commandsClickHandler),g(e.elements.footer,"click",e.__internal.buttonsClickHandler),g(e.elements.reset[0],"focus",e.__internal.resetHandler),g(e.elements.reset[1],"focus",e.__internal.resetHandler),_(e.elements.dialog,v.type,e.__internal.transitionOutHandler),e.get("modal")||pt(e),e.get("movable")&&mt(e),e.get("resizable")&&gt(e)}function dt(t){_(t.elements.dialog,"focus",t.__internal.bringToFrontHandler,!0)}function pt(t){g(t.elements.dialog,"focus",t.__internal.bringToFrontHandler,!0)}function ft(t){_(t.elements.header,"mousedown",t.__internal.beginMoveHandler),_(t.elements.header,"touchstart",t.__internal.beginMoveHandler)}function mt(t){g(t.elements.header,"mousedown",t.__internal.beginMoveHandler),g(t.elements.header,"touchstart",t.__internal.beginMoveHandler)}function _t(t){_(t.elements.resizeHandle,"mousedown",t.__internal.beginResizeHandler),_(t.elements.resizeHandle,"touchstart",t.__internal.beginResizeHandler)}function gt(t){g(t.elements.resizeHandle,"mousedown",t.__internal.beginResizeHandler),g(t.elements.resizeHandle,"touchstart",t.__internal.beginResizeHandler)}function vt(t){_(t.elements.modal,"click",t.__internal.modalClickHandler)}function yt(t){g(t.elements.modal,"click",t.__internal.modalClickHandler)}var bt,wt,xt=[],Lt=null,Pt=t.navigator.userAgent.indexOf("Safari")>-1&&t.navigator.userAgent.indexOf("Chrome")<0,Et={dimmer:'<div class="ajs-dimmer"></div>',modal:'<div class="ajs-modal" tabindex="0"></div>',dialog:'<div class="ajs-dialog" tabindex="0"></div>',reset:'<button class="ajs-reset"></button>',commands:'<div class="ajs-commands"><button class="ajs-pin"></button><button class="ajs-maximize"></button><button class="ajs-close"></button></div>',header:'<div class="ajs-header"></div>',body:'<div class="ajs-body"></div>',content:'<div class="ajs-content"></div>',footer:'<div class="ajs-footer"></div>',buttons:{primary:'<div class="ajs-primary ajs-buttons"></div>',auxiliary:'<div class="ajs-auxiliary ajs-buttons"></div>'},button:'<button class="ajs-button"></button>',resizeHandle:'<div class="ajs-handle"></div>'},Tt={base:"alertify",prefix:"ajs-",hidden:"ajs-hidden",noSelection:"ajs-no-selection",noOverflow:"ajs-no-overflow",noPadding:"ajs-no-padding",modeless:"ajs-modeless",movable:"ajs-movable",resizable:"ajs-resizable",capture:"ajs-capture",fixed:"ajs-fixed",closable:"ajs-closable",maximizable:"ajs-maximizable",maximize:"ajs-maximize",restore:"ajs-restore",pinnable:"ajs-pinnable",unpinned:"ajs-unpinned",pin:"ajs-pin",maximized:"ajs-maximized",animationIn:"ajs-in",animationOut:"ajs-out",shake:"ajs-shake",basic:"ajs-basic",frameless:"ajs-frameless"},Mt=!1,kt=!1,Ct=null,St=0,Ot=0,Dt="pageX",At="pageY",It=null,zt=!1,Bt=null,Nt=null,jt=Number.Nan,Rt=0,Ut=0,Ht=0;return{__init:e,isOpen:function(){return this.__internal.isOpen},isModal:function(){return this.elements.root.className.indexOf(Tt.modeless)<0},isMaximized:function(){return this.elements.root.className.indexOf(Tt.maximized)>-1},isPinned:function(){return this.elements.root.className.indexOf(Tt.unpinned)<0},maximize:function(){return this.isMaximized()||D(this),this},restore:function(){return this.isMaximized()&&A(this),this},pin:function(){return this.isPinned()||S(this),this},unpin:function(){return this.isPinned()&&O(this),this},bringToFront:function(){return E(null,this),this},moveTo:function(t,e){if(!isNaN(t)&&!isNaN(e)){var n=this.elements.dialog,i=n,r=0,s=0;n.style.left&&(r-=parseInt(n.style.left,10)),n.style.top&&(s-=parseInt(n.style.top,10));do r+=i.offsetLeft,s+=i.offsetTop;while(i=i.offsetParent);var a=t-r,l=e-s;o()&&(a*=-1),n.style.left=a+"px",n.style.top=l+"px"}return this},resizeTo:function(t,e){var n=parseFloat(t),i=parseFloat(e),o=/(\d*\.\d+|\d+)%/;if(!isNaN(n)&&!isNaN(i)&&this.get("resizable")===!0){(""+t).match(o)&&(n=n/100*document.documentElement.clientWidth),(""+e).match(o)&&(i=i/100*document.documentElement.clientHeight);var r=this.elements.dialog;"none"!==r.style.maxWidth&&(r.style.minWidth=(Ut=r.offsetWidth)+"px"),r.style.maxWidth="none",r.style.minHeight=this.elements.header.offsetHeight+this.elements.footer.offsetHeight+"px",r.style.width=n+"px",r.style.height=i+"px"}return this},setting:function(t,e){var n=this,i=M(this,this.__internal.options,function(t,e,i){T(n,t,e,i)},t,e);if("get"===i.op)return i.found?i.value:"undefined"!=typeof this.settings?M(this,this.settings,this.settingUpdated||function(){},t,e).value:void 0;if("set"===i.op){if(i.items.length>0)for(var o=this.settingUpdated||function(){},r=0;r<i.items.length;r+=1){var s=i.items[r];s.found||"undefined"==typeof this.settings||M(this,this.settings,o,s.key,s.value)}return this}},set:function(t,e){return this.setting(t,e),this},get:function(t){return this.setting(t)},setHeader:function(e){return"string"==typeof e?(a(this.elements.header),this.elements.header.innerHTML=e):e instanceof t.HTMLElement&&this.elements.header.firstChild!==e&&(a(this.elements.header),this.elements.header.appendChild(e)),this},setContent:function(e){return"string"==typeof e?(a(this.elements.content),this.elements.content.innerHTML=e):e instanceof t.HTMLElement&&this.elements.content.firstChild!==e&&(a(this.elements.content),this.elements.content.appendChild(e)),this},showModal:function(t){return this.show(!0,t)},show:function(t,o){if(e(this),this.__internal.isOpen){et(this),at(this),n(this.elements.dialog,Tt.shake);var r=this;setTimeout(function(){i(r.elements.dialog,Tt.shake)},200)}else{if(this.__internal.isOpen=!0,m.push(this),w.defaults.maintainFocus&&(this.__internal.activeElement=document.activeElement),"function"==typeof this.prepare&&this.prepare(),ht(this),void 0!==t&&this.set("modal",t),d(),y(),"string"==typeof o&&""!==o&&(this.__internal.className=o,n(this.elements.root,o)),this.get("startMaximized")?this.maximize():this.isMaximized()&&A(this),N(this),i(this.elements.root,Tt.animationOut),n(this.elements.root,Tt.animationIn),clearTimeout(this.__internal.timerIn),this.__internal.timerIn=setTimeout(this.__internal.transitionInHandler,v.supported?1e3:100),Pt){var s=this.elements.root;s.style.display="none",setTimeout(function(){s.style.display="block"},0)}Lt=this.elements.root.offsetWidth,i(this.elements.root,Tt.hidden),"function"==typeof this.hooks.onshow&&this.hooks.onshow.call(this),"function"==typeof this.get("onshow")&&this.get("onshow").call(this)}return this},close:function(){return this.__internal.isOpen&&(ct(this),i(this.elements.root,Tt.animationIn),n(this.elements.root,Tt.animationOut),clearTimeout(this.__internal.timerOut),this.__internal.timerOut=setTimeout(this.__internal.transitionOutHandler,v.supported?1e3:100),n(this.elements.root,Tt.hidden),Lt=this.elements.modal.offsetWidth,"undefined"!=typeof this.__internal.className&&""!==this.__internal.className&&i(this.elements.root,this.__internal.className),"function"==typeof this.hooks.onclose&&this.hooks.onclose.call(this),"function"==typeof this.get("onclose")&&this.get("onclose").call(this),m.splice(m.indexOf(this),1),this.__internal.isOpen=!1,y()),this},closeOthers:function(){return w.closeAll(this),this},destroy:function(){return this.__internal.isOpen?(this.__internal.destroy=function(){u(this,e)},this.close()):u(this,e),this}}}(),b=function(){function e(t){t.__internal||(t.__internal={position:w.defaults.notifier.position,delay:w.defaults.notifier.delay},c=document.createElement("DIV"),s(t)),c.parentNode!==document.body&&document.body.appendChild(c)}function o(t){t.__internal.pushed=!0,d.push(t)}function r(t){d.splice(d.indexOf(t),1),t.__internal.pushed=!1}function s(t){switch(c.className=p.base,t.__internal.position){case"top-right":n(c,p.top+" "+p.right);break;case"top-left":n(c,p.top+" "+p.left);break;case"bottom-left":n(c,p.bottom+" "+p.left);break;default:case"bottom-right":n(c,p.bottom+" "+p.right)}}function l(e,s){function l(t,e){e.dismiss(!0)}function d(t,e){g(e.element,v.type,d),c.removeChild(e.element)}function f(t){return t.__internal||(t.__internal={pushed:!1,delay:void 0,timer:void 0,clickHandler:void 0,transitionEndHandler:void 0,transitionTimeout:void 0},t.__internal.clickHandler=h(t,l),t.__internal.transitionEndHandler=h(t,d)),t}function m(t){clearTimeout(t.__internal.timer),clearTimeout(t.__internal.transitionTimeout)}return f({element:e,push:function(t,e){if(!this.__internal.pushed){o(this),m(this);var i,r;switch(arguments.length){case 0:r=this.__internal.delay;break;case 1:"number"==typeof t?r=t:(i=t,r=this.__internal.delay);break;case 2:i=t,r=e}return"undefined"!=typeof i&&this.setContent(i),b.__internal.position.indexOf("top")<0?c.appendChild(this.element):c.insertBefore(this.element,c.firstChild),u=this.element.offsetWidth,n(this.element,p.visible),_(this.element,"click",this.__internal.clickHandler),this.delay(r)}return this},ondismiss:function(){},callback:s,dismiss:function(t){return this.__internal.pushed&&(m(this),"function"==typeof this.ondismiss&&this.ondismiss.call(this)===!1||(g(this.element,"click",this.__internal.clickHandler),"undefined"!=typeof this.element&&this.element.parentNode===c&&(this.__internal.transitionTimeout=setTimeout(this.__internal.transitionEndHandler,v.supported?1e3:100),i(this.element,p.visible),"function"==typeof this.callback&&this.callback.call(this,t)),r(this))),this},delay:function(t){if(m(this),this.__internal.delay="undefined"==typeof t||isNaN(+t)?b.__internal.delay:+t,this.__internal.delay>0){var e=this;this.__internal.timer=setTimeout(function(){e.dismiss()},1e3*this.__internal.delay)}return this},setContent:function(e){return"string"==typeof e?(a(this.element),this.element.innerHTML=e):e instanceof t.HTMLElement&&this.element.firstChild!==e&&(a(this.element),this.element.appendChild(e)),this},dismissOthers:function(){return b.dismissAll(this),this}})}var u,c,d=[],p={base:"alertify-notifier",message:"ajs-message",top:"ajs-top",right:"ajs-right",bottom:"ajs-bottom",left:"ajs-left",visible:"ajs-visible",hidden:"ajs-hidden"};return{setting:function(t,n){if(e(this),"undefined"==typeof n)return this.__internal[t];switch(t){case"position":this.__internal.position=n,s(this);break;case"delay":this.__internal.delay=n}return this},set:function(t,e){return this.setting(t,e),this},get:function(t){return this.setting(t)},create:function(t,n){e(this);var i=document.createElement("div");return i.className=p.message+("string"==typeof t&&""!==t?" ajs-"+t:""),l(i,n)},dismissAll:function(t){for(var e=d.slice(0),n=0;n<e.length;n+=1){var i=e[n];void 0!==t&&t===i||i.dismiss()}}}}(),w=new d;w.dialog("alert",function(){return{main:function(t,e,n){var i,o,r;switch(arguments.length){case 1:o=t;break;case 2:"function"==typeof e?(o=t,r=e):(i=t,o=e);break;case 3:i=t,o=e,r=n}return this.set("title",i),this.set("message",o),this.set("onok",r),this},setup:function(){return{buttons:[{text:w.defaults.glossary.ok,key:p.ESC,invokeOnClose:!0,className:w.defaults.theme.ok}],focus:{element:0,select:!1},options:{maximizable:!1,resizable:!1}}},build:function(){},prepare:function(){},setMessage:function(t){this.setContent(t)},settings:{message:void 0,onok:void 0,label:void 0},settingUpdated:function(t,e,n){switch(t){case"message":this.setMessage(n);break;case"label":this.__internal.buttons[0].element&&(this.__internal.buttons[0].element.innerHTML=n)}},callback:function(t){if("function"==typeof this.get("onok")){var e=this.get("onok").call(this,t);"undefined"!=typeof e&&(t.cancel=!e)}}}}),w.dialog("confirm",function(){function t(t){null!==n.timer&&(clearInterval(n.timer),n.timer=null,t.__internal.buttons[n.index].element.innerHTML=n.text)}function e(e,i,o){t(e),n.duration=o,n.index=i,n.text=e.__internal.buttons[i].element.innerHTML,n.timer=setInterval(h(e,n.task),1e3),n.task(null,e)}var n={timer:null,index:null,text:null,
-duration:null,task:function(e,i){if(i.isOpen()){if(i.__internal.buttons[n.index].element.innerHTML=n.text+" (&#8207;"+n.duration+"&#8207;) ",n.duration-=1,n.duration===-1){t(i);var o=i.__internal.buttons[n.index],r=c(n.index,o);"function"==typeof i.callback&&i.callback.apply(i,[r]),r.close!==!1&&i.close()}}else t(i)}};return{main:function(t,e,n,i){var o,r,s,a;switch(arguments.length){case 1:r=t;break;case 2:r=t,s=e;break;case 3:r=t,s=e,a=n;break;case 4:o=t,r=e,s=n,a=i}return this.set("title",o),this.set("message",r),this.set("onok",s),this.set("oncancel",a),this},setup:function(){return{buttons:[{text:w.defaults.glossary.ok,key:p.ENTER,className:w.defaults.theme.ok},{text:w.defaults.glossary.cancel,key:p.ESC,invokeOnClose:!0,className:w.defaults.theme.cancel}],focus:{element:0,select:!1},options:{maximizable:!1,resizable:!1}}},build:function(){},prepare:function(){},setMessage:function(t){this.setContent(t)},settings:{message:null,labels:null,onok:null,oncancel:null,defaultFocus:null,reverseButtons:null},settingUpdated:function(t,e,n){switch(t){case"message":this.setMessage(n);break;case"labels":"ok"in n&&this.__internal.buttons[0].element&&(this.__internal.buttons[0].text=n.ok,this.__internal.buttons[0].element.innerHTML=n.ok),"cancel"in n&&this.__internal.buttons[1].element&&(this.__internal.buttons[1].text=n.cancel,this.__internal.buttons[1].element.innerHTML=n.cancel);break;case"reverseButtons":n===!0?this.elements.buttons.primary.appendChild(this.__internal.buttons[0].element):this.elements.buttons.primary.appendChild(this.__internal.buttons[1].element);break;case"defaultFocus":this.__internal.focus.element="ok"===n?0:1}},callback:function(e){t(this);var n;switch(e.index){case 0:"function"==typeof this.get("onok")&&(n=this.get("onok").call(this,e),"undefined"!=typeof n&&(e.cancel=!n));break;case 1:"function"==typeof this.get("oncancel")&&(n=this.get("oncancel").call(this,e),"undefined"!=typeof n&&(e.cancel=!n))}},autoOk:function(t){return e(this,0,t),this},autoCancel:function(t){return e(this,1,t),this}}}),w.dialog("prompt",function(){var e=document.createElement("INPUT"),n=document.createElement("P");return{main:function(t,e,n,i,o){var r,s,a,l,u;switch(arguments.length){case 1:s=t;break;case 2:s=t,a=e;break;case 3:s=t,a=e,l=n;break;case 4:s=t,a=e,l=n,u=i;break;case 5:r=t,s=e,a=n,l=i,u=o}return this.set("title",r),this.set("message",s),this.set("value",a),this.set("onok",l),this.set("oncancel",u),this},setup:function(){return{buttons:[{text:w.defaults.glossary.ok,key:p.ENTER,className:w.defaults.theme.ok},{text:w.defaults.glossary.cancel,key:p.ESC,invokeOnClose:!0,className:w.defaults.theme.cancel}],focus:{element:e,select:!0},options:{maximizable:!1,resizable:!1}}},build:function(){e.className=w.defaults.theme.input,e.setAttribute("type","text"),e.value=this.get("value"),this.elements.content.appendChild(n),this.elements.content.appendChild(e)},prepare:function(){},setMessage:function(e){"string"==typeof e?(a(n),n.innerHTML=e):e instanceof t.HTMLElement&&n.firstChild!==e&&(a(n),n.appendChild(e))},settings:{message:void 0,labels:void 0,onok:void 0,oncancel:void 0,value:"",type:"text",reverseButtons:void 0},settingUpdated:function(t,n,i){switch(t){case"message":this.setMessage(i);break;case"value":e.value=i;break;case"type":switch(i){case"text":case"color":case"date":case"datetime-local":case"email":case"month":case"number":case"password":case"search":case"tel":case"time":case"week":e.type=i;break;default:e.type="text"}break;case"labels":i.ok&&this.__internal.buttons[0].element&&(this.__internal.buttons[0].element.innerHTML=i.ok),i.cancel&&this.__internal.buttons[1].element&&(this.__internal.buttons[1].element.innerHTML=i.cancel);break;case"reverseButtons":i===!0?this.elements.buttons.primary.appendChild(this.__internal.buttons[0].element):this.elements.buttons.primary.appendChild(this.__internal.buttons[1].element)}},callback:function(t){var n;switch(t.index){case 0:this.settings.value=e.value,"function"==typeof this.get("onok")&&(n=this.get("onok").call(this,t,this.settings.value),"undefined"!=typeof n&&(t.cancel=!n));break;case 1:"function"==typeof this.get("oncancel")&&(n=this.get("oncancel").call(this,t),"undefined"!=typeof n&&(t.cancel=!n))}}}}),"object"==typeof e&&"object"==typeof e.exports?e.exports=w:"function"==typeof define&&define.amd?define([],function(){return w}):t.alertify||(t.alertify=w)}("undefined"!=typeof window?window:this)},{}],2:[function(t,e,n){"document"in window.self&&("classList"in document.createElement("_")?!function(){"use strict";var t=document.createElement("_");if(t.classList.add("c1","c2"),!t.classList.contains("c2")){var e=function(t){var e=DOMTokenList.prototype[t];DOMTokenList.prototype[t]=function(t){var n,i=arguments.length;for(n=0;n<i;n++)t=arguments[n],e.call(this,t)}};e("add"),e("remove")}if(t.classList.toggle("c3",!1),t.classList.contains("c3")){var n=DOMTokenList.prototype.toggle;DOMTokenList.prototype.toggle=function(t,e){return 1 in arguments&&!this.contains(t)==!e?e:n.call(this,t)}}t=null}():!function(t){"use strict";if("Element"in t){var e="classList",n="prototype",i=t.Element[n],o=Object,r=String[n].trim||function(){return this.replace(/^\s+|\s+$/g,"")},s=Array[n].indexOf||function(t){for(var e=0,n=this.length;e<n;e++)if(e in this&&this[e]===t)return e;return-1},a=function(t,e){this.name=t,this.code=DOMException[t],this.message=e},l=function(t,e){if(""===e)throw new a("SYNTAX_ERR","An invalid or illegal string was specified");if(/\s/.test(e))throw new a("INVALID_CHARACTER_ERR","String contains an invalid character");return s.call(t,e)},u=function(t){for(var e=r.call(t.getAttribute("class")||""),n=e?e.split(/\s+/):[],i=0,o=n.length;i<o;i++)this.push(n[i]);this._updateClassName=function(){t.setAttribute("class",this.toString())}},h=u[n]=[],c=function(){return new u(this)};if(a[n]=Error[n],h.item=function(t){return this[t]||null},h.contains=function(t){return t+="",l(this,t)!==-1},h.add=function(){var t,e=arguments,n=0,i=e.length,o=!1;do t=e[n]+"",l(this,t)===-1&&(this.push(t),o=!0);while(++n<i);o&&this._updateClassName()},h.remove=function(){var t,e,n=arguments,i=0,o=n.length,r=!1;do for(t=n[i]+"",e=l(this,t);e!==-1;)this.splice(e,1),r=!0,e=l(this,t);while(++i<o);r&&this._updateClassName()},h.toggle=function(t,e){t+="";var n=this.contains(t),i=n?e!==!0&&"remove":e!==!1&&"add";return i&&this[i](t),e===!0||e===!1?e:!n},h.toString=function(){return this.join(" ")},o.defineProperty){var d={get:c,enumerable:!0,configurable:!0};try{o.defineProperty(i,e,d)}catch(t){t.number===-2146823252&&(d.enumerable=!1,o.defineProperty(i,e,d))}}else o[n].__defineGetter__&&i.__defineGetter__(e,c)}}(window.self))},{}],3:[function(t,e,n){"use strict";var i,o=t("es5-ext/object/copy"),r=t("es5-ext/object/map"),s=t("es5-ext/object/valid-callable"),a=t("es5-ext/object/valid-value"),l=Function.prototype.bind,u=Object.defineProperty,h=Object.prototype.hasOwnProperty;i=function(t,e,n){var i,r=a(e)&&s(e.value);return i=o(e),delete i.writable,delete i.value,i.get=function(){return h.call(this,t)?r:(e.value=l.call(r,null==n?this:this[n]),u(this,t,e),this[t])},i},e.exports=function(t){var e=arguments[1];return r(t,function(t,n){return i(n,t,e)})}},{"es5-ext/object/copy":18,"es5-ext/object/map":26,"es5-ext/object/valid-callable":31,"es5-ext/object/valid-value":32}],4:[function(t,e,n){"use strict";var i,o=t("es5-ext/object/assign"),r=t("es5-ext/object/normalize-options"),s=t("es5-ext/object/is-callable"),a=t("es5-ext/string/#/contains");i=e.exports=function(t,e){var n,i,s,l,u;return arguments.length<2||"string"!=typeof t?(l=e,e=t,t=null):l=arguments[2],null==t?(n=s=!0,i=!1):(n=a.call(t,"c"),i=a.call(t,"e"),s=a.call(t,"w")),u={value:e,configurable:n,enumerable:i,writable:s},l?o(r(l),u):u},i.gs=function(t,e,n){var i,l,u,h;return"string"!=typeof t?(u=n,n=e,e=t,t=null):u=arguments[3],null==e?e=void 0:s(e)?null==n?n=void 0:s(n)||(u=n,n=void 0):(u=e,e=n=void 0),null==t?(i=!0,l=!1):(i=a.call(t,"c"),l=a.call(t,"e")),h={get:e,set:n,configurable:i,enumerable:l},u?o(r(u),h):h}},{"es5-ext/object/assign":15,"es5-ext/object/is-callable":21,"es5-ext/object/normalize-options":27,"es5-ext/string/#/contains":33}],5:[function(t,e,n){"use strict";var i=t("../../object/valid-value");e.exports=function(){return i(this).length=0,this}},{"../../object/valid-value":32}],6:[function(t,e,n){"use strict";var i=t("../../number/to-pos-integer"),o=t("../../object/valid-value"),r=Array.prototype.indexOf,s=Object.prototype.hasOwnProperty,a=Math.abs,l=Math.floor;e.exports=function(t){var e,n,u,h;if(t===t)return r.apply(this,arguments);for(n=i(o(this).length),u=arguments[1],u=isNaN(u)?0:u>=0?l(u):i(this.length)-l(a(u)),e=u;e<n;++e)if(s.call(this,e)&&(h=this[e],h!==h))return e;return-1}},{"../../number/to-pos-integer":13,"../../object/valid-value":32}],7:[function(t,e,n){"use strict";var i=Object.prototype.toString,o=i.call(function(){return arguments}());e.exports=function(t){return i.call(t)===o}},{}],8:[function(t,e,n){"use strict";e.exports=new Function("return this")()},{}],9:[function(t,e,n){"use strict";e.exports=t("./is-implemented")()?Math.sign:t("./shim")},{"./is-implemented":10,"./shim":11}],10:[function(t,e,n){"use strict";e.exports=function(){var t=Math.sign;return"function"==typeof t&&(1===t(10)&&t(-20)===-1)}},{}],11:[function(t,e,n){"use strict";e.exports=function(t){return t=Number(t),isNaN(t)||0===t?t:t>0?1:-1}},{}],12:[function(t,e,n){"use strict";var i=t("../math/sign"),o=Math.abs,r=Math.floor;e.exports=function(t){return isNaN(t)?0:(t=Number(t),0!==t&&isFinite(t)?i(t)*r(o(t)):t)}},{"../math/sign":9}],13:[function(t,e,n){"use strict";var i=t("./to-integer"),o=Math.max;e.exports=function(t){return o(0,i(t))}},{"./to-integer":12}],14:[function(t,e,n){"use strict";var i=t("./valid-callable"),o=t("./valid-value"),r=Function.prototype.bind,s=Function.prototype.call,a=Object.keys,l=Object.prototype.propertyIsEnumerable;e.exports=function(t,e){return function(n,u){var h,c=arguments[2],d=arguments[3];return n=Object(o(n)),i(u),h=a(n),d&&h.sort("function"==typeof d?r.call(d,n):void 0),"function"!=typeof t&&(t=h[t]),s.call(t,h,function(t,i){return l.call(n,t)?s.call(u,c,n[t],t,n,i):e})}}},{"./valid-callable":31,"./valid-value":32}],15:[function(t,e,n){"use strict";e.exports=t("./is-implemented")()?Object.assign:t("./shim")},{"./is-implemented":16,"./shim":17}],16:[function(t,e,n){"use strict";e.exports=function(){var t,e=Object.assign;return"function"==typeof e&&(t={foo:"raz"},e(t,{bar:"dwa"},{trzy:"trzy"}),t.foo+t.bar+t.trzy==="razdwatrzy")}},{}],17:[function(t,e,n){"use strict";var i=t("../keys"),o=t("../valid-value"),r=Math.max;e.exports=function(t,e){var n,s,a,l=r(arguments.length,2);for(t=Object(o(t)),a=function(i){try{t[i]=e[i]}catch(t){n||(n=t)}},s=1;s<l;++s)e=arguments[s],i(e).forEach(a);if(void 0!==n)throw n;return t}},{"../keys":23,"../valid-value":32}],18:[function(t,e,n){"use strict";var i=t("./assign"),o=t("./valid-value");e.exports=function(t){var e=Object(o(t));return e!==t?e:i({},t)}},{"./assign":15,"./valid-value":32}],19:[function(t,e,n){"use strict";var i,o=Object.create;t("./set-prototype-of/is-implemented")()||(i=t("./set-prototype-of/shim")),e.exports=function(){var t,e,n;return i?1!==i.level?o:(t={},e={},n={configurable:!1,enumerable:!1,writable:!0,value:void 0},Object.getOwnPropertyNames(Object.prototype).forEach(function(t){return"__proto__"===t?void(e[t]={configurable:!0,enumerable:!1,writable:!0,value:void 0}):void(e[t]=n)}),Object.defineProperties(t,e),Object.defineProperty(i,"nullPolyfill",{configurable:!1,enumerable:!1,writable:!1,value:t}),function(e,n){return o(null===e?t:e,n)}):o}()},{"./set-prototype-of/is-implemented":29,"./set-prototype-of/shim":30}],20:[function(t,e,n){"use strict";e.exports=t("./_iterate")("forEach")},{"./_iterate":14}],21:[function(t,e,n){"use strict";e.exports=function(t){return"function"==typeof t}},{}],22:[function(t,e,n){"use strict";var i={function:!0,object:!0};e.exports=function(t){return null!=t&&i[typeof t]||!1}},{}],23:[function(t,e,n){"use strict";e.exports=t("./is-implemented")()?Object.keys:t("./shim")},{"./is-implemented":24,"./shim":25}],24:[function(t,e,n){"use strict";e.exports=function(){try{return Object.keys("primitive"),!0}catch(t){return!1}}},{}],25:[function(t,e,n){"use strict";var i=Object.keys;e.exports=function(t){return i(null==t?t:Object(t))}},{}],26:[function(t,e,n){"use strict";var i=t("./valid-callable"),o=t("./for-each"),r=Function.prototype.call;e.exports=function(t,e){var n={},s=arguments[2];return i(e),o(t,function(t,i,o,a){n[i]=r.call(e,s,t,i,o,a)}),n}},{"./for-each":20,"./valid-callable":31}],27:[function(t,e,n){"use strict";var i=Array.prototype.forEach,o=Object.create,r=function(t,e){var n;for(n in t)e[n]=t[n]};e.exports=function(t){var e=o(null);return i.call(arguments,function(t){null!=t&&r(Object(t),e)}),e}},{}],28:[function(t,e,n){"use strict";e.exports=t("./is-implemented")()?Object.setPrototypeOf:t("./shim")},{"./is-implemented":29,"./shim":30}],29:[function(t,e,n){"use strict";var i=Object.create,o=Object.getPrototypeOf,r={};e.exports=function(){var t=Object.setPrototypeOf,e=arguments[0]||i;return"function"==typeof t&&o(t(e(null),r))===r}},{}],30:[function(t,e,n){"use strict";var i,o=t("../is-object"),r=t("../valid-value"),s=Object.prototype.isPrototypeOf,a=Object.defineProperty,l={configurable:!0,enumerable:!1,writable:!0,value:void 0};i=function(t,e){if(r(t),null===e||o(e))return t;throw new TypeError("Prototype must be null or an object")},e.exports=function(t){var e,n;return t?(2===t.level?t.set?(n=t.set,e=function(t,e){return n.call(i(t,e),e),t}):e=function(t,e){return i(t,e).__proto__=e,t}:e=function t(e,n){var o;return i(e,n),o=s.call(t.nullPolyfill,e),o&&delete t.nullPolyfill.__proto__,null===n&&(n=t.nullPolyfill),e.__proto__=n,o&&a(t.nullPolyfill,"__proto__",l),e},Object.defineProperty(e,"level",{configurable:!1,enumerable:!1,writable:!1,value:t.level})):null}(function(){var t,e=Object.create(null),n={},i=Object.getOwnPropertyDescriptor(Object.prototype,"__proto__");if(i){try{t=i.set,t.call(e,n)}catch(t){}if(Object.getPrototypeOf(e)===n)return{set:t,level:2}}return e.__proto__=n,Object.getPrototypeOf(e)===n?{level:2}:(e={},e.__proto__=n,Object.getPrototypeOf(e)===n&&{level:1})}()),t("../create")},{"../create":19,"../is-object":22,"../valid-value":32}],31:[function(t,e,n){"use strict";e.exports=function(t){if("function"!=typeof t)throw new TypeError(t+" is not a function");return t}},{}],32:[function(t,e,n){"use strict";e.exports=function(t){if(null==t)throw new TypeError("Cannot use null or undefined");return t}},{}],33:[function(t,e,n){"use strict";e.exports=t("./is-implemented")()?String.prototype.contains:t("./shim")},{"./is-implemented":34,"./shim":35}],34:[function(t,e,n){"use strict";var i="razdwatrzy";e.exports=function(){return"function"==typeof i.contains&&(i.contains("dwa")===!0&&i.contains("foo")===!1)}},{}],35:[function(t,e,n){"use strict";var i=String.prototype.indexOf;e.exports=function(t){return i.call(this,t,arguments[1])>-1}},{}],36:[function(t,e,n){"use strict";var i=Object.prototype.toString,o=i.call("");e.exports=function(t){return"string"==typeof t||t&&"object"==typeof t&&(t instanceof String||i.call(t)===o)||!1}},{}],37:[function(t,e,n){"use strict";var i,o=t("es5-ext/object/set-prototype-of"),r=t("es5-ext/string/#/contains"),s=t("d"),a=t("./"),l=Object.defineProperty;i=e.exports=function(t,e){return this instanceof i?(a.call(this,t),e=e?r.call(e,"key+value")?"key+value":r.call(e,"key")?"key":"value":"value",void l(this,"__kind__",s("",e))):new i(t,e)},o&&o(i,a),i.prototype=Object.create(a.prototype,{constructor:s(i),_resolve:s(function(t){return"value"===this.__kind__?this.__list__[t]:"key+value"===this.__kind__?[t,this.__list__[t]]:t}),toString:s(function(){return"[object Array Iterator]"})})},{"./":40,d:4,"es5-ext/object/set-prototype-of":28,"es5-ext/string/#/contains":33}],38:[function(t,e,n){"use strict";var i=t("es5-ext/function/is-arguments"),o=t("es5-ext/object/valid-callable"),r=t("es5-ext/string/is-string"),s=t("./get"),a=Array.isArray,l=Function.prototype.call,u=Array.prototype.some;e.exports=function(t,e){var n,h,c,d,p,f,m,_,g=arguments[2];if(a(t)||i(t)?n="array":r(t)?n="string":t=s(t),o(e),c=function(){d=!0},"array"===n)return void u.call(t,function(t){if(l.call(e,g,t,c),d)return!0});if("string"!==n)for(h=t.next();!h.done;){if(l.call(e,g,h.value,c),d)return;h=t.next()}else for(f=t.length,p=0;p<f&&(m=t[p],p+1<f&&(_=m.charCodeAt(0),_>=55296&&_<=56319&&(m+=t[++p])),l.call(e,g,m,c),!d);++p);}},{"./get":39,"es5-ext/function/is-arguments":7,"es5-ext/object/valid-callable":31,"es5-ext/string/is-string":36}],39:[function(t,e,n){"use strict";var i=t("es5-ext/function/is-arguments"),o=t("es5-ext/string/is-string"),r=t("./array"),s=t("./string"),a=t("./valid-iterable"),l=t("es6-symbol").iterator;e.exports=function(t){return"function"==typeof a(t)[l]?t[l]():i(t)?new r(t):o(t)?new s(t):new r(t)}},{"./array":37,"./string":42,"./valid-iterable":43,"es5-ext/function/is-arguments":7,"es5-ext/string/is-string":36,"es6-symbol":50}],40:[function(t,e,n){"use strict";var i,o=t("es5-ext/array/#/clear"),r=t("es5-ext/object/assign"),s=t("es5-ext/object/valid-callable"),a=t("es5-ext/object/valid-value"),l=t("d"),u=t("d/auto-bind"),h=t("es6-symbol"),c=Object.defineProperty,d=Object.defineProperties;e.exports=i=function(t,e){return this instanceof i?(d(this,{__list__:l("w",a(t)),__context__:l("w",e),__nextIndex__:l("w",0)}),void(e&&(s(e.on),e.on("_add",this._onAdd),e.on("_delete",this._onDelete),e.on("_clear",this._onClear)))):new i(t,e)},d(i.prototype,r({constructor:l(i),_next:l(function(){var t;if(this.__list__)return this.__redo__&&(t=this.__redo__.shift(),void 0!==t)?t:this.__nextIndex__<this.__list__.length?this.__nextIndex__++:void this._unBind()}),next:l(function(){return this._createResult(this._next())}),_createResult:l(function(t){return void 0===t?{done:!0,value:void 0}:{done:!1,value:this._resolve(t)}}),_resolve:l(function(t){return this.__list__[t]}),_unBind:l(function(){this.__list__=null,delete this.__redo__,this.__context__&&(this.__context__.off("_add",this._onAdd),this.__context__.off("_delete",this._onDelete),this.__context__.off("_clear",this._onClear),this.__context__=null)}),toString:l(function(){return"[object Iterator]"})},u({_onAdd:l(function(t){if(!(t>=this.__nextIndex__)){if(++this.__nextIndex__,!this.__redo__)return void c(this,"__redo__",l("c",[t]));this.__redo__.forEach(function(e,n){e>=t&&(this.__redo__[n]=++e)},this),this.__redo__.push(t)}}),_onDelete:l(function(t){var e;t>=this.__nextIndex__||(--this.__nextIndex__,this.__redo__&&(e=this.__redo__.indexOf(t),e!==-1&&this.__redo__.splice(e,1),this.__redo__.forEach(function(e,n){e>t&&(this.__redo__[n]=--e)},this)))}),_onClear:l(function(){this.__redo__&&o.call(this.__redo__),this.__nextIndex__=0})}))),c(i.prototype,h.iterator,l(function(){return this})),c(i.prototype,h.toStringTag,l("","Iterator"))},{d:4,"d/auto-bind":3,"es5-ext/array/#/clear":5,"es5-ext/object/assign":15,"es5-ext/object/valid-callable":31,"es5-ext/object/valid-value":32,"es6-symbol":50}],41:[function(t,e,n){"use strict";var i=t("es5-ext/function/is-arguments"),o=t("es5-ext/string/is-string"),r=t("es6-symbol").iterator,s=Array.isArray;e.exports=function(t){return null!=t&&(!!s(t)||(!!o(t)||(!!i(t)||"function"==typeof t[r])))}},{"es5-ext/function/is-arguments":7,"es5-ext/string/is-string":36,"es6-symbol":50}],42:[function(t,e,n){"use strict";var i,o=t("es5-ext/object/set-prototype-of"),r=t("d"),s=t("./"),a=Object.defineProperty;i=e.exports=function(t){return this instanceof i?(t=String(t),s.call(this,t),void a(this,"__length__",r("",t.length))):new i(t)},o&&o(i,s),i.prototype=Object.create(s.prototype,{constructor:r(i),_next:r(function(){if(this.__list__)return this.__nextIndex__<this.__length__?this.__nextIndex__++:void this._unBind()}),_resolve:r(function(t){var e,n=this.__list__[t];return this.__nextIndex__===this.__length__?n:(e=n.charCodeAt(0),e>=55296&&e<=56319?n+this.__list__[this.__nextIndex__++]:n)}),toString:r(function(){return"[object String Iterator]"})})},{"./":40,d:4,"es5-ext/object/set-prototype-of":28}],43:[function(t,e,n){"use strict";var i=t("./is-iterable");e.exports=function(t){if(!i(t))throw new TypeError(t+" is not iterable");return t}},{"./is-iterable":41}],44:[function(t,e,n){(function(n,i){(function(){"use strict";function o(t){return"function"==typeof t||"object"==typeof t&&null!==t}function r(t){return"function"==typeof t}function s(t){return"object"==typeof t&&null!==t}function a(t){G=t}function l(t){X=t}function u(){return function(){n.nextTick(f)}}function h(){return function(){W(f)}}function c(){var t=0,e=new Q(f),n=document.createTextNode("");return e.observe(n,{characterData:!0}),function(){n.data=t=++t%2}}function d(){var t=new MessageChannel;return t.port1.onmessage=f,function(){t.port2.postMessage(0)}}function p(){return function(){setTimeout(f,1)}}function f(){for(var t=0;t<J;t+=2){var e=et[t],n=et[t+1];e(n),et[t]=void 0,et[t+1]=void 0}J=0}function m(){try{var e=t,n=e("vertx");return W=n.runOnLoop||n.runOnContext,h()}catch(t){return p()}}function _(){}function g(){return new TypeError("You cannot resolve a promise with itself")}function v(){return new TypeError("A promises callback cannot return that same promise.")}function y(t){try{return t.then}catch(t){return rt.error=t,rt}}function b(t,e,n,i){try{t.call(e,n,i)}catch(t){return t}}function w(t,e,n){X(function(t){var i=!1,o=b(n,e,function(n){i||(i=!0,e!==n?P(t,n):T(t,n))},function(e){i||(i=!0,M(t,e))},"Settle: "+(t._label||" unknown promise"));!i&&o&&(i=!0,M(t,o))},t)}function x(t,e){e._state===it?T(t,e._result):e._state===ot?M(t,e._result):k(e,void 0,function(e){P(t,e)},function(e){M(t,e)})}function L(t,e){if(e.constructor===t.constructor)x(t,e);else{var n=y(e);n===rt?M(t,rt.error):void 0===n?T(t,e):r(n)?w(t,e,n):T(t,e)}}function P(t,e){t===e?M(t,g()):o(e)?L(t,e):T(t,e)}function E(t){t._onerror&&t._onerror(t._result),C(t)}function T(t,e){t._state===nt&&(t._result=e,t._state=it,0!==t._subscribers.length&&X(C,t))}function M(t,e){t._state===nt&&(t._state=ot,t._result=e,X(E,t))}function k(t,e,n,i){var o=t._subscribers,r=o.length;t._onerror=null,o[r]=e,o[r+it]=n,o[r+ot]=i,0===r&&t._state&&X(C,t)}function C(t){var e=t._subscribers,n=t._state;if(0!==e.length){for(var i,o,r=t._result,s=0;s<e.length;s+=3)i=e[s],o=e[s+n],i?D(n,i,o,r):o(r);t._subscribers.length=0}}function S(){this.error=null}function O(t,e){try{return t(e)}catch(t){return st.error=t,st}}function D(t,e,n,i){var o,s,a,l,u=r(n);if(u){if(o=O(n,i),o===st?(l=!0,s=o.error,o=null):a=!0,e===o)return void M(e,v())}else o=i,a=!0;e._state!==nt||(u&&a?P(e,o):l?M(e,s):t===it?T(e,o):t===ot&&M(e,o))}function A(t,e){try{e(function(e){P(t,e)},function(e){M(t,e)})}catch(e){M(t,e)}}function I(t,e){var n=this;n._instanceConstructor=t,n.promise=new t(_),n._validateInput(e)?(n._input=e,n.length=e.length,n._remaining=e.length,n._init(),0===n.length?T(n.promise,n._result):(n.length=n.length||0,n._enumerate(),0===n._remaining&&T(n.promise,n._result))):M(n.promise,n._validationError())}function z(t){return new at(this,t).promise}function B(t){function e(t){P(o,t)}function n(t){M(o,t)}var i=this,o=new i(_);if(!q(t))return M(o,new TypeError("You must pass an array to race.")),o;for(var r=t.length,s=0;o._state===nt&&s<r;s++)k(i.resolve(t[s]),void 0,e,n);return o}function N(t){var e=this;if(t&&"object"==typeof t&&t.constructor===e)return t;var n=new e(_);return P(n,t),n}function j(t){var e=this,n=new e(_);return M(n,t),n}function R(){throw new TypeError("You must pass a resolver function as the first argument to the promise constructor")}function U(){throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.")}function H(t){this._id=dt++,this._state=void 0,this._result=void 0,this._subscribers=[],_!==t&&(r(t)||R(),this instanceof H||U(),A(this,t))}function Z(){var t;if("undefined"!=typeof i)t=i;else if("undefined"!=typeof self)t=self;else try{t=Function("return this")()}catch(t){throw new Error("polyfill failed because global object is unavailable in this environment")}var e=t.Promise;e&&"[object Promise]"===Object.prototype.toString.call(e.resolve())&&!e.cast||(t.Promise=pt)}var F;F=Array.isArray?Array.isArray:function(t){return"[object Array]"===Object.prototype.toString.call(t)};var W,G,V,q=F,J=0,X=({}.toString,function(t,e){et[J]=t,et[J+1]=e,J+=2,2===J&&(G?G(f):V())}),Y="undefined"!=typeof window?window:void 0,K=Y||{},Q=K.MutationObserver||K.WebKitMutationObserver,$="undefined"!=typeof n&&"[object process]"==={}.toString.call(n),tt="undefined"!=typeof Uint8ClampedArray&&"undefined"!=typeof importScripts&&"undefined"!=typeof MessageChannel,et=new Array(1e3);V=$?u():Q?c():tt?d():void 0===Y&&"function"==typeof t?m():p();var nt=void 0,it=1,ot=2,rt=new S,st=new S;I.prototype._validateInput=function(t){return q(t)},I.prototype._validationError=function(){return new Error("Array Methods must be provided an Array")},I.prototype._init=function(){this._result=new Array(this.length)};var at=I;I.prototype._enumerate=function(){for(var t=this,e=t.length,n=t.promise,i=t._input,o=0;n._state===nt&&o<e;o++)t._eachEntry(i[o],o)},I.prototype._eachEntry=function(t,e){var n=this,i=n._instanceConstructor;s(t)?t.constructor===i&&t._state!==nt?(t._onerror=null,n._settledAt(t._state,e,t._result)):n._willSettleAt(i.resolve(t),e):(n._remaining--,n._result[e]=t)},I.prototype._settledAt=function(t,e,n){var i=this,o=i.promise;o._state===nt&&(i._remaining--,t===ot?M(o,n):i._result[e]=n),0===i._remaining&&T(o,i._result)},I.prototype._willSettleAt=function(t,e){var n=this;k(t,void 0,function(t){n._settledAt(it,e,t)},function(t){n._settledAt(ot,e,t)})};var lt=z,ut=B,ht=N,ct=j,dt=0,pt=H;H.all=lt,H.race=ut,H.resolve=ht,H.reject=ct,H._setScheduler=a,H._setAsap=l,H._asap=X,H.prototype={constructor:H,then:function(t,e){var n=this,i=n._state;if(i===it&&!t||i===ot&&!e)return this;var o=new this.constructor(_),r=n._result;if(i){var s=arguments[i-1];X(function(){D(i,o,s,r)})}else k(n,o,t,e);return o},catch:function(t){return this.then(null,t)}};var ft=Z,mt={Promise:pt,polyfill:ft};"function"==typeof define&&define.amd?define(function(){return mt}):"undefined"!=typeof e&&e.exports?e.exports=mt:"undefined"!=typeof this&&(this.ES6Promise=mt),ft()}).call(this)}).call(this,t("_process"),"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{_process:58}],45:[function(t,e,n){"use strict";t("./is-implemented")()||Object.defineProperty(t("es5-ext/global"),"Set",{value:t("./polyfill"),configurable:!0,enumerable:!1,writable:!0})},{"./is-implemented":46,"./polyfill":49,"es5-ext/global":8}],46:[function(t,e,n){"use strict";e.exports=function(){var t,e,n;return"function"==typeof Set&&(t=new Set(["raz","dwa","trzy"]),"[object Set]"===String(t)&&(3===t.size&&("function"==typeof t.add&&("function"==typeof t.clear&&("function"==typeof t.delete&&("function"==typeof t.entries&&("function"==typeof t.forEach&&("function"==typeof t.has&&("function"==typeof t.keys&&("function"==typeof t.values&&(e=t.values(),n=e.next(),n.done===!1&&"raz"===n.value)))))))))))}},{}],47:[function(t,e,n){"use strict";e.exports=function(){return"undefined"!=typeof Set&&"[object Set]"===Object.prototype.toString.call(Set.prototype)}()},{}],48:[function(t,e,n){"use strict";var i,o=t("es5-ext/object/set-prototype-of"),r=t("es5-ext/string/#/contains"),s=t("d"),a=t("es6-iterator"),l=t("es6-symbol").toStringTag,u=Object.defineProperty;i=e.exports=function(t,e){return this instanceof i?(a.call(this,t.__setData__,t),e=e&&r.call(e,"key+value")?"key+value":"value",void u(this,"__kind__",s("",e))):new i(t,e)},o&&o(i,a),i.prototype=Object.create(a.prototype,{constructor:s(i),_resolve:s(function(t){return"value"===this.__kind__?this.__list__[t]:[this.__list__[t],this.__list__[t]]}),toString:s(function(){return"[object Set Iterator]"})}),u(i.prototype,l,s("c","Set Iterator"))},{d:4,"es5-ext/object/set-prototype-of":28,"es5-ext/string/#/contains":33,"es6-iterator":40,"es6-symbol":50}],49:[function(t,e,n){"use strict";var i,o,r=t("es5-ext/array/#/clear"),s=t("es5-ext/array/#/e-index-of"),a=t("es5-ext/object/set-prototype-of"),l=t("es5-ext/object/valid-callable"),u=t("d"),h=t("event-emitter"),c=t("es6-symbol"),d=t("es6-iterator/valid-iterable"),p=t("es6-iterator/for-of"),f=t("./lib/iterator"),m=t("./is-native-implemented"),_=Function.prototype.call,g=Object.defineProperty,v=Object.getPrototypeOf;e.exports=i=function(){var t,e=arguments[0];if(!(this instanceof i))throw new TypeError("Constructor requires 'new'");return t=m&&a?a(new Set,v(this)):this,null!=e&&d(e),g(t,"__setData__",u("c",[])),e?(p(e,function(t){s.call(this,t)===-1&&this.push(t)},t.__setData__),t):t},m&&(a&&a(i,Set),i.prototype=Object.create(Set.prototype,{constructor:u(i)})),h(Object.defineProperties(i.prototype,{add:u(function(t){return this.has(t)?this:(this.emit("_add",this.__setData__.push(t)-1,t),this)}),clear:u(function(){this.__setData__.length&&(r.call(this.__setData__),this.emit("_clear"))}),delete:u(function(t){var e=s.call(this.__setData__,t);return e!==-1&&(this.__setData__.splice(e,1),this.emit("_delete",e,t),!0)}),entries:u(function(){return new f(this,"key+value")}),forEach:u(function(t){var e,n,i,o=arguments[1];for(l(t),e=this.values(),n=e._next();void 0!==n;)i=e._resolve(n),_.call(t,o,i,i,this),n=e._next()}),has:u(function(t){return s.call(this.__setData__,t)!==-1}),keys:u(o=function(){return this.values()}),size:u.gs(function(){return this.__setData__.length}),values:u(function(){return new f(this)}),toString:u(function(){return"[object Set]"})})),g(i.prototype,c.iterator,u(o)),g(i.prototype,c.toStringTag,u("c","Set"))},{"./is-native-implemented":47,"./lib/iterator":48,d:4,"es5-ext/array/#/clear":5,"es5-ext/array/#/e-index-of":6,"es5-ext/object/set-prototype-of":28,"es5-ext/object/valid-callable":31,"es6-iterator/for-of":38,"es6-iterator/valid-iterable":43,"es6-symbol":50,"event-emitter":55}],50:[function(t,e,n){"use strict";e.exports=t("./is-implemented")()?Symbol:t("./polyfill")},{"./is-implemented":51,"./polyfill":53}],51:[function(t,e,n){"use strict";e.exports=function(){var t;if("function"!=typeof Symbol)return!1;t=Symbol("test symbol");try{String(t)}catch(t){return!1}return"symbol"==typeof Symbol.iterator||"object"==typeof Symbol.isConcatSpreadable&&("object"==typeof Symbol.iterator&&("object"==typeof Symbol.toPrimitive&&("object"==typeof Symbol.toStringTag&&"object"==typeof Symbol.unscopables)))}},{}],52:[function(t,e,n){"use strict";e.exports=function(t){return t&&("symbol"==typeof t||"Symbol"===t["@@toStringTag"])||!1}},{}],53:[function(t,e,n){"use strict";var i,o,r,s=t("d"),a=t("./validate-symbol"),l=Object.create,u=Object.defineProperties,h=Object.defineProperty,c=Object.prototype,d=l(null);"function"==typeof Symbol&&(i=Symbol);var p=function(){var t=l(null);return function(e){for(var n,i,o=0;t[e+(o||"")];)++o;return e+=o||"",t[e]=!0,n="@@"+e,h(c,n,s.gs(null,function(t){i||(i=!0,h(this,n,s(t)),i=!1)})),n}}();r=function(t){if(this instanceof r)throw new TypeError("TypeError: Symbol is not a constructor");return o(t)},e.exports=o=function t(e){var n;if(this instanceof t)throw new TypeError("TypeError: Symbol is not a constructor");return n=l(r.prototype),e=void 0===e?"":String(e),u(n,{__description__:s("",e),__name__:s("",p(e))})},u(o,{for:s(function(t){return d[t]?d[t]:d[t]=o(String(t))}),keyFor:s(function(t){var e;a(t);for(e in d)if(d[e]===t)return e}),hasInstance:s("",i&&i.hasInstance||o("hasInstance")),isConcatSpreadable:s("",i&&i.isConcatSpreadable||o("isConcatSpreadable")),iterator:s("",i&&i.iterator||o("iterator")),match:s("",i&&i.match||o("match")),replace:s("",i&&i.replace||o("replace")),search:s("",i&&i.search||o("search")),species:s("",i&&i.species||o("species")),split:s("",i&&i.split||o("split")),toPrimitive:s("",i&&i.toPrimitive||o("toPrimitive")),toStringTag:s("",i&&i.toStringTag||o("toStringTag")),
-unscopables:s("",i&&i.unscopables||o("unscopables"))}),u(r.prototype,{constructor:s(o),toString:s("",function(){return this.__name__})}),u(o.prototype,{toString:s(function(){return"Symbol ("+a(this).__description__+")"}),valueOf:s(function(){return a(this)})}),h(o.prototype,o.toPrimitive,s("",function(){return a(this)})),h(o.prototype,o.toStringTag,s("c","Symbol")),h(r.prototype,o.toStringTag,s("c",o.prototype[o.toStringTag])),h(r.prototype,o.toPrimitive,s("c",o.prototype[o.toPrimitive]))},{"./validate-symbol":54,d:4}],54:[function(t,e,n){"use strict";var i=t("./is-symbol");e.exports=function(t){if(!i(t))throw new TypeError(t+" is not a symbol");return t}},{"./is-symbol":52}],55:[function(t,e,n){"use strict";var i,o,r,s,a,l,u,h=t("d"),c=t("es5-ext/object/valid-callable"),d=Function.prototype.apply,p=Function.prototype.call,f=Object.create,m=Object.defineProperty,_=Object.defineProperties,g=Object.prototype.hasOwnProperty,v={configurable:!0,enumerable:!1,writable:!0};i=function(t,e){var n;return c(e),g.call(this,"__ee__")?n=this.__ee__:(n=v.value=f(null),m(this,"__ee__",v),v.value=null),n[t]?"object"==typeof n[t]?n[t].push(e):n[t]=[n[t],e]:n[t]=e,this},o=function(t,e){var n,o;return c(e),o=this,i.call(this,t,n=function(){r.call(o,t,n),d.call(e,this,arguments)}),n.__eeOnceListener__=e,this},r=function(t,e){var n,i,o,r;if(c(e),!g.call(this,"__ee__"))return this;if(n=this.__ee__,!n[t])return this;if(i=n[t],"object"==typeof i)for(r=0;o=i[r];++r)o!==e&&o.__eeOnceListener__!==e||(2===i.length?n[t]=i[r?0:1]:i.splice(r,1));else i!==e&&i.__eeOnceListener__!==e||delete n[t];return this},s=function(t){var e,n,i,o,r;if(g.call(this,"__ee__")&&(o=this.__ee__[t]))if("object"==typeof o){for(n=arguments.length,r=new Array(n-1),e=1;e<n;++e)r[e-1]=arguments[e];for(o=o.slice(),e=0;i=o[e];++e)d.call(i,this,r)}else switch(arguments.length){case 1:p.call(o,this);break;case 2:p.call(o,this,arguments[1]);break;case 3:p.call(o,this,arguments[1],arguments[2]);break;default:for(n=arguments.length,r=new Array(n-1),e=1;e<n;++e)r[e-1]=arguments[e];d.call(o,this,r)}},a={on:i,once:o,off:r,emit:s},l={on:h(i),once:h(o),off:h(r),emit:h(s)},u=_({},l),e.exports=n=function(t){return null==t?f(u):_(Object(t),l)},n.methods=a},{d:4,"es5-ext/object/valid-callable":31}],56:[function(t,e,n){!function(t,n,i,o){"use strict";function r(t,e,n){return setTimeout(h(t,n),e)}function s(t,e,n){return!!Array.isArray(t)&&(a(t,n[e],n),!0)}function a(t,e,n){var i;if(t)if(t.forEach)t.forEach(e,n);else if(t.length!==o)for(i=0;i<t.length;)e.call(n,t[i],i,t),i++;else for(i in t)t.hasOwnProperty(i)&&e.call(n,t[i],i,t)}function l(e,n,i){var o="DEPRECATED METHOD: "+n+"\n"+i+" AT \n";return function(){var n=new Error("get-stack-trace"),i=n&&n.stack?n.stack.replace(/^[^\(]+?[\n$]/gm,"").replace(/^\s+at\s+/gm,"").replace(/^Object.<anonymous>\s*\(/gm,"{anonymous}()@"):"Unknown Stack Trace",r=t.console&&(t.console.warn||t.console.log);return r&&r.call(t.console,o,i),e.apply(this,arguments)}}function u(t,e,n){var i,o=e.prototype;i=t.prototype=Object.create(o),i.constructor=t,i._super=o,n&&lt(i,n)}function h(t,e){return function(){return t.apply(e,arguments)}}function c(t,e){return typeof t==ct?t.apply(e?e[0]||o:o,e):t}function d(t,e){return t===o?e:t}function p(t,e,n){a(g(e),function(e){t.addEventListener(e,n,!1)})}function f(t,e,n){a(g(e),function(e){t.removeEventListener(e,n,!1)})}function m(t,e){for(;t;){if(t==e)return!0;t=t.parentNode}return!1}function _(t,e){return t.indexOf(e)>-1}function g(t){return t.trim().split(/\s+/g)}function v(t,e,n){if(t.indexOf&&!n)return t.indexOf(e);for(var i=0;i<t.length;){if(n&&t[i][n]==e||!n&&t[i]===e)return i;i++}return-1}function y(t){return Array.prototype.slice.call(t,0)}function b(t,e,n){for(var i=[],o=[],r=0;r<t.length;){var s=e?t[r][e]:t[r];v(o,s)<0&&i.push(t[r]),o[r]=s,r++}return n&&(i=e?i.sort(function(t,n){return t[e]>n[e]}):i.sort()),i}function w(t,e){for(var n,i,r=e[0].toUpperCase()+e.slice(1),s=0;s<ut.length;){if(n=ut[s],i=n?n+r:e,i in t)return i;s++}return o}function x(){return gt++}function L(e){var n=e.ownerDocument||e;return n.defaultView||n.parentWindow||t}function P(t,e){var n=this;this.manager=t,this.callback=e,this.element=t.element,this.target=t.options.inputTarget,this.domHandler=function(e){c(t.options.enable,[t])&&n.handler(e)},this.init()}function E(t){var e,n=t.options.inputClass;return new(e=n?n:bt?R:wt?Z:yt?W:j)(t,T)}function T(t,e,n){var i=n.pointers.length,o=n.changedPointers.length,r=e&Mt&&i-o===0,s=e&(Ct|St)&&i-o===0;n.isFirst=!!r,n.isFinal=!!s,r&&(t.session={}),n.eventType=e,M(t,n),t.emit("hammer.input",n),t.recognize(n),t.session.prevInput=n}function M(t,e){var n=t.session,i=e.pointers,o=i.length;n.firstInput||(n.firstInput=S(e)),o>1&&!n.firstMultiple?n.firstMultiple=S(e):1===o&&(n.firstMultiple=!1);var r=n.firstInput,s=n.firstMultiple,a=s?s.center:r.center,l=e.center=O(i);e.timeStamp=ft(),e.deltaTime=e.timeStamp-r.timeStamp,e.angle=z(a,l),e.distance=I(a,l),k(n,e),e.offsetDirection=A(e.deltaX,e.deltaY);var u=D(e.deltaTime,e.deltaX,e.deltaY);e.overallVelocityX=u.x,e.overallVelocityY=u.y,e.overallVelocity=pt(u.x)>pt(u.y)?u.x:u.y,e.scale=s?N(s.pointers,i):1,e.rotation=s?B(s.pointers,i):0,e.maxPointers=n.prevInput?e.pointers.length>n.prevInput.maxPointers?e.pointers.length:n.prevInput.maxPointers:e.pointers.length,C(n,e);var h=t.element;m(e.srcEvent.target,h)&&(h=e.srcEvent.target),e.target=h}function k(t,e){var n=e.center,i=t.offsetDelta||{},o=t.prevDelta||{},r=t.prevInput||{};e.eventType!==Mt&&r.eventType!==Ct||(o=t.prevDelta={x:r.deltaX||0,y:r.deltaY||0},i=t.offsetDelta={x:n.x,y:n.y}),e.deltaX=o.x+(n.x-i.x),e.deltaY=o.y+(n.y-i.y)}function C(t,e){var n,i,r,s,a=t.lastInterval||e,l=e.timeStamp-a.timeStamp;if(e.eventType!=St&&(l>Tt||a.velocity===o)){var u=e.deltaX-a.deltaX,h=e.deltaY-a.deltaY,c=D(l,u,h);i=c.x,r=c.y,n=pt(c.x)>pt(c.y)?c.x:c.y,s=A(u,h),t.lastInterval=e}else n=a.velocity,i=a.velocityX,r=a.velocityY,s=a.direction;e.velocity=n,e.velocityX=i,e.velocityY=r,e.direction=s}function S(t){for(var e=[],n=0;n<t.pointers.length;)e[n]={clientX:dt(t.pointers[n].clientX),clientY:dt(t.pointers[n].clientY)},n++;return{timeStamp:ft(),pointers:e,center:O(e),deltaX:t.deltaX,deltaY:t.deltaY}}function O(t){var e=t.length;if(1===e)return{x:dt(t[0].clientX),y:dt(t[0].clientY)};for(var n=0,i=0,o=0;o<e;)n+=t[o].clientX,i+=t[o].clientY,o++;return{x:dt(n/e),y:dt(i/e)}}function D(t,e,n){return{x:e/t||0,y:n/t||0}}function A(t,e){return t===e?Ot:pt(t)>=pt(e)?t<0?Dt:At:e<0?It:zt}function I(t,e,n){n||(n=Rt);var i=e[n[0]]-t[n[0]],o=e[n[1]]-t[n[1]];return Math.sqrt(i*i+o*o)}function z(t,e,n){n||(n=Rt);var i=e[n[0]]-t[n[0]],o=e[n[1]]-t[n[1]];return 180*Math.atan2(o,i)/Math.PI}function B(t,e){return z(e[1],e[0],Ut)+z(t[1],t[0],Ut)}function N(t,e){return I(e[0],e[1],Ut)/I(t[0],t[1],Ut)}function j(){this.evEl=Zt,this.evWin=Ft,this.allow=!0,this.pressed=!1,P.apply(this,arguments)}function R(){this.evEl=Vt,this.evWin=qt,P.apply(this,arguments),this.store=this.manager.session.pointerEvents=[]}function U(){this.evTarget=Xt,this.evWin=Yt,this.started=!1,P.apply(this,arguments)}function H(t,e){var n=y(t.touches),i=y(t.changedTouches);return e&(Ct|St)&&(n=b(n.concat(i),"identifier",!0)),[n,i]}function Z(){this.evTarget=Qt,this.targetIds={},P.apply(this,arguments)}function F(t,e){var n=y(t.touches),i=this.targetIds;if(e&(Mt|kt)&&1===n.length)return i[n[0].identifier]=!0,[n,n];var o,r,s=y(t.changedTouches),a=[],l=this.target;if(r=n.filter(function(t){return m(t.target,l)}),e===Mt)for(o=0;o<r.length;)i[r[o].identifier]=!0,o++;for(o=0;o<s.length;)i[s[o].identifier]&&a.push(s[o]),e&(Ct|St)&&delete i[s[o].identifier],o++;return a.length?[b(r.concat(a),"identifier",!0),a]:void 0}function W(){P.apply(this,arguments);var t=h(this.handler,this);this.touch=new Z(this.manager,t),this.mouse=new j(this.manager,t)}function G(t,e){this.manager=t,this.set(e)}function V(t){if(_(t,oe))return oe;var e=_(t,re),n=_(t,se);return e&&n?oe:e||n?e?re:se:_(t,ie)?ie:ne}function q(t){this.options=lt({},this.defaults,t||{}),this.id=x(),this.manager=null,this.options.enable=d(this.options.enable,!0),this.state=ae,this.simultaneous={},this.requireFail=[]}function J(t){return t&de?"cancel":t&he?"end":t&ue?"move":t&le?"start":""}function X(t){return t==zt?"down":t==It?"up":t==Dt?"left":t==At?"right":""}function Y(t,e){var n=e.manager;return n?n.get(t):t}function K(){q.apply(this,arguments)}function Q(){K.apply(this,arguments),this.pX=null,this.pY=null}function $(){K.apply(this,arguments)}function tt(){q.apply(this,arguments),this._timer=null,this._input=null}function et(){K.apply(this,arguments)}function nt(){K.apply(this,arguments)}function it(){q.apply(this,arguments),this.pTime=!1,this.pCenter=!1,this._timer=null,this._input=null,this.count=0}function ot(t,e){return e=e||{},e.recognizers=d(e.recognizers,ot.defaults.preset),new rt(t,e)}function rt(t,e){this.options=lt({},ot.defaults,e||{}),this.options.inputTarget=this.options.inputTarget||t,this.handlers={},this.session={},this.recognizers=[],this.element=t,this.input=E(this),this.touchAction=new G(this,this.options.touchAction),st(this,!0),a(this.options.recognizers,function(t){var e=this.add(new t[0](t[1]));t[2]&&e.recognizeWith(t[2]),t[3]&&e.requireFailure(t[3])},this)}function st(t,e){var n=t.element;n.style&&a(t.options.cssProps,function(t,i){n.style[w(n.style,i)]=e?t:""})}function at(t,e){var i=n.createEvent("Event");i.initEvent(t,!0,!0),i.gesture=e,e.target.dispatchEvent(i)}var lt,ut=["","webkit","Moz","MS","ms","o"],ht=n.createElement("div"),ct="function",dt=Math.round,pt=Math.abs,ft=Date.now;lt="function"!=typeof Object.assign?function(t){if(t===o||null===t)throw new TypeError("Cannot convert undefined or null to object");for(var e=Object(t),n=1;n<arguments.length;n++){var i=arguments[n];if(i!==o&&null!==i)for(var r in i)i.hasOwnProperty(r)&&(e[r]=i[r])}return e}:Object.assign;var mt=l(function(t,e,n){for(var i=Object.keys(e),r=0;r<i.length;)(!n||n&&t[i[r]]===o)&&(t[i[r]]=e[i[r]]),r++;return t},"extend","Use `assign`."),_t=l(function(t,e){return mt(t,e,!0)},"merge","Use `assign`."),gt=1,vt=/mobile|tablet|ip(ad|hone|od)|android/i,yt="ontouchstart"in t,bt=w(t,"PointerEvent")!==o,wt=yt&&vt.test(navigator.userAgent),xt="touch",Lt="pen",Pt="mouse",Et="kinect",Tt=25,Mt=1,kt=2,Ct=4,St=8,Ot=1,Dt=2,At=4,It=8,zt=16,Bt=Dt|At,Nt=It|zt,jt=Bt|Nt,Rt=["x","y"],Ut=["clientX","clientY"];P.prototype={handler:function(){},init:function(){this.evEl&&p(this.element,this.evEl,this.domHandler),this.evTarget&&p(this.target,this.evTarget,this.domHandler),this.evWin&&p(L(this.element),this.evWin,this.domHandler)},destroy:function(){this.evEl&&f(this.element,this.evEl,this.domHandler),this.evTarget&&f(this.target,this.evTarget,this.domHandler),this.evWin&&f(L(this.element),this.evWin,this.domHandler)}};var Ht={mousedown:Mt,mousemove:kt,mouseup:Ct},Zt="mousedown",Ft="mousemove mouseup";u(j,P,{handler:function(t){var e=Ht[t.type];e&Mt&&0===t.button&&(this.pressed=!0),e&kt&&1!==t.which&&(e=Ct),this.pressed&&this.allow&&(e&Ct&&(this.pressed=!1),this.callback(this.manager,e,{pointers:[t],changedPointers:[t],pointerType:Pt,srcEvent:t}))}});var Wt={pointerdown:Mt,pointermove:kt,pointerup:Ct,pointercancel:St,pointerout:St},Gt={2:xt,3:Lt,4:Pt,5:Et},Vt="pointerdown",qt="pointermove pointerup pointercancel";t.MSPointerEvent&&!t.PointerEvent&&(Vt="MSPointerDown",qt="MSPointerMove MSPointerUp MSPointerCancel"),u(R,P,{handler:function(t){var e=this.store,n=!1,i=t.type.toLowerCase().replace("ms",""),o=Wt[i],r=Gt[t.pointerType]||t.pointerType,s=r==xt,a=v(e,t.pointerId,"pointerId");o&Mt&&(0===t.button||s)?a<0&&(e.push(t),a=e.length-1):o&(Ct|St)&&(n=!0),a<0||(e[a]=t,this.callback(this.manager,o,{pointers:e,changedPointers:[t],pointerType:r,srcEvent:t}),n&&e.splice(a,1))}});var Jt={touchstart:Mt,touchmove:kt,touchend:Ct,touchcancel:St},Xt="touchstart",Yt="touchstart touchmove touchend touchcancel";u(U,P,{handler:function(t){var e=Jt[t.type];if(e===Mt&&(this.started=!0),this.started){var n=H.call(this,t,e);e&(Ct|St)&&n[0].length-n[1].length===0&&(this.started=!1),this.callback(this.manager,e,{pointers:n[0],changedPointers:n[1],pointerType:xt,srcEvent:t})}}});var Kt={touchstart:Mt,touchmove:kt,touchend:Ct,touchcancel:St},Qt="touchstart touchmove touchend touchcancel";u(Z,P,{handler:function(t){var e=Kt[t.type],n=F.call(this,t,e);n&&this.callback(this.manager,e,{pointers:n[0],changedPointers:n[1],pointerType:xt,srcEvent:t})}}),u(W,P,{handler:function(t,e,n){var i=n.pointerType==xt,o=n.pointerType==Pt;if(i)this.mouse.allow=!1;else if(o&&!this.mouse.allow)return;e&(Ct|St)&&(this.mouse.allow=!0),this.callback(t,e,n)},destroy:function(){this.touch.destroy(),this.mouse.destroy()}});var $t=w(ht.style,"touchAction"),te=$t!==o,ee="compute",ne="auto",ie="manipulation",oe="none",re="pan-x",se="pan-y";G.prototype={set:function(t){t==ee&&(t=this.compute()),te&&this.manager.element.style&&(this.manager.element.style[$t]=t),this.actions=t.toLowerCase().trim()},update:function(){this.set(this.manager.options.touchAction)},compute:function(){var t=[];return a(this.manager.recognizers,function(e){c(e.options.enable,[e])&&(t=t.concat(e.getTouchAction()))}),V(t.join(" "))},preventDefaults:function(t){if(!te){var e=t.srcEvent,n=t.offsetDirection;if(this.manager.session.prevented)return void e.preventDefault();var i=this.actions,o=_(i,oe),r=_(i,se),s=_(i,re);if(o){var a=1===t.pointers.length,l=t.distance<2,u=t.deltaTime<250;if(a&&l&&u)return}if(!s||!r)return o||r&&n&Bt||s&&n&Nt?this.preventSrc(e):void 0}},preventSrc:function(t){this.manager.session.prevented=!0,t.preventDefault()}};var ae=1,le=2,ue=4,he=8,ce=he,de=16,pe=32;q.prototype={defaults:{},set:function(t){return lt(this.options,t),this.manager&&this.manager.touchAction.update(),this},recognizeWith:function(t){if(s(t,"recognizeWith",this))return this;var e=this.simultaneous;return t=Y(t,this),e[t.id]||(e[t.id]=t,t.recognizeWith(this)),this},dropRecognizeWith:function(t){return s(t,"dropRecognizeWith",this)?this:(t=Y(t,this),delete this.simultaneous[t.id],this)},requireFailure:function(t){if(s(t,"requireFailure",this))return this;var e=this.requireFail;return t=Y(t,this),v(e,t)===-1&&(e.push(t),t.requireFailure(this)),this},dropRequireFailure:function(t){if(s(t,"dropRequireFailure",this))return this;t=Y(t,this);var e=v(this.requireFail,t);return e>-1&&this.requireFail.splice(e,1),this},hasRequireFailures:function(){return this.requireFail.length>0},canRecognizeWith:function(t){return!!this.simultaneous[t.id]},emit:function(t){function e(e){n.manager.emit(e,t)}var n=this,i=this.state;i<he&&e(n.options.event+J(i)),e(n.options.event),t.additionalEvent&&e(t.additionalEvent),i>=he&&e(n.options.event+J(i))},tryEmit:function(t){return this.canEmit()?this.emit(t):void(this.state=pe)},canEmit:function(){for(var t=0;t<this.requireFail.length;){if(!(this.requireFail[t].state&(pe|ae)))return!1;t++}return!0},recognize:function(t){var e=lt({},t);return c(this.options.enable,[this,e])?(this.state&(ce|de|pe)&&(this.state=ae),this.state=this.process(e),void(this.state&(le|ue|he|de)&&this.tryEmit(e))):(this.reset(),void(this.state=pe))},process:function(t){},getTouchAction:function(){},reset:function(){}},u(K,q,{defaults:{pointers:1},attrTest:function(t){var e=this.options.pointers;return 0===e||t.pointers.length===e},process:function(t){var e=this.state,n=t.eventType,i=e&(le|ue),o=this.attrTest(t);return i&&(n&St||!o)?e|de:i||o?n&Ct?e|he:e&le?e|ue:le:pe}}),u(Q,K,{defaults:{event:"pan",threshold:10,pointers:1,direction:jt},getTouchAction:function(){var t=this.options.direction,e=[];return t&Bt&&e.push(se),t&Nt&&e.push(re),e},directionTest:function(t){var e=this.options,n=!0,i=t.distance,o=t.direction,r=t.deltaX,s=t.deltaY;return o&e.direction||(e.direction&Bt?(o=0===r?Ot:r<0?Dt:At,n=r!=this.pX,i=Math.abs(t.deltaX)):(o=0===s?Ot:s<0?It:zt,n=s!=this.pY,i=Math.abs(t.deltaY))),t.direction=o,n&&i>e.threshold&&o&e.direction},attrTest:function(t){return K.prototype.attrTest.call(this,t)&&(this.state&le||!(this.state&le)&&this.directionTest(t))},emit:function(t){this.pX=t.deltaX,this.pY=t.deltaY;var e=X(t.direction);e&&(t.additionalEvent=this.options.event+e),this._super.emit.call(this,t)}}),u($,K,{defaults:{event:"pinch",threshold:0,pointers:2},getTouchAction:function(){return[oe]},attrTest:function(t){return this._super.attrTest.call(this,t)&&(Math.abs(t.scale-1)>this.options.threshold||this.state&le)},emit:function(t){if(1!==t.scale){var e=t.scale<1?"in":"out";t.additionalEvent=this.options.event+e}this._super.emit.call(this,t)}}),u(tt,q,{defaults:{event:"press",pointers:1,time:251,threshold:9},getTouchAction:function(){return[ne]},process:function(t){var e=this.options,n=t.pointers.length===e.pointers,i=t.distance<e.threshold,o=t.deltaTime>e.time;if(this._input=t,!i||!n||t.eventType&(Ct|St)&&!o)this.reset();else if(t.eventType&Mt)this.reset(),this._timer=r(function(){this.state=ce,this.tryEmit()},e.time,this);else if(t.eventType&Ct)return ce;return pe},reset:function(){clearTimeout(this._timer)},emit:function(t){this.state===ce&&(t&&t.eventType&Ct?this.manager.emit(this.options.event+"up",t):(this._input.timeStamp=ft(),this.manager.emit(this.options.event,this._input)))}}),u(et,K,{defaults:{event:"rotate",threshold:0,pointers:2},getTouchAction:function(){return[oe]},attrTest:function(t){return this._super.attrTest.call(this,t)&&(Math.abs(t.rotation)>this.options.threshold||this.state&le)}}),u(nt,K,{defaults:{event:"swipe",threshold:10,velocity:.3,direction:Bt|Nt,pointers:1},getTouchAction:function(){return Q.prototype.getTouchAction.call(this)},attrTest:function(t){var e,n=this.options.direction;return n&(Bt|Nt)?e=t.overallVelocity:n&Bt?e=t.overallVelocityX:n&Nt&&(e=t.overallVelocityY),this._super.attrTest.call(this,t)&&n&t.offsetDirection&&t.distance>this.options.threshold&&t.maxPointers==this.options.pointers&&pt(e)>this.options.velocity&&t.eventType&Ct},emit:function(t){var e=X(t.offsetDirection);e&&this.manager.emit(this.options.event+e,t),this.manager.emit(this.options.event,t)}}),u(it,q,{defaults:{event:"tap",pointers:1,taps:1,interval:300,time:250,threshold:9,posThreshold:10},getTouchAction:function(){return[ie]},process:function(t){var e=this.options,n=t.pointers.length===e.pointers,i=t.distance<e.threshold,o=t.deltaTime<e.time;if(this.reset(),t.eventType&Mt&&0===this.count)return this.failTimeout();if(i&&o&&n){if(t.eventType!=Ct)return this.failTimeout();var s=!this.pTime||t.timeStamp-this.pTime<e.interval,a=!this.pCenter||I(this.pCenter,t.center)<e.posThreshold;this.pTime=t.timeStamp,this.pCenter=t.center,a&&s?this.count+=1:this.count=1,this._input=t;var l=this.count%e.taps;if(0===l)return this.hasRequireFailures()?(this._timer=r(function(){this.state=ce,this.tryEmit()},e.interval,this),le):ce}return pe},failTimeout:function(){return this._timer=r(function(){this.state=pe},this.options.interval,this),pe},reset:function(){clearTimeout(this._timer)},emit:function(){this.state==ce&&(this._input.tapCount=this.count,this.manager.emit(this.options.event,this._input))}}),ot.VERSION="2.0.6",ot.defaults={domEvents:!1,touchAction:ee,enable:!0,inputTarget:null,inputClass:null,preset:[[et,{enable:!1}],[$,{enable:!1},["rotate"]],[nt,{direction:Bt}],[Q,{direction:Bt},["swipe"]],[it],[it,{event:"doubletap",taps:2},["tap"]],[tt]],cssProps:{userSelect:"none",touchSelect:"none",touchCallout:"none",contentZooming:"none",userDrag:"none",tapHighlightColor:"rgba(0,0,0,0)"}};var fe=1,me=2;rt.prototype={set:function(t){return lt(this.options,t),t.touchAction&&this.touchAction.update(),t.inputTarget&&(this.input.destroy(),this.input.target=t.inputTarget,this.input.init()),this},stop:function(t){this.session.stopped=t?me:fe},recognize:function(t){var e=this.session;if(!e.stopped){this.touchAction.preventDefaults(t);var n,i=this.recognizers,o=e.curRecognizer;(!o||o&&o.state&ce)&&(o=e.curRecognizer=null);for(var r=0;r<i.length;)n=i[r],e.stopped===me||o&&n!=o&&!n.canRecognizeWith(o)?n.reset():n.recognize(t),!o&&n.state&(le|ue|he)&&(o=e.curRecognizer=n),r++}},get:function(t){if(t instanceof q)return t;for(var e=this.recognizers,n=0;n<e.length;n++)if(e[n].options.event==t)return e[n];return null},add:function(t){if(s(t,"add",this))return this;var e=this.get(t.options.event);return e&&this.remove(e),this.recognizers.push(t),t.manager=this,this.touchAction.update(),t},remove:function(t){if(s(t,"remove",this))return this;if(t=this.get(t)){var e=this.recognizers,n=v(e,t);n!==-1&&(e.splice(n,1),this.touchAction.update())}return this},on:function(t,e){var n=this.handlers;return a(g(t),function(t){n[t]=n[t]||[],n[t].push(e)}),this},off:function(t,e){var n=this.handlers;return a(g(t),function(t){e?n[t]&&n[t].splice(v(n[t],e),1):delete n[t]}),this},emit:function(t,e){this.options.domEvents&&at(t,e);var n=this.handlers[t]&&this.handlers[t].slice();if(n&&n.length){e.type=t,e.preventDefault=function(){e.srcEvent.preventDefault()};for(var i=0;i<n.length;)n[i](e),i++}},destroy:function(){this.element&&st(this,!1),this.handlers={},this.session={},this.input.destroy(),this.element=null}},lt(ot,{INPUT_START:Mt,INPUT_MOVE:kt,INPUT_END:Ct,INPUT_CANCEL:St,STATE_POSSIBLE:ae,STATE_BEGAN:le,STATE_CHANGED:ue,STATE_ENDED:he,STATE_RECOGNIZED:ce,STATE_CANCELLED:de,STATE_FAILED:pe,DIRECTION_NONE:Ot,DIRECTION_LEFT:Dt,DIRECTION_RIGHT:At,DIRECTION_UP:It,DIRECTION_DOWN:zt,DIRECTION_HORIZONTAL:Bt,DIRECTION_VERTICAL:Nt,DIRECTION_ALL:jt,Manager:rt,Input:P,TouchAction:G,TouchInput:Z,MouseInput:j,PointerEventInput:R,TouchMouseInput:W,SingleTouchInput:U,Recognizer:q,AttrRecognizer:K,Tap:it,Pan:Q,Swipe:nt,Pinch:$,Rotate:et,Press:tt,on:p,off:f,each:a,merge:_t,extend:mt,assign:lt,inherit:u,bindFn:h,prefixed:w});var _e="undefined"!=typeof t?t:"undefined"!=typeof self?self:{};_e.Hammer=ot,"function"==typeof define&&define.amd?define(function(){return ot}):"undefined"!=typeof e&&e.exports?e.exports=ot:t[i]=ot}(window,document,"Hammer")},{}],57:[function(t,e,n){!function(t,n,i){var o=t.L,r={};r.version="0.7.7","object"==typeof e&&"object"==typeof e.exports?e.exports=r:"function"==typeof define&&define.amd&&define(r),r.noConflict=function(){return t.L=o,this},t.L=r,r.Util={extend:function(t){var e,n,i,o,r=Array.prototype.slice.call(arguments,1);for(n=0,i=r.length;n<i;n++){o=r[n]||{};for(e in o)o.hasOwnProperty(e)&&(t[e]=o[e])}return t},bind:function(t,e){var n=arguments.length>2?Array.prototype.slice.call(arguments,2):null;return function(){return t.apply(e,n||arguments)}},stamp:function(){var t=0,e="_leaflet_id";return function(n){return n[e]=n[e]||++t,n[e]}}(),invokeEach:function(t,e,n){var i,o;if("object"==typeof t){o=Array.prototype.slice.call(arguments,3);for(i in t)e.apply(n,[i,t[i]].concat(o));return!0}return!1},limitExecByInterval:function(t,e,n){var i,o;return function r(){var s=arguments;return i?void(o=!0):(i=!0,setTimeout(function(){i=!1,o&&(r.apply(n,s),o=!1)},e),void t.apply(n,s))}},falseFn:function(){return!1},formatNum:function(t,e){var n=Math.pow(10,e||5);return Math.round(t*n)/n},trim:function(t){return t.trim?t.trim():t.replace(/^\s+|\s+$/g,"")},splitWords:function(t){return r.Util.trim(t).split(/\s+/)},setOptions:function(t,e){return t.options=r.extend({},t.options,e),t.options},getParamString:function(t,e,n){var i=[];for(var o in t)i.push(encodeURIComponent(n?o.toUpperCase():o)+"="+encodeURIComponent(t[o]));return(e&&e.indexOf("?")!==-1?"&":"?")+i.join("&")},template:function(t,e){return t.replace(/\{ *([\w_]+) *\}/g,function(t,n){var o=e[n];if(o===i)throw new Error("No value provided for variable "+t);return"function"==typeof o&&(o=o(e)),o})},isArray:Array.isArray||function(t){return"[object Array]"===Object.prototype.toString.call(t)},emptyImageUrl:"data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="},function(){function e(e){var n,i,o=["webkit","moz","o","ms"];for(n=0;n<o.length&&!i;n++)i=t[o[n]+e];return i}function n(e){var n=+new Date,o=Math.max(0,16-(n-i));return i=n+o,t.setTimeout(e,o)}var i=0,o=t.requestAnimationFrame||e("RequestAnimationFrame")||n,s=t.cancelAnimationFrame||e("CancelAnimationFrame")||e("CancelRequestAnimationFrame")||function(e){t.clearTimeout(e)};r.Util.requestAnimFrame=function(e,i,s,a){return e=r.bind(e,i),s&&o===n?void e():o.call(t,e,a)},r.Util.cancelAnimFrame=function(e){e&&s.call(t,e)}}(),r.extend=r.Util.extend,r.bind=r.Util.bind,r.stamp=r.Util.stamp,r.setOptions=r.Util.setOptions,r.Class=function(){},r.Class.extend=function(t){var e=function(){this.initialize&&this.initialize.apply(this,arguments),this._initHooks&&this.callInitHooks()},n=function(){};n.prototype=this.prototype;var i=new n;i.constructor=e,e.prototype=i;for(var o in this)this.hasOwnProperty(o)&&"prototype"!==o&&(e[o]=this[o]);t.statics&&(r.extend(e,t.statics),delete t.statics),t.includes&&(r.Util.extend.apply(null,[i].concat(t.includes)),delete t.includes),t.options&&i.options&&(t.options=r.extend({},i.options,t.options)),r.extend(i,t),i._initHooks=[];var s=this;return e.__super__=s.prototype,i.callInitHooks=function(){if(!this._initHooksCalled){s.prototype.callInitHooks&&s.prototype.callInitHooks.call(this),this._initHooksCalled=!0;for(var t=0,e=i._initHooks.length;t<e;t++)i._initHooks[t].call(this)}},e},r.Class.include=function(t){r.extend(this.prototype,t)},r.Class.mergeOptions=function(t){r.extend(this.prototype.options,t)},r.Class.addInitHook=function(t){var e=Array.prototype.slice.call(arguments,1),n="function"==typeof t?t:function(){this[t].apply(this,e)};this.prototype._initHooks=this.prototype._initHooks||[],this.prototype._initHooks.push(n)};var s="_leaflet_events";r.Mixin={},r.Mixin.Events={addEventListener:function(t,e,n){if(r.Util.invokeEach(t,this.addEventListener,this,e,n))return this;var i,o,a,l,u,h,c,d=this[s]=this[s]||{},p=n&&n!==this&&r.stamp(n);for(t=r.Util.splitWords(t),i=0,o=t.length;i<o;i++)a={action:e,context:n||this},l=t[i],p?(u=l+"_idx",h=u+"_len",c=d[u]=d[u]||{},c[p]||(c[p]=[],d[h]=(d[h]||0)+1),c[p].push(a)):(d[l]=d[l]||[],d[l].push(a));return this},hasEventListeners:function(t){var e=this[s];return!!e&&(t in e&&e[t].length>0||t+"_idx"in e&&e[t+"_idx_len"]>0)},removeEventListener:function(t,e,n){if(!this[s])return this;if(!t)return this.clearAllEventListeners();if(r.Util.invokeEach(t,this.removeEventListener,this,e,n))return this;var i,o,a,l,u,h,c,d,p,f=this[s],m=n&&n!==this&&r.stamp(n);for(t=r.Util.splitWords(t),i=0,o=t.length;i<o;i++)if(a=t[i],h=a+"_idx",c=h+"_len",d=f[h],e){if(l=m&&d?d[m]:f[a]){for(u=l.length-1;u>=0;u--)l[u].action!==e||n&&l[u].context!==n||(p=l.splice(u,1),p[0].action=r.Util.falseFn);n&&d&&0===l.length&&(delete d[m],f[c]--)}}else delete f[a],delete f[h],delete f[c];return this},clearAllEventListeners:function(){return delete this[s],this},fireEvent:function(t,e){if(!this.hasEventListeners(t))return this;var n,i,o,a,l,u=r.Util.extend({},e,{type:t,target:this}),h=this[s];if(h[t])for(n=h[t].slice(),i=0,o=n.length;i<o;i++)n[i].action.call(n[i].context,u);a=h[t+"_idx"];for(l in a)if(n=a[l].slice())for(i=0,o=n.length;i<o;i++)n[i].action.call(n[i].context,u);return this},addOneTimeEventListener:function(t,e,n){if(r.Util.invokeEach(t,this.addOneTimeEventListener,this,e,n))return this;var i=r.bind(function(){this.removeEventListener(t,e,n).removeEventListener(t,i,n)},this);return this.addEventListener(t,e,n).addEventListener(t,i,n)}},r.Mixin.Events.on=r.Mixin.Events.addEventListener,r.Mixin.Events.off=r.Mixin.Events.removeEventListener,r.Mixin.Events.once=r.Mixin.Events.addOneTimeEventListener,r.Mixin.Events.fire=r.Mixin.Events.fireEvent,function(){var e="ActiveXObject"in t,o=e&&!n.addEventListener,s=navigator.userAgent.toLowerCase(),a=s.indexOf("webkit")!==-1,l=s.indexOf("chrome")!==-1,u=s.indexOf("phantom")!==-1,h=s.indexOf("android")!==-1,c=s.search("android [23]")!==-1,d=s.indexOf("gecko")!==-1,p=typeof orientation!=i+"",f=!t.PointerEvent&&t.MSPointerEvent,m=t.PointerEvent&&t.navigator.pointerEnabled||f,_="devicePixelRatio"in t&&t.devicePixelRatio>1||"matchMedia"in t&&t.matchMedia("(min-resolution:144dpi)")&&t.matchMedia("(min-resolution:144dpi)").matches,g=n.documentElement,v=e&&"transition"in g.style,y="WebKitCSSMatrix"in t&&"m11"in new t.WebKitCSSMatrix&&!c,b="MozPerspective"in g.style,w="OTransition"in g.style,x=!t.L_DISABLE_3D&&(v||y||b||w)&&!u,L=!t.L_NO_TOUCH&&!u&&(m||"ontouchstart"in t||t.DocumentTouch&&n instanceof t.DocumentTouch);r.Browser={ie:e,ielt9:o,webkit:a,gecko:d&&!a&&!t.opera&&!e,android:h,android23:c,chrome:l,ie3d:v,webkit3d:y,gecko3d:b,opera3d:w,any3d:x,mobile:p,mobileWebkit:p&&a,mobileWebkit3d:p&&y,mobileOpera:p&&t.opera,touch:L,msPointer:f,pointer:m,retina:_}}(),r.Point=function(t,e,n){this.x=n?Math.round(t):t,this.y=n?Math.round(e):e},r.Point.prototype={clone:function(){return new r.Point(this.x,this.y)},add:function(t){return this.clone()._add(r.point(t))},_add:function(t){return this.x+=t.x,this.y+=t.y,this},subtract:function(t){return this.clone()._subtract(r.point(t))},_subtract:function(t){return this.x-=t.x,this.y-=t.y,this},divideBy:function(t){return this.clone()._divideBy(t)},_divideBy:function(t){return this.x/=t,this.y/=t,this},multiplyBy:function(t){return this.clone()._multiplyBy(t)},_multiplyBy:function(t){return this.x*=t,this.y*=t,this},round:function(){return this.clone()._round()},_round:function(){return this.x=Math.round(this.x),this.y=Math.round(this.y),this},floor:function(){return this.clone()._floor()},_floor:function(){return this.x=Math.floor(this.x),this.y=Math.floor(this.y),this},distanceTo:function(t){t=r.point(t);var e=t.x-this.x,n=t.y-this.y;return Math.sqrt(e*e+n*n)},equals:function(t){return t=r.point(t),t.x===this.x&&t.y===this.y},contains:function(t){return t=r.point(t),Math.abs(t.x)<=Math.abs(this.x)&&Math.abs(t.y)<=Math.abs(this.y)},toString:function(){return"Point("+r.Util.formatNum(this.x)+", "+r.Util.formatNum(this.y)+")"}},r.point=function(t,e,n){return t instanceof r.Point?t:r.Util.isArray(t)?new r.Point(t[0],t[1]):t===i||null===t?t:new r.Point(t,e,n)},r.Bounds=function(t,e){if(t)for(var n=e?[t,e]:t,i=0,o=n.length;i<o;i++)this.extend(n[i])},r.Bounds.prototype={extend:function(t){return t=r.point(t),this.min||this.max?(this.min.x=Math.min(t.x,this.min.x),this.max.x=Math.max(t.x,this.max.x),this.min.y=Math.min(t.y,this.min.y),this.max.y=Math.max(t.y,this.max.y)):(this.min=t.clone(),this.max=t.clone()),this},getCenter:function(t){return new r.Point((this.min.x+this.max.x)/2,(this.min.y+this.max.y)/2,t)},getBottomLeft:function(){return new r.Point(this.min.x,this.max.y)},getTopRight:function(){return new r.Point(this.max.x,this.min.y)},getSize:function(){return this.max.subtract(this.min)},contains:function(t){var e,n;return t="number"==typeof t[0]||t instanceof r.Point?r.point(t):r.bounds(t),t instanceof r.Bounds?(e=t.min,n=t.max):e=n=t,e.x>=this.min.x&&n.x<=this.max.x&&e.y>=this.min.y&&n.y<=this.max.y},intersects:function(t){t=r.bounds(t);var e=this.min,n=this.max,i=t.min,o=t.max,s=o.x>=e.x&&i.x<=n.x,a=o.y>=e.y&&i.y<=n.y;return s&&a},isValid:function(){return!(!this.min||!this.max)}},r.bounds=function(t,e){return!t||t instanceof r.Bounds?t:new r.Bounds(t,e)},r.Transformation=function(t,e,n,i){this._a=t,this._b=e,this._c=n,this._d=i},r.Transformation.prototype={transform:function(t,e){return this._transform(t.clone(),e)},_transform:function(t,e){return e=e||1,t.x=e*(this._a*t.x+this._b),t.y=e*(this._c*t.y+this._d),t},untransform:function(t,e){return e=e||1,new r.Point((t.x/e-this._b)/this._a,(t.y/e-this._d)/this._c)}},r.DomUtil={get:function(t){return"string"==typeof t?n.getElementById(t):t},getStyle:function(t,e){var i=t.style[e];if(!i&&t.currentStyle&&(i=t.currentStyle[e]),(!i||"auto"===i)&&n.defaultView){var o=n.defaultView.getComputedStyle(t,null);i=o?o[e]:null}return"auto"===i?null:i},getViewportOffset:function(t){var e,i=0,o=0,s=t,a=n.body,l=n.documentElement;do{if(i+=s.offsetTop||0,o+=s.offsetLeft||0,i+=parseInt(r.DomUtil.getStyle(s,"borderTopWidth"),10)||0,o+=parseInt(r.DomUtil.getStyle(s,"borderLeftWidth"),10)||0,e=r.DomUtil.getStyle(s,"position"),s.offsetParent===a&&"absolute"===e)break;if("fixed"===e){i+=a.scrollTop||l.scrollTop||0,o+=a.scrollLeft||l.scrollLeft||0;
-break}if("relative"===e&&!s.offsetLeft){var u=r.DomUtil.getStyle(s,"width"),h=r.DomUtil.getStyle(s,"max-width"),c=s.getBoundingClientRect();"none"===u&&"none"===h||(o+=c.left+s.clientLeft),i+=c.top+(a.scrollTop||l.scrollTop||0);break}s=s.offsetParent}while(s);s=t;do{if(s===a)break;i-=s.scrollTop||0,o-=s.scrollLeft||0,s=s.parentNode}while(s);return new r.Point(o,i)},documentIsLtr:function(){return r.DomUtil._docIsLtrCached||(r.DomUtil._docIsLtrCached=!0,r.DomUtil._docIsLtr="ltr"===r.DomUtil.getStyle(n.body,"direction")),r.DomUtil._docIsLtr},create:function(t,e,i){var o=n.createElement(t);return o.className=e,i&&i.appendChild(o),o},hasClass:function(t,e){if(t.classList!==i)return t.classList.contains(e);var n=r.DomUtil._getClass(t);return n.length>0&&new RegExp("(^|\\s)"+e+"(\\s|$)").test(n)},addClass:function(t,e){if(t.classList!==i)for(var n=r.Util.splitWords(e),o=0,s=n.length;o<s;o++)t.classList.add(n[o]);else if(!r.DomUtil.hasClass(t,e)){var a=r.DomUtil._getClass(t);r.DomUtil._setClass(t,(a?a+" ":"")+e)}},removeClass:function(t,e){t.classList!==i?t.classList.remove(e):r.DomUtil._setClass(t,r.Util.trim((" "+r.DomUtil._getClass(t)+" ").replace(" "+e+" "," ")))},_setClass:function(t,e){t.className.baseVal===i?t.className=e:t.className.baseVal=e},_getClass:function(t){return t.className.baseVal===i?t.className:t.className.baseVal},setOpacity:function(t,e){if("opacity"in t.style)t.style.opacity=e;else if("filter"in t.style){var n=!1,i="DXImageTransform.Microsoft.Alpha";try{n=t.filters.item(i)}catch(t){if(1===e)return}e=Math.round(100*e),n?(n.Enabled=100!==e,n.Opacity=e):t.style.filter+=" progid:"+i+"(opacity="+e+")"}},testProp:function(t){for(var e=n.documentElement.style,i=0;i<t.length;i++)if(t[i]in e)return t[i];return!1},getTranslateString:function(t){var e=r.Browser.webkit3d,n="translate"+(e?"3d":"")+"(",i=(e?",0":"")+")";return n+t.x+"px,"+t.y+"px"+i},getScaleString:function(t,e){var n=r.DomUtil.getTranslateString(e.add(e.multiplyBy(-1*t))),i=" scale("+t+") ";return n+i},setPosition:function(t,e,n){t._leaflet_pos=e,!n&&r.Browser.any3d?t.style[r.DomUtil.TRANSFORM]=r.DomUtil.getTranslateString(e):(t.style.left=e.x+"px",t.style.top=e.y+"px")},getPosition:function(t){return t._leaflet_pos}},r.DomUtil.TRANSFORM=r.DomUtil.testProp(["transform","WebkitTransform","OTransform","MozTransform","msTransform"]),r.DomUtil.TRANSITION=r.DomUtil.testProp(["webkitTransition","transition","OTransition","MozTransition","msTransition"]),r.DomUtil.TRANSITION_END="webkitTransition"===r.DomUtil.TRANSITION||"OTransition"===r.DomUtil.TRANSITION?r.DomUtil.TRANSITION+"End":"transitionend",function(){if("onselectstart"in n)r.extend(r.DomUtil,{disableTextSelection:function(){r.DomEvent.on(t,"selectstart",r.DomEvent.preventDefault)},enableTextSelection:function(){r.DomEvent.off(t,"selectstart",r.DomEvent.preventDefault)}});else{var e=r.DomUtil.testProp(["userSelect","WebkitUserSelect","OUserSelect","MozUserSelect","msUserSelect"]);r.extend(r.DomUtil,{disableTextSelection:function(){if(e){var t=n.documentElement.style;this._userSelect=t[e],t[e]="none"}},enableTextSelection:function(){e&&(n.documentElement.style[e]=this._userSelect,delete this._userSelect)}})}r.extend(r.DomUtil,{disableImageDrag:function(){r.DomEvent.on(t,"dragstart",r.DomEvent.preventDefault)},enableImageDrag:function(){r.DomEvent.off(t,"dragstart",r.DomEvent.preventDefault)}})}(),r.LatLng=function(t,e,n){if(t=parseFloat(t),e=parseFloat(e),isNaN(t)||isNaN(e))throw new Error("Invalid LatLng object: ("+t+", "+e+")");this.lat=t,this.lng=e,n!==i&&(this.alt=parseFloat(n))},r.extend(r.LatLng,{DEG_TO_RAD:Math.PI/180,RAD_TO_DEG:180/Math.PI,MAX_MARGIN:1e-9}),r.LatLng.prototype={equals:function(t){if(!t)return!1;t=r.latLng(t);var e=Math.max(Math.abs(this.lat-t.lat),Math.abs(this.lng-t.lng));return e<=r.LatLng.MAX_MARGIN},toString:function(t){return"LatLng("+r.Util.formatNum(this.lat,t)+", "+r.Util.formatNum(this.lng,t)+")"},distanceTo:function(t){t=r.latLng(t);var e=6378137,n=r.LatLng.DEG_TO_RAD,i=(t.lat-this.lat)*n,o=(t.lng-this.lng)*n,s=this.lat*n,a=t.lat*n,l=Math.sin(i/2),u=Math.sin(o/2),h=l*l+u*u*Math.cos(s)*Math.cos(a);return 2*e*Math.atan2(Math.sqrt(h),Math.sqrt(1-h))},wrap:function(t,e){var n=this.lng;return t=t||-180,e=e||180,n=(n+e)%(e-t)+(n<t||n===e?e:t),new r.LatLng(this.lat,n)}},r.latLng=function(t,e){return t instanceof r.LatLng?t:r.Util.isArray(t)?"number"==typeof t[0]||"string"==typeof t[0]?new r.LatLng(t[0],t[1],t[2]):null:t===i||null===t?t:"object"==typeof t&&"lat"in t?new r.LatLng(t.lat,"lng"in t?t.lng:t.lon):e===i?null:new r.LatLng(t,e)},r.LatLngBounds=function(t,e){if(t)for(var n=e?[t,e]:t,i=0,o=n.length;i<o;i++)this.extend(n[i])},r.LatLngBounds.prototype={extend:function(t){if(!t)return this;var e=r.latLng(t);return t=null!==e?e:r.latLngBounds(t),t instanceof r.LatLng?this._southWest||this._northEast?(this._southWest.lat=Math.min(t.lat,this._southWest.lat),this._southWest.lng=Math.min(t.lng,this._southWest.lng),this._northEast.lat=Math.max(t.lat,this._northEast.lat),this._northEast.lng=Math.max(t.lng,this._northEast.lng)):(this._southWest=new r.LatLng(t.lat,t.lng),this._northEast=new r.LatLng(t.lat,t.lng)):t instanceof r.LatLngBounds&&(this.extend(t._southWest),this.extend(t._northEast)),this},pad:function(t){var e=this._southWest,n=this._northEast,i=Math.abs(e.lat-n.lat)*t,o=Math.abs(e.lng-n.lng)*t;return new r.LatLngBounds(new r.LatLng(e.lat-i,e.lng-o),new r.LatLng(n.lat+i,n.lng+o))},getCenter:function(){return new r.LatLng((this._southWest.lat+this._northEast.lat)/2,(this._southWest.lng+this._northEast.lng)/2)},getSouthWest:function(){return this._southWest},getNorthEast:function(){return this._northEast},getNorthWest:function(){return new r.LatLng(this.getNorth(),this.getWest())},getSouthEast:function(){return new r.LatLng(this.getSouth(),this.getEast())},getWest:function(){return this._southWest.lng},getSouth:function(){return this._southWest.lat},getEast:function(){return this._northEast.lng},getNorth:function(){return this._northEast.lat},contains:function(t){t="number"==typeof t[0]||t instanceof r.LatLng?r.latLng(t):r.latLngBounds(t);var e,n,i=this._southWest,o=this._northEast;return t instanceof r.LatLngBounds?(e=t.getSouthWest(),n=t.getNorthEast()):e=n=t,e.lat>=i.lat&&n.lat<=o.lat&&e.lng>=i.lng&&n.lng<=o.lng},intersects:function(t){t=r.latLngBounds(t);var e=this._southWest,n=this._northEast,i=t.getSouthWest(),o=t.getNorthEast(),s=o.lat>=e.lat&&i.lat<=n.lat,a=o.lng>=e.lng&&i.lng<=n.lng;return s&&a},toBBoxString:function(){return[this.getWest(),this.getSouth(),this.getEast(),this.getNorth()].join(",")},equals:function(t){return!!t&&(t=r.latLngBounds(t),this._southWest.equals(t.getSouthWest())&&this._northEast.equals(t.getNorthEast()))},isValid:function(){return!(!this._southWest||!this._northEast)}},r.latLngBounds=function(t,e){return!t||t instanceof r.LatLngBounds?t:new r.LatLngBounds(t,e)},r.Projection={},r.Projection.SphericalMercator={MAX_LATITUDE:85.0511287798,project:function(t){var e=r.LatLng.DEG_TO_RAD,n=this.MAX_LATITUDE,i=Math.max(Math.min(n,t.lat),-n),o=t.lng*e,s=i*e;return s=Math.log(Math.tan(Math.PI/4+s/2)),new r.Point(o,s)},unproject:function(t){var e=r.LatLng.RAD_TO_DEG,n=t.x*e,i=(2*Math.atan(Math.exp(t.y))-Math.PI/2)*e;return new r.LatLng(i,n)}},r.Projection.LonLat={project:function(t){return new r.Point(t.lng,t.lat)},unproject:function(t){return new r.LatLng(t.y,t.x)}},r.CRS={latLngToPoint:function(t,e){var n=this.projection.project(t),i=this.scale(e);return this.transformation._transform(n,i)},pointToLatLng:function(t,e){var n=this.scale(e),i=this.transformation.untransform(t,n);return this.projection.unproject(i)},project:function(t){return this.projection.project(t)},scale:function(t){return 256*Math.pow(2,t)},getSize:function(t){var e=this.scale(t);return r.point(e,e)}},r.CRS.Simple=r.extend({},r.CRS,{projection:r.Projection.LonLat,transformation:new r.Transformation(1,0,(-1),0),scale:function(t){return Math.pow(2,t)}}),r.CRS.EPSG3857=r.extend({},r.CRS,{code:"EPSG:3857",projection:r.Projection.SphericalMercator,transformation:new r.Transformation(.5/Math.PI,.5,-.5/Math.PI,.5),project:function(t){var e=this.projection.project(t),n=6378137;return e.multiplyBy(n)}}),r.CRS.EPSG900913=r.extend({},r.CRS.EPSG3857,{code:"EPSG:900913"}),r.CRS.EPSG4326=r.extend({},r.CRS,{code:"EPSG:4326",projection:r.Projection.LonLat,transformation:new r.Transformation(1/360,.5,-1/360,.5)}),r.Map=r.Class.extend({includes:r.Mixin.Events,options:{crs:r.CRS.EPSG3857,fadeAnimation:r.DomUtil.TRANSITION&&!r.Browser.android23,trackResize:!0,markerZoomAnimation:r.DomUtil.TRANSITION&&r.Browser.any3d},initialize:function(t,e){e=r.setOptions(this,e),this._initContainer(t),this._initLayout(),this._onResize=r.bind(this._onResize,this),this._initEvents(),e.maxBounds&&this.setMaxBounds(e.maxBounds),e.center&&e.zoom!==i&&this.setView(r.latLng(e.center),e.zoom,{reset:!0}),this._handlers=[],this._layers={},this._zoomBoundLayers={},this._tileLayersNum=0,this.callInitHooks(),this._addLayers(e.layers)},setView:function(t,e){return e=e===i?this.getZoom():e,this._resetView(r.latLng(t),this._limitZoom(e)),this},setZoom:function(t,e){return this._loaded?this.setView(this.getCenter(),t,{zoom:e}):(this._zoom=this._limitZoom(t),this)},zoomIn:function(t,e){return this.setZoom(this._zoom+(t||1),e)},zoomOut:function(t,e){return this.setZoom(this._zoom-(t||1),e)},setZoomAround:function(t,e,n){var i=this.getZoomScale(e),o=this.getSize().divideBy(2),s=t instanceof r.Point?t:this.latLngToContainerPoint(t),a=s.subtract(o).multiplyBy(1-1/i),l=this.containerPointToLatLng(o.add(a));return this.setView(l,e,{zoom:n})},fitBounds:function(t,e){e=e||{},t=t.getBounds?t.getBounds():r.latLngBounds(t);var n=r.point(e.paddingTopLeft||e.padding||[0,0]),i=r.point(e.paddingBottomRight||e.padding||[0,0]),o=this.getBoundsZoom(t,!1,n.add(i));o=e.maxZoom?Math.min(e.maxZoom,o):o;var s=i.subtract(n).divideBy(2),a=this.project(t.getSouthWest(),o),l=this.project(t.getNorthEast(),o),u=this.unproject(a.add(l).divideBy(2).add(s),o);return this.setView(u,o,e)},fitWorld:function(t){return this.fitBounds([[-90,-180],[90,180]],t)},panTo:function(t,e){return this.setView(t,this._zoom,{pan:e})},panBy:function(t){return this.fire("movestart"),this._rawPanBy(r.point(t)),this.fire("move"),this.fire("moveend")},setMaxBounds:function(t){return t=r.latLngBounds(t),this.options.maxBounds=t,t?(this._loaded&&this._panInsideMaxBounds(),this.on("moveend",this._panInsideMaxBounds,this)):this.off("moveend",this._panInsideMaxBounds,this)},panInsideBounds:function(t,e){var n=this.getCenter(),i=this._limitCenter(n,this._zoom,t);return n.equals(i)?this:this.panTo(i,e)},addLayer:function(t){var e=r.stamp(t);return this._layers[e]?this:(this._layers[e]=t,!t.options||isNaN(t.options.maxZoom)&&isNaN(t.options.minZoom)||(this._zoomBoundLayers[e]=t,this._updateZoomLevels()),this.options.zoomAnimation&&r.TileLayer&&t instanceof r.TileLayer&&(this._tileLayersNum++,this._tileLayersToLoad++,t.on("load",this._onTileLayerLoad,this)),this._loaded&&this._layerAdd(t),this)},removeLayer:function(t){var e=r.stamp(t);return this._layers[e]?(this._loaded&&t.onRemove(this),delete this._layers[e],this._loaded&&this.fire("layerremove",{layer:t}),this._zoomBoundLayers[e]&&(delete this._zoomBoundLayers[e],this._updateZoomLevels()),this.options.zoomAnimation&&r.TileLayer&&t instanceof r.TileLayer&&(this._tileLayersNum--,this._tileLayersToLoad--,t.off("load",this._onTileLayerLoad,this)),this):this},hasLayer:function(t){return!!t&&r.stamp(t)in this._layers},eachLayer:function(t,e){for(var n in this._layers)t.call(e,this._layers[n]);return this},invalidateSize:function(t){if(!this._loaded)return this;t=r.extend({animate:!1,pan:!0},t===!0?{animate:!0}:t);var e=this.getSize();this._sizeChanged=!0,this._initialCenter=null;var n=this.getSize(),i=e.divideBy(2).round(),o=n.divideBy(2).round(),s=i.subtract(o);return s.x||s.y?(t.animate&&t.pan?this.panBy(s):(t.pan&&this._rawPanBy(s),this.fire("move"),t.debounceMoveend?(clearTimeout(this._sizeTimer),this._sizeTimer=setTimeout(r.bind(this.fire,this,"moveend"),200)):this.fire("moveend")),this.fire("resize",{oldSize:e,newSize:n})):this},addHandler:function(t,e){if(!e)return this;var n=this[t]=new e(this);return this._handlers.push(n),this.options[t]&&n.enable(),this},remove:function(){this._loaded&&this.fire("unload"),this._initEvents("off");try{delete this._container._leaflet}catch(t){this._container._leaflet=i}return this._clearPanes(),this._clearControlPos&&this._clearControlPos(),this._clearHandlers(),this},getCenter:function(){return this._checkIfLoaded(),this._initialCenter&&!this._moved()?this._initialCenter:this.layerPointToLatLng(this._getCenterLayerPoint())},getZoom:function(){return this._zoom},getBounds:function(){var t=this.getPixelBounds(),e=this.unproject(t.getBottomLeft()),n=this.unproject(t.getTopRight());return new r.LatLngBounds(e,n)},getMinZoom:function(){return this.options.minZoom===i?this._layersMinZoom===i?0:this._layersMinZoom:this.options.minZoom},getMaxZoom:function(){return this.options.maxZoom===i?this._layersMaxZoom===i?1/0:this._layersMaxZoom:this.options.maxZoom},getBoundsZoom:function(t,e,n){t=r.latLngBounds(t);var i,o=this.getMinZoom()-(e?1:0),s=this.getMaxZoom(),a=this.getSize(),l=t.getNorthWest(),u=t.getSouthEast(),h=!0;n=r.point(n||[0,0]);do o++,i=this.project(u,o).subtract(this.project(l,o)).add(n),h=e?i.x<a.x||i.y<a.y:a.contains(i);while(h&&o<=s);return h&&e?null:e?o:o-1},getSize:function(){return this._size&&!this._sizeChanged||(this._size=new r.Point(this._container.clientWidth,this._container.clientHeight),this._sizeChanged=!1),this._size.clone()},getPixelBounds:function(){var t=this._getTopLeftPoint();return new r.Bounds(t,t.add(this.getSize()))},getPixelOrigin:function(){return this._checkIfLoaded(),this._initialTopLeftPoint},getPanes:function(){return this._panes},getContainer:function(){return this._container},getZoomScale:function(t){var e=this.options.crs;return e.scale(t)/e.scale(this._zoom)},getScaleZoom:function(t){return this._zoom+Math.log(t)/Math.LN2},project:function(t,e){return e=e===i?this._zoom:e,this.options.crs.latLngToPoint(r.latLng(t),e)},unproject:function(t,e){return e=e===i?this._zoom:e,this.options.crs.pointToLatLng(r.point(t),e)},layerPointToLatLng:function(t){var e=r.point(t).add(this.getPixelOrigin());return this.unproject(e)},latLngToLayerPoint:function(t){var e=this.project(r.latLng(t))._round();return e._subtract(this.getPixelOrigin())},containerPointToLayerPoint:function(t){return r.point(t).subtract(this._getMapPanePos())},layerPointToContainerPoint:function(t){return r.point(t).add(this._getMapPanePos())},containerPointToLatLng:function(t){var e=this.containerPointToLayerPoint(r.point(t));return this.layerPointToLatLng(e)},latLngToContainerPoint:function(t){return this.layerPointToContainerPoint(this.latLngToLayerPoint(r.latLng(t)))},mouseEventToContainerPoint:function(t){return r.DomEvent.getMousePosition(t,this._container)},mouseEventToLayerPoint:function(t){return this.containerPointToLayerPoint(this.mouseEventToContainerPoint(t))},mouseEventToLatLng:function(t){return this.layerPointToLatLng(this.mouseEventToLayerPoint(t))},_initContainer:function(t){var e=this._container=r.DomUtil.get(t);if(!e)throw new Error("Map container not found.");if(e._leaflet)throw new Error("Map container is already initialized.");e._leaflet=!0},_initLayout:function(){var t=this._container;r.DomUtil.addClass(t,"leaflet-container"+(r.Browser.touch?" leaflet-touch":"")+(r.Browser.retina?" leaflet-retina":"")+(r.Browser.ielt9?" leaflet-oldie":"")+(this.options.fadeAnimation?" leaflet-fade-anim":""));var e=r.DomUtil.getStyle(t,"position");"absolute"!==e&&"relative"!==e&&"fixed"!==e&&(t.style.position="relative"),this._initPanes(),this._initControlPos&&this._initControlPos()},_initPanes:function(){var t=this._panes={};this._mapPane=t.mapPane=this._createPane("leaflet-map-pane",this._container),this._tilePane=t.tilePane=this._createPane("leaflet-tile-pane",this._mapPane),t.objectsPane=this._createPane("leaflet-objects-pane",this._mapPane),t.shadowPane=this._createPane("leaflet-shadow-pane"),t.overlayPane=this._createPane("leaflet-overlay-pane"),t.markerPane=this._createPane("leaflet-marker-pane"),t.popupPane=this._createPane("leaflet-popup-pane");var e=" leaflet-zoom-hide";this.options.markerZoomAnimation||(r.DomUtil.addClass(t.markerPane,e),r.DomUtil.addClass(t.shadowPane,e),r.DomUtil.addClass(t.popupPane,e))},_createPane:function(t,e){return r.DomUtil.create("div",t,e||this._panes.objectsPane)},_clearPanes:function(){this._container.removeChild(this._mapPane)},_addLayers:function(t){t=t?r.Util.isArray(t)?t:[t]:[];for(var e=0,n=t.length;e<n;e++)this.addLayer(t[e])},_resetView:function(t,e,n,i){var o=this._zoom!==e;i||(this.fire("movestart"),o&&this.fire("zoomstart")),this._zoom=e,this._initialCenter=t,this._initialTopLeftPoint=this._getNewTopLeftPoint(t),n?this._initialTopLeftPoint._add(this._getMapPanePos()):r.DomUtil.setPosition(this._mapPane,new r.Point(0,0)),this._tileLayersToLoad=this._tileLayersNum;var s=!this._loaded;this._loaded=!0,this.fire("viewreset",{hard:!n}),s&&(this.fire("load"),this.eachLayer(this._layerAdd,this)),this.fire("move"),(o||i)&&this.fire("zoomend"),this.fire("moveend",{hard:!n})},_rawPanBy:function(t){r.DomUtil.setPosition(this._mapPane,this._getMapPanePos().subtract(t))},_getZoomSpan:function(){return this.getMaxZoom()-this.getMinZoom()},_updateZoomLevels:function(){var t,e=1/0,n=-(1/0),o=this._getZoomSpan();for(t in this._zoomBoundLayers){var r=this._zoomBoundLayers[t];isNaN(r.options.minZoom)||(e=Math.min(e,r.options.minZoom)),isNaN(r.options.maxZoom)||(n=Math.max(n,r.options.maxZoom))}t===i?this._layersMaxZoom=this._layersMinZoom=i:(this._layersMaxZoom=n,this._layersMinZoom=e),o!==this._getZoomSpan()&&this.fire("zoomlevelschange")},_panInsideMaxBounds:function(){this.panInsideBounds(this.options.maxBounds)},_checkIfLoaded:function(){if(!this._loaded)throw new Error("Set map center and zoom first.")},_initEvents:function(e){if(r.DomEvent){e=e||"on",r.DomEvent[e](this._container,"click",this._onMouseClick,this);var n,i,o=["dblclick","mousedown","mouseup","mouseenter","mouseleave","mousemove","contextmenu"];for(n=0,i=o.length;n<i;n++)r.DomEvent[e](this._container,o[n],this._fireMouseEvent,this);this.options.trackResize&&r.DomEvent[e](t,"resize",this._onResize,this)}},_onResize:function(){r.Util.cancelAnimFrame(this._resizeRequest),this._resizeRequest=r.Util.requestAnimFrame(function(){this.invalidateSize({debounceMoveend:!0})},this,!1,this._container)},_onMouseClick:function(t){!this._loaded||!t._simulated&&(this.dragging&&this.dragging.moved()||this.boxZoom&&this.boxZoom.moved())||r.DomEvent._skipped(t)||(this.fire("preclick"),this._fireMouseEvent(t))},_fireMouseEvent:function(t){if(this._loaded&&!r.DomEvent._skipped(t)){var e=t.type;if(e="mouseenter"===e?"mouseover":"mouseleave"===e?"mouseout":e,this.hasEventListeners(e)){"contextmenu"===e&&r.DomEvent.preventDefault(t);var n=this.mouseEventToContainerPoint(t),i=this.containerPointToLayerPoint(n),o=this.layerPointToLatLng(i);this.fire(e,{latlng:o,layerPoint:i,containerPoint:n,originalEvent:t})}}},_onTileLayerLoad:function(){this._tileLayersToLoad--,this._tileLayersNum&&!this._tileLayersToLoad&&this.fire("tilelayersload")},_clearHandlers:function(){for(var t=0,e=this._handlers.length;t<e;t++)this._handlers[t].disable()},whenReady:function(t,e){return this._loaded?t.call(e||this,this):this.on("load",t,e),this},_layerAdd:function(t){t.onAdd(this),this.fire("layeradd",{layer:t})},_getMapPanePos:function(){return r.DomUtil.getPosition(this._mapPane)},_moved:function(){var t=this._getMapPanePos();return t&&!t.equals([0,0])},_getTopLeftPoint:function(){return this.getPixelOrigin().subtract(this._getMapPanePos())},_getNewTopLeftPoint:function(t,e){var n=this.getSize()._divideBy(2);return this.project(t,e)._subtract(n)._round()},_latLngToNewLayerPoint:function(t,e,n){var i=this._getNewTopLeftPoint(n,e).add(this._getMapPanePos());return this.project(t,e)._subtract(i)},_getCenterLayerPoint:function(){return this.containerPointToLayerPoint(this.getSize()._divideBy(2))},_getCenterOffset:function(t){return this.latLngToLayerPoint(t).subtract(this._getCenterLayerPoint())},_limitCenter:function(t,e,n){if(!n)return t;var i=this.project(t,e),o=this.getSize().divideBy(2),s=new r.Bounds(i.subtract(o),i.add(o)),a=this._getBoundsOffset(s,n,e);return this.unproject(i.add(a),e)},_limitOffset:function(t,e){if(!e)return t;var n=this.getPixelBounds(),i=new r.Bounds(n.min.add(t),n.max.add(t));return t.add(this._getBoundsOffset(i,e))},_getBoundsOffset:function(t,e,n){var i=this.project(e.getNorthWest(),n).subtract(t.min),o=this.project(e.getSouthEast(),n).subtract(t.max),s=this._rebound(i.x,-o.x),a=this._rebound(i.y,-o.y);return new r.Point(s,a)},_rebound:function(t,e){return t+e>0?Math.round(t-e)/2:Math.max(0,Math.ceil(t))-Math.max(0,Math.floor(e))},_limitZoom:function(t){var e=this.getMinZoom(),n=this.getMaxZoom();return Math.max(e,Math.min(n,t))}}),r.map=function(t,e){return new r.Map(t,e)},r.Projection.Mercator={MAX_LATITUDE:85.0840591556,R_MINOR:6356752.314245179,R_MAJOR:6378137,project:function(t){var e=r.LatLng.DEG_TO_RAD,n=this.MAX_LATITUDE,i=Math.max(Math.min(n,t.lat),-n),o=this.R_MAJOR,s=this.R_MINOR,a=t.lng*e*o,l=i*e,u=s/o,h=Math.sqrt(1-u*u),c=h*Math.sin(l);c=Math.pow((1-c)/(1+c),.5*h);var d=Math.tan(.5*(.5*Math.PI-l))/c;return l=-o*Math.log(d),new r.Point(a,l)},unproject:function(t){for(var e,n=r.LatLng.RAD_TO_DEG,i=this.R_MAJOR,o=this.R_MINOR,s=t.x*n/i,a=o/i,l=Math.sqrt(1-a*a),u=Math.exp(-t.y/i),h=Math.PI/2-2*Math.atan(u),c=15,d=1e-7,p=c,f=.1;Math.abs(f)>d&&--p>0;)e=l*Math.sin(h),f=Math.PI/2-2*Math.atan(u*Math.pow((1-e)/(1+e),.5*l))-h,h+=f;return new r.LatLng(h*n,s)}},r.CRS.EPSG3395=r.extend({},r.CRS,{code:"EPSG:3395",projection:r.Projection.Mercator,transformation:function(){var t=r.Projection.Mercator,e=t.R_MAJOR,n=.5/(Math.PI*e);return new r.Transformation(n,.5,(-n),.5)}()}),r.TileLayer=r.Class.extend({includes:r.Mixin.Events,options:{minZoom:0,maxZoom:18,tileSize:256,subdomains:"abc",errorTileUrl:"",attribution:"",zoomOffset:0,opacity:1,unloadInvisibleTiles:r.Browser.mobile,updateWhenIdle:r.Browser.mobile},initialize:function(t,e){e=r.setOptions(this,e),e.detectRetina&&r.Browser.retina&&e.maxZoom>0&&(e.tileSize=Math.floor(e.tileSize/2),e.zoomOffset++,e.minZoom>0&&e.minZoom--,this.options.maxZoom--),e.bounds&&(e.bounds=r.latLngBounds(e.bounds)),this._url=t;var n=this.options.subdomains;"string"==typeof n&&(this.options.subdomains=n.split(""))},onAdd:function(t){this._map=t,this._animated=t._zoomAnimated,this._initContainer(),t.on({viewreset:this._reset,moveend:this._update},this),this._animated&&t.on({zoomanim:this._animateZoom,zoomend:this._endZoomAnim},this),this.options.updateWhenIdle||(this._limitedUpdate=r.Util.limitExecByInterval(this._update,150,this),t.on("move",this._limitedUpdate,this)),this._reset(),this._update()},addTo:function(t){return t.addLayer(this),this},onRemove:function(t){this._container.parentNode.removeChild(this._container),t.off({viewreset:this._reset,moveend:this._update},this),this._animated&&t.off({zoomanim:this._animateZoom,zoomend:this._endZoomAnim},this),this.options.updateWhenIdle||t.off("move",this._limitedUpdate,this),this._container=null,this._map=null},bringToFront:function(){var t=this._map._panes.tilePane;return this._container&&(t.appendChild(this._container),this._setAutoZIndex(t,Math.max)),this},bringToBack:function(){var t=this._map._panes.tilePane;return this._container&&(t.insertBefore(this._container,t.firstChild),this._setAutoZIndex(t,Math.min)),this},getAttribution:function(){return this.options.attribution},getContainer:function(){return this._container},setOpacity:function(t){return this.options.opacity=t,this._map&&this._updateOpacity(),this},setZIndex:function(t){return this.options.zIndex=t,this._updateZIndex(),this},setUrl:function(t,e){return this._url=t,e||this.redraw(),this},redraw:function(){return this._map&&(this._reset({hard:!0}),this._update()),this},_updateZIndex:function(){this._container&&this.options.zIndex!==i&&(this._container.style.zIndex=this.options.zIndex)},_setAutoZIndex:function(t,e){var n,i,o,r=t.children,s=-e(1/0,-(1/0));for(i=0,o=r.length;i<o;i++)r[i]!==this._container&&(n=parseInt(r[i].style.zIndex,10),isNaN(n)||(s=e(s,n)));this.options.zIndex=this._container.style.zIndex=(isFinite(s)?s:0)+e(1,-1)},_updateOpacity:function(){var t,e=this._tiles;if(r.Browser.ielt9)for(t in e)r.DomUtil.setOpacity(e[t],this.options.opacity);else r.DomUtil.setOpacity(this._container,this.options.opacity)},_initContainer:function(){var t=this._map._panes.tilePane;if(!this._container){if(this._container=r.DomUtil.create("div","leaflet-layer"),this._updateZIndex(),this._animated){var e="leaflet-tile-container";this._bgBuffer=r.DomUtil.create("div",e,this._container),this._tileContainer=r.DomUtil.create("div",e,this._container)}else this._tileContainer=this._container;t.appendChild(this._container),this.options.opacity<1&&this._updateOpacity()}},_reset:function(t){for(var e in this._tiles)this.fire("tileunload",{tile:this._tiles[e]});this._tiles={},this._tilesToLoad=0,this.options.reuseTiles&&(this._unusedTiles=[]),this._tileContainer.innerHTML="",this._animated&&t&&t.hard&&this._clearBgBuffer(),this._initContainer()},_getTileSize:function(){var t=this._map,e=t.getZoom()+this.options.zoomOffset,n=this.options.maxNativeZoom,i=this.options.tileSize;return n&&e>n&&(i=Math.round(t.getZoomScale(e)/t.getZoomScale(n)*i)),i},_update:function(){if(this._map){var t=this._map,e=t.getPixelBounds(),n=t.getZoom(),i=this._getTileSize();if(!(n>this.options.maxZoom||n<this.options.minZoom)){var o=r.bounds(e.min.divideBy(i)._floor(),e.max.divideBy(i)._floor());this._addTilesFromCenterOut(o),(this.options.unloadInvisibleTiles||this.options.reuseTiles)&&this._removeOtherTiles(o)}}},_addTilesFromCenterOut:function(t){var e,i,o,s=[],a=t.getCenter();for(e=t.min.y;e<=t.max.y;e++)for(i=t.min.x;i<=t.max.x;i++)o=new r.Point(i,e),this._tileShouldBeLoaded(o)&&s.push(o);var l=s.length;if(0!==l){s.sort(function(t,e){return t.distanceTo(a)-e.distanceTo(a)});var u=n.createDocumentFragment();for(this._tilesToLoad||this.fire("loading"),this._tilesToLoad+=l,i=0;i<l;i++)this._addTile(s[i],u);this._tileContainer.appendChild(u)}},_tileShouldBeLoaded:function(t){if(t.x+":"+t.y in this._tiles)return!1;var e=this.options;if(!e.continuousWorld){var n=this._getWrapTileNum();if(e.noWrap&&(t.x<0||t.x>=n.x)||t.y<0||t.y>=n.y)return!1}if(e.bounds){var i=this._getTileSize(),o=t.multiplyBy(i),r=o.add([i,i]),s=this._map.unproject(o),a=this._map.unproject(r);if(e.continuousWorld||e.noWrap||(s=s.wrap(),a=a.wrap()),!e.bounds.intersects([s,a]))return!1}return!0},_removeOtherTiles:function(t){var e,n,i,o;for(o in this._tiles)e=o.split(":"),n=parseInt(e[0],10),i=parseInt(e[1],10),(n<t.min.x||n>t.max.x||i<t.min.y||i>t.max.y)&&this._removeTile(o)},_removeTile:function(t){var e=this._tiles[t];this.fire("tileunload",{tile:e,url:e.src}),this.options.reuseTiles?(r.DomUtil.removeClass(e,"leaflet-tile-loaded"),this._unusedTiles.push(e)):e.parentNode===this._tileContainer&&this._tileContainer.removeChild(e),r.Browser.android||(e.onload=null,e.src=r.Util.emptyImageUrl),delete this._tiles[t]},_addTile:function(t,e){var n=this._getTilePos(t),i=this._getTile();r.DomUtil.setPosition(i,n,r.Browser.chrome),this._tiles[t.x+":"+t.y]=i,this._loadTile(i,t),i.parentNode!==this._tileContainer&&e.appendChild(i)},_getZoomForUrl:function(){var t=this.options,e=this._map.getZoom();return t.zoomReverse&&(e=t.maxZoom-e),e+=t.zoomOffset,t.maxNativeZoom?Math.min(e,t.maxNativeZoom):e},_getTilePos:function(t){var e=this._map.getPixelOrigin(),n=this._getTileSize();return t.multiplyBy(n).subtract(e)},getTileUrl:function(t){return r.Util.template(this._url,r.extend({s:this._getSubdomain(t),z:t.z,x:t.x,y:t.y},this.options))},_getWrapTileNum:function(){var t=this._map.options.crs,e=t.getSize(this._map.getZoom());return e.divideBy(this._getTileSize())._floor()},_adjustTilePoint:function(t){var e=this._getWrapTileNum();this.options.continuousWorld||this.options.noWrap||(t.x=(t.x%e.x+e.x)%e.x),this.options.tms&&(t.y=e.y-t.y-1),t.z=this._getZoomForUrl()},_getSubdomain:function(t){var e=Math.abs(t.x+t.y)%this.options.subdomains.length;return this.options.subdomains[e]},_getTile:function(){if(this.options.reuseTiles&&this._unusedTiles.length>0){var t=this._unusedTiles.pop();return this._resetTile(t),t}return this._createTile()},_resetTile:function(){},_createTile:function(){var t=r.DomUtil.create("img","leaflet-tile");return t.style.width=t.style.height=this._getTileSize()+"px",t.galleryimg="no",t.onselectstart=t.onmousemove=r.Util.falseFn,r.Browser.ielt9&&this.options.opacity!==i&&r.DomUtil.setOpacity(t,this.options.opacity),r.Browser.mobileWebkit3d&&(t.style.WebkitBackfaceVisibility="hidden"),t},_loadTile:function(t,e){t._layer=this,t.onload=this._tileOnLoad,t.onerror=this._tileOnError,this._adjustTilePoint(e),t.src=this.getTileUrl(e),this.fire("tileloadstart",{tile:t,url:t.src})},_tileLoaded:function(){this._tilesToLoad--,this._animated&&r.DomUtil.addClass(this._tileContainer,"leaflet-zoom-animated"),this._tilesToLoad||(this.fire("load"),this._animated&&(clearTimeout(this._clearBgBufferTimer),this._clearBgBufferTimer=setTimeout(r.bind(this._clearBgBuffer,this),500)))},_tileOnLoad:function(){var t=this._layer;this.src!==r.Util.emptyImageUrl&&(r.DomUtil.addClass(this,"leaflet-tile-loaded"),t.fire("tileload",{tile:this,url:this.src})),t._tileLoaded()},_tileOnError:function(){var t=this._layer;t.fire("tileerror",{tile:this,url:this.src});var e=t.options.errorTileUrl;e&&(this.src=e),t._tileLoaded()}}),r.tileLayer=function(t,e){return new r.TileLayer(t,e)},r.TileLayer.WMS=r.TileLayer.extend({defaultWmsParams:{service:"WMS",request:"GetMap",version:"1.1.1",layers:"",styles:"",format:"image/jpeg",transparent:!1},initialize:function(t,e){this._url=t;var n=r.extend({},this.defaultWmsParams),i=e.tileSize||this.options.tileSize;e.detectRetina&&r.Browser.retina?n.width=n.height=2*i:n.width=n.height=i;for(var o in e)this.options.hasOwnProperty(o)||"crs"===o||(n[o]=e[o]);this.wmsParams=n,r.setOptions(this,e)},onAdd:function(t){this._crs=this.options.crs||t.options.crs,this._wmsVersion=parseFloat(this.wmsParams.version);var e=this._wmsVersion>=1.3?"crs":"srs";this.wmsParams[e]=this._crs.code,r.TileLayer.prototype.onAdd.call(this,t)},getTileUrl:function(t){var e=this._map,n=this.options.tileSize,i=t.multiplyBy(n),o=i.add([n,n]),s=this._crs.project(e.unproject(i,t.z)),a=this._crs.project(e.unproject(o,t.z)),l=this._wmsVersion>=1.3&&this._crs===r.CRS.EPSG4326?[a.y,s.x,s.y,a.x].join(","):[s.x,a.y,a.x,s.y].join(","),u=r.Util.template(this._url,{s:this._getSubdomain(t)});return u+r.Util.getParamString(this.wmsParams,u,!0)+"&BBOX="+l},setParams:function(t,e){return r.extend(this.wmsParams,t),e||this.redraw(),this}}),r.tileLayer.wms=function(t,e){return new r.TileLayer.WMS(t,e)},r.TileLayer.Canvas=r.TileLayer.extend({options:{async:!1},initialize:function(t){r.setOptions(this,t)},redraw:function(){this._map&&(this._reset({hard:!0}),this._update());for(var t in this._tiles)this._redrawTile(this._tiles[t]);return this},_redrawTile:function(t){this.drawTile(t,t._tilePoint,this._map._zoom)},_createTile:function(){var t=r.DomUtil.create("canvas","leaflet-tile");return t.width=t.height=this.options.tileSize,t.onselectstart=t.onmousemove=r.Util.falseFn,t},_loadTile:function(t,e){t._layer=this,t._tilePoint=e,this._redrawTile(t),this.options.async||this.tileDrawn(t)},drawTile:function(){},tileDrawn:function(t){this._tileOnLoad.call(t)}}),r.tileLayer.canvas=function(t){return new r.TileLayer.Canvas(t)},r.ImageOverlay=r.Class.extend({includes:r.Mixin.Events,options:{opacity:1},initialize:function(t,e,n){this._url=t,this._bounds=r.latLngBounds(e),r.setOptions(this,n)},onAdd:function(t){this._map=t,this._image||this._initImage(),t._panes.overlayPane.appendChild(this._image),
-t.on("viewreset",this._reset,this),t.options.zoomAnimation&&r.Browser.any3d&&t.on("zoomanim",this._animateZoom,this),this._reset()},onRemove:function(t){t.getPanes().overlayPane.removeChild(this._image),t.off("viewreset",this._reset,this),t.options.zoomAnimation&&t.off("zoomanim",this._animateZoom,this)},addTo:function(t){return t.addLayer(this),this},setOpacity:function(t){return this.options.opacity=t,this._updateOpacity(),this},bringToFront:function(){return this._image&&this._map._panes.overlayPane.appendChild(this._image),this},bringToBack:function(){var t=this._map._panes.overlayPane;return this._image&&t.insertBefore(this._image,t.firstChild),this},setUrl:function(t){this._url=t,this._image.src=this._url},getAttribution:function(){return this.options.attribution},_initImage:function(){this._image=r.DomUtil.create("img","leaflet-image-layer"),this._map.options.zoomAnimation&&r.Browser.any3d?r.DomUtil.addClass(this._image,"leaflet-zoom-animated"):r.DomUtil.addClass(this._image,"leaflet-zoom-hide"),this._updateOpacity(),r.extend(this._image,{galleryimg:"no",onselectstart:r.Util.falseFn,onmousemove:r.Util.falseFn,onload:r.bind(this._onImageLoad,this),src:this._url})},_animateZoom:function(t){var e=this._map,n=this._image,i=e.getZoomScale(t.zoom),o=this._bounds.getNorthWest(),s=this._bounds.getSouthEast(),a=e._latLngToNewLayerPoint(o,t.zoom,t.center),l=e._latLngToNewLayerPoint(s,t.zoom,t.center)._subtract(a),u=a._add(l._multiplyBy(.5*(1-1/i)));n.style[r.DomUtil.TRANSFORM]=r.DomUtil.getTranslateString(u)+" scale("+i+") "},_reset:function(){var t=this._image,e=this._map.latLngToLayerPoint(this._bounds.getNorthWest()),n=this._map.latLngToLayerPoint(this._bounds.getSouthEast())._subtract(e);r.DomUtil.setPosition(t,e),t.style.width=n.x+"px",t.style.height=n.y+"px"},_onImageLoad:function(){this.fire("load")},_updateOpacity:function(){r.DomUtil.setOpacity(this._image,this.options.opacity)}}),r.imageOverlay=function(t,e,n){return new r.ImageOverlay(t,e,n)},r.Icon=r.Class.extend({options:{className:""},initialize:function(t){r.setOptions(this,t)},createIcon:function(t){return this._createIcon("icon",t)},createShadow:function(t){return this._createIcon("shadow",t)},_createIcon:function(t,e){var n=this._getIconUrl(t);if(!n){if("icon"===t)throw new Error("iconUrl not set in Icon options (see the docs).");return null}var i;return i=e&&"IMG"===e.tagName?this._createImg(n,e):this._createImg(n),this._setIconStyles(i,t),i},_setIconStyles:function(t,e){var n,i=this.options,o=r.point(i[e+"Size"]);n="shadow"===e?r.point(i.shadowAnchor||i.iconAnchor):r.point(i.iconAnchor),!n&&o&&(n=o.divideBy(2,!0)),t.className="leaflet-marker-"+e+" "+i.className,n&&(t.style.marginLeft=-n.x+"px",t.style.marginTop=-n.y+"px"),o&&(t.style.width=o.x+"px",t.style.height=o.y+"px")},_createImg:function(t,e){return e=e||n.createElement("img"),e.src=t,e},_getIconUrl:function(t){return r.Browser.retina&&this.options[t+"RetinaUrl"]?this.options[t+"RetinaUrl"]:this.options[t+"Url"]}}),r.icon=function(t){return new r.Icon(t)},r.Icon.Default=r.Icon.extend({options:{iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[1,-34],shadowSize:[41,41]},_getIconUrl:function(t){var e=t+"Url";if(this.options[e])return this.options[e];r.Browser.retina&&"icon"===t&&(t+="-2x");var n=r.Icon.Default.imagePath;if(!n)throw new Error("Couldn't autodetect L.Icon.Default.imagePath, set it manually.");return n+"/marker-"+t+".png"}}),r.Icon.Default.imagePath=function(){var t,e,i,o,r,s=n.getElementsByTagName("script"),a=/[\/^]leaflet[\-\._]?([\w\-\._]*)\.js\??/;for(t=0,e=s.length;t<e;t++)if(i=s[t].src,o=i.match(a))return r=i.split(a)[0],(r?r+"/":"")+"images"}(),r.Marker=r.Class.extend({includes:r.Mixin.Events,options:{icon:new r.Icon.Default,title:"",alt:"",clickable:!0,draggable:!1,keyboard:!0,zIndexOffset:0,opacity:1,riseOnHover:!1,riseOffset:250},initialize:function(t,e){r.setOptions(this,e),this._latlng=r.latLng(t)},onAdd:function(t){this._map=t,t.on("viewreset",this.update,this),this._initIcon(),this.update(),this.fire("add"),t.options.zoomAnimation&&t.options.markerZoomAnimation&&t.on("zoomanim",this._animateZoom,this)},addTo:function(t){return t.addLayer(this),this},onRemove:function(t){this.dragging&&this.dragging.disable(),this._removeIcon(),this._removeShadow(),this.fire("remove"),t.off({viewreset:this.update,zoomanim:this._animateZoom},this),this._map=null},getLatLng:function(){return this._latlng},setLatLng:function(t){return this._latlng=r.latLng(t),this.update(),this.fire("move",{latlng:this._latlng})},setZIndexOffset:function(t){return this.options.zIndexOffset=t,this.update(),this},setIcon:function(t){return this.options.icon=t,this._map&&(this._initIcon(),this.update()),this._popup&&this.bindPopup(this._popup),this},update:function(){return this._icon&&this._setPos(this._map.latLngToLayerPoint(this._latlng).round()),this},_initIcon:function(){var t=this.options,e=this._map,n=e.options.zoomAnimation&&e.options.markerZoomAnimation,i=n?"leaflet-zoom-animated":"leaflet-zoom-hide",o=t.icon.createIcon(this._icon),s=!1;o!==this._icon&&(this._icon&&this._removeIcon(),s=!0,t.title&&(o.title=t.title),t.alt&&(o.alt=t.alt)),r.DomUtil.addClass(o,i),t.keyboard&&(o.tabIndex="0"),this._icon=o,this._initInteraction(),t.riseOnHover&&r.DomEvent.on(o,"mouseover",this._bringToFront,this).on(o,"mouseout",this._resetZIndex,this);var a=t.icon.createShadow(this._shadow),l=!1;a!==this._shadow&&(this._removeShadow(),l=!0),a&&r.DomUtil.addClass(a,i),this._shadow=a,t.opacity<1&&this._updateOpacity();var u=this._map._panes;s&&u.markerPane.appendChild(this._icon),a&&l&&u.shadowPane.appendChild(this._shadow)},_removeIcon:function(){this.options.riseOnHover&&r.DomEvent.off(this._icon,"mouseover",this._bringToFront).off(this._icon,"mouseout",this._resetZIndex),this._map._panes.markerPane.removeChild(this._icon),this._icon=null},_removeShadow:function(){this._shadow&&this._map._panes.shadowPane.removeChild(this._shadow),this._shadow=null},_setPos:function(t){r.DomUtil.setPosition(this._icon,t),this._shadow&&r.DomUtil.setPosition(this._shadow,t),this._zIndex=t.y+this.options.zIndexOffset,this._resetZIndex()},_updateZIndex:function(t){this._icon.style.zIndex=this._zIndex+t},_animateZoom:function(t){var e=this._map._latLngToNewLayerPoint(this._latlng,t.zoom,t.center).round();this._setPos(e)},_initInteraction:function(){if(this.options.clickable){var t=this._icon,e=["dblclick","mousedown","mouseover","mouseout","contextmenu"];r.DomUtil.addClass(t,"leaflet-clickable"),r.DomEvent.on(t,"click",this._onMouseClick,this),r.DomEvent.on(t,"keypress",this._onKeyPress,this);for(var n=0;n<e.length;n++)r.DomEvent.on(t,e[n],this._fireMouseEvent,this);r.Handler.MarkerDrag&&(this.dragging=new r.Handler.MarkerDrag(this),this.options.draggable&&this.dragging.enable())}},_onMouseClick:function(t){var e=this.dragging&&this.dragging.moved();(this.hasEventListeners(t.type)||e)&&r.DomEvent.stopPropagation(t),e||(this.dragging&&this.dragging._enabled||!this._map.dragging||!this._map.dragging.moved())&&this.fire(t.type,{originalEvent:t,latlng:this._latlng})},_onKeyPress:function(t){13===t.keyCode&&this.fire("click",{originalEvent:t,latlng:this._latlng})},_fireMouseEvent:function(t){this.fire(t.type,{originalEvent:t,latlng:this._latlng}),"contextmenu"===t.type&&this.hasEventListeners(t.type)&&r.DomEvent.preventDefault(t),"mousedown"!==t.type?r.DomEvent.stopPropagation(t):r.DomEvent.preventDefault(t)},setOpacity:function(t){return this.options.opacity=t,this._map&&this._updateOpacity(),this},_updateOpacity:function(){r.DomUtil.setOpacity(this._icon,this.options.opacity),this._shadow&&r.DomUtil.setOpacity(this._shadow,this.options.opacity)},_bringToFront:function(){this._updateZIndex(this.options.riseOffset)},_resetZIndex:function(){this._updateZIndex(0)}}),r.marker=function(t,e){return new r.Marker(t,e)},r.DivIcon=r.Icon.extend({options:{iconSize:[12,12],className:"leaflet-div-icon",html:!1},createIcon:function(t){var e=t&&"DIV"===t.tagName?t:n.createElement("div"),i=this.options;return i.html!==!1?e.innerHTML=i.html:e.innerHTML="",i.bgPos&&(e.style.backgroundPosition=-i.bgPos.x+"px "+-i.bgPos.y+"px"),this._setIconStyles(e,"icon"),e},createShadow:function(){return null}}),r.divIcon=function(t){return new r.DivIcon(t)},r.Map.mergeOptions({closePopupOnClick:!0}),r.Popup=r.Class.extend({includes:r.Mixin.Events,options:{minWidth:50,maxWidth:300,autoPan:!0,closeButton:!0,offset:[0,7],autoPanPadding:[5,5],keepInView:!1,className:"",zoomAnimation:!0},initialize:function(t,e){r.setOptions(this,t),this._source=e,this._animated=r.Browser.any3d&&this.options.zoomAnimation,this._isOpen=!1},onAdd:function(t){this._map=t,this._container||this._initLayout();var e=t.options.fadeAnimation;e&&r.DomUtil.setOpacity(this._container,0),t._panes.popupPane.appendChild(this._container),t.on(this._getEvents(),this),this.update(),e&&r.DomUtil.setOpacity(this._container,1),this.fire("open"),t.fire("popupopen",{popup:this}),this._source&&this._source.fire("popupopen",{popup:this})},addTo:function(t){return t.addLayer(this),this},openOn:function(t){return t.openPopup(this),this},onRemove:function(t){t._panes.popupPane.removeChild(this._container),r.Util.falseFn(this._container.offsetWidth),t.off(this._getEvents(),this),t.options.fadeAnimation&&r.DomUtil.setOpacity(this._container,0),this._map=null,this.fire("close"),t.fire("popupclose",{popup:this}),this._source&&this._source.fire("popupclose",{popup:this})},getLatLng:function(){return this._latlng},setLatLng:function(t){return this._latlng=r.latLng(t),this._map&&(this._updatePosition(),this._adjustPan()),this},getContent:function(){return this._content},setContent:function(t){return this._content=t,this.update(),this},update:function(){this._map&&(this._container.style.visibility="hidden",this._updateContent(),this._updateLayout(),this._updatePosition(),this._container.style.visibility="",this._adjustPan())},_getEvents:function(){var t={viewreset:this._updatePosition};return this._animated&&(t.zoomanim=this._zoomAnimation),("closeOnClick"in this.options?this.options.closeOnClick:this._map.options.closePopupOnClick)&&(t.preclick=this._close),this.options.keepInView&&(t.moveend=this._adjustPan),t},_close:function(){this._map&&this._map.closePopup(this)},_initLayout:function(){var t,e="leaflet-popup",n=e+" "+this.options.className+" leaflet-zoom-"+(this._animated?"animated":"hide"),i=this._container=r.DomUtil.create("div",n);this.options.closeButton&&(t=this._closeButton=r.DomUtil.create("a",e+"-close-button",i),t.href="#close",t.innerHTML="&#215;",r.DomEvent.disableClickPropagation(t),r.DomEvent.on(t,"click",this._onCloseButtonClick,this));var o=this._wrapper=r.DomUtil.create("div",e+"-content-wrapper",i);r.DomEvent.disableClickPropagation(o),this._contentNode=r.DomUtil.create("div",e+"-content",o),r.DomEvent.disableScrollPropagation(this._contentNode),r.DomEvent.on(o,"contextmenu",r.DomEvent.stopPropagation),this._tipContainer=r.DomUtil.create("div",e+"-tip-container",i),this._tip=r.DomUtil.create("div",e+"-tip",this._tipContainer)},_updateContent:function(){if(this._content){if("string"==typeof this._content)this._contentNode.innerHTML=this._content;else{for(;this._contentNode.hasChildNodes();)this._contentNode.removeChild(this._contentNode.firstChild);this._contentNode.appendChild(this._content)}this.fire("contentupdate")}},_updateLayout:function(){var t=this._contentNode,e=t.style;e.width="",e.whiteSpace="nowrap";var n=t.offsetWidth;n=Math.min(n,this.options.maxWidth),n=Math.max(n,this.options.minWidth),e.width=n+1+"px",e.whiteSpace="",e.height="";var i=t.offsetHeight,o=this.options.maxHeight,s="leaflet-popup-scrolled";o&&i>o?(e.height=o+"px",r.DomUtil.addClass(t,s)):r.DomUtil.removeClass(t,s),this._containerWidth=this._container.offsetWidth},_updatePosition:function(){if(this._map){var t=this._map.latLngToLayerPoint(this._latlng),e=this._animated,n=r.point(this.options.offset);e&&r.DomUtil.setPosition(this._container,t),this._containerBottom=-n.y-(e?0:t.y),this._containerLeft=-Math.round(this._containerWidth/2)+n.x+(e?0:t.x),this._container.style.bottom=this._containerBottom+"px",this._container.style.left=this._containerLeft+"px"}},_zoomAnimation:function(t){var e=this._map._latLngToNewLayerPoint(this._latlng,t.zoom,t.center);r.DomUtil.setPosition(this._container,e)},_adjustPan:function(){if(this.options.autoPan){var t=this._map,e=this._container.offsetHeight,n=this._containerWidth,i=new r.Point(this._containerLeft,-e-this._containerBottom);this._animated&&i._add(r.DomUtil.getPosition(this._container));var o=t.layerPointToContainerPoint(i),s=r.point(this.options.autoPanPadding),a=r.point(this.options.autoPanPaddingTopLeft||s),l=r.point(this.options.autoPanPaddingBottomRight||s),u=t.getSize(),h=0,c=0;o.x+n+l.x>u.x&&(h=o.x+n-u.x+l.x),o.x-h-a.x<0&&(h=o.x-a.x),o.y+e+l.y>u.y&&(c=o.y+e-u.y+l.y),o.y-c-a.y<0&&(c=o.y-a.y),(h||c)&&t.fire("autopanstart").panBy([h,c])}},_onCloseButtonClick:function(t){this._close(),r.DomEvent.stop(t)}}),r.popup=function(t,e){return new r.Popup(t,e)},r.Map.include({openPopup:function(t,e,n){if(this.closePopup(),!(t instanceof r.Popup)){var i=t;t=new r.Popup(n).setLatLng(e).setContent(i)}return t._isOpen=!0,this._popup=t,this.addLayer(t)},closePopup:function(t){return t&&t!==this._popup||(t=this._popup,this._popup=null),t&&(this.removeLayer(t),t._isOpen=!1),this}}),r.Marker.include({openPopup:function(){return this._popup&&this._map&&!this._map.hasLayer(this._popup)&&(this._popup.setLatLng(this._latlng),this._map.openPopup(this._popup)),this},closePopup:function(){return this._popup&&this._popup._close(),this},togglePopup:function(){return this._popup&&(this._popup._isOpen?this.closePopup():this.openPopup()),this},bindPopup:function(t,e){var n=r.point(this.options.icon.options.popupAnchor||[0,0]);return n=n.add(r.Popup.prototype.options.offset),e&&e.offset&&(n=n.add(e.offset)),e=r.extend({offset:n},e),this._popupHandlersAdded||(this.on("click",this.togglePopup,this).on("remove",this.closePopup,this).on("move",this._movePopup,this),this._popupHandlersAdded=!0),t instanceof r.Popup?(r.setOptions(t,e),this._popup=t,t._source=this):this._popup=new r.Popup(e,this).setContent(t),this},setPopupContent:function(t){return this._popup&&this._popup.setContent(t),this},unbindPopup:function(){return this._popup&&(this._popup=null,this.off("click",this.togglePopup,this).off("remove",this.closePopup,this).off("move",this._movePopup,this),this._popupHandlersAdded=!1),this},getPopup:function(){return this._popup},_movePopup:function(t){this._popup.setLatLng(t.latlng)}}),r.LayerGroup=r.Class.extend({initialize:function(t){this._layers={};var e,n;if(t)for(e=0,n=t.length;e<n;e++)this.addLayer(t[e])},addLayer:function(t){var e=this.getLayerId(t);return this._layers[e]=t,this._map&&this._map.addLayer(t),this},removeLayer:function(t){var e=t in this._layers?t:this.getLayerId(t);return this._map&&this._layers[e]&&this._map.removeLayer(this._layers[e]),delete this._layers[e],this},hasLayer:function(t){return!!t&&(t in this._layers||this.getLayerId(t)in this._layers)},clearLayers:function(){return this.eachLayer(this.removeLayer,this),this},invoke:function(t){var e,n,i=Array.prototype.slice.call(arguments,1);for(e in this._layers)n=this._layers[e],n[t]&&n[t].apply(n,i);return this},onAdd:function(t){this._map=t,this.eachLayer(t.addLayer,t)},onRemove:function(t){this.eachLayer(t.removeLayer,t),this._map=null},addTo:function(t){return t.addLayer(this),this},eachLayer:function(t,e){for(var n in this._layers)t.call(e,this._layers[n]);return this},getLayer:function(t){return this._layers[t]},getLayers:function(){var t=[];for(var e in this._layers)t.push(this._layers[e]);return t},setZIndex:function(t){return this.invoke("setZIndex",t)},getLayerId:function(t){return r.stamp(t)}}),r.layerGroup=function(t){return new r.LayerGroup(t)},r.FeatureGroup=r.LayerGroup.extend({includes:r.Mixin.Events,statics:{EVENTS:"click dblclick mouseover mouseout mousemove contextmenu popupopen popupclose"},addLayer:function(t){return this.hasLayer(t)?this:("on"in t&&t.on(r.FeatureGroup.EVENTS,this._propagateEvent,this),r.LayerGroup.prototype.addLayer.call(this,t),this._popupContent&&t.bindPopup&&t.bindPopup(this._popupContent,this._popupOptions),this.fire("layeradd",{layer:t}))},removeLayer:function(t){return this.hasLayer(t)?(t in this._layers&&(t=this._layers[t]),"off"in t&&t.off(r.FeatureGroup.EVENTS,this._propagateEvent,this),r.LayerGroup.prototype.removeLayer.call(this,t),this._popupContent&&this.invoke("unbindPopup"),this.fire("layerremove",{layer:t})):this},bindPopup:function(t,e){return this._popupContent=t,this._popupOptions=e,this.invoke("bindPopup",t,e)},openPopup:function(t){for(var e in this._layers){this._layers[e].openPopup(t);break}return this},setStyle:function(t){return this.invoke("setStyle",t)},bringToFront:function(){return this.invoke("bringToFront")},bringToBack:function(){return this.invoke("bringToBack")},getBounds:function(){var t=new r.LatLngBounds;return this.eachLayer(function(e){t.extend(e instanceof r.Marker?e.getLatLng():e.getBounds())}),t},_propagateEvent:function(t){t=r.extend({layer:t.target,target:this},t),this.fire(t.type,t)}}),r.featureGroup=function(t){return new r.FeatureGroup(t)},r.Path=r.Class.extend({includes:[r.Mixin.Events],statics:{CLIP_PADDING:function(){var e=r.Browser.mobile?1280:2e3,n=(e/Math.max(t.outerWidth,t.outerHeight)-1)/2;return Math.max(0,Math.min(.5,n))}()},options:{stroke:!0,color:"#0033ff",dashArray:null,lineCap:null,lineJoin:null,weight:5,opacity:.5,fill:!1,fillColor:null,fillOpacity:.2,clickable:!0},initialize:function(t){r.setOptions(this,t)},onAdd:function(t){this._map=t,this._container||(this._initElements(),this._initEvents()),this.projectLatlngs(),this._updatePath(),this._container&&this._map._pathRoot.appendChild(this._container),this.fire("add"),t.on({viewreset:this.projectLatlngs,moveend:this._updatePath},this)},addTo:function(t){return t.addLayer(this),this},onRemove:function(t){t._pathRoot.removeChild(this._container),this.fire("remove"),this._map=null,r.Browser.vml&&(this._container=null,this._stroke=null,this._fill=null),t.off({viewreset:this.projectLatlngs,moveend:this._updatePath},this)},projectLatlngs:function(){},setStyle:function(t){return r.setOptions(this,t),this._container&&this._updateStyle(),this},redraw:function(){return this._map&&(this.projectLatlngs(),this._updatePath()),this}}),r.Map.include({_updatePathViewport:function(){var t=r.Path.CLIP_PADDING,e=this.getSize(),n=r.DomUtil.getPosition(this._mapPane),i=n.multiplyBy(-1)._subtract(e.multiplyBy(t)._round()),o=i.add(e.multiplyBy(1+2*t)._round());this._pathViewport=new r.Bounds(i,o)}}),r.Path.SVG_NS="http://www.w3.org/2000/svg",r.Browser.svg=!(!n.createElementNS||!n.createElementNS(r.Path.SVG_NS,"svg").createSVGRect),r.Path=r.Path.extend({statics:{SVG:r.Browser.svg},bringToFront:function(){var t=this._map._pathRoot,e=this._container;return e&&t.lastChild!==e&&t.appendChild(e),this},bringToBack:function(){var t=this._map._pathRoot,e=this._container,n=t.firstChild;return e&&n!==e&&t.insertBefore(e,n),this},getPathString:function(){},_createElement:function(t){return n.createElementNS(r.Path.SVG_NS,t)},_initElements:function(){this._map._initPathRoot(),this._initPath(),this._initStyle()},_initPath:function(){this._container=this._createElement("g"),this._path=this._createElement("path"),this.options.className&&r.DomUtil.addClass(this._path,this.options.className),this._container.appendChild(this._path)},_initStyle:function(){this.options.stroke&&(this._path.setAttribute("stroke-linejoin","round"),this._path.setAttribute("stroke-linecap","round")),this.options.fill&&this._path.setAttribute("fill-rule","evenodd"),this.options.pointerEvents&&this._path.setAttribute("pointer-events",this.options.pointerEvents),this.options.clickable||this.options.pointerEvents||this._path.setAttribute("pointer-events","none"),this._updateStyle()},_updateStyle:function(){this.options.stroke?(this._path.setAttribute("stroke",this.options.color),this._path.setAttribute("stroke-opacity",this.options.opacity),this._path.setAttribute("stroke-width",this.options.weight),this.options.dashArray?this._path.setAttribute("stroke-dasharray",this.options.dashArray):this._path.removeAttribute("stroke-dasharray"),this.options.lineCap&&this._path.setAttribute("stroke-linecap",this.options.lineCap),this.options.lineJoin&&this._path.setAttribute("stroke-linejoin",this.options.lineJoin)):this._path.setAttribute("stroke","none"),this.options.fill?(this._path.setAttribute("fill",this.options.fillColor||this.options.color),this._path.setAttribute("fill-opacity",this.options.fillOpacity)):this._path.setAttribute("fill","none")},_updatePath:function(){var t=this.getPathString();t||(t="M0 0"),this._path.setAttribute("d",t)},_initEvents:function(){if(this.options.clickable){!r.Browser.svg&&r.Browser.vml||r.DomUtil.addClass(this._path,"leaflet-clickable"),r.DomEvent.on(this._container,"click",this._onMouseClick,this);for(var t=["dblclick","mousedown","mouseover","mouseout","mousemove","contextmenu"],e=0;e<t.length;e++)r.DomEvent.on(this._container,t[e],this._fireMouseEvent,this)}},_onMouseClick:function(t){this._map.dragging&&this._map.dragging.moved()||this._fireMouseEvent(t)},_fireMouseEvent:function(t){if(this._map&&this.hasEventListeners(t.type)){var e=this._map,n=e.mouseEventToContainerPoint(t),i=e.containerPointToLayerPoint(n),o=e.layerPointToLatLng(i);this.fire(t.type,{latlng:o,layerPoint:i,containerPoint:n,originalEvent:t}),"contextmenu"===t.type&&r.DomEvent.preventDefault(t),"mousemove"!==t.type&&r.DomEvent.stopPropagation(t)}}}),r.Map.include({_initPathRoot:function(){this._pathRoot||(this._pathRoot=r.Path.prototype._createElement("svg"),this._panes.overlayPane.appendChild(this._pathRoot),this.options.zoomAnimation&&r.Browser.any3d?(r.DomUtil.addClass(this._pathRoot,"leaflet-zoom-animated"),this.on({zoomanim:this._animatePathZoom,zoomend:this._endPathZoom})):r.DomUtil.addClass(this._pathRoot,"leaflet-zoom-hide"),this.on("moveend",this._updateSvgViewport),this._updateSvgViewport())},_animatePathZoom:function(t){var e=this.getZoomScale(t.zoom),n=this._getCenterOffset(t.center)._multiplyBy(-e)._add(this._pathViewport.min);this._pathRoot.style[r.DomUtil.TRANSFORM]=r.DomUtil.getTranslateString(n)+" scale("+e+") ",this._pathZooming=!0},_endPathZoom:function(){this._pathZooming=!1},_updateSvgViewport:function(){if(!this._pathZooming){this._updatePathViewport();var t=this._pathViewport,e=t.min,n=t.max,i=n.x-e.x,o=n.y-e.y,s=this._pathRoot,a=this._panes.overlayPane;r.Browser.mobileWebkit&&a.removeChild(s),r.DomUtil.setPosition(s,e),s.setAttribute("width",i),s.setAttribute("height",o),s.setAttribute("viewBox",[e.x,e.y,i,o].join(" ")),r.Browser.mobileWebkit&&a.appendChild(s)}}}),r.Path.include({bindPopup:function(t,e){return t instanceof r.Popup?this._popup=t:(this._popup&&!e||(this._popup=new r.Popup(e,this)),this._popup.setContent(t)),this._popupHandlersAdded||(this.on("click",this._openPopup,this).on("remove",this.closePopup,this),this._popupHandlersAdded=!0),this},unbindPopup:function(){return this._popup&&(this._popup=null,this.off("click",this._openPopup).off("remove",this.closePopup),this._popupHandlersAdded=!1),this},openPopup:function(t){return this._popup&&(t=t||this._latlng||this._latlngs[Math.floor(this._latlngs.length/2)],this._openPopup({latlng:t})),this},closePopup:function(){return this._popup&&this._popup._close(),this},_openPopup:function(t){this._popup.setLatLng(t.latlng),this._map.openPopup(this._popup)}}),r.Browser.vml=!r.Browser.svg&&function(){try{var t=n.createElement("div");t.innerHTML='<v:shape adj="1"/>';var e=t.firstChild;return e.style.behavior="url(#default#VML)",e&&"object"==typeof e.adj}catch(t){return!1}}(),r.Path=r.Browser.svg||!r.Browser.vml?r.Path:r.Path.extend({statics:{VML:!0,CLIP_PADDING:.02},_createElement:function(){try{return n.namespaces.add("lvml","urn:schemas-microsoft-com:vml"),function(t){return n.createElement("<lvml:"+t+' class="lvml">')}}catch(t){return function(t){return n.createElement("<"+t+' xmlns="urn:schemas-microsoft.com:vml" class="lvml">')}}}(),_initPath:function(){var t=this._container=this._createElement("shape");r.DomUtil.addClass(t,"leaflet-vml-shape"+(this.options.className?" "+this.options.className:"")),this.options.clickable&&r.DomUtil.addClass(t,"leaflet-clickable"),t.coordsize="1 1",this._path=this._createElement("path"),t.appendChild(this._path),this._map._pathRoot.appendChild(t)},_initStyle:function(){this._updateStyle()},_updateStyle:function(){var t=this._stroke,e=this._fill,n=this.options,i=this._container;i.stroked=n.stroke,i.filled=n.fill,n.stroke?(t||(t=this._stroke=this._createElement("stroke"),t.endcap="round",i.appendChild(t)),t.weight=n.weight+"px",t.color=n.color,t.opacity=n.opacity,n.dashArray?t.dashStyle=r.Util.isArray(n.dashArray)?n.dashArray.join(" "):n.dashArray.replace(/( *, *)/g," "):t.dashStyle="",n.lineCap&&(t.endcap=n.lineCap.replace("butt","flat")),n.lineJoin&&(t.joinstyle=n.lineJoin)):t&&(i.removeChild(t),this._stroke=null),n.fill?(e||(e=this._fill=this._createElement("fill"),i.appendChild(e)),e.color=n.fillColor||n.color,e.opacity=n.fillOpacity):e&&(i.removeChild(e),this._fill=null)},_updatePath:function(){var t=this._container.style;t.display="none",this._path.v=this.getPathString()+" ",t.display=""}}),r.Map.include(r.Browser.svg||!r.Browser.vml?{}:{_initPathRoot:function(){if(!this._pathRoot){var t=this._pathRoot=n.createElement("div");t.className="leaflet-vml-container",this._panes.overlayPane.appendChild(t),this.on("moveend",this._updatePathViewport),this._updatePathViewport()}}}),r.Browser.canvas=function(){return!!n.createElement("canvas").getContext}(),r.Path=r.Path.SVG&&!t.L_PREFER_CANVAS||!r.Browser.canvas?r.Path:r.Path.extend({statics:{CANVAS:!0,SVG:!1},redraw:function(){return this._map&&(this.projectLatlngs(),this._requestUpdate()),this},setStyle:function(t){return r.setOptions(this,t),this._map&&(this._updateStyle(),this._requestUpdate()),this},onRemove:function(t){t.off("viewreset",this.projectLatlngs,this).off("moveend",this._updatePath,this),this.options.clickable&&(this._map.off("click",this._onClick,this),this._map.off("mousemove",this._onMouseMove,this)),this._requestUpdate(),this.fire("remove"),this._map=null},_requestUpdate:function(){this._map&&!r.Path._updateRequest&&(r.Path._updateRequest=r.Util.requestAnimFrame(this._fireMapMoveEnd,this._map))},_fireMapMoveEnd:function(){r.Path._updateRequest=null,this.fire("moveend")},_initElements:function(){this._map._initPathRoot(),this._ctx=this._map._canvasCtx},_updateStyle:function(){var t=this.options;t.stroke&&(this._ctx.lineWidth=t.weight,this._ctx.strokeStyle=t.color),t.fill&&(this._ctx.fillStyle=t.fillColor||t.color),t.lineCap&&(this._ctx.lineCap=t.lineCap),t.lineJoin&&(this._ctx.lineJoin=t.lineJoin)},_drawPath:function(){var t,e,n,i,o,s;for(this._ctx.beginPath(),t=0,n=this._parts.length;t<n;t++){for(e=0,i=this._parts[t].length;e<i;e++)o=this._parts[t][e],s=(0===e?"move":"line")+"To",this._ctx[s](o.x,o.y);this instanceof r.Polygon&&this._ctx.closePath()}},_checkIfEmpty:function(){return!this._parts.length},_updatePath:function(){if(!this._checkIfEmpty()){var t=this._ctx,e=this.options;this._drawPath(),t.save(),this._updateStyle(),e.fill&&(t.globalAlpha=e.fillOpacity,t.fill(e.fillRule||"evenodd")),e.stroke&&(t.globalAlpha=e.opacity,t.stroke()),t.restore()}},_initEvents:function(){this.options.clickable&&(this._map.on("mousemove",this._onMouseMove,this),this._map.on("click dblclick contextmenu",this._fireMouseEvent,this))},_fireMouseEvent:function(t){this._containsPoint(t.layerPoint)&&this.fire(t.type,t)},_onMouseMove:function(t){this._map&&!this._map._animatingZoom&&(this._containsPoint(t.layerPoint)?(this._ctx.canvas.style.cursor="pointer",this._mouseInside=!0,this.fire("mouseover",t)):this._mouseInside&&(this._ctx.canvas.style.cursor="",this._mouseInside=!1,this.fire("mouseout",t)))}}),r.Map.include(r.Path.SVG&&!t.L_PREFER_CANVAS||!r.Browser.canvas?{}:{_initPathRoot:function(){var t,e=this._pathRoot;e||(e=this._pathRoot=n.createElement("canvas"),e.style.position="absolute",t=this._canvasCtx=e.getContext("2d"),t.lineCap="round",t.lineJoin="round",this._panes.overlayPane.appendChild(e),this.options.zoomAnimation&&(this._pathRoot.className="leaflet-zoom-animated",this.on("zoomanim",this._animatePathZoom),this.on("zoomend",this._endPathZoom)),this.on("moveend",this._updateCanvasViewport),this._updateCanvasViewport())},_updateCanvasViewport:function(){if(!this._pathZooming){this._updatePathViewport();var t=this._pathViewport,e=t.min,n=t.max.subtract(e),i=this._pathRoot;r.DomUtil.setPosition(i,e),i.width=n.x,i.height=n.y,i.getContext("2d").translate(-e.x,-e.y)}}}),r.LineUtil={simplify:function(t,e){if(!e||!t.length)return t.slice();var n=e*e;return t=this._reducePoints(t,n),t=this._simplifyDP(t,n)},pointToSegmentDistance:function(t,e,n){return Math.sqrt(this._sqClosestPointOnSegment(t,e,n,!0))},closestPointOnSegment:function(t,e,n){return this._sqClosestPointOnSegment(t,e,n)},_simplifyDP:function(t,e){var n=t.length,o=typeof Uint8Array!=i+""?Uint8Array:Array,r=new o(n);r[0]=r[n-1]=1,this._simplifyDPStep(t,r,e,0,n-1);var s,a=[];for(s=0;s<n;s++)r[s]&&a.push(t[s]);return a},_simplifyDPStep:function(t,e,n,i,o){var r,s,a,l=0;for(s=i+1;s<=o-1;s++)a=this._sqClosestPointOnSegment(t[s],t[i],t[o],!0),a>l&&(r=s,l=a);l>n&&(e[r]=1,this._simplifyDPStep(t,e,n,i,r),this._simplifyDPStep(t,e,n,r,o))},_reducePoints:function(t,e){for(var n=[t[0]],i=1,o=0,r=t.length;i<r;i++)this._sqDist(t[i],t[o])>e&&(n.push(t[i]),o=i);return o<r-1&&n.push(t[r-1]),n},clipSegment:function(t,e,n,i){var o,r,s,a=i?this._lastCode:this._getBitCode(t,n),l=this._getBitCode(e,n);for(this._lastCode=l;;){if(!(a|l))return[t,e];if(a&l)return!1;o=a||l,r=this._getEdgeIntersection(t,e,o,n),s=this._getBitCode(r,n),o===a?(t=r,a=s):(e=r,l=s)}},_getEdgeIntersection:function(t,e,n,i){var o=e.x-t.x,s=e.y-t.y,a=i.min,l=i.max;return 8&n?new r.Point(t.x+o*(l.y-t.y)/s,l.y):4&n?new r.Point(t.x+o*(a.y-t.y)/s,a.y):2&n?new r.Point(l.x,t.y+s*(l.x-t.x)/o):1&n?new r.Point(a.x,t.y+s*(a.x-t.x)/o):void 0},_getBitCode:function(t,e){var n=0;return t.x<e.min.x?n|=1:t.x>e.max.x&&(n|=2),t.y<e.min.y?n|=4:t.y>e.max.y&&(n|=8),n},_sqDist:function(t,e){var n=e.x-t.x,i=e.y-t.y;return n*n+i*i},_sqClosestPointOnSegment:function(t,e,n,i){var o,s=e.x,a=e.y,l=n.x-s,u=n.y-a,h=l*l+u*u;return h>0&&(o=((t.x-s)*l+(t.y-a)*u)/h,o>1?(s=n.x,a=n.y):o>0&&(s+=l*o,a+=u*o)),l=t.x-s,u=t.y-a,i?l*l+u*u:new r.Point(s,a)}},r.Polyline=r.Path.extend({initialize:function(t,e){r.Path.prototype.initialize.call(this,e),this._latlngs=this._convertLatLngs(t)},options:{smoothFactor:1,noClip:!1},projectLatlngs:function(){this._originalPoints=[];for(var t=0,e=this._latlngs.length;t<e;t++)this._originalPoints[t]=this._map.latLngToLayerPoint(this._latlngs[t])},getPathString:function(){for(var t=0,e=this._parts.length,n="";t<e;t++)n+=this._getPathPartStr(this._parts[t]);return n},getLatLngs:function(){return this._latlngs},setLatLngs:function(t){return this._latlngs=this._convertLatLngs(t),this.redraw()},addLatLng:function(t){return this._latlngs.push(r.latLng(t)),this.redraw()},spliceLatLngs:function(){var t=[].splice.apply(this._latlngs,arguments);return this._convertLatLngs(this._latlngs,!0),this.redraw(),t},closestLayerPoint:function(t){for(var e,n,i=1/0,o=this._parts,s=null,a=0,l=o.length;a<l;a++)for(var u=o[a],h=1,c=u.length;h<c;h++){e=u[h-1],n=u[h];var d=r.LineUtil._sqClosestPointOnSegment(t,e,n,!0);d<i&&(i=d,s=r.LineUtil._sqClosestPointOnSegment(t,e,n))}return s&&(s.distance=Math.sqrt(i)),s},getBounds:function(){return new r.LatLngBounds(this.getLatLngs())},_convertLatLngs:function(t,e){var n,i,o=e?t:[];for(n=0,i=t.length;n<i;n++){if(r.Util.isArray(t[n])&&"number"!=typeof t[n][0])return;o[n]=r.latLng(t[n])}return o},_initEvents:function(){r.Path.prototype._initEvents.call(this)},_getPathPartStr:function(t){for(var e,n=r.Path.VML,i=0,o=t.length,s="";i<o;i++)e=t[i],n&&e._round(),s+=(i?"L":"M")+e.x+" "+e.y;
-return s},_clipPoints:function(){var t,e,n,i=this._originalPoints,o=i.length;if(this.options.noClip)return void(this._parts=[i]);this._parts=[];var s=this._parts,a=this._map._pathViewport,l=r.LineUtil;for(t=0,e=0;t<o-1;t++)n=l.clipSegment(i[t],i[t+1],a,t),n&&(s[e]=s[e]||[],s[e].push(n[0]),n[1]===i[t+1]&&t!==o-2||(s[e].push(n[1]),e++))},_simplifyPoints:function(){for(var t=this._parts,e=r.LineUtil,n=0,i=t.length;n<i;n++)t[n]=e.simplify(t[n],this.options.smoothFactor)},_updatePath:function(){this._map&&(this._clipPoints(),this._simplifyPoints(),r.Path.prototype._updatePath.call(this))}}),r.polyline=function(t,e){return new r.Polyline(t,e)},r.PolyUtil={},r.PolyUtil.clipPolygon=function(t,e){var n,i,o,s,a,l,u,h,c,d=[1,4,2,8],p=r.LineUtil;for(i=0,u=t.length;i<u;i++)t[i]._code=p._getBitCode(t[i],e);for(s=0;s<4;s++){for(h=d[s],n=[],i=0,u=t.length,o=u-1;i<u;o=i++)a=t[i],l=t[o],a._code&h?l._code&h||(c=p._getEdgeIntersection(l,a,h,e),c._code=p._getBitCode(c,e),n.push(c)):(l._code&h&&(c=p._getEdgeIntersection(l,a,h,e),c._code=p._getBitCode(c,e),n.push(c)),n.push(a));t=n}return t},r.Polygon=r.Polyline.extend({options:{fill:!0},initialize:function(t,e){r.Polyline.prototype.initialize.call(this,t,e),this._initWithHoles(t)},_initWithHoles:function(t){var e,n,i;if(t&&r.Util.isArray(t[0])&&"number"!=typeof t[0][0])for(this._latlngs=this._convertLatLngs(t[0]),this._holes=t.slice(1),e=0,n=this._holes.length;e<n;e++)i=this._holes[e]=this._convertLatLngs(this._holes[e]),i[0].equals(i[i.length-1])&&i.pop();t=this._latlngs,t.length>=2&&t[0].equals(t[t.length-1])&&t.pop()},projectLatlngs:function(){if(r.Polyline.prototype.projectLatlngs.call(this),this._holePoints=[],this._holes){var t,e,n,i;for(t=0,n=this._holes.length;t<n;t++)for(this._holePoints[t]=[],e=0,i=this._holes[t].length;e<i;e++)this._holePoints[t][e]=this._map.latLngToLayerPoint(this._holes[t][e])}},setLatLngs:function(t){return t&&r.Util.isArray(t[0])&&"number"!=typeof t[0][0]?(this._initWithHoles(t),this.redraw()):r.Polyline.prototype.setLatLngs.call(this,t)},_clipPoints:function(){var t=this._originalPoints,e=[];if(this._parts=[t].concat(this._holePoints),!this.options.noClip){for(var n=0,i=this._parts.length;n<i;n++){var o=r.PolyUtil.clipPolygon(this._parts[n],this._map._pathViewport);o.length&&e.push(o)}this._parts=e}},_getPathPartStr:function(t){var e=r.Polyline.prototype._getPathPartStr.call(this,t);return e+(r.Browser.svg?"z":"x")}}),r.polygon=function(t,e){return new r.Polygon(t,e)},function(){function t(t){return r.FeatureGroup.extend({initialize:function(t,e){this._layers={},this._options=e,this.setLatLngs(t)},setLatLngs:function(e){var n=0,i=e.length;for(this.eachLayer(function(t){n<i?t.setLatLngs(e[n++]):this.removeLayer(t)},this);n<i;)this.addLayer(new t(e[n++],this._options));return this},getLatLngs:function(){var t=[];return this.eachLayer(function(e){t.push(e.getLatLngs())}),t}})}r.MultiPolyline=t(r.Polyline),r.MultiPolygon=t(r.Polygon),r.multiPolyline=function(t,e){return new r.MultiPolyline(t,e)},r.multiPolygon=function(t,e){return new r.MultiPolygon(t,e)}}(),r.Rectangle=r.Polygon.extend({initialize:function(t,e){r.Polygon.prototype.initialize.call(this,this._boundsToLatLngs(t),e)},setBounds:function(t){this.setLatLngs(this._boundsToLatLngs(t))},_boundsToLatLngs:function(t){return t=r.latLngBounds(t),[t.getSouthWest(),t.getNorthWest(),t.getNorthEast(),t.getSouthEast()]}}),r.rectangle=function(t,e){return new r.Rectangle(t,e)},r.Circle=r.Path.extend({initialize:function(t,e,n){r.Path.prototype.initialize.call(this,n),this._latlng=r.latLng(t),this._mRadius=e},options:{fill:!0},setLatLng:function(t){return this._latlng=r.latLng(t),this.redraw()},setRadius:function(t){return this._mRadius=t,this.redraw()},projectLatlngs:function(){var t=this._getLngRadius(),e=this._latlng,n=this._map.latLngToLayerPoint([e.lat,e.lng-t]);this._point=this._map.latLngToLayerPoint(e),this._radius=Math.max(this._point.x-n.x,1)},getBounds:function(){var t=this._getLngRadius(),e=this._mRadius/40075017*360,n=this._latlng;return new r.LatLngBounds([n.lat-e,n.lng-t],[n.lat+e,n.lng+t])},getLatLng:function(){return this._latlng},getPathString:function(){var t=this._point,e=this._radius;return this._checkIfEmpty()?"":r.Browser.svg?"M"+t.x+","+(t.y-e)+"A"+e+","+e+",0,1,1,"+(t.x-.1)+","+(t.y-e)+" z":(t._round(),e=Math.round(e),"AL "+t.x+","+t.y+" "+e+","+e+" 0,23592600")},getRadius:function(){return this._mRadius},_getLatRadius:function(){return this._mRadius/40075017*360},_getLngRadius:function(){return this._getLatRadius()/Math.cos(r.LatLng.DEG_TO_RAD*this._latlng.lat)},_checkIfEmpty:function(){if(!this._map)return!1;var t=this._map._pathViewport,e=this._radius,n=this._point;return n.x-e>t.max.x||n.y-e>t.max.y||n.x+e<t.min.x||n.y+e<t.min.y}}),r.circle=function(t,e,n){return new r.Circle(t,e,n)},r.CircleMarker=r.Circle.extend({options:{radius:10,weight:2},initialize:function(t,e){r.Circle.prototype.initialize.call(this,t,null,e),this._radius=this.options.radius},projectLatlngs:function(){this._point=this._map.latLngToLayerPoint(this._latlng)},_updateStyle:function(){r.Circle.prototype._updateStyle.call(this),this.setRadius(this.options.radius)},setLatLng:function(t){return r.Circle.prototype.setLatLng.call(this,t),this._popup&&this._popup._isOpen&&this._popup.setLatLng(t),this},setRadius:function(t){return this.options.radius=this._radius=t,this.redraw()},getRadius:function(){return this._radius}}),r.circleMarker=function(t,e){return new r.CircleMarker(t,e)},r.Polyline.include(r.Path.CANVAS?{_containsPoint:function(t,e){var n,i,o,s,a,l,u,h=this.options.weight/2;for(r.Browser.touch&&(h+=10),n=0,s=this._parts.length;n<s;n++)for(u=this._parts[n],i=0,a=u.length,o=a-1;i<a;o=i++)if((e||0!==i)&&(l=r.LineUtil.pointToSegmentDistance(t,u[o],u[i]),l<=h))return!0;return!1}}:{}),r.Polygon.include(r.Path.CANVAS?{_containsPoint:function(t){var e,n,i,o,s,a,l,u,h=!1;if(r.Polyline.prototype._containsPoint.call(this,t,!0))return!0;for(o=0,l=this._parts.length;o<l;o++)for(e=this._parts[o],s=0,u=e.length,a=u-1;s<u;a=s++)n=e[s],i=e[a],n.y>t.y!=i.y>t.y&&t.x<(i.x-n.x)*(t.y-n.y)/(i.y-n.y)+n.x&&(h=!h);return h}}:{}),r.Circle.include(r.Path.CANVAS?{_drawPath:function(){var t=this._point;this._ctx.beginPath(),this._ctx.arc(t.x,t.y,this._radius,0,2*Math.PI,!1)},_containsPoint:function(t){var e=this._point,n=this.options.stroke?this.options.weight/2:0;return t.distanceTo(e)<=this._radius+n}}:{}),r.CircleMarker.include(r.Path.CANVAS?{_updateStyle:function(){r.Path.prototype._updateStyle.call(this)}}:{}),r.GeoJSON=r.FeatureGroup.extend({initialize:function(t,e){r.setOptions(this,e),this._layers={},t&&this.addData(t)},addData:function(t){var e,n,i,o=r.Util.isArray(t)?t:t.features;if(o){for(e=0,n=o.length;e<n;e++)i=o[e],(i.geometries||i.geometry||i.features||i.coordinates)&&this.addData(o[e]);return this}var s=this.options;if(!s.filter||s.filter(t)){var a=r.GeoJSON.geometryToLayer(t,s.pointToLayer,s.coordsToLatLng,s);return a.feature=r.GeoJSON.asFeature(t),a.defaultOptions=a.options,this.resetStyle(a),s.onEachFeature&&s.onEachFeature(t,a),this.addLayer(a)}},resetStyle:function(t){var e=this.options.style;e&&(r.Util.extend(t.options,t.defaultOptions),this._setLayerStyle(t,e))},setStyle:function(t){this.eachLayer(function(e){this._setLayerStyle(e,t)},this)},_setLayerStyle:function(t,e){"function"==typeof e&&(e=e(t.feature)),t.setStyle&&t.setStyle(e)}}),r.extend(r.GeoJSON,{geometryToLayer:function(t,e,n,i){var o,s,a,l,u="Feature"===t.type?t.geometry:t,h=u.coordinates,c=[];switch(n=n||this.coordsToLatLng,u.type){case"Point":return o=n(h),e?e(t,o):new r.Marker(o);case"MultiPoint":for(a=0,l=h.length;a<l;a++)o=n(h[a]),c.push(e?e(t,o):new r.Marker(o));return new r.FeatureGroup(c);case"LineString":return s=this.coordsToLatLngs(h,0,n),new r.Polyline(s,i);case"Polygon":if(2===h.length&&!h[1].length)throw new Error("Invalid GeoJSON object.");return s=this.coordsToLatLngs(h,1,n),new r.Polygon(s,i);case"MultiLineString":return s=this.coordsToLatLngs(h,1,n),new r.MultiPolyline(s,i);case"MultiPolygon":return s=this.coordsToLatLngs(h,2,n),new r.MultiPolygon(s,i);case"GeometryCollection":for(a=0,l=u.geometries.length;a<l;a++)c.push(this.geometryToLayer({geometry:u.geometries[a],type:"Feature",properties:t.properties},e,n,i));return new r.FeatureGroup(c);default:throw new Error("Invalid GeoJSON object.")}},coordsToLatLng:function(t){return new r.LatLng(t[1],t[0],t[2])},coordsToLatLngs:function(t,e,n){var i,o,r,s=[];for(o=0,r=t.length;o<r;o++)i=e?this.coordsToLatLngs(t[o],e-1,n):(n||this.coordsToLatLng)(t[o]),s.push(i);return s},latLngToCoords:function(t){var e=[t.lng,t.lat];return t.alt!==i&&e.push(t.alt),e},latLngsToCoords:function(t){for(var e=[],n=0,i=t.length;n<i;n++)e.push(r.GeoJSON.latLngToCoords(t[n]));return e},getFeature:function(t,e){return t.feature?r.extend({},t.feature,{geometry:e}):r.GeoJSON.asFeature(e)},asFeature:function(t){return"Feature"===t.type?t:{type:"Feature",properties:{},geometry:t}}});var a={toGeoJSON:function(){return r.GeoJSON.getFeature(this,{type:"Point",coordinates:r.GeoJSON.latLngToCoords(this.getLatLng())})}};r.Marker.include(a),r.Circle.include(a),r.CircleMarker.include(a),r.Polyline.include({toGeoJSON:function(){return r.GeoJSON.getFeature(this,{type:"LineString",coordinates:r.GeoJSON.latLngsToCoords(this.getLatLngs())})}}),r.Polygon.include({toGeoJSON:function(){var t,e,n,i=[r.GeoJSON.latLngsToCoords(this.getLatLngs())];if(i[0].push(i[0][0]),this._holes)for(t=0,e=this._holes.length;t<e;t++)n=r.GeoJSON.latLngsToCoords(this._holes[t]),n.push(n[0]),i.push(n);return r.GeoJSON.getFeature(this,{type:"Polygon",coordinates:i})}}),function(){function t(t){return function(){var e=[];return this.eachLayer(function(t){e.push(t.toGeoJSON().geometry.coordinates)}),r.GeoJSON.getFeature(this,{type:t,coordinates:e})}}r.MultiPolyline.include({toGeoJSON:t("MultiLineString")}),r.MultiPolygon.include({toGeoJSON:t("MultiPolygon")}),r.LayerGroup.include({toGeoJSON:function(){var e,n=this.feature&&this.feature.geometry,i=[];if(n&&"MultiPoint"===n.type)return t("MultiPoint").call(this);var o=n&&"GeometryCollection"===n.type;return this.eachLayer(function(t){t.toGeoJSON&&(e=t.toGeoJSON(),i.push(o?e.geometry:r.GeoJSON.asFeature(e)))}),o?r.GeoJSON.getFeature(this,{geometries:i,type:"GeometryCollection"}):{type:"FeatureCollection",features:i}}})}(),r.geoJson=function(t,e){return new r.GeoJSON(t,e)},r.DomEvent={addListener:function(t,e,n,i){var o,s,a,l=r.stamp(n),u="_leaflet_"+e+l;return t[u]?this:(o=function(e){return n.call(i||t,e||r.DomEvent._getEvent())},r.Browser.pointer&&0===e.indexOf("touch")?this.addPointerListener(t,e,o,l):(r.Browser.touch&&"dblclick"===e&&this.addDoubleTapListener&&this.addDoubleTapListener(t,o,l),"addEventListener"in t?"mousewheel"===e?(t.addEventListener("DOMMouseScroll",o,!1),t.addEventListener(e,o,!1)):"mouseenter"===e||"mouseleave"===e?(s=o,a="mouseenter"===e?"mouseover":"mouseout",o=function(e){if(r.DomEvent._checkMouse(t,e))return s(e)},t.addEventListener(a,o,!1)):"click"===e&&r.Browser.android?(s=o,o=function(t){return r.DomEvent._filterClick(t,s)},t.addEventListener(e,o,!1)):t.addEventListener(e,o,!1):"attachEvent"in t&&t.attachEvent("on"+e,o),t[u]=o,this))},removeListener:function(t,e,n){var i=r.stamp(n),o="_leaflet_"+e+i,s=t[o];return s?(r.Browser.pointer&&0===e.indexOf("touch")?this.removePointerListener(t,e,i):r.Browser.touch&&"dblclick"===e&&this.removeDoubleTapListener?this.removeDoubleTapListener(t,i):"removeEventListener"in t?"mousewheel"===e?(t.removeEventListener("DOMMouseScroll",s,!1),t.removeEventListener(e,s,!1)):"mouseenter"===e||"mouseleave"===e?t.removeEventListener("mouseenter"===e?"mouseover":"mouseout",s,!1):t.removeEventListener(e,s,!1):"detachEvent"in t&&t.detachEvent("on"+e,s),t[o]=null,this):this},stopPropagation:function(t){return t.stopPropagation?t.stopPropagation():t.cancelBubble=!0,r.DomEvent._skipped(t),this},disableScrollPropagation:function(t){var e=r.DomEvent.stopPropagation;return r.DomEvent.on(t,"mousewheel",e).on(t,"MozMousePixelScroll",e)},disableClickPropagation:function(t){for(var e=r.DomEvent.stopPropagation,n=r.Draggable.START.length-1;n>=0;n--)r.DomEvent.on(t,r.Draggable.START[n],e);return r.DomEvent.on(t,"click",r.DomEvent._fakeStop).on(t,"dblclick",e)},preventDefault:function(t){return t.preventDefault?t.preventDefault():t.returnValue=!1,this},stop:function(t){return r.DomEvent.preventDefault(t).stopPropagation(t)},getMousePosition:function(t,e){if(!e)return new r.Point(t.clientX,t.clientY);var n=e.getBoundingClientRect();return new r.Point(t.clientX-n.left-e.clientLeft,t.clientY-n.top-e.clientTop)},getWheelDelta:function(t){var e=0;return t.wheelDelta&&(e=t.wheelDelta/120),t.detail&&(e=-t.detail/3),e},_skipEvents:{},_fakeStop:function(t){r.DomEvent._skipEvents[t.type]=!0},_skipped:function(t){var e=this._skipEvents[t.type];return this._skipEvents[t.type]=!1,e},_checkMouse:function(t,e){var n=e.relatedTarget;if(!n)return!0;try{for(;n&&n!==t;)n=n.parentNode}catch(t){return!1}return n!==t},_getEvent:function(){var e=t.event;if(!e)for(var n=arguments.callee.caller;n&&(e=n.arguments[0],!e||t.Event!==e.constructor);)n=n.caller;return e},_filterClick:function(t,e){var n=t.timeStamp||t.originalEvent.timeStamp,i=r.DomEvent._lastClick&&n-r.DomEvent._lastClick;return i&&i>100&&i<500||t.target._simulatedClick&&!t._simulated?void r.DomEvent.stop(t):(r.DomEvent._lastClick=n,e(t))}},r.DomEvent.on=r.DomEvent.addListener,r.DomEvent.off=r.DomEvent.removeListener,r.Draggable=r.Class.extend({includes:r.Mixin.Events,statics:{START:r.Browser.touch?["touchstart","mousedown"]:["mousedown"],END:{mousedown:"mouseup",touchstart:"touchend",pointerdown:"touchend",MSPointerDown:"touchend"},MOVE:{mousedown:"mousemove",touchstart:"touchmove",pointerdown:"touchmove",MSPointerDown:"touchmove"}},initialize:function(t,e){this._element=t,this._dragStartTarget=e||t},enable:function(){if(!this._enabled){for(var t=r.Draggable.START.length-1;t>=0;t--)r.DomEvent.on(this._dragStartTarget,r.Draggable.START[t],this._onDown,this);this._enabled=!0}},disable:function(){if(this._enabled){for(var t=r.Draggable.START.length-1;t>=0;t--)r.DomEvent.off(this._dragStartTarget,r.Draggable.START[t],this._onDown,this);this._enabled=!1,this._moved=!1}},_onDown:function(t){if(this._moved=!1,!t.shiftKey&&(1===t.which||1===t.button||t.touches)&&(r.DomEvent.stopPropagation(t),!r.Draggable._disabled&&(r.DomUtil.disableImageDrag(),r.DomUtil.disableTextSelection(),!this._moving))){var e=t.touches?t.touches[0]:t;this._startPoint=new r.Point(e.clientX,e.clientY),this._startPos=this._newPos=r.DomUtil.getPosition(this._element),r.DomEvent.on(n,r.Draggable.MOVE[t.type],this._onMove,this).on(n,r.Draggable.END[t.type],this._onUp,this)}},_onMove:function(t){if(t.touches&&t.touches.length>1)return void(this._moved=!0);var e=t.touches&&1===t.touches.length?t.touches[0]:t,i=new r.Point(e.clientX,e.clientY),o=i.subtract(this._startPoint);(o.x||o.y)&&(r.Browser.touch&&Math.abs(o.x)+Math.abs(o.y)<3||(r.DomEvent.preventDefault(t),this._moved||(this.fire("dragstart"),this._moved=!0,this._startPos=r.DomUtil.getPosition(this._element).subtract(o),r.DomUtil.addClass(n.body,"leaflet-dragging"),this._lastTarget=t.target||t.srcElement,r.DomUtil.addClass(this._lastTarget,"leaflet-drag-target")),this._newPos=this._startPos.add(o),this._moving=!0,r.Util.cancelAnimFrame(this._animRequest),this._animRequest=r.Util.requestAnimFrame(this._updatePosition,this,!0,this._dragStartTarget)))},_updatePosition:function(){this.fire("predrag"),r.DomUtil.setPosition(this._element,this._newPos),this.fire("drag")},_onUp:function(){r.DomUtil.removeClass(n.body,"leaflet-dragging"),this._lastTarget&&(r.DomUtil.removeClass(this._lastTarget,"leaflet-drag-target"),this._lastTarget=null);for(var t in r.Draggable.MOVE)r.DomEvent.off(n,r.Draggable.MOVE[t],this._onMove).off(n,r.Draggable.END[t],this._onUp);r.DomUtil.enableImageDrag(),r.DomUtil.enableTextSelection(),this._moved&&this._moving&&(r.Util.cancelAnimFrame(this._animRequest),this.fire("dragend",{distance:this._newPos.distanceTo(this._startPos)})),this._moving=!1}}),r.Handler=r.Class.extend({initialize:function(t){this._map=t},enable:function(){this._enabled||(this._enabled=!0,this.addHooks())},disable:function(){this._enabled&&(this._enabled=!1,this.removeHooks())},enabled:function(){return!!this._enabled}}),r.Map.mergeOptions({dragging:!0,inertia:!r.Browser.android23,inertiaDeceleration:3400,inertiaMaxSpeed:1/0,inertiaThreshold:r.Browser.touch?32:18,easeLinearity:.25,worldCopyJump:!1}),r.Map.Drag=r.Handler.extend({addHooks:function(){if(!this._draggable){var t=this._map;this._draggable=new r.Draggable(t._mapPane,t._container),this._draggable.on({dragstart:this._onDragStart,drag:this._onDrag,dragend:this._onDragEnd},this),t.options.worldCopyJump&&(this._draggable.on("predrag",this._onPreDrag,this),t.on("viewreset",this._onViewReset,this),t.whenReady(this._onViewReset,this))}this._draggable.enable()},removeHooks:function(){this._draggable.disable()},moved:function(){return this._draggable&&this._draggable._moved},_onDragStart:function(){var t=this._map;t._panAnim&&t._panAnim.stop(),t.fire("movestart").fire("dragstart"),t.options.inertia&&(this._positions=[],this._times=[])},_onDrag:function(){if(this._map.options.inertia){var t=this._lastTime=+new Date,e=this._lastPos=this._draggable._newPos;this._positions.push(e),this._times.push(t),t-this._times[0]>200&&(this._positions.shift(),this._times.shift())}this._map.fire("move").fire("drag")},_onViewReset:function(){var t=this._map.getSize()._divideBy(2),e=this._map.latLngToLayerPoint([0,0]);this._initialWorldOffset=e.subtract(t).x,this._worldWidth=this._map.project([0,180]).x},_onPreDrag:function(){var t=this._worldWidth,e=Math.round(t/2),n=this._initialWorldOffset,i=this._draggable._newPos.x,o=(i-e+n)%t+e-n,r=(i+e+n)%t-e-n,s=Math.abs(o+n)<Math.abs(r+n)?o:r;this._draggable._newPos.x=s},_onDragEnd:function(t){var e=this._map,n=e.options,i=+new Date-this._lastTime,o=!n.inertia||i>n.inertiaThreshold||!this._positions[0];if(e.fire("dragend",t),o)e.fire("moveend");else{var s=this._lastPos.subtract(this._positions[0]),a=(this._lastTime+i-this._times[0])/1e3,l=n.easeLinearity,u=s.multiplyBy(l/a),h=u.distanceTo([0,0]),c=Math.min(n.inertiaMaxSpeed,h),d=u.multiplyBy(c/h),p=c/(n.inertiaDeceleration*l),f=d.multiplyBy(-p/2).round();f.x&&f.y?(f=e._limitOffset(f,e.options.maxBounds),r.Util.requestAnimFrame(function(){e.panBy(f,{duration:p,easeLinearity:l,noMoveStart:!0})})):e.fire("moveend")}}}),r.Map.addInitHook("addHandler","dragging",r.Map.Drag),r.Map.mergeOptions({doubleClickZoom:!0}),r.Map.DoubleClickZoom=r.Handler.extend({addHooks:function(){this._map.on("dblclick",this._onDoubleClick,this)},removeHooks:function(){this._map.off("dblclick",this._onDoubleClick,this)},_onDoubleClick:function(t){var e=this._map,n=e.getZoom()+(t.originalEvent.shiftKey?-1:1);"center"===e.options.doubleClickZoom?e.setZoom(n):e.setZoomAround(t.containerPoint,n)}}),r.Map.addInitHook("addHandler","doubleClickZoom",r.Map.DoubleClickZoom),r.Map.mergeOptions({scrollWheelZoom:!0}),r.Map.ScrollWheelZoom=r.Handler.extend({addHooks:function(){r.DomEvent.on(this._map._container,"mousewheel",this._onWheelScroll,this),r.DomEvent.on(this._map._container,"MozMousePixelScroll",r.DomEvent.preventDefault),this._delta=0},removeHooks:function(){r.DomEvent.off(this._map._container,"mousewheel",this._onWheelScroll),r.DomEvent.off(this._map._container,"MozMousePixelScroll",r.DomEvent.preventDefault)},_onWheelScroll:function(t){var e=r.DomEvent.getWheelDelta(t);this._delta+=e,this._lastMousePos=this._map.mouseEventToContainerPoint(t),this._startTime||(this._startTime=+new Date);var n=Math.max(40-(+new Date-this._startTime),0);clearTimeout(this._timer),this._timer=setTimeout(r.bind(this._performZoom,this),n),r.DomEvent.preventDefault(t),r.DomEvent.stopPropagation(t)},_performZoom:function(){var t=this._map,e=this._delta,n=t.getZoom();e=e>0?Math.ceil(e):Math.floor(e),e=Math.max(Math.min(e,4),-4),e=t._limitZoom(n+e)-n,this._delta=0,this._startTime=null,e&&("center"===t.options.scrollWheelZoom?t.setZoom(n+e):t.setZoomAround(this._lastMousePos,n+e))}}),r.Map.addInitHook("addHandler","scrollWheelZoom",r.Map.ScrollWheelZoom),r.extend(r.DomEvent,{_touchstart:r.Browser.msPointer?"MSPointerDown":r.Browser.pointer?"pointerdown":"touchstart",_touchend:r.Browser.msPointer?"MSPointerUp":r.Browser.pointer?"pointerup":"touchend",addDoubleTapListener:function(t,e,i){function o(t){var e;if(r.Browser.pointer?(f.push(t.pointerId),e=f.length):e=t.touches.length,!(e>1)){var n=Date.now(),i=n-(a||n);l=t.touches?t.touches[0]:t,u=i>0&&i<=h,a=n}}function s(t){if(r.Browser.pointer){var n=f.indexOf(t.pointerId);if(n===-1)return;f.splice(n,1)}if(u){if(r.Browser.pointer){var i,o={};for(var s in l)i=l[s],"function"==typeof i?o[s]=i.bind(l):o[s]=i;l=o}l.type="dblclick",e(l),a=null}}var a,l,u=!1,h=250,c="_leaflet_",d=this._touchstart,p=this._touchend,f=[];t[c+d+i]=o,t[c+p+i]=s;var m=r.Browser.pointer?n.documentElement:t;return t.addEventListener(d,o,!1),m.addEventListener(p,s,!1),r.Browser.pointer&&m.addEventListener(r.DomEvent.POINTER_CANCEL,s,!1),this},removeDoubleTapListener:function(t,e){var i="_leaflet_";return t.removeEventListener(this._touchstart,t[i+this._touchstart+e],!1),(r.Browser.pointer?n.documentElement:t).removeEventListener(this._touchend,t[i+this._touchend+e],!1),r.Browser.pointer&&n.documentElement.removeEventListener(r.DomEvent.POINTER_CANCEL,t[i+this._touchend+e],!1),this}}),r.extend(r.DomEvent,{POINTER_DOWN:r.Browser.msPointer?"MSPointerDown":"pointerdown",POINTER_MOVE:r.Browser.msPointer?"MSPointerMove":"pointermove",POINTER_UP:r.Browser.msPointer?"MSPointerUp":"pointerup",POINTER_CANCEL:r.Browser.msPointer?"MSPointerCancel":"pointercancel",_pointers:[],_pointerDocumentListener:!1,addPointerListener:function(t,e,n,i){switch(e){case"touchstart":return this.addPointerListenerStart(t,e,n,i);case"touchend":return this.addPointerListenerEnd(t,e,n,i);case"touchmove":return this.addPointerListenerMove(t,e,n,i);default:throw"Unknown touch event type"}},addPointerListenerStart:function(t,e,i,o){var s="_leaflet_",a=this._pointers,l=function(t){"mouse"!==t.pointerType&&t.pointerType!==t.MSPOINTER_TYPE_MOUSE&&r.DomEvent.preventDefault(t);for(var e=!1,n=0;n<a.length;n++)if(a[n].pointerId===t.pointerId){e=!0;break}e||a.push(t),t.touches=a.slice(),t.changedTouches=[t],i(t)};if(t[s+"touchstart"+o]=l,t.addEventListener(this.POINTER_DOWN,l,!1),!this._pointerDocumentListener){var u=function(t){for(var e=0;e<a.length;e++)if(a[e].pointerId===t.pointerId){a.splice(e,1);break}};n.documentElement.addEventListener(this.POINTER_UP,u,!1),n.documentElement.addEventListener(this.POINTER_CANCEL,u,!1),this._pointerDocumentListener=!0}return this},addPointerListenerMove:function(t,e,n,i){function o(t){if(t.pointerType!==t.MSPOINTER_TYPE_MOUSE&&"mouse"!==t.pointerType||0!==t.buttons){for(var e=0;e<s.length;e++)if(s[e].pointerId===t.pointerId){s[e]=t;break}t.touches=s.slice(),t.changedTouches=[t],n(t)}}var r="_leaflet_",s=this._pointers;return t[r+"touchmove"+i]=o,t.addEventListener(this.POINTER_MOVE,o,!1),this},addPointerListenerEnd:function(t,e,n,i){var o="_leaflet_",r=this._pointers,s=function(t){for(var e=0;e<r.length;e++)if(r[e].pointerId===t.pointerId){r.splice(e,1);break}t.touches=r.slice(),t.changedTouches=[t],n(t)};return t[o+"touchend"+i]=s,t.addEventListener(this.POINTER_UP,s,!1),t.addEventListener(this.POINTER_CANCEL,s,!1),this},removePointerListener:function(t,e,n){var i="_leaflet_",o=t[i+e+n];switch(e){case"touchstart":t.removeEventListener(this.POINTER_DOWN,o,!1);break;case"touchmove":t.removeEventListener(this.POINTER_MOVE,o,!1);break;case"touchend":t.removeEventListener(this.POINTER_UP,o,!1),t.removeEventListener(this.POINTER_CANCEL,o,!1)}return this}}),r.Map.mergeOptions({touchZoom:r.Browser.touch&&!r.Browser.android23,bounceAtZoomLimits:!0}),r.Map.TouchZoom=r.Handler.extend({addHooks:function(){r.DomEvent.on(this._map._container,"touchstart",this._onTouchStart,this)},removeHooks:function(){r.DomEvent.off(this._map._container,"touchstart",this._onTouchStart,this)},_onTouchStart:function(t){var e=this._map;if(t.touches&&2===t.touches.length&&!e._animatingZoom&&!this._zooming){var i=e.mouseEventToLayerPoint(t.touches[0]),o=e.mouseEventToLayerPoint(t.touches[1]),s=e._getCenterLayerPoint();this._startCenter=i.add(o)._divideBy(2),this._startDist=i.distanceTo(o),this._moved=!1,this._zooming=!0,this._centerOffset=s.subtract(this._startCenter),e._panAnim&&e._panAnim.stop(),r.DomEvent.on(n,"touchmove",this._onTouchMove,this).on(n,"touchend",this._onTouchEnd,this),r.DomEvent.preventDefault(t)}},_onTouchMove:function(t){var e=this._map;if(t.touches&&2===t.touches.length&&this._zooming){var n=e.mouseEventToLayerPoint(t.touches[0]),i=e.mouseEventToLayerPoint(t.touches[1]);this._scale=n.distanceTo(i)/this._startDist,this._delta=n._add(i)._divideBy(2)._subtract(this._startCenter),1!==this._scale&&(!e.options.bounceAtZoomLimits&&(e.getZoom()===e.getMinZoom()&&this._scale<1||e.getZoom()===e.getMaxZoom()&&this._scale>1)||(this._moved||(r.DomUtil.addClass(e._mapPane,"leaflet-touching"),e.fire("movestart").fire("zoomstart"),this._moved=!0),r.Util.cancelAnimFrame(this._animRequest),this._animRequest=r.Util.requestAnimFrame(this._updateOnMove,this,!0,this._map._container),r.DomEvent.preventDefault(t)))}},_updateOnMove:function(){var t=this._map,e=this._getScaleOrigin(),n=t.layerPointToLatLng(e),i=t.getScaleZoom(this._scale);t._animateZoom(n,i,this._startCenter,this._scale,this._delta,!1,!0)},_onTouchEnd:function(){if(!this._moved||!this._zooming)return void(this._zooming=!1);var t=this._map;this._zooming=!1,r.DomUtil.removeClass(t._mapPane,"leaflet-touching"),r.Util.cancelAnimFrame(this._animRequest),r.DomEvent.off(n,"touchmove",this._onTouchMove).off(n,"touchend",this._onTouchEnd);var e=this._getScaleOrigin(),i=t.layerPointToLatLng(e),o=t.getZoom(),s=t.getScaleZoom(this._scale)-o,a=s>0?Math.ceil(s):Math.floor(s),l=t._limitZoom(o+a),u=t.getZoomScale(l)/this._scale;t._animateZoom(i,l,e,u)},_getScaleOrigin:function(){var t=this._centerOffset.subtract(this._delta).divideBy(this._scale);return this._startCenter.add(t)}}),r.Map.addInitHook("addHandler","touchZoom",r.Map.TouchZoom),r.Map.mergeOptions({tap:!0,tapTolerance:15}),r.Map.Tap=r.Handler.extend({addHooks:function(){r.DomEvent.on(this._map._container,"touchstart",this._onDown,this)},removeHooks:function(){r.DomEvent.off(this._map._container,"touchstart",this._onDown,this)},_onDown:function(t){if(t.touches){if(r.DomEvent.preventDefault(t),this._fireClick=!0,t.touches.length>1)return this._fireClick=!1,void clearTimeout(this._holdTimeout);var e=t.touches[0],i=e.target;this._startPos=this._newPos=new r.Point(e.clientX,e.clientY),i.tagName&&"a"===i.tagName.toLowerCase()&&r.DomUtil.addClass(i,"leaflet-active"),this._holdTimeout=setTimeout(r.bind(function(){this._isTapValid()&&(this._fireClick=!1,this._onUp(),this._simulateEvent("contextmenu",e))},this),1e3),r.DomEvent.on(n,"touchmove",this._onMove,this).on(n,"touchend",this._onUp,this)}},_onUp:function(t){if(clearTimeout(this._holdTimeout),r.DomEvent.off(n,"touchmove",this._onMove,this).off(n,"touchend",this._onUp,this),this._fireClick&&t&&t.changedTouches){var e=t.changedTouches[0],i=e.target;i&&i.tagName&&"a"===i.tagName.toLowerCase()&&r.DomUtil.removeClass(i,"leaflet-active"),this._isTapValid()&&this._simulateEvent("click",e)}},_isTapValid:function(){return this._newPos.distanceTo(this._startPos)<=this._map.options.tapTolerance},_onMove:function(t){var e=t.touches[0];this._newPos=new r.Point(e.clientX,e.clientY)},_simulateEvent:function(e,i){var o=n.createEvent("MouseEvents");o._simulated=!0,i.target._simulatedClick=!0,o.initMouseEvent(e,!0,!0,t,1,i.screenX,i.screenY,i.clientX,i.clientY,!1,!1,!1,!1,0,null),i.target.dispatchEvent(o)}}),r.Browser.touch&&!r.Browser.pointer&&r.Map.addInitHook("addHandler","tap",r.Map.Tap),r.Map.mergeOptions({boxZoom:!0}),r.Map.BoxZoom=r.Handler.extend({initialize:function(t){this._map=t,this._container=t._container,this._pane=t._panes.overlayPane,this._moved=!1},addHooks:function(){r.DomEvent.on(this._container,"mousedown",this._onMouseDown,this)},removeHooks:function(){r.DomEvent.off(this._container,"mousedown",this._onMouseDown),this._moved=!1},moved:function(){return this._moved},_onMouseDown:function(t){return this._moved=!1,!(!t.shiftKey||1!==t.which&&1!==t.button)&&(r.DomUtil.disableTextSelection(),r.DomUtil.disableImageDrag(),this._startLayerPoint=this._map.mouseEventToLayerPoint(t),void r.DomEvent.on(n,"mousemove",this._onMouseMove,this).on(n,"mouseup",this._onMouseUp,this).on(n,"keydown",this._onKeyDown,this))},_onMouseMove:function(t){this._moved||(this._box=r.DomUtil.create("div","leaflet-zoom-box",this._pane),r.DomUtil.setPosition(this._box,this._startLayerPoint),this._container.style.cursor="crosshair",this._map.fire("boxzoomstart"));var e=this._startLayerPoint,n=this._box,i=this._map.mouseEventToLayerPoint(t),o=i.subtract(e),s=new r.Point(Math.min(i.x,e.x),Math.min(i.y,e.y));r.DomUtil.setPosition(n,s),this._moved=!0,n.style.width=Math.max(0,Math.abs(o.x)-4)+"px",n.style.height=Math.max(0,Math.abs(o.y)-4)+"px"},_finish:function(){this._moved&&(this._pane.removeChild(this._box),this._container.style.cursor=""),r.DomUtil.enableTextSelection(),r.DomUtil.enableImageDrag(),r.DomEvent.off(n,"mousemove",this._onMouseMove).off(n,"mouseup",this._onMouseUp).off(n,"keydown",this._onKeyDown)},_onMouseUp:function(t){this._finish();var e=this._map,n=e.mouseEventToLayerPoint(t);if(!this._startLayerPoint.equals(n)){var i=new r.LatLngBounds(e.layerPointToLatLng(this._startLayerPoint),e.layerPointToLatLng(n));e.fitBounds(i),e.fire("boxzoomend",{boxZoomBounds:i})}},_onKeyDown:function(t){27===t.keyCode&&this._finish()}}),r.Map.addInitHook("addHandler","boxZoom",r.Map.BoxZoom),r.Map.mergeOptions({keyboard:!0,keyboardPanOffset:80,keyboardZoomOffset:1}),r.Map.Keyboard=r.Handler.extend({keyCodes:{left:[37],right:[39],down:[40],up:[38],zoomIn:[187,107,61,171],zoomOut:[189,109,173]},initialize:function(t){this._map=t,this._setPanOffset(t.options.keyboardPanOffset),this._setZoomOffset(t.options.keyboardZoomOffset)},addHooks:function(){var t=this._map._container;t.tabIndex===-1&&(t.tabIndex="0"),r.DomEvent.on(t,"focus",this._onFocus,this).on(t,"blur",this._onBlur,this).on(t,"mousedown",this._onMouseDown,this),this._map.on("focus",this._addHooks,this).on("blur",this._removeHooks,this)},removeHooks:function(){this._removeHooks();var t=this._map._container;r.DomEvent.off(t,"focus",this._onFocus,this).off(t,"blur",this._onBlur,this).off(t,"mousedown",this._onMouseDown,this),this._map.off("focus",this._addHooks,this).off("blur",this._removeHooks,this)},_onMouseDown:function(){if(!this._focused){var e=n.body,i=n.documentElement,o=e.scrollTop||i.scrollTop,r=e.scrollLeft||i.scrollLeft;this._map._container.focus(),t.scrollTo(r,o)}},_onFocus:function(){this._focused=!0,this._map.fire("focus")},_onBlur:function(){this._focused=!1,this._map.fire("blur")},_setPanOffset:function(t){var e,n,i=this._panKeys={},o=this.keyCodes;for(e=0,n=o.left.length;e<n;e++)i[o.left[e]]=[-1*t,0];for(e=0,n=o.right.length;e<n;e++)i[o.right[e]]=[t,0];for(e=0,n=o.down.length;e<n;e++)i[o.down[e]]=[0,t];for(e=0,n=o.up.length;e<n;e++)i[o.up[e]]=[0,-1*t]},_setZoomOffset:function(t){var e,n,i=this._zoomKeys={},o=this.keyCodes;for(e=0,n=o.zoomIn.length;e<n;e++)i[o.zoomIn[e]]=t;for(e=0,n=o.zoomOut.length;e<n;e++)i[o.zoomOut[e]]=-t},_addHooks:function(){r.DomEvent.on(n,"keydown",this._onKeyDown,this)},_removeHooks:function(){r.DomEvent.off(n,"keydown",this._onKeyDown,this)},_onKeyDown:function(t){var e=t.keyCode,n=this._map;if(e in this._panKeys){if(n._panAnim&&n._panAnim._inProgress)return;n.panBy(this._panKeys[e]),n.options.maxBounds&&n.panInsideBounds(n.options.maxBounds)}else{if(!(e in this._zoomKeys))return;n.setZoom(n.getZoom()+this._zoomKeys[e])}r.DomEvent.stop(t)}}),r.Map.addInitHook("addHandler","keyboard",r.Map.Keyboard),r.Handler.MarkerDrag=r.Handler.extend({
-initialize:function(t){this._marker=t},addHooks:function(){var t=this._marker._icon;this._draggable||(this._draggable=new r.Draggable(t,t)),this._draggable.on("dragstart",this._onDragStart,this).on("drag",this._onDrag,this).on("dragend",this._onDragEnd,this),this._draggable.enable(),r.DomUtil.addClass(this._marker._icon,"leaflet-marker-draggable")},removeHooks:function(){this._draggable.off("dragstart",this._onDragStart,this).off("drag",this._onDrag,this).off("dragend",this._onDragEnd,this),this._draggable.disable(),r.DomUtil.removeClass(this._marker._icon,"leaflet-marker-draggable")},moved:function(){return this._draggable&&this._draggable._moved},_onDragStart:function(){this._marker.closePopup().fire("movestart").fire("dragstart")},_onDrag:function(){var t=this._marker,e=t._shadow,n=r.DomUtil.getPosition(t._icon),i=t._map.layerPointToLatLng(n);e&&r.DomUtil.setPosition(e,n),t._latlng=i,t.fire("move",{latlng:i}).fire("drag")},_onDragEnd:function(t){this._marker.fire("moveend").fire("dragend",t)}}),r.Control=r.Class.extend({options:{position:"topright"},initialize:function(t){r.setOptions(this,t)},getPosition:function(){return this.options.position},setPosition:function(t){var e=this._map;return e&&e.removeControl(this),this.options.position=t,e&&e.addControl(this),this},getContainer:function(){return this._container},addTo:function(t){this._map=t;var e=this._container=this.onAdd(t),n=this.getPosition(),i=t._controlCorners[n];return r.DomUtil.addClass(e,"leaflet-control"),n.indexOf("bottom")!==-1?i.insertBefore(e,i.firstChild):i.appendChild(e),this},removeFrom:function(t){var e=this.getPosition(),n=t._controlCorners[e];return n.removeChild(this._container),this._map=null,this.onRemove&&this.onRemove(t),this},_refocusOnMap:function(){this._map&&this._map.getContainer().focus()}}),r.control=function(t){return new r.Control(t)},r.Map.include({addControl:function(t){return t.addTo(this),this},removeControl:function(t){return t.removeFrom(this),this},_initControlPos:function(){function t(t,o){var s=n+t+" "+n+o;e[t+o]=r.DomUtil.create("div",s,i)}var e=this._controlCorners={},n="leaflet-",i=this._controlContainer=r.DomUtil.create("div",n+"control-container",this._container);t("top","left"),t("top","right"),t("bottom","left"),t("bottom","right")},_clearControlPos:function(){this._container.removeChild(this._controlContainer)}}),r.Control.Zoom=r.Control.extend({options:{position:"topleft",zoomInText:"+",zoomInTitle:"Zoom in",zoomOutText:"-",zoomOutTitle:"Zoom out"},onAdd:function(t){var e="leaflet-control-zoom",n=r.DomUtil.create("div",e+" leaflet-bar");return this._map=t,this._zoomInButton=this._createButton(this.options.zoomInText,this.options.zoomInTitle,e+"-in",n,this._zoomIn,this),this._zoomOutButton=this._createButton(this.options.zoomOutText,this.options.zoomOutTitle,e+"-out",n,this._zoomOut,this),this._updateDisabled(),t.on("zoomend zoomlevelschange",this._updateDisabled,this),n},onRemove:function(t){t.off("zoomend zoomlevelschange",this._updateDisabled,this)},_zoomIn:function(t){this._map.zoomIn(t.shiftKey?3:1)},_zoomOut:function(t){this._map.zoomOut(t.shiftKey?3:1)},_createButton:function(t,e,n,i,o,s){var a=r.DomUtil.create("a",n,i);a.innerHTML=t,a.href="#",a.title=e;var l=r.DomEvent.stopPropagation;return r.DomEvent.on(a,"click",l).on(a,"mousedown",l).on(a,"dblclick",l).on(a,"click",r.DomEvent.preventDefault).on(a,"click",o,s).on(a,"click",this._refocusOnMap,s),a},_updateDisabled:function(){var t=this._map,e="leaflet-disabled";r.DomUtil.removeClass(this._zoomInButton,e),r.DomUtil.removeClass(this._zoomOutButton,e),t._zoom===t.getMinZoom()&&r.DomUtil.addClass(this._zoomOutButton,e),t._zoom===t.getMaxZoom()&&r.DomUtil.addClass(this._zoomInButton,e)}}),r.Map.mergeOptions({zoomControl:!0}),r.Map.addInitHook(function(){this.options.zoomControl&&(this.zoomControl=new r.Control.Zoom,this.addControl(this.zoomControl))}),r.control.zoom=function(t){return new r.Control.Zoom(t)},r.Control.Attribution=r.Control.extend({options:{position:"bottomright",prefix:'<a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>'},initialize:function(t){r.setOptions(this,t),this._attributions={}},onAdd:function(t){this._container=r.DomUtil.create("div","leaflet-control-attribution"),r.DomEvent.disableClickPropagation(this._container);for(var e in t._layers)t._layers[e].getAttribution&&this.addAttribution(t._layers[e].getAttribution());return t.on("layeradd",this._onLayerAdd,this).on("layerremove",this._onLayerRemove,this),this._update(),this._container},onRemove:function(t){t.off("layeradd",this._onLayerAdd).off("layerremove",this._onLayerRemove)},setPrefix:function(t){return this.options.prefix=t,this._update(),this},addAttribution:function(t){if(t)return this._attributions[t]||(this._attributions[t]=0),this._attributions[t]++,this._update(),this},removeAttribution:function(t){if(t)return this._attributions[t]&&(this._attributions[t]--,this._update()),this},_update:function(){if(this._map){var t=[];for(var e in this._attributions)this._attributions[e]&&t.push(e);var n=[];this.options.prefix&&n.push(this.options.prefix),t.length&&n.push(t.join(", ")),this._container.innerHTML=n.join(" | ")}},_onLayerAdd:function(t){t.layer.getAttribution&&this.addAttribution(t.layer.getAttribution())},_onLayerRemove:function(t){t.layer.getAttribution&&this.removeAttribution(t.layer.getAttribution())}}),r.Map.mergeOptions({attributionControl:!0}),r.Map.addInitHook(function(){this.options.attributionControl&&(this.attributionControl=(new r.Control.Attribution).addTo(this))}),r.control.attribution=function(t){return new r.Control.Attribution(t)},r.Control.Scale=r.Control.extend({options:{position:"bottomleft",maxWidth:100,metric:!0,imperial:!0,updateWhenIdle:!1},onAdd:function(t){this._map=t;var e="leaflet-control-scale",n=r.DomUtil.create("div",e),i=this.options;return this._addScales(i,e,n),t.on(i.updateWhenIdle?"moveend":"move",this._update,this),t.whenReady(this._update,this),n},onRemove:function(t){t.off(this.options.updateWhenIdle?"moveend":"move",this._update,this)},_addScales:function(t,e,n){t.metric&&(this._mScale=r.DomUtil.create("div",e+"-line",n)),t.imperial&&(this._iScale=r.DomUtil.create("div",e+"-line",n))},_update:function(){var t=this._map.getBounds(),e=t.getCenter().lat,n=6378137*Math.PI*Math.cos(e*Math.PI/180),i=n*(t.getNorthEast().lng-t.getSouthWest().lng)/180,o=this._map.getSize(),r=this.options,s=0;o.x>0&&(s=i*(r.maxWidth/o.x)),this._updateScales(r,s)},_updateScales:function(t,e){t.metric&&e&&this._updateMetric(e),t.imperial&&e&&this._updateImperial(e)},_updateMetric:function(t){var e=this._getRoundNum(t);this._mScale.style.width=this._getScaleWidth(e/t)+"px",this._mScale.innerHTML=e<1e3?e+" m":e/1e3+" km"},_updateImperial:function(t){var e,n,i,o=3.2808399*t,r=this._iScale;o>5280?(e=o/5280,n=this._getRoundNum(e),r.style.width=this._getScaleWidth(n/e)+"px",r.innerHTML=n+" mi"):(i=this._getRoundNum(o),r.style.width=this._getScaleWidth(i/o)+"px",r.innerHTML=i+" ft")},_getScaleWidth:function(t){return Math.round(this.options.maxWidth*t)-10},_getRoundNum:function(t){var e=Math.pow(10,(Math.floor(t)+"").length-1),n=t/e;return n=n>=10?10:n>=5?5:n>=3?3:n>=2?2:1,e*n}}),r.control.scale=function(t){return new r.Control.Scale(t)},r.Control.Layers=r.Control.extend({options:{collapsed:!0,position:"topright",autoZIndex:!0},initialize:function(t,e,n){r.setOptions(this,n),this._layers={},this._lastZIndex=0,this._handlingClick=!1;for(var i in t)this._addLayer(t[i],i);for(i in e)this._addLayer(e[i],i,!0)},onAdd:function(t){return this._initLayout(),this._update(),t.on("layeradd",this._onLayerChange,this).on("layerremove",this._onLayerChange,this),this._container},onRemove:function(t){t.off("layeradd",this._onLayerChange,this).off("layerremove",this._onLayerChange,this)},addBaseLayer:function(t,e){return this._addLayer(t,e),this._update(),this},addOverlay:function(t,e){return this._addLayer(t,e,!0),this._update(),this},removeLayer:function(t){var e=r.stamp(t);return delete this._layers[e],this._update(),this},_initLayout:function(){var t="leaflet-control-layers",e=this._container=r.DomUtil.create("div",t);e.setAttribute("aria-haspopup",!0),r.Browser.touch?r.DomEvent.on(e,"click",r.DomEvent.stopPropagation):r.DomEvent.disableClickPropagation(e).disableScrollPropagation(e);var n=this._form=r.DomUtil.create("form",t+"-list");if(this.options.collapsed){r.Browser.android||r.DomEvent.on(e,"mouseover",this._expand,this).on(e,"mouseout",this._collapse,this);var i=this._layersLink=r.DomUtil.create("a",t+"-toggle",e);i.href="#",i.title="Layers",r.Browser.touch?r.DomEvent.on(i,"click",r.DomEvent.stop).on(i,"click",this._expand,this):r.DomEvent.on(i,"focus",this._expand,this),r.DomEvent.on(n,"click",function(){setTimeout(r.bind(this._onInputClick,this),0)},this),this._map.on("click",this._collapse,this)}else this._expand();this._baseLayersList=r.DomUtil.create("div",t+"-base",n),this._separator=r.DomUtil.create("div",t+"-separator",n),this._overlaysList=r.DomUtil.create("div",t+"-overlays",n),e.appendChild(n)},_addLayer:function(t,e,n){var i=r.stamp(t);this._layers[i]={layer:t,name:e,overlay:n},this.options.autoZIndex&&t.setZIndex&&(this._lastZIndex++,t.setZIndex(this._lastZIndex))},_update:function(){if(this._container){this._baseLayersList.innerHTML="",this._overlaysList.innerHTML="";var t,e,n=!1,i=!1;for(t in this._layers)e=this._layers[t],this._addItem(e),i=i||e.overlay,n=n||!e.overlay;this._separator.style.display=i&&n?"":"none"}},_onLayerChange:function(t){var e=this._layers[r.stamp(t.layer)];if(e){this._handlingClick||this._update();var n=e.overlay?"layeradd"===t.type?"overlayadd":"overlayremove":"layeradd"===t.type?"baselayerchange":null;n&&this._map.fire(n,e)}},_createRadioElement:function(t,e){var i='<input type="radio" class="leaflet-control-layers-selector" name="'+t+'"';e&&(i+=' checked="checked"'),i+="/>";var o=n.createElement("div");return o.innerHTML=i,o.firstChild},_addItem:function(t){var e,i=n.createElement("label"),o=this._map.hasLayer(t.layer);t.overlay?(e=n.createElement("input"),e.type="checkbox",e.className="leaflet-control-layers-selector",e.defaultChecked=o):e=this._createRadioElement("leaflet-base-layers",o),e.layerId=r.stamp(t.layer),r.DomEvent.on(e,"click",this._onInputClick,this);var s=n.createElement("span");s.innerHTML=" "+t.name,i.appendChild(e),i.appendChild(s);var a=t.overlay?this._overlaysList:this._baseLayersList;return a.appendChild(i),i},_onInputClick:function(){var t,e,n,i=this._form.getElementsByTagName("input"),o=i.length;for(this._handlingClick=!0,t=0;t<o;t++)e=i[t],n=this._layers[e.layerId],e.checked&&!this._map.hasLayer(n.layer)?this._map.addLayer(n.layer):!e.checked&&this._map.hasLayer(n.layer)&&this._map.removeLayer(n.layer);this._handlingClick=!1,this._refocusOnMap()},_expand:function(){r.DomUtil.addClass(this._container,"leaflet-control-layers-expanded")},_collapse:function(){this._container.className=this._container.className.replace(" leaflet-control-layers-expanded","")}}),r.control.layers=function(t,e,n){return new r.Control.Layers(t,e,n)},r.PosAnimation=r.Class.extend({includes:r.Mixin.Events,run:function(t,e,n,i){this.stop(),this._el=t,this._inProgress=!0,this._newPos=e,this.fire("start"),t.style[r.DomUtil.TRANSITION]="all "+(n||.25)+"s cubic-bezier(0,0,"+(i||.5)+",1)",r.DomEvent.on(t,r.DomUtil.TRANSITION_END,this._onTransitionEnd,this),r.DomUtil.setPosition(t,e),r.Util.falseFn(t.offsetWidth),this._stepTimer=setInterval(r.bind(this._onStep,this),50)},stop:function(){this._inProgress&&(r.DomUtil.setPosition(this._el,this._getPos()),this._onTransitionEnd(),r.Util.falseFn(this._el.offsetWidth))},_onStep:function(){var t=this._getPos();return t?(this._el._leaflet_pos=t,void this.fire("step")):void this._onTransitionEnd()},_transformRe:/([-+]?(?:\d*\.)?\d+)\D*, ([-+]?(?:\d*\.)?\d+)\D*\)/,_getPos:function(){var e,n,i,o=this._el,s=t.getComputedStyle(o);if(r.Browser.any3d){if(i=s[r.DomUtil.TRANSFORM].match(this._transformRe),!i)return;e=parseFloat(i[1]),n=parseFloat(i[2])}else e=parseFloat(s.left),n=parseFloat(s.top);return new r.Point(e,n,(!0))},_onTransitionEnd:function(){r.DomEvent.off(this._el,r.DomUtil.TRANSITION_END,this._onTransitionEnd,this),this._inProgress&&(this._inProgress=!1,this._el.style[r.DomUtil.TRANSITION]="",this._el._leaflet_pos=this._newPos,clearInterval(this._stepTimer),this.fire("step").fire("end"))}}),r.Map.include({setView:function(t,e,n){if(e=e===i?this._zoom:this._limitZoom(e),t=this._limitCenter(r.latLng(t),e,this.options.maxBounds),n=n||{},this._panAnim&&this._panAnim.stop(),this._loaded&&!n.reset&&n!==!0){n.animate!==i&&(n.zoom=r.extend({animate:n.animate},n.zoom),n.pan=r.extend({animate:n.animate},n.pan));var o=this._zoom!==e?this._tryAnimatedZoom&&this._tryAnimatedZoom(t,e,n.zoom):this._tryAnimatedPan(t,n.pan);if(o)return clearTimeout(this._sizeTimer),this}return this._resetView(t,e),this},panBy:function(t,e){if(t=r.point(t).round(),e=e||{},!t.x&&!t.y)return this;if(this._panAnim||(this._panAnim=new r.PosAnimation,this._panAnim.on({step:this._onPanTransitionStep,end:this._onPanTransitionEnd},this)),e.noMoveStart||this.fire("movestart"),e.animate!==!1){r.DomUtil.addClass(this._mapPane,"leaflet-pan-anim");var n=this._getMapPanePos().subtract(t);this._panAnim.run(this._mapPane,n,e.duration||.25,e.easeLinearity)}else this._rawPanBy(t),this.fire("move").fire("moveend");return this},_onPanTransitionStep:function(){this.fire("move")},_onPanTransitionEnd:function(){r.DomUtil.removeClass(this._mapPane,"leaflet-pan-anim"),this.fire("moveend")},_tryAnimatedPan:function(t,e){var n=this._getCenterOffset(t)._floor();return!((e&&e.animate)!==!0&&!this.getSize().contains(n))&&(this.panBy(n,e),!0)}}),r.PosAnimation=r.DomUtil.TRANSITION?r.PosAnimation:r.PosAnimation.extend({run:function(t,e,n,i){this.stop(),this._el=t,this._inProgress=!0,this._duration=n||.25,this._easeOutPower=1/Math.max(i||.5,.2),this._startPos=r.DomUtil.getPosition(t),this._offset=e.subtract(this._startPos),this._startTime=+new Date,this.fire("start"),this._animate()},stop:function(){this._inProgress&&(this._step(),this._complete())},_animate:function(){this._animId=r.Util.requestAnimFrame(this._animate,this),this._step()},_step:function(){var t=+new Date-this._startTime,e=1e3*this._duration;t<e?this._runFrame(this._easeOut(t/e)):(this._runFrame(1),this._complete())},_runFrame:function(t){var e=this._startPos.add(this._offset.multiplyBy(t));r.DomUtil.setPosition(this._el,e),this.fire("step")},_complete:function(){r.Util.cancelAnimFrame(this._animId),this._inProgress=!1,this.fire("end")},_easeOut:function(t){return 1-Math.pow(1-t,this._easeOutPower)}}),r.Map.mergeOptions({zoomAnimation:!0,zoomAnimationThreshold:4}),r.DomUtil.TRANSITION&&r.Map.addInitHook(function(){this._zoomAnimated=this.options.zoomAnimation&&r.DomUtil.TRANSITION&&r.Browser.any3d&&!r.Browser.android23&&!r.Browser.mobileOpera,this._zoomAnimated&&r.DomEvent.on(this._mapPane,r.DomUtil.TRANSITION_END,this._catchTransitionEnd,this)}),r.Map.include(r.DomUtil.TRANSITION?{_catchTransitionEnd:function(t){this._animatingZoom&&t.propertyName.indexOf("transform")>=0&&this._onZoomTransitionEnd()},_nothingToAnimate:function(){return!this._container.getElementsByClassName("leaflet-zoom-animated").length},_tryAnimatedZoom:function(t,e,n){if(this._animatingZoom)return!0;if(n=n||{},!this._zoomAnimated||n.animate===!1||this._nothingToAnimate()||Math.abs(e-this._zoom)>this.options.zoomAnimationThreshold)return!1;var i=this.getZoomScale(e),o=this._getCenterOffset(t)._divideBy(1-1/i),r=this._getCenterLayerPoint()._add(o);return!(n.animate!==!0&&!this.getSize().contains(o))&&(this.fire("movestart").fire("zoomstart"),this._animateZoom(t,e,r,i,null,!0),!0)},_animateZoom:function(t,e,n,i,o,s,a){a||(this._animatingZoom=!0),r.DomUtil.addClass(this._mapPane,"leaflet-zoom-anim"),this._animateToCenter=t,this._animateToZoom=e,r.Draggable&&(r.Draggable._disabled=!0),r.Util.requestAnimFrame(function(){this.fire("zoomanim",{center:t,zoom:e,origin:n,scale:i,delta:o,backwards:s}),setTimeout(r.bind(this._onZoomTransitionEnd,this),250)},this)},_onZoomTransitionEnd:function(){this._animatingZoom&&(this._animatingZoom=!1,r.DomUtil.removeClass(this._mapPane,"leaflet-zoom-anim"),r.Util.requestAnimFrame(function(){this._resetView(this._animateToCenter,this._animateToZoom,!0,!0),r.Draggable&&(r.Draggable._disabled=!1)},this))}}:{}),r.TileLayer.include({_animateZoom:function(t){this._animating||(this._animating=!0,this._prepareBgBuffer());var e=this._bgBuffer,n=r.DomUtil.TRANSFORM,i=t.delta?r.DomUtil.getTranslateString(t.delta):e.style[n],o=r.DomUtil.getScaleString(t.scale,t.origin);e.style[n]=t.backwards?o+" "+i:i+" "+o},_endZoomAnim:function(){var t=this._tileContainer,e=this._bgBuffer;t.style.visibility="",t.parentNode.appendChild(t),r.Util.falseFn(e.offsetWidth);var n=this._map.getZoom();(n>this.options.maxZoom||n<this.options.minZoom)&&this._clearBgBuffer(),this._animating=!1},_clearBgBuffer:function(){var t=this._map;!t||t._animatingZoom||t.touchZoom._zooming||(this._bgBuffer.innerHTML="",this._bgBuffer.style[r.DomUtil.TRANSFORM]="")},_prepareBgBuffer:function(){var t=this._tileContainer,e=this._bgBuffer,n=this._getLoadedTilesPercentage(e),i=this._getLoadedTilesPercentage(t);return e&&n>.5&&i<.5?(t.style.visibility="hidden",void this._stopLoadingImages(t)):(e.style.visibility="hidden",e.style[r.DomUtil.TRANSFORM]="",this._tileContainer=e,e=this._bgBuffer=t,this._stopLoadingImages(e),void clearTimeout(this._clearBgBufferTimer))},_getLoadedTilesPercentage:function(t){var e,n,i=t.getElementsByTagName("img"),o=0;for(e=0,n=i.length;e<n;e++)i[e].complete&&o++;return o/n},_stopLoadingImages:function(t){var e,n,i,o=Array.prototype.slice.call(t.getElementsByTagName("img"));for(e=0,n=o.length;e<n;e++)i=o[e],i.complete||(i.onload=r.Util.falseFn,i.onerror=r.Util.falseFn,i.src=r.Util.emptyImageUrl,i.parentNode.removeChild(i))}}),r.Map.include({_defaultLocateOptions:{watch:!1,setView:!1,maxZoom:1/0,timeout:1e4,maximumAge:0,enableHighAccuracy:!1},locate:function(t){if(t=this._locateOptions=r.extend(this._defaultLocateOptions,t),!navigator.geolocation)return this._handleGeolocationError({code:0,message:"Geolocation not supported."}),this;var e=r.bind(this._handleGeolocationResponse,this),n=r.bind(this._handleGeolocationError,this);return t.watch?this._locationWatchId=navigator.geolocation.watchPosition(e,n,t):navigator.geolocation.getCurrentPosition(e,n,t),this},stopLocate:function(){return navigator.geolocation&&navigator.geolocation.clearWatch(this._locationWatchId),this._locateOptions&&(this._locateOptions.setView=!1),this},_handleGeolocationError:function(t){var e=t.code,n=t.message||(1===e?"permission denied":2===e?"position unavailable":"timeout");this._locateOptions.setView&&!this._loaded&&this.fitWorld(),this.fire("locationerror",{code:e,message:"Geolocation error: "+n+"."})},_handleGeolocationResponse:function(t){var e=t.coords.latitude,n=t.coords.longitude,i=new r.LatLng(e,n),o=180*t.coords.accuracy/40075017,s=o/Math.cos(r.LatLng.DEG_TO_RAD*e),a=r.latLngBounds([e-o,n-s],[e+o,n+s]),l=this._locateOptions;if(l.setView){var u=Math.min(this.getBoundsZoom(a),l.maxZoom);this.setView(i,u)}var h={latlng:i,bounds:a,timestamp:t.timestamp};for(var c in t.coords)"number"==typeof t.coords[c]&&(h[c]=t.coords[c]);this.fire("locationfound",h)}})}(window,document)},{}],58:[function(t,e,n){function i(){d&&h&&(d=!1,h.length?c=h.concat(c):p=-1,c.length&&o())}function o(){if(!d){var t=a(i);d=!0;for(var e=c.length;e;){for(h=c,c=[];++p<e;)h&&h[p].run();p=-1,e=c.length}h=null,d=!1,l(t)}}function r(t,e){this.fun=t,this.array=e}function s(){}var a,l,u=e.exports={};!function(){try{a=setTimeout}catch(t){a=function(){throw new Error("setTimeout is not defined")}}try{l=clearTimeout}catch(t){l=function(){throw new Error("clearTimeout is not defined")}}}();var h,c=[],d=!1,p=-1;u.nextTick=function(t){var e=new Array(arguments.length-1);if(arguments.length>1)for(var n=1;n<arguments.length;n++)e[n-1]=arguments[n];c.push(new r(t,e)),1!==c.length||d||a(o,0)},r.prototype.run=function(){this.fun.apply(null,this.array)},u.title="browser",u.browser=!0,u.env={},u.argv=[],u.version="",u.versions={},u.on=s,u.addListener=s,u.once=s,u.off=s,u.removeListener=s,u.removeAllListeners=s,u.emit=s,u.binding=function(t){throw new Error("process.binding is not supported")},u.cwd=function(){return"/"},u.chdir=function(t){throw new Error("process.chdir is not supported")},u.umask=function(){return 0}},{}],59:[function(t,e,n){function i(t,e){if(e.platforms.length<3)return[];var n=e.platforms.map(function(e){return t.platforms[e]});if(3===n.length){for(var i=0,o=e.platforms;i<o.length;i++){var r=o[i];if(2!==t.transfers.filter(function(t){return t.has(r)}).length)return[]}return n}if(4===n.length){var a=t.platforms,l=t.transfers,u=function(t){return{platform:a[t],degree:l.filter(function(e){return e.has(t)}).length}},h=e.platforms.map(u).sort(function(t,e){return t.degree-e.degree}),c=h.map(function(t){return t.degree}),d=h.map(function(t){return t.platform});if(s.arrayEquals(c,[2,2,3,3]))return d;if(s.arrayEquals(c,[1,2,2,3]))return d.slice(1)}return[]}function o(t,e,n){for(var i=1,o=20,s=.7,h=25,c=40,d=240,p=360,f=t.platforms,m=[],_=[],g=0;g<f.length;g++){var v=f[g],y=v.spans.map(function(e){return t.spans[e].routes[0]}).map(function(e){return t.routes[e].line}).some(function(t){return t.startsWith("E")}),b=u(e,v.location),w=b/i;m.push(w+(y?p:d)),b=u(v.location,n),w=b/i,_.push(w)}for(var x=f.indexOf(l.findClosestObject(e,f)),L=new Set(f.map(function(t,e){return e})),P=f.map(function(t){return null});L.size>0;){var E=1/0;L.forEach(function(t){m[t]<E&&(x=t,E=m[t])});var T=f[x];L.delete(x);for(var M=P[x],k=(f[M],t.spans.find(function(t){return t.isOf(x,M)})),C=[],S=[],O=0,D=T.spans;O<D.length;O++){var A=D[O],I=t.spans[A],z=x===I.source?I.target:I.source;if(L.has(z)){C.push(z);var B=f[z],b=u(T.location,B.location),N=0;k&&t.routes[k.routes[0]]!==t.routes[I.routes[0]];var j=t.routes[I.routes[0]].line.startsWith("E")?c:h,R=a.timeToTravel(b,o,s);S.push(R+j+N)}}for(var U=0,H=t.stations[T.station].platforms;U<H.length;U++){var z=H[U];if(L.has(z)){C.push(z);var B=f[z],y=B.spans.map(function(e){return t.spans[e].routes[0]}).map(function(e){return t.routes[e].line}).some(function(t){return t.startsWith("E")}),b=u(T.location,B.location)/2;S.push(b/i+(y?p:d))}}for(var A=0,Z=C.length;A<Z;++A){var z=C[A],F=m[x]+S[A];F<m[z]&&(m[z]=F,P[z]=x)}var W=m[x]+_[x]}for(var G=1/0,A=0;A<m.length;++A){var W=m[A]+_[A];W<G&&(G=W,x=A)}var V=u(e,n)/i;if(V<G)return{time:{walkTo:V}};for(var q=[],J=[x],X=P[x];null!==X;X=P[x]){var T=f[x];if(null===X)break;for(var Y="",K=0,Q=T.spans;K<Q.length;K++){var A=Q[K];if(t.spans[A].isOf(x,X)){Y="p-"+A;break}}if(""===Y)for(var A=0,$=t.transfers.length;A<$;++A)if(t.transfers[A].isOf(x,X)){Y="t-"+A;break}if(""===Y){var tt=r(t,X,x),et=tt.transfers,nt=tt.midPlatforms;q.push.apply(q,et.reverse().map(function(t){return"t-"+t})),J.push.apply(J,nt)}else q.push(Y);J.push(X),x=X}J.reverse(),q.reverse();var it=_[J[J.length-1]],ot=m[J[0]];return{platforms:J,edges:q,time:{walkTo:ot,metro:G-it-ot,walkFrom:it,total:G}}}function r(t,e,n){var i=t.platforms[e],o=t.platforms[n];if(i.station!==o.station)throw new Error("platforms ("+i.name+" & "+o.name+" must be on the same station");for(var r=t.stations[i.station],s=r.platforms,a=new Set(s),l=[],h=[],c=0;c<s.length;c++){var d=s[c];l[d]=1/0,h[d]=null}l[e]=0;for(var p=e;a.size>0;){var f=1/0;a.forEach(function(t){l[t]<f&&(p=t,f=l[t])}),a.delete(p);for(var m=t.platforms[p],_=[],g=0,v=t.transfers;g<v.length;g++){var y=v[g];y.source===p?_.push(y.target):y.target===p&&_.push(y.source)}for(var b=0;b<_.length;b++){var w=_[b];if(a.has(w)){var x=u(m.location,t.platforms[w].location),L=l[p]+x;L<l[w]&&(l[w]=L,h[w]=p)}}}var P=[],E=[];for(p=n;;){var T=h[p];if(null===T)break;var M=t.transfers.findIndex(function(t){return t.isOf(p,T)});P.push(M),p=T,E.push(p)}return E.pop(),{transfers:P.reverse(),midPlatforms:E.reverse()}}var s=t("./util"),a=t("./math"),l=t("./geo");n.findCircle=i;var u=function(t,e){return L.LatLng.prototype.distanceTo.call(t,e)};n.shortestRoute=o},{"./geo":60,"./math":63,"./util":81}],60:[function(t,e,n){function i(t,e){if(e.length<1)throw new Error("an objects array must contain at least 1 object");for(var n=e[0],i=t.distanceTo(n.location||n),o=1,r=e.length;o<r;++o){var s=e[o],a=t.distanceTo(s.location||s);a<i&&(n=e[o],i=a)}return n}function o(t,e,n,i){void 0===i&&(i=!1);var o=e.map(function(e){return{object:e,distance:t.distanceTo(e.location)}}).filter(function(t){return t.distance<=n});return(i?o.sort(function(t,e){return t.distance-e.distance}):o).map(function(t){return t.object})}function r(t){for(var e=0,n=0,i=0;i<t.length;i++){var o=t[i],r=o.lat,s=o.lng;e+=r,n+=s}return new a.LatLng(e/t.length,n/t.length)}function s(t,e,n,i){void 0===n&&(n=1e-5);var o=r(t),s=e(o);l.callMeMaybe(i,o);for(var u=10;u>n;u*=.61803398875)for(var h=u,c=-h;c<=h;c+=u)for(var d=-h;d<=h;d+=u){var p=new a.LatLng(o.lat+c,o.lng+d),f=e(p);f<s&&(o=p,s=f,l.callMeMaybe(i,o))}return o}var a=t("leaflet"),l=t("./util");n.findClosestObject=i,n.findObjectsWithinRadius=o,n.getCenter=r,n.calculateGeoMean=s},{"./util":81,leaflet:57}],61:[function(t,e,n){function i(t,e){function n(e){if(void 0===t.platforms.find(function(t){return t.name===e}))throw new Error("platform "+e+" doesn't exist")}function i(t){for(var e=0,i=Object.keys(t);e<i.length;e++){var o=i[e],r=t[o];"string"==typeof r?n(r):r.forEach(n)}}return new Promise(function(n,o){var r=e.crossPlatform;Object.keys(r).forEach(function(e){void 0===t.platforms.find(function(t){return t.name===e})&&o("platform "+e+" doesn't exist");var n=r[e];"forEach"in n?n.forEach(i):i(n)}),n(e)})}function o(t,e,n){var i=n.spans.map(function(e){return t.spans[e]}),o=[];i.forEach(function(e){return e.routes.forEach(function(e){return o.push(t.routes[e])})});var r=o.map(function(t){return t.line}),s=e[n.name];if(s)if("forEach"in s){for(var a=0,l=s.length;a<l;++a)if(Object.keys(s[a]).some(function(t){return r.indexOf(t)>-1}))return a}else if(Object.keys(s).some(function(t){return r.indexOf(t)>-1}))return-1;return null}n.verify=i,n.hintContainsLine=o},{}],62:[function(t,e,n){function i(t){return l.getJSON(t).then(function(t){for(var e=Object.keys(t),i=0;i<e.length;i++){var o=e[i],r=t[o];u.set(o.toLowerCase(),n.userLanguage in r?r[n.userLanguage]:o)}h=new RegExp(e.join("|"),"ig")})}function o(t){var e=u.get(t.toLowerCase());return void 0===e?t:t.toUpperCase()===t?e.toUpperCase():e}function r(t){for(var e=[],n=1;n<arguments.length;n++)e[n-1]=arguments[n];return t.map(function(t){return t.replace(h,o)}).map(function(t,n){return t+(e[n]||"")}).join("")}function s(t,e){return 0===t?"":""+t+(t>1&&"en"===n.userLanguage?e+"s":e)}function a(t){if(t<60)return Math.round(t)+" seconds";if(t<3570){var e=Math.round(t/60);return s(e,"min")}var n=Math.floor(t/3600),i=Math.floor((t-3600*n)/60);return(n>0?n+(o=["%hour%"],o.raw=["%hour%"],r(o)):"")+" "+s(i,"min");var o}var l=t("./res");n.userLanguage=navigator.language.slice(0,2).toLowerCase();var u=new Map,h=new RegExp(Object.keys(u).join("|"),"ig");n.updateDictionary=i,n.translate=o,n.tr=r,n.formatTime=a},{"./res":68}],63:[function(t,e,n){function i(t,e){return t.x*e.x+t.y*e.y}function o(t,e){return i(t,e)/t.distanceTo(e)}function r(t){return t.reduce(function(t,e){return t.add(e)}).divideBy(t.length)}function s(t){if(3!==t.length)throw new Error("must have 3 vertices");var e=t[0],n=t[1].subtract(e),o=t[2].subtract(e),r=i(n,n),s=i(o,o);return new h.Point(o.y*r-n.y*s,n.x*s-o.x*r).divideBy(2*(n.x*o.y-n.y*o.x)).add(e)}function a(t,e,n){return new h.Point(t.x+e*Math.cos(n),t.y+e*Math.sin(n))}function l(t){var e=Math.abs(t.x),n=Math.abs(t.y);return t.divideBy(e<n?n:e)}function u(t,e,n){var i=e*e/n;return i<t?e/n*2+(t-i)/e:2*Math.sqrt(t/n)}var h=t("leaflet");n.dot=i,n.angle=o,n.getCenter=r,n.getCircumcenter=s,n.polarToCartesian=a,n.vectorToGradCoordinates=l,n.timeToTravel=u},{leaflet:57}],64:[function(t,e,n){var i=function(){function t(){this.eventListeners=new Map}return t.prototype.addListener=function(t,e){for(var n=0,i=t.split(/\s+/);n<i.length;n++){var o=i[n],r=this.eventListeners.get(o);void 0===r?this.eventListeners.set(o,[e]):r.push(e)}},t.prototype.removeListener=function(t,e){var n=this.eventListeners.get(t);if(void 0!==n){var i=n.indexOf(e);i<0||n.splice(i,1)}},t.prototype.receiveEvent=function(t){console.log("event as seen from the dispatcher",t);for(var e=0,n=this.eventListeners.get(t.type);e<n.length;e++){var i=n[e];i(t)}return!1},t.prototype.addListenersFromObject=function(t){for(var e=0,n=Object.keys(t);e<n.length;e++){var i=n[e];this.eventListeners.set(i,[t[i]])}},t}();Object.defineProperty(n,"__esModule",{value:!0}),n.default=i},{}],65:[function(t,e,n){var i=this&&this.__extends||function(t,e){function n(){this.constructor=t}for(var i in e)e.hasOwnProperty(i)&&(t[i]=e[i]);t.prototype=null===e?Object.create(e):(n.prototype=e.prototype,new n)},o=t("leaflet"),r=t("./network"),s=t("./hints"),a=t("./ui"),l=t("./svg"),u=t("./util"),h=t("./res"),c=t("./math"),d=t("./algorithm"),p=t("./tilelayers"),f=t("./i18n"),m=t("./mediator"),_=function(t){function e(e){var n=this;t.call(this),this.whiskers=new Map,this.platformsOnSVG=new Map;var i=h.getContent(e.url.graph).then(function(t){return n.network=new r.Network(t)}),c=h.getLineRules().then(function(t){return n.lineRules=t}),d=Promise.all([h.getJSON(e.url.hints),i]).then(function(t){return s.verify(t[1],t[0])}).catch(console.error).then(function(t){return n.hints=t}),m=new a.ContextMenu(e.url.contextMenu),_=new a.FAQ(e.url.data),g=new Promise(function(t){return p.mapbox.once("load",function(e){return t()})});this.config=e;var v=Object.assign({},e);"1"===o.version[0]&&(v.wheelPxPerZoomLevel=75,v.inertiaMaxSpeed=1500,v.fadeAnimation=!1),this.map=new o.Map(e.containerId,v).addControl(new o.Control.Scale({imperial:!1})).addLayer(p.mapbox);var y=this.map.getPanes().mapPane.style;y.visibility="hidden",a.addLayerSwitcher(this.map,[p.mapbox,p.mapnik,p.osmFrance,p.cartoDBNoLabels,p.wikimapia]),this.addMapListeners(),this.addKeyboardListeners(),i.then(function(t){var e=new o.LatLngBounds(n.network.platforms.map(function(t){return t.location}));n.overlay=new a.MapOverlay(e).addTo(n.map);var i=n.overlay.defs;return l.Filters.appendAll(i),0===i.textContent.length&&alert((r=["Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience."],r.raw=["Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience."],f.tr(r))),Promise.all([c,d]);var r}).then(function(t){return n.redrawNetwork(),n.overlay.onZoomChange=function(t){return n.redrawNetwork()},n.map.invalidateSize(!1),new a.RoutePlanner(n),new a.DistanceMeasure(n),n.resetMapView(),m.whenAvailable}).then(function(){return m.addTo(n),n.contextMenu=m,o.Browser.mobile||new a.MapEditor(n.config.detailedZoom).addTo(n),_.whenAvailable}).then(function(){return _.addTo(n),g}).then(function(){u.fixFontRendering(),y.visibility=""})}return i(e,t),e.prototype.getMap=function(){return this.map},e.prototype.getNetwork=function(){return this.network},e.prototype.addMapListeners=function(){var e=this;t.prototype.addListenersFromObject.call(this,{measuredistance:function(t){e.contextMenu.removeItem("measuredistance"),e.contextMenu.insertItem({event:"deletemeasurements",text:"Delete measurements"})},deletemeasurements:function(t){e.contextMenu.removeItem("deletemeasurements"),e.contextMenu.insertItem({event:"measuredistance",text:"Measure distance"})},platformrename:function(t){var n=t.relatedTarget,i=u.platformByCircle(n,e.network);e.plate.show(l.circleOffset(n),u.getPlatformNames(i)),a.platformRenameDialog(e.network,i)},platformmove:function(t){e.plate.disabled=!0},platformmoveend:function(t){var n=t.relatedTarget,i=u.platformByCircle(n,e.network);e.plate.disabled=!1,e.plate.show(l.circleOffset(n),u.getPlatformNames(i));
-},platformadd:function(t){var n=u.mouseToLatLng(e.map,t),i=e.overlay.latLngToSvgPoint(n),o=document.getElementById("station-circles"),r=document.getElementById("dummy-circles"),s=l.makeCircle(i,+o.firstElementChild.getAttribute("r")),a=l.makeCircle(i,+r.firstElementChild.getAttribute("r")),h=e.network.platforms.length;s.id="p-"+h,a.id="d-"+h,o.appendChild(s),r.appendChild(a);var c={name:(d=["New station"],d.raw=["New station"],f.tr(d)),altNames:{},station:null,spans:[],elevation:0,location:n};e.network.platforms.push(c),e.platformToModel(c,[s,a]);var d},platformdelete:function(t){},editmapstart:function(t){e.map.getZoom()<e.config.detailedZoom&&e.map.setZoom(e.config.detailedZoom),e.contextMenu.insertItem({text:"New station",event:"platformadd"});var n=function(t){return"dummy-circles"===t.parentElement.id};e.contextMenu.insertItem({text:"Rename station",predicate:n,event:"platformrename"}),e.contextMenu.insertItem({text:"Delete station",predicate:n,event:"platformdelete"})},editmapend:function(t){e.contextMenu.removeItem("platformadd"),e.contextMenu.removeItem("platformrename"),e.contextMenu.removeItem("platformdelete")},showheatmap:function(t){}})},e.prototype.addKeyboardListeners=function(){var t=this;addEventListener("keydown",function(e){if(e.altKey)switch(e.keyCode){case 82:return t.resetNetwork();default:return}switch(e.keyCode){case 27:return t.receiveEvent(new Event("clearroute"));default:return}})},e.prototype.resetMapView=function(){this.map.setView(this.config.center,this.config.zoom,{pan:{animate:!1},zoom:{animate:!1}})},e.prototype.resetNetwork=function(){var t=this;h.getContent(this.config.url.graph).then(function(e){t.network=new r.Network(e),t.redrawNetwork()})},e.prototype.resetOverlayStructure=function(){var t=this.overlay.origin;u.removeAllChildren(t);for(var e=["paths-outer","paths-inner","transfers-outer","station-circles","transfers-inner","dummy-circles"],n=0;n<e.length;n++){var i=e[n],o=l.createSVGElement("g");o.id=i,t.appendChild(o)}this.plate=new a.TextPlate,t.insertBefore(this.plate.element,document.getElementById("dummy-circles"))},e.prototype.addBindings=function(){for(var t=this.network.platforms.length,e=0;e<t;++e){var n=document.getElementById("p-"+e),i=document.getElementById("d-"+e);this.platformToModel(e,[n,i])}},e.prototype.redrawNetwork=function(){var t=this;console.time("pre"),this.resetOverlayStructure(),this.updatePlatformsPositionOnOverlay(),console.timeEnd("pre"),console.time("preparation");for(var e=this.config.detailedZoom,n=this.map.getZoom(),i=n>9?n:n>8?9.5:9,o=.5*(i-7),r=.75*o,s=i<e?1.25*o:o,a=i<e?.4*s:.6*s,u=2*s,h=.9*o,c=1.25*a,p={"station-circles":a,"dummy-circles":0,"transfers-outer":h+c/2,"transfers-inner":h-c/2,"paths-outer":o,"paths-inner":o/2},f=s+a/2,m=new Map,_=0,g=Object.keys(p);_<g.length;_++){var v=g[_];m.set(v,document.createDocumentFragment()),document.getElementById(v).style.strokeWidth=p[v]+"px"}this.lineRules.get("light-rail-path").strokeWidth=r+"px";var y=Math.max(.5*(n+10),11);this.plate.element.firstChild.firstChild.style.fontSize=y+"px";var b=new Map;console.timeEnd("preparation"),console.time("circle preparation");for(var w=m.get("station-circles"),x=m.get("dummy-circles"),L=0,P=this.network.stations;L<P.length;L++){for(var E=P[L],T=[],M=0,k=E.platforms;M<k.length;M++){var C=k[M],S=this.network.platforms[C],O=this.platformsOnSVG.get(C);if(n>9){var D=l.makeCircle(O,s);D.id="p-"+C,n>=e&&this.colorizePlatformCircle(D,this.network.passingLines(S));var A=l.makeCircle(O,u);A.id="d-"+C,w.appendChild(D),x.appendChild(A)}this.whiskers.set(C,this.makeWhiskers(C))}var I=d.findCircle(this.network,E);if(I.length>0){for(var z=0,B=E.platforms;z<B.length;z++){var C=B[z],S=this.network.platforms[C];I.indexOf(S)>-1&&T.push(this.platformsOnSVG.get(C))}b.set(E,I)}}if(console.timeEnd("circle preparation"),console.time("transfer preparation"),n>=e)for(var N=m.get("transfers-outer"),j=m.get("transfers-inner"),R=this.overlay.defs,U=this.network.transfers,H=U.length,Z=0;Z<H;++Z){var F=U[Z],W=this.network.platforms[F.source],G=this.network.platforms[F.target],V=this.platformsOnSVG.get(F.source),q=this.platformsOnSVG.get(F.target),J=b.get(this.network.stations[W.station]),X=void 0!==J&&J.indexOf(W)>-1&&J.indexOf(G)>-1?this.makeTransferArc(F,J):l.makeTransferLine(V,q);X[0].id="ot-"+Z,X[1].id="it-"+Z;var Y=[W,G].map(function(e){return t.getPlatformColor(e)}),K=f/V.distanceTo(q),Q=q.subtract(V),$=document.getElementById("g-"+Z);null===$?($=l.Gradients.makeLinear(Q,Y,K),$.id="g-"+Z,R.appendChild($)):(l.Gradients.setDirection($,Q),l.Gradients.setOffset($,K)),X[0].style.stroke="url(#"+$.id+")",N.appendChild(X[0]),j.appendChild(X[1]),this.transferToModel(F,X)}console.timeEnd("transfer preparation"),console.time("span preparation");for(var tt=m.get("paths-outer"),et=m.get("paths-inner"),nt=0,it=this.network.spans.length;nt<it;++nt){var ot=this.makePath(nt),rt=ot[0],st=ot[1];tt.appendChild(rt),st&&et.appendChild(st)}console.timeEnd("span preparation"),console.time("appending"),m.forEach(function(t,e){return document.getElementById(e).appendChild(t)}),this.addStationListeners(),this.addBindings(),console.timeEnd("appending")},e.prototype.updatePlatformsPositionOnOverlay=function(t){void 0===t&&(t=this.map.getZoom());for(var e=this.network.platforms,n=t<this.config.detailedZoom,i=0,o=this.network.stations;i<o.length;i++)for(var r=o[i],s=n?this.overlay.latLngToSvgPoint(this.network.getStationCenter(r)):void 0,a=0,l=r.platforms;a<l.length;a++){var u=l[a],h=s||this.overlay.latLngToSvgPoint(e[u].location);this.platformsOnSVG.set(u,h)}},e.prototype.getPlatformColor=function(t){return u.Color.mean(this.linesToColors(this.network.passingLines(t)))},e.prototype.linesToColors=function(t){for(var e=[],n=t.values(),i=n.next();!i.done;i=n.next()){var o=i.value;e.push(this.lineRules.get("M"===o[0]?i.value:o[0]).stroke)}return e},e.prototype.colorizePlatformCircle=function(t,e){if(0!==e.size){if(1===e.size){var n=e.values().next().value;return void t.classList.add("M"===n[0]?n:n[0])}t.style.stroke=u.Color.mean(this.linesToColors(e))}},e.prototype.makeWhiskers=function(t){var e=this.network.platforms[t],n=this.platformsOnSVG.get(t),i=new Map;if(1===e.spans.length)return i.set(e.spans[0],n);if(e.spans.length>2){var o=[[],[]],r=[[],[]],a=this.hints.crossPlatform,l=s.hintContainsLine(this.network,a,e);if(e.name in a&&null!==l){for(var u=l>-1?a[e.name][l]:a[e.name],h=[],d=0,p=Object.keys(u);d<p.length;d++){var f=p[d],m=u[f];"string"==typeof m?h.push(m):h.push.apply(h,m)}for(var _=0,g=e.spans;_<g.length;_++){var v=g[_],y=this.network.spans[v],b=y.source===t?y.target:y.source,w=this.network.platforms[b],x=this.platformsOnSVG.get(b),L=h.indexOf(w.name)>-1?1:0;o[L].push(x),r[L].push(v)}}var P=o.map(function(t){return n.add(1===t.length?t[0]:0===t.length?n:c.getCenter(t)).divideBy(2)}),E=P.map(function(t){return n.distanceTo(t)}),T=P[1].subtract(P[0]).multiplyBy(E[0]/(E[0]+E[1])),M=P[0].add(T),k=n.subtract(M);return r[0].forEach(function(t){return i.set(t,P[0].add(k))}),r[1].forEach(function(t){return i.set(t,P[1].add(k))}),i}if(2===this.network.passingLines(e).size)return i.set(e.spans[0],n).set(e.spans[1],n);for(var C=[n,n],S=[0,0],O=0;O<2;++O){var y=this.network.spans[e.spans[O]],D=this.platformsOnSVG.get(y.other(t));S[O]=n.distanceTo(D),C[O]=n.add(D).divideBy(2)}var A=C[1].subtract(C[0]).multiplyBy(S[0]/(S[0]+S[1])),I=C[0].add(A),z=n.subtract(I);return i.set(e.spans[0],C[0].add(z)).set(e.spans[1],C[1].add(z))},e.prototype.makeTransferArc=function(t,e){var n=this,i=this.network.platforms,o=i[t.source],r=i[t.target],s=this.platformsOnSVG.get(t.source),a=this.platformsOnSVG.get(t.target),u=function(t){return l.makeTransferArc(s,a,n.platformsOnSVG.get(t))};if(3===e.length){var h=e.find(function(t){return t!==o&&t!==r});return u(i.indexOf(h))}if(o===e[2]&&r===e[3]||o===e[3]&&r===e[2])return l.makeTransferLine(s,a);for(var c=[],d=0,p=this.network.transfers;d<p.length;d++){var f=p[d];f!==t&&(t.has(f.source)?c.push(f.target):t.has(f.target)&&c.push(f.source))}var m;if(2===c.length){if(c[0]!==c[1])throw Error("FFFFUC");m=c[0]}else{if(3!==c.length)throw new Error("111FUUFF");m=c[0]===c[1]?c[2]:c[0]===c[2]?c[1]:c[0]}return u(m)},e.prototype.makePath=function(t){var e=this,n=this.network.spans[t],i=n.source,o=n.target,r=n.routes.map(function(t){return e.network.routes[t]}),s=r[0].line.match(/([MEL])(\d{0,2})/),a=s[0],u=s[1],h=(s[2],[this.platformsOnSVG.get(i),this.whiskers.get(i).get(t),this.whiskers.get(o).get(t),this.platformsOnSVG.get(o)]),c=l.makeCubicBezier(h);if(c.id="op-"+t,"E"===u){c.classList.add("E");var d=c.cloneNode(!0);return d.id="ip-"+t,[c,d]}return a&&c.classList.add(a),c.classList.add(u),[c]},e.prototype.addStationListeners=function(){var t=this,e=function(e){t.plate.hide(),l.Scale.unscaleAll()},n=function(t,e){return t+" / "+e},i=function(t){return[0,1,2].map(function(e){return u.uniquify(t.map(function(t){return u.getPlatformNames(t)[e]})).reduce(n)}).filter(function(t){return void 0!==t&&t.length>0})},o=document.getElementById("dummy-circles");o.addEventListener("mouseover",function(e){var n=e.target,o=t.network.platforms[+n.id.slice(2)],r=t.network.stations[o.station],s=t.map.getZoom()<t.config.detailedZoom&&r.platforms.length>1?i(r.platforms.map(function(e){return t.network.platforms[e]})):u.getPlatformNames(o);t.highlightStation(r,s)}),o.addEventListener("mouseout",e);var r=function(e){var n=e.target,o=t.network.transfers[+n.id.slice(3)],r=t.network.platforms[o.source],s=t.network.stations[r.station];t.highlightStation(s,i([r,t.network.platforms[o.target]]))},s=document.getElementById("transfers-outer"),a=document.getElementById("transfers-inner");s.addEventListener("mouseover",r),a.addEventListener("mouseover",r),s.addEventListener("mouseout",e),a.addEventListener("mouseout",e)},e.prototype.highlightStation=function(t,e){var n,i,o=1.25,r=this.network.platforms,s=t.platforms;if(1===s.length)n=u.circleByIndex(s[0]),l.Scale.scaleCircle(n,o,!0),i=r[s[0]];else{var a=this.map.getZoom()<this.config.detailedZoom?void 0:this.network.transfers;l.Scale.scaleStation(r,t,o,a);var h=function(t){return r[t].location.lat},c=s.reduce(function(t,e){return h(t)<h(e)?e:t});n=u.circleByIndex(c),i=r[c]}this.plate.show(l.circleOffset(n),e)},e.prototype.platformToModel=function(t,e){var n=this,i="number"==typeof t?[t,this.network.platforms[t]]:[this.network.platforms.indexOf(t),t],o=i[0],r=i[1],s=r.location;Object.defineProperty(r,"location",{get:function(){return r._location},set:function(t){r._location=t;for(var i=n.map.getZoom()<n.config.detailedZoom?n.network.getStationCenter(n.network.stations[r.station]):t,s=n.overlay.latLngToSvgPoint(i),a=0;a<e.length;a++){var u=e[a];u.setAttribute("cx",s.x.toString()),u.setAttribute("cy",s.y.toString())}n.whiskers.set(o,n.makeWhiskers(o)),n.platformsOnSVG.set(o,s);for(var h=new Set(r.spans),c=0,d=r.spans;c<d.length;c++){var p=d[c],f=n.network.spans[p],m=f.source,_=f.target,g=o===m?_:m;n.whiskers.set(g,n.makeWhiskers(g)),n.network.platforms[g].spans.forEach(function(t){return h.add(t)})}h.forEach(function(t){var e=n.network.spans[t],i=e.source,o=e.target,r=[n.platformsOnSVG.get(i),n.whiskers.get(i).get(t),n.whiskers.get(o).get(t),n.platformsOnSVG.get(o)];l.setBezierPath(document.getElementById("op-"+t),r);var s=document.getElementById("ip-"+t);s&&l.setBezierPath(s,r)});for(var v=0,y=0,b=n.network.transfers;y<b.length;y++){var w=b[y];w.source===o?(w.source=o,++v):w.target===o&&(w.target=o,++v)}console.log(v)}}),r._location=s},e.prototype.transferToModel=function(t,e){var n=this,i=[t.source,t.target],o=this.network.transfers.indexOf(t);["source","target"].forEach(function(r,s){Object.defineProperty(t,r,{get:function(){return t["_"+r]},set:function(i){var a=document.getElementById("p-"+i),u=+a.getAttribute("r")/2+parseFloat(getComputedStyle(a).strokeWidth),h=n.platformsOnSVG.get(i);if("line"===e[0].tagName){for(var c=s+1,d=n.platformsOnSVG.get(t.other(i)),p=0;p<e.length;p++){var f=e[p];f.setAttribute("x"+c,h.x.toString()),f.setAttribute("y"+c,h.y.toString())}var m=document.getElementById("g-"+o),_="source"===r?d.subtract(h):h.subtract(d);l.Gradients.setDirection(m,_);var g=u/h.distanceTo(d);l.Gradients.setOffset(m,g)}else{if("path"!==e[0].tagName)throw new TypeError("wrong element type for transfer");for(var v=[],y=[],b=0,w=n.network.transfers.length;b<w;++b){var x=n.network.transfers[b];if(t.isAdjacent(x)&&(v.push(x),y.push(b),3===v.length))break}for(var L=new Set,P=0;P<v.length;P++){var E=v[P];L.add(E.source).add(E.target)}var T=Array.from(L).map(function(t){return n.platformsOnSVG.get(t)});L.forEach(function(t){return T.push(n.platformsOnSVG.get(t))});for(var M=y.map(function(t){return document.getElementById("ot-"+t)}),k=y.map(function(t){return document.getElementById("it-"+t)}),b=0;b<3;++b){var C=v[b],S=M[b],O=k[b],D=n.platformsOnSVG.get(C.source),A=n.platformsOnSVG.get(C.target),I=T.find(function(t){return t!==D&&t!==A});l.setCircularPath(S,D,A,I),O.setAttribute("d",S.getAttribute("d"));var m=document.getElementById("g-"+y[b]);l.Gradients.setDirection(m,A.subtract(D));var g=u/D.distanceTo(A);l.Gradients.setOffset(m,g)}}}}),t["_"+r]=i[s]})},e}(m.default);Object.defineProperty(n,"__esModule",{value:!0}),n.default=_},{"./algorithm":59,"./hints":61,"./i18n":62,"./math":63,"./mediator":64,"./network":66,"./res":68,"./svg":69,"./tilelayers":70,"./ui":71,"./util":81,leaflet:57}],66:[function(t,e,n){var i=this&&this.__extends||function(t,e){function n(){this.constructor=t}for(var i in e)e.hasOwnProperty(i)&&(t[i]=e[i]);t.prototype=null===e?Object.create(e):(n.prototype=e.prototype,new n)},o=t("./geo"),r=function(){function t(t,e,n){this.platforms=t,this.name=e,this.altNames=n}return t}();n.Station=r;var s=function(){function t(t,e){if(t===e)throw new Error("source is the same as target: "+t);this.source=t,this.target=e}return t.prototype.isOf=function(t,e){return this.source===t&&this.target===e||this.source===e&&this.target===t},t.prototype.has=function(t){return this.source===t||this.target===t},t.prototype.other=function(t){return this.source===t?this.target:this.target===t?this.source:null},t.prototype.isAdjacent=function(t){return this.has(t.source)||this.has(t.target)},t}(),a=function(t){function e(){t.apply(this,arguments)}return i(e,t),e}(s);n.Transfer=a;var l=function(t){function e(e,n,i){t.call(this,e,n),this.routes=i}return i(e,t),e}(s);n.Span=l;var u=function(){function t(t){var e=JSON.parse(t);this.platforms=e.platforms,this.stations=[],this.lines=e.lines,this.transfers=e.transfers.map(function(t){return new a(t.source,t.target)}),this.spans=e.spans.map(function(t){return new l(t.source,t.target,t.routes)}),this.routes=e.routes;for(var n=0,i=this.platforms;n<i.length;n++){var o=i[n];o.spans=[]}for(var s=0,u=this.spans.length;s<u;++s){var h=this.spans[s];this.platforms[h.source].spans.push(s),this.platforms[h.target].spans.push(s)}console.time("restore");for(var c=new Set(this.transfers),d=this.platforms.slice();c.size>0;){var p=c.values().next().value,f=(new Set).add(p.source).add(p.target);c.delete(p);for(var m=f.values(),_=m.next().value;void 0!==_;_=m.next().value){for(var g=new Set,v=c.values(),y=v.next().value;void 0!==y;y=v.next().value)y.source===_?(f.add(y.target),g.add(y)):y.target===_&&(f.add(y.source),g.add(y));g.forEach(function(t){return c.delete(t)}),d[_]=void 0}var b=Array.from(f),w=this.platforms[b[0]];this.stations.push(new r(b,w.name,w.altNames));for(var x=0;x<b.length;x++){var _=b[x];this.platforms[_].station=this.stations.length-1}}for(var s=0;s<d.length;++s){var L=d[s];void 0!==L&&(this.stations.push(new r([s],L.name,L.altNames)),this.platforms[s].station=this.stations.length-1)}console.timeEnd("restore")}return t.prototype.toJSON=function(){for(var t=JSON.parse(JSON.stringify(this.platforms)),e=JSON.parse(JSON.stringify(this.spans)),n=JSON.parse(JSON.stringify(this.routes)),i=0;i<t.length;i++){var o=t[i];o.spans=o.station=void 0}return JSON.stringify({platforms:t,transfers:this.transfers,lines:this.lines,spans:e,routes:n},function(t,e){return t.startsWith("_")?void 0:e})},t.prototype.passingLines=function(t){for(var e=new Set,n=0,i=t.spans;n<i.length;n++)for(var o=i[n],r=0,s=this.spans[o].routes;r<s.length;r++){var a=s[r];e.add(this.routes[a].line)}return e},t.prototype.passingLinesStation=function(t){for(var e=new Set,n=0,i=t.platforms;n<i.length;n++)for(var o=i[n],r=0,s=this.platforms[o].spans;r<s.length;r++)for(var a=s[r],l=0,u=this.spans[a].routes;l<u.length;l++){var h=u[l];e.add(this.routes[h].line)}return e},t.prototype.getStationCenter=function(t){var e=this;return o.getCenter(t.platforms.map(function(t){return e.platforms[t].location}))},t}();n.Network=u},{"./geo":60}],67:[function(t,e,n){function i(){"Promise"in window&&"then"in Promise.prototype&&"catch"in Promise.prototype||(console.log("promises not present, using a polyfill"),t("es6-promise").polyfill()),"Set"in window&&"add"in Set.prototype&&"has"in Set.prototype||(console.log("set not present, using a polyfill"),t("es6-set/implement")),"classList"in HTMLElement.prototype||(console.log("classlist not present, using a polyfill"),t("classlist-polyfill")),Array.prototype.find||(Array.prototype.find=function(t){if(null==this)throw new TypeError("Array.prototype.find called on null or undefined");if("function"!=typeof t)throw new TypeError("predicate must be a function");for(var e,n=Object(this),i=n.length>>>0,o=arguments[1],r=0;r<i;r++)if(e=n[r],t.call(o,e,r,n))return e})}Object.defineProperty(n,"__esModule",{value:!0}),n.default=i},{"classlist-polyfill":2,"es6-promise":44,"es6-set/implement":45}],68:[function(t,e,n){n.getJSON=function(t){return fetch(t).then(function(t){return t.json()})},n.getContent=function(t){return fetch(t).then(function(t){return t.text()})},n.getConfig=function(){return fetch("res/mapconfig.json").then(function(t){return t.json()})},n.getLineRules=function(){return new Promise(function(t){var e=document.querySelector('[href$="css/scheme.css"]'),n=e.sheet;n&&n.cssRules?t(n):e.onload=function(e){return t(n)}}).then(function(t){for(var e=new Map,n=0,i=t.cssRules;n<i.length;n++){var o=i[n];if(o instanceof CSSStyleRule){var r=o.selectorText.match(/^.(M\d+|L|E)$/);r&&r[1]?e.set(r[1],o.style):"#paths-outer > .L"===o.selectorText&&e.set("light-rail-path",o.style)}}return console.log(e),e})}},{}],69:[function(t,e,n){function i(t){return document.createElementNS("http://www.w3.org/2000/svg",t)}function o(t,e){var n=i("circle");return n.setAttribute("r",e.toString()),n.setAttribute("cy",t.y.toString()),n.setAttribute("cx",t.x.toString()),n}function r(t,e){var n=i("line");return n.setAttribute("x1",t.x.toString()),n.setAttribute("y1",t.y.toString()),n.setAttribute("x2",e.x.toString()),n.setAttribute("y2",e.y.toString()),n}function s(t,e,n){var o=i("path");return h(o,t,e,n),o}function a(t){for(var e,n=[],i=/\D([\d\.]+).*?,.*?([\d\.]+)/g,o=t.getAttribute("d");null!==(e=i.exec(o));)n.push(new _.Point(Number(e[1]),Number(e[2])));return n}function l(t,e){if(4!==e.length)throw new Error("there should be 4 points");var n=(i("path"),["M"].concat(e.map(function(t){return t.x+","+t.y})));n.splice(2,0,"C"),t.setAttribute("d",n.join(" "))}function u(t){for(var e,n=[],i=/\D([\d\.]+)/g,o=t.getAttribute("d");null!==(e=i.exec(o));)n.push(Number(e[1]));return n}function h(t,e,n,i){var o=g.getCircumcenter([e,n,i]),r=Math.atan2(e.y-o.y,e.x-o.x),s=Math.atan2(n.y-o.y,n.x-o.x),a=s-r,l=a<=Math.PI||a>-Math.PI?0:1,u=e.subtract(o),h=n.subtract(o),c=u.x*h.y-h.x*u.y<0?0:1,d=g.dot(i.subtract(e),i.subtract(n));d<0&&(c=1-c,l=1-l);var p=o.distanceTo(e),f=["M",e.x,e.y,"A",p,p,0,l,c,n.x,n.y].join(" ");t.setAttribute("d",f)}function c(t){var e=i("path");return l(e,t),e}function d(t,e){var n=o(t,e),i=n.cloneNode(!0);return[n,i]}function p(t,e,n){var i=s(t,e,n),o=i.cloneNode(!0);return[i,o]}function f(t,e){var n=e.clone();return t.x===e.x?n.x+=.01:t.y===e.y&&(n.y+=.01),[r(t,n),r(t,n)]}function m(t){var e=new _.Point((+t.getAttribute("cx")),(+t.getAttribute("cy"))),n=~~t.getAttribute("r"),i=new _.Point(0+n,4+n);return e.subtract(i)}var _=t("leaflet"),g=t("./math");n.createSVGElement=i,n.makeCircle=o,n.makeLine=r,n.makeArc=s,n.getBezierPathPoints=a,n.setBezierPath=l,n.getCircularPath=u,n.setCircularPath=h,n.makeCubicBezier=c,n.makeTransferRing=d,n.makeTransferArc=p,n.makeTransferLine=f,n.circleOffset=m;var v;!function(t){function e(t,e,n){if(void 0===n&&(n=!1),!n)return void(t.style.transform="scale("+e+")");o.add(t);var i=t.getAttribute("r");t.setAttribute("data-r",i),t.setAttribute("r",(+i*e).toString())}function n(t,n,i,o){for(var s=parseFloat(document.getElementById("transfers-outer").style.strokeWidth),a=parseFloat(document.getElementById("transfers-inner").style.strokeWidth),l=0,u=n.platforms;l<u.length;l++){var h=u[l],c=document.getElementById("p-"+h);if(e(c,i,!0),!(void 0===o||n.platforms.length<2))for(var d=0;d<o.length;++d){var p=o[d];if(p.source===h||p.target===h){var f=document.getElementById("ot-"+d),m=document.getElementById("it-"+d);r.add(f),r.add(m),f.style.strokeWidth=s*i+"px",m.style.strokeWidth=a*i+"px"}}}}function i(){o.forEach(function(t){return t.setAttribute("r",t.getAttribute("data-r"))}),r.forEach(function(t){return t.style.strokeWidth=null}),r.clear(),o.clear()}t.scaleCircle=e;var o=new Set,r=new Set;t.scaleStation=n,t.unscaleAll=i}(v=n.Scale||(n.Scale={}));var y;!function(t){function e(){var t=i("filter");return t.id="shadow",t.setAttribute("width","200%"),t.setAttribute("height","200%"),t.innerHTML='\n            <feOffset result="offOut" in="SourceAlpha" dx="0" dy="4" />\n            <feColorMatrix result="matrixOut" in="offOut" type="matrix" values=\n                "0 0 0 0   0\n                0 0 0 0   0\n                0 0 0 0   0\n                0 0 0 0.5 0"/>\n            <feGaussianBlur result="blurOut" in="matrixOut" stdDeviation="2" />\n\n            <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />\n        ',t}function n(){var t=i("filter");return t.id="black-glow",t.innerHTML='<feColorMatrix type="matrix" values=\n                "0 0 0 0   0\n                0 0 0 0   0\n                0 0 0 0   0\n                0 0 0 0.3 0"/>\n            <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>\n            <feMerge>\n                <feMergeNode in="coloredBlur"/>\n                <feMergeNode in="SourceGraphic"/>\n            </feMerge>',t}function o(){var t=i("filter");return t.id="opacity",t.innerHTML='<feComponentTransfer>\n            <feFuncA type="table" tableValues="0 0.5">\n        </feComponentTransfer>',t}function r(){var t=i("filter");return t.id="gray",t.innerHTML='<feColorMatrix type="matrix"\n               values="0.2126 0.7152 0.0722 0 0\n                       0.2126 0.7152 0.0722 0 0\n                       0.2126 0.7152 0.0722 0 0\n                       0 0 0 1 0"/>',t}function s(t){t.appendChild(e()),t.appendChild(n()),t.appendChild(o()),t.appendChild(r())}function a(t){var e=t.getBoundingClientRect(),n=2*parseFloat(getComputedStyle(t).strokeWidth);e.height>=n&&e.width>=n&&(t.style.filter="url(#black-glow)")}t.makeDrop=e,t.makeGlow=n,t.makeOpacity=o,t.makeGray=r,t.appendAll=s,t.applyDrop=a}(y=n.Filters||(n.Filters={}));var b;!function(t){function e(t){var e=i("linearGradient");if("innerHTML"in e)return e.innerHTML='<stop style="stop-color:'+t[0]+'" /><stop style="stop-color:'+t[1]+'" />',e;var n=i("stop");n.style.stopColor=t[0];var o=i("stop");return o.style.stopColor=t[1],e.appendChild(n),e.appendChild(o),e}function n(t,n,i){void 0===i&&(i=0);var s=e(n);return r(s,i),o(s,t),s}function o(t,e){var n=g.vectorToGradCoordinates(e);t.setAttribute("x1",50*(1-n.x)+"%"),t.setAttribute("y1",50*(1-n.y)+"%"),t.setAttribute("x2",50*(1+n.x)+"%"),t.setAttribute("y2",50*(1+n.y)+"%")}function r(t,e){t.firstChild.setAttribute("offset",e.toString()),t.lastChild.setAttribute("offset",(1-e).toString())}t.makeUndirectedLinear=e,t.makeLinear=n,t.setDirection=o,t.setOffset=r}(b=n.Gradients||(n.Gradients={}));var w;!function(t){function e(){return null===r?Promise.resolve(!0):(o=!1,r)}function n(t,n,s,a){void 0===a&&(a=1);var l=_.Browser.webkit&&!_.Browser.mobile;return r=e().then(function(e){return new Promise(function(e,r){return function r(u){if(!o)return e(!1);var h=document.getElementById("p-"+n[u]);if(h.style.opacity=null,l&&i(h,u<s.length?1.5:3,200),u===s.length)return e(!0);var c=document.getElementById("o"+s[u]);if(null===c)return r(u+1);var d=document.getElementById("i"+s[u]),p=c.cloneNode(!0),f=null===d?null:d.cloneNode(!0);document.getElementById("paths-outer").appendChild(p),f&&document.getElementById("paths-inner").appendChild(f);var m;if(p instanceof SVGPathElement)m=p.getTotalLength();else{var g=new _.Point((+p.getAttribute("x1")),(+p.getAttribute("y1"))),v=new _.Point((+p.getAttribute("x2")),(+p.getAttribute("y2")));m=g.distanceTo(v)}var b=s[u].split("-"),w=t["p"===b[0]?"spans":"transfers"][+b[1]],x=w.source===n[u]?m:-m,L=m/a;y.applyDrop(p);for(var P=0,E=null===f?[p]:[p,f];P<E.length;P++){var T=E[P],M=T.style;M.transition=null,M.opacity=null,M.strokeDasharray=m+" "+m,M.strokeDashoffset=x.toString(),T.getBoundingClientRect(),M.transition="stroke-dashoffset "+L+"ms linear",M.strokeDashoffset="0"}p.addEventListener("transitionend",function(t){c.style.opacity=null,"t"!==p.id.charAt(1)&&y.applyDrop(c),p.parentNode.removeChild(p),f&&(d.style.opacity=null,f.parentNode.removeChild(f)),r(u+1)})}(0)}).then(function(t){return r=null,o=!0,t})})}function i(t,e,n){t.getBoundingClientRect(),t.style.transition="transform "+n/2+"ms linear",v.scaleCircle(t,e),t.addEventListener("transitionend",function t(e){this.removeEventListener("transitionend",t),this.style.transform="scale(1)",this.addEventListener("transitionend",function t(e){this.removeEventListener("transitionend",t),this.style.transition=null,this.style.transform=null})})}var o=!0,r=null;t.terminateAnimations=e,t.animateRoute=n,t.pulsateCircle=i}(w=n.Animation||(n.Animation={}))},{"./math":63,leaflet:57}],70:[function(t,e,n){var i=t("leaflet");n.mapbox=new i.TileLayer("https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png",{detectRetina:!1,bounds:null,attribution:'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://mapbox.com">Mapbox</a>'}),n.mapnik=i.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}),n.osmFrance=i.tileLayer("http://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png",{attribution:'&copy; Openstreetmap France | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}),n.openMapSurfer=new i.TileLayer("https://openmapsurfer.uni-hd.de/tiles/roads/x={x}&y={y}&z={z}",{detectRetina:!0,attribution:'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="https://server.ts.openstreetmap.org/copyright">OpenStreetMap</a>'}),n.hyddaBase=i.tileLayer("https://{s}.tile.openstreetmap.se/hydda/base/{z}/{x}/{y}.png",{detectRetina:!0,attribution:'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://server.ts.openstreetmap.org/copyright">OpenStreetMap</a>'}),n.esriGrey=i.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",{attribution:"Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ",detectRetina:!0}),n.cartoDB=i.tileLayer("http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",{attribution:'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'}),n.cartoDBNoLabels=i.tileLayer("http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",{attribution:'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'}),n.wikimapia=i.tileLayer("http://i{hash}.wikimapia.org/?x={x}&y={y}&zoom={z}",{hash:function(t){return t.x%4+t.y%4*4}})},{leaflet:57}],71:[function(t,e,n){function i(t,e){var n=e.name,i=e.altNames,o=i.fi,r=i.en,s=r?[n,o,r]:o?[n,o]:[n],l=s.join("|");a.prompt((u=["New name"],u.raw=["New name"],v.tr(u)),l,function(i,o){var r=o.split("|");if(e.name=r[0],e.altNames.fi=r[1],e.altNames.en=r[2],o===l)return a.warning((d=["Name was not changed"],d.raw=["Name was not changed"],v.tr(d)));var u=s.slice(1).join(", "),h=r.slice(1).join(", ");a.success((p=[""," (",") renamed to "," (",")"],p.raw=[""," (",") renamed to "," (",")"],v.tr(p,n,u,r[0],h)));var c=t.stations[e.station];if(!(c.platforms.length<2)){a.confirm((f=["Rename the entire station?"],f.raw=["Rename the entire station?"],v.tr(f)),function(){for(var e=0,n=c.platforms;e<n.length;e++){var i=n[e],s=t.platforms[i];s.name=r[0],s.altNames.fi=r[1],s.altNames.en=r[2]}c.name=r[0],c.altNames.fi=r[1],c.altNames.en=r[2],a.success((l=["The entire station was renamed to ",""],l.raw=["The entire station was renamed to ",""],v.tr(l,o)));var l});var d,p,f}},function(){return a.warning((t=["Name change cancelled"],t.raw=["Name change cancelled"],v.tr(t)));var t});var u}function o(t,e){var n=0;console.log(e.length),addEventListener("keydown",function(i){i.ctrlKey&&76===i.keyCode&&(i.preventDefault(),t.removeLayer(e[n]),++n===e.length&&(n=0),t.addLayer(e[n]),t.invalidateSize(!1))})}function r(t){var e=t.getNetwork(),n=t.getMap(),i=e.platforms.filter(function(t){return e.routes[e.spans[t.spans[0]].routes[0]].line.startsWith("M")}).map(function(t){return t.location}),o=function(t){return i.reduce(function(e,n){return e+t.distanceTo(n)},0)},r=_.polyline([],{color:"red"}),s=g.calculateGeoMean(i,o,1,function(t){return r.addLatLng(t)});n.addLayer(r);for(var a=5e3;a<2e4;a+=5e3)_.circle(s,a-250,{weight:1}).addTo(n),_.circle(s,a+250,{weight:1}).addTo(n);var l=(e.platforms.filter(function(t){return e.routes[e.spans[t.spans[0]].routes[0]].line.startsWith("E")}).map(function(t){return t.location}),e.platforms.find(function(t){return"Glavnyj voxal"===t.name&&e.routes[e.spans[t.spans[0]].routes[0]].line.startsWith("E")}).location);_.circle(l,3e4).addTo(n),_.circle(l,45e3).addTo(n)}function s(t,e){for(var n=0;n<e.length;n++){var i=e[n];t.addLayer(i).removeLayer(i)}}var a=t("alertifyjs"),l=t("./ui/mapeditor");n.MapEditor=l.default;var u=t("./ui/faq");n.FAQ=u.default;var h=t("./ui/textplate");n.TextPlate=h.default;var c=t("./ui/routeplanner");n.RoutePlanner=c.default;var d=t("./ui/contextmenu");n.ContextMenu=d.default;var p=t("./ui/distancemeasure");n.DistanceMeasure=p.default;var f=t("./ui/mapoverlay");n.MapOverlay=f.default;var m=t("./ui/icons");n.Icons=m;var _=t("leaflet"),g=t("./geo"),v=t("./i18n");n.platformRenameDialog=i,n.addLayerSwitcher=o,n.drawZones=r,n.cacheIcons=s},{"./geo":60,"./i18n":62,"./ui/contextmenu":72,"./ui/distancemeasure":73,"./ui/faq":74,"./ui/icons":75,"./ui/mapeditor":76,"./ui/mapoverlay":77,"./ui/routeplanner":78,"./ui/textplate":79,alertifyjs:1,leaflet:57}],72:[function(t,e,n){var i=this&&this.__extends||function(t,e){function n(){this.constructor=t}for(var i in e)e.hasOwnProperty(i)&&(t[i]=e[i]);t.prototype=null===e?Object.create(e):(n.prototype=e.prototype,new n)},o=t("leaflet"),r=t("./widget"),s=t("../util"),a=t("../res"),l=t("../i18n"),u=function(t){function e(e){var n=this;t.call(this),this._whenAvailable=a.getJSON(e).then(function(t){console.log("adding context menu"),n.items=t,n.container=document.createElement("div"),n.container.id="contextmenu",n.container.addEventListener("contextmenu",function(t){t.preventDefault(),t.target.click()}),console.log("context menu ready")})}return i(e,t),e.prototype.addTo=function(t){var e=this;this.metroMap=t;var n=t.getMap(),i=n.getPanes().mapPane,r=n.getContainer(),s=function(t){return e.handler(t)},a=function(t){return e.hide()};this._whenAvailable.then(function(t){i.addEventListener("contextmenu",s,!1),r.addEventListener("mousedown",a),
-r.addEventListener("touchstart",a),o.Browser.mobile||n.on("movestart",a),document.body.appendChild(e.container)})},e.prototype.handler=function(t){var e=this;t.preventDefault(),console.log("target",t.target,t.target.parentNode),s.removeAllChildren(this.container);for(var n=0,i=this.items;n<i.length;n++){var o=i[n];if(void 0===o.predicate||o.predicate(t.target)){var r=document.createElement("div");o.disabled?r.setAttribute("disabled",""):r.setAttribute("data-event",o.event),r.textContent=l.translate(o.text),this.container.appendChild(r)}else console.log(o.predicate(t.target))}this.container.onclick=function(n){console.log(n);var i=n.target,o=i.getAttribute("data-event");if(o){e.hide();var r=new MouseEvent(o,{clientX:f,clientY:m,relatedTarget:t.target});e.metroMap.receiveEvent(r)}};var a=this.container.getBoundingClientRect(),u=a.width,h=a.height,c=document.documentElement,d=c.clientWidth,p=c.clientHeight,f=t.clientX,m=t.clientY,_=f+u>d?d-u:f,g=m+h>p?m-h:m;this.container.style.transform="translate("+_+"px, "+g+"px)",this.show()},e.prototype.insertItem=function(t,e){void 0===e||e<0?this.items.push(t):this.items.splice(e,0,t)},e.prototype.removeItem=function(t,e){if(void 0===e&&(e=!1),e)return void(this.items=this.items.filter(function(e){return e.event!==t}));var n=this.items.findIndex(function(e){return e.event===t});void 0===n||n<0||this.items.splice(n,1)},e.prototype.show=function(){this.container.style.visibility=null,o.Browser.mobile&&this.metroMap.getMap().dragging.disable()},e.prototype.hide=function(){this.container.style.visibility="hidden",o.Browser.mobile&&this.metroMap.getMap().dragging.enable()},e}(r.DeferredWidget);Object.defineProperty(n,"__esModule",{value:!0}),n.default=u},{"../i18n":62,"../res":68,"../util":81,"./widget":80,leaflet:57}],73:[function(t,e,n){var i=t("leaflet"),o=t("../util"),r=t("../ui"),s=function(){function t(t){var e=this;this.polyline=new i.Polyline([],{color:"red"}),this.markers=(new i.FeatureGroup).on("layeradd layerremove",function(t){return o.fixFontRendering()}),this.dashedLine=new i.Polyline([],{color:"red",opacity:.5,dashArray:"0,9"}),this.makeMarker=function(t){if(0===t.originalEvent.button){var n=e.metroMap.getMap(),o=new i.Marker(t.latlng,{draggable:!0}).setIcon(r.Icons.Circle).bindPopup("").on("mouseover",function(t){return e.removeDashedLine()}).on("mouseout",function(t){return e.addDashedLine()}).on("drag",function(t){return e.updateDistances()}).on("click",function(t){if(0===t.originalEvent.button){if(e.markers.removeLayer(o),0===e.markers.getLayers().length)return void e.metroMap.receiveEvent(new MouseEvent("deletemeasurements"));e.updateDistances(),n.hasLayer(e.dashedLine)||e.addDashedLine()}});e.markers.addLayer(o),e.updateDistances()}},this.resetDashedLine=function(t){e.dashedLine.getLatLngs()[1]=t.latlng,e.dashedLine.redraw()},this.metroMap=t;var n=t.getMap(),s=function(t){return e.measureDistance(o.mouseToLatLng(n,t))};t.addListener("measuredistance",s),t.addListener("deletemeasurements",function(t){return e.deleteMeasurements()})}return t.prototype.updateDistances=function(){var t=this.polyline.getLatLngs(),e=this.markers.getLayers(),n=e.length;t[0]=e[0].setPopupContent("0").getLatLng();for(var i=1,o=0;i<n;++i){var r=e[i].getLatLng();t[i]=r,o+=e[i-1].getLatLng().distanceTo(r);var s=Math.round(o),a=s<1e3?s+" m":(s<1e4?s/1e3:Math.round(s/10)/100)+" km";e[i].setPopupContent(a)}t.length>n&&(t.length=n),this.dashedLine.getLatLngs()[0]=t[t.length-1],this.polyline.redraw(),n>1&&e[n-1].openPopup()},t.prototype.addDashedLine=function(){this.metroMap.getMap().addLayer(this.dashedLine).on("mousemove",this.resetDashedLine)},t.prototype.removeDashedLine=function(){this.metroMap.getMap().off("mousemove",this.resetDashedLine).removeLayer(this.dashedLine)},t.prototype.measureDistance=function(t){var e=this;this.dashedLine.addLatLng(t).addLatLng(t),this.metroMap.getMap().addLayer(this.polyline.setLatLngs([])).addLayer(this.markers).addLayer(this.dashedLine.setLatLngs([])).on("click",this.makeMarker).on("mousemove",this.resetDashedLine).fire("click",{latlng:t,originalEvent:{button:0}}),o.onceEscapePress(function(t){return e.metroMap.receiveEvent(new MouseEvent("deletemeasurements"))})},t.prototype.deleteMeasurements=function(){this.metroMap.getMap().removeLayer(this.polyline).removeLayer(this.markers.clearLayers()).removeLayer(this.dashedLine).off("mousemove",this.resetDashedLine).off("click",this.makeMarker)},t}();Object.defineProperty(n,"__esModule",{value:!0}),n.default=s},{"../ui":71,"../util":81,leaflet:57}],74:[function(t,e,n){var i=this&&this.__extends||function(t,e){function n(){this.constructor=t}for(var i in e)e.hasOwnProperty(i)&&(t[i]=e[i]);t.prototype=null===e?Object.create(e):(n.prototype=e.prototype,new n)},o=t("hammerjs"),r=t("./widget"),s=t("../util"),a=function(t){function e(e){var n=this;t.call(this);var i=fetch(e).then(function(t){return t.json()}),r=document.createElement("button");r.id="faq-button",r.textContent="FAQ",r.classList.add("leaflet-control"),r.addEventListener("click",function(t){return n.showFAQ()}),this.button=r,this.card=document.createElement("div"),this.card.id="faq-card",L.Browser.mobile&&new o(this.card).on("swipeleft swiperight",function(t){return n.hideFAQ()});var s=/\[\[(.+?)\|(.*?)\]\]/g,a='<a href="$1" target="_blank">$2</a>',l=function(t){return'<div><span class="question">'+t.q+'</span><span class="answer">'+t.a+"</span></div>"};this._whenAvailable=i.then(function(t){n.card.innerHTML+=t.faq.map(l).join("").replace(s,a)})}return i(e,t),e.prototype.addTo=function(t){var e=this;this.map=t.getMap(),this._whenAvailable.then(function(t){document.querySelector(".leaflet-right.leaflet-top").appendChild(e.button),document.body.appendChild(e.card)})},e.prototype.showFAQ=function(){var t=this,e=this.card.style;e.display="inline",e.transform="scale(0.1)",e.opacity="0",this.card.getBoundingClientRect(),e.transform=null,e.opacity=null,this.button.disabled=!0,L.Browser.mobile||(this.map.getContainer().classList.add("dimmed"),this.map.once("mousedown",function(e){return t.hideFAQ()}),s.once(window,"keydown",function(e){27===e.keyCode&&t.map.fireEvent("mousedown")}))},e.prototype.hideFAQ=function(){var t=this;console.log("hiding"),this.card.getBoundingClientRect(),this.card.style.transform="scale(0.1)",this.card.style.opacity="0",L.Browser.mobile||this.map.getContainer().classList.remove("dimmed"),s.once(this.card,"transitionend",function(e){return t.card.style.display=null}),this.button.disabled=!1},e}(r.DeferredWidget);Object.defineProperty(n,"__esModule",{value:!0}),n.default=a},{"../util":81,"./widget":80,hammerjs:56}],75:[function(t,e,n){var i=t("../svg"),o=t("../util");n.Start=L.icon({iconUrl:"http://map.project-osrm.org/images/marker-start-icon-2x.png",iconSize:[20,56],iconAnchor:[10,28]}),n.End=L.icon({iconUrl:"http://map.project-osrm.org/images/marker-end-icon-2x.png",iconSize:[20,56],iconAnchor:[10,28]}),n.Red=L.icon({iconUrl:"http://harrywood.co.uk/maps/examples/leaflet/marker-icon-red.png",iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[1,-34],shadowUrl:"http://cdn.leafletjs.com/leaflet/v0.7.7/images/marker-shadow.png",shadowRetinaUrl:"marker-shadow-@2x.png",shadowSize:[41,41],shadowAnchor:[12,41]}),n.Circle=function(){var t=i.createSVGElement("svg");t.setAttribute("width","100"),t.setAttribute("height","100");var e=i.makeCircle(new L.Point(50,50),40);e.style.stroke="red",e.style.strokeWidth="20px",e.style.fill="white",t.appendChild(e);var n=5;return L.icon({iconUrl:o.svgToData(t),iconSize:[2*n,2*n],iconAnchor:[n,n],popupAnchor:[0,-n]})}()},{"../svg":69,"../util":81}],76:[function(t,e,n){var i=t("../i18n"),o=t("../util"),r=function(){function t(t){var e=this,n=document.createElement("button");n.id="edit-map-button",n.textContent="Edit Map",n.classList.add("leaflet-control"),n.onclick=function(t){return e.editMapClick()},this.button=n}return Object.defineProperty(t.prototype,"editMode",{get:function(){return this._editMode},set:function(t){var e=this;if(t){this.button.textContent=(o=["Save map"],o.raw=["Save map"],i.tr(o)),this.button.onclick=function(t){return e.saveMapClick()};var n=document.getElementById("dummy-circles");n.onmousedown=n.onclick=null,this.metroMap.receiveEvent(new Event("editmapstart"))}else this.button.textContent=(r=["Edit map"],r.raw=["Edit map"],i.tr(r)),this.button.onclick=function(t){return e.editMapClick()},this.metroMap.receiveEvent(new Event("editmapend"));this._editMode=t;var o,r},enumerable:!0,configurable:!0}),t.prototype.addTo=function(t){var e=this,n=t.getMap();if(void 0===n||void 0===t.getNetwork())throw new Error("cannot add map editor to metro map: map or network is missing");this.metroMap=t,document.querySelector(".leaflet-right.leaflet-top").appendChild(this.button),this.editMode=!1,n.on("zoomend",function(t){e.editMode&&e.addMapListeners()})},t.prototype.editMapClick=function(){this.editMode=!0,this.addMapListeners()},t.prototype.saveMapClick=function(){o.downloadTextFile("graph.json",this.metroMap.getNetwork().toJSON()),this.editMode=!1},t.prototype.addMapListeners=function(){var t=this;console.log("adding");var e=this.metroMap.getMap(),n=this.metroMap.getNetwork(),i=document.getElementById("dummy-circles");i.onmousedown=function(i){if(0===i.button){var r=o.platformByCircle(i.target,n);e.dragging.disable(),e.on("mousemove",function(e){r.location=e.latlng,t.metroMap.receiveEvent(new MouseEvent("platformmove"))}).once("mouseup",function(n){e.off("mousemove").dragging.enable();var i=n.originalEvent.target,o=new MouseEvent("platformmoveend",{relatedTarget:i});t.metroMap.receiveEvent(o)})}else 1===i.button}},t}();Object.defineProperty(n,"__esModule",{value:!0}),n.default=r},{"../i18n":62,"../util":81}],77:[function(t,e,n){var i=t("leaflet"),o=t("../util"),r=t("../svg"),s=function(){function t(t,e){void 0===e&&(e=new i.Point(100,100)),this.margin=e.round(),this._overlayContainer=r.createSVGElement("svg"),this._overlayContainer.id="overlay",this._defs=r.createSVGElement("defs"),this._overlayContainer.appendChild(this._defs),this._origin=r.createSVGElement("g"),this._origin.id="origin",this._overlayContainer.appendChild(this._origin),this._bounds=t}return Object.defineProperty(t.prototype,"origin",{get:function(){return this._origin},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"defs",{get:function(){return this._defs},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"bounds",{set:function(t){this._bounds=t,this.updateOverlayPositioning()},enumerable:!0,configurable:!0}),t.prototype.addTo=function(t){return this.onAdd(t),this},t.prototype.onAdd=function(t){this.map=t,this.minZoom=t.getMinZoom(),this.maxZoom=t.getMaxZoom(),this.updateOverlayPositioning();var e=t.getPanes(),n=e.objectsPane,o=e.markerPane,r=e.mapPane;("1"===i.version[0]?r:n).insertBefore(this._overlayContainer,o),this.addMapMovementListeners()},t.prototype.onRemove=function(t){this.map=this.minZoom=this.maxZoom=void 0;var e=t.getPanes(),n=e.objectsPane,o=(e.markerPane,e.mapPane);("1"===i.version[0]?o:n).removeChild(this._overlayContainer),this.map.clearAllEventListeners()},t.prototype.addMapMovementListeners=function(){var t,e=this,n=this.map.getPanes(),r=n.mapPane,s=n.tilePane,a=n.overlayPane,l=this._overlayContainer,u=l.style,h=l.classList,c=function(t,e){return void 0===e&&(e=250),setTimeout(function(){return o.fixFontRendering(t)},e)},d=1;this.map.on("zoomstart",function(n){h.add("leaflet-zoom-animated"),console.log("zoomstart",n),e.map.dragging.disable(),1!==d&&(console.log("mousepos:",t),o.scaleOverlay(e._overlayContainer,d,t)),d=1}).on("zoomanim",function(t){}).on("zoomend",function(t){d=1,console.log("zoomend",t),u.transformOrigin=null,h.remove("leaflet-zoom-animated"),e.updateOverlayPositioning(),e.onZoomChange(t),e.map.dragging.enable()}).on("moveend",function(t){o.fixFontRendering(),"1"===i.version[0]?c(s.firstElementChild):a.hasChildNodes()&&c(a,0),u.transform=null}).on("layeradd layerremove",function(){return o.fixFontRendering()});var p=function(t){var n=e.map.getZoom();d=t?Math.min(2*d,Math.pow(2,e.maxZoom-n)):Math.max(d/2,Math.pow(2,e.minZoom-n))},f=function(e){t=i.DomEvent.getMousePosition(e),p(e.deltaY<0)};r.addEventListener("wheel",f),document.querySelector(".leaflet-control-container").addEventListener("wheel",f);var m=this.map.zoomControl.getContainer();m.addEventListener("mousedown",function(e){t=new i.Point(innerWidth/2,innerHeight/2).round(),p(e.target===m.firstChild)},!0),this.map.on("dblclick",function(e){var n=e.originalEvent;t=i.DomEvent.getMousePosition(n),p(!n.shiftKey)}),document.addEventListener("keydown",function(e){t=new i.Point(innerWidth/2,innerHeight/2);var n=[189,109,54,173,187,107,61,171].indexOf(e.keyCode);n!==-1&&p(n>3)})},t.prototype.updateOverlayPositioning=function(){var t=this._bounds.getNorthWest(),e=this._bounds.getSouthEast();this.topLeft=this.map.project(t).round();var n=new i.Bounds(this.map.latLngToLayerPoint(t),this.map.latLngToLayerPoint(e)),o=this._overlayContainer.style,r=n.min.subtract(this.margin);o.left=r.x+"px",o.top=r.y+"px",this._origin.setAttribute("transform","translate("+this.margin.x+", "+this.margin.y+")");var s=n.getSize().add(this.margin).add(this.margin);o.width=s.x+"px",o.height=s.y+"px"},t.prototype.latLngToSvgPoint=function(t){return this.map.project(t).round().subtract(this.topLeft)},t}();Object.defineProperty(n,"__esModule",{value:!0}),n.default=s},{"../svg":69,"../util":81,leaflet:57}],78:[function(t,e,n){var i=t("alertifyjs"),o=t("leaflet"),r=t("../util"),s=t("../svg"),a=t("../algorithm"),l=t("../ui"),u=t("../i18n"),h=function(){function t(t){var e=this;this.metroMap=t;var n=t.getMap(),i=n.getCenter();this.fromMarker=new o.Marker(i,{draggable:!0,icon:l.Icons.Start}),this.toMarker=new o.Marker(i,{draggable:!0,icon:l.Icons.End}),l.cacheIcons(t.getMap(),[this.fromMarker,this.toMarker]),this.addMarkerListeners(),t.addListener("routefrom routeto",this.handleFromTo.bind(this)),t.addListener("clearroute",function(t){return e.clearRoute()}),n.on("zoomstart",function(t){return s.Animation.terminateAnimations()})}return t.prototype.handleFromTo=function(t){var e=this.metroMap.getMap(),n=r.mouseToLatLng(e,t),i="routefrom"===t.type?this.fromMarker:this.toMarker;i.setLatLng(n),e.hasLayer(i)||e.addLayer(i);var o=i===this.fromMarker?this.toMarker:this.fromMarker;e.hasLayer(o)&&(r.fixFontRendering(),this.visualizeRouteBetween(this.fromMarker.getLatLng(),this.toMarker.getLatLng()))},t.prototype.addMarkerListeners=function(){for(var t=this,e=0,n=[this.fromMarker,this.toMarker];e<n.length;e++){var i=n[e];i.on("drag",function(e){return t.visualizeShortestRoute(!1)}).on("dragend",function(e){r.fixFontRendering(),t.visualizeShortestRoute()})}},t.prototype.visualizeShortestRoute=function(t){void 0===t&&(t=!0);var e=this.metroMap.getMap();e.hasLayer(this.fromMarker)&&e.hasLayer(this.toMarker)&&this.visualizeRouteBetween(this.fromMarker.getLatLng(),this.toMarker.getLatLng(),t)},t.prototype.visualizeRouteBetween=function(t,e,n){void 0===n&&(n=!0),r.resetStyle(),i.dismissAll(),this.visualizeRoute(a.shortestRoute(this.metroMap.getNetwork(),t,e),n)},t.prototype.visualizeRoute=function(t,e){var n=this;void 0===e&&(e=!0);var o=t.platforms,r=t.edges,a=t.time,l=u.formatTime(a.walkTo);if(void 0===r)return i.success((c=[""," on foot!"],c.raw=[""," on foot!"],u.tr(c,l)));var h="#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *";s.Animation.terminateAnimations().then(function(){for(var t=0,i=document.querySelectorAll(h);t<i.length;t++){var a=i[t].style;a.filter=null,a.opacity="0.25"}if(e)return s.Animation.animateRoute(n.metroMap.getNetwork(),o,r,1);for(var l=0;l<r.length;l++){var u=r[l],c=document.getElementById("o"+u);if(null!==c){c.style.opacity=null;var d=document.getElementById("i"+u);null!==d&&(d.style.opacity=null),"t"!==c.id.charAt(1)&&s.Filters.applyDrop(c)}}for(var p=0;p<o.length;p++){var f=o[p];document.getElementById("p-"+f).style.opacity=null}}).then(function(t){if(t){i.message((e=["TIME:<br>"," on foot<br>"," by metro<br>"," on foot<br>TOTAL: ",""],e.raw=["TIME:<br>"," on foot<br>"," by metro<br>"," on foot<br>TOTAL: ",""],u.tr(e,l,u.formatTime(a.metro),u.formatTime(a.walkFrom),u.formatTime(a.total))),10);var e}});var c},t.prototype.clearRoute=function(){var t=this.metroMap.getMap(),e=s.Animation.terminateAnimations();t.removeLayer(this.fromMarker).removeLayer(this.toMarker),this.fromMarker.off("drag").off("dragend"),this.toMarker.off("drag").off("dragend"),i.dismissAll(),e.then(r.resetStyle)},t}();Object.defineProperty(n,"__esModule",{value:!0}),n.default=h},{"../algorithm":59,"../i18n":62,"../svg":69,"../ui":71,"../util":81,alertifyjs:1,leaflet:57}],79:[function(t,e,n){var i=t("../svg"),o=function(){function t(){this._disabled=!1,this._editable=!1;var t=document.createElement("div");t.classList.add("plate-box");var e=i.createSVGElement("foreignObject");e.setAttribute("x","0"),e.setAttribute("y","0"),e.setAttribute("width","100%"),e.setAttribute("height","100%"),e.appendChild(t);var n=i.createSVGElement("g");n.id="station-plate",n.style.display="none",n.appendChild(e),this._element=n}return Object.defineProperty(t.prototype,"element",{get:function(){return this._element},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"disabled",{get:function(){return this._disabled},set:function(t){t?this.hide():getSelection().removeAllRanges(),this._disabled=t},enumerable:!0,configurable:!0}),Object.defineProperty(t.prototype,"editable",{get:function(){return this._editable},set:function(t){for(var e=t?"true":null,n=this._element.childNodes[1].children[1],i=n.children,o=0;o<i.length;++o)i[o].contentEditable=e},enumerable:!0,configurable:!0}),t.prototype.show=function(t,e){if(!this.disabled&&"none"===this._element.style.display){var n=this._element.firstChild,i=n.firstChild;i.innerHTML=e.join("<br>"),this._element.setAttribute("transform","translate("+t.x+", "+t.y+")"),this._element.style.display=null;var o=i.getBoundingClientRect(),r=o.width,s=o.height;n.setAttribute("transform","translate("+-r+", "+-s+")"),console.log(n.getBoundingClientRect()),console.log(i.getBoundingClientRect())}},t.prototype.hide=function(){this._element.style.display="none"},t}();Object.defineProperty(n,"__esModule",{value:!0}),n.default=o},{"../svg":69}],80:[function(t,e,n){var i=function(){function t(){}return Object.defineProperty(t.prototype,"whenAvailable",{get:function(){return this._whenAvailable},enumerable:!0,configurable:!0}),t.prototype.addTo=function(t){},t}();n.DeferredWidget=i},{}],81:[function(t,e,n){function i(t,e){var n=t.length;if(n!==e.length)return!1;for(var i=0;i<n;++i)if(t[i]!==e[i])return!1;return!0}function o(t){return Array.from(new Set(t))}function r(t){var e=t.toString();console.log(e);for(var n=e.length%3,i=n>0?[e.slice(0,n)]:[],o=e.length%3;o<e.length;o+=3)i.push(e.substr(o,3));return console.log(i),i.join("'")}function s(t,e){var n=t.getContainer().getBoundingClientRect(),i=new E.Point(e.clientX-n.left,e.clientY-n.top);return t.containerPointToLatLng(i)}function a(t){for(var e=[],n=1;n<arguments.length;n++)e[n-1]=arguments[n];return t?t.apply(void 0,e):void 0}function l(t,e,n){t.addEventListener(e,function i(o){t.removeEventListener(e,i),n(o)})}function u(t){function e(){removeEventListener("keydown",n),removeEventListener("backbutton",i)}var n=function(n){27===n.keyCode&&(t(n),e())},i=function(n){t(n),e()};addEventListener("keydown",n),addEventListener("backbutton",i)}function h(){for(var t=["paths-inner","paths-outer","transfers-inner","transfers-outer","station-circles"].map(function(t){return"#"+t+" > *"}).join(", "),e=document.querySelectorAll(t),n=0;n<e.length;++n){var i=e[n];i.style.opacity=null,"t"!==i.id[1]&&(i.style.filter=null)}}function c(t,e){var n=document.createEvent("MouseEvents");n.initEvent(e,!0,!0),t.dispatchEvent(n)}function d(t){var e=t.name,n=t.altNames,i=n.fi,o=n.en,r=i?"fi"===T.userLanguage?[i,e]:[e,i]:[e];return o&&r.push(o),r}function p(t){return document.getElementById("p-"+t)}function f(t){return document.getElementById("p-"+t.id.slice(2))}function m(t,e){return e.platforms[+t.id.slice(2)]}function _(t){var e=t.style;e.transform=e.transform.replace(/translate3d\s*\((.+?,\s*.+?),\s*.+?\s*\)/i,"translate($1)")}function g(t,e){var n=0;setInterval(function(){return document.title=t[++n%t.length]},e)}function v(t,e){var n=URL.createObjectURL(e),i=document.createElement("a");i.href=n,i.download=t,i.click(),URL.revokeObjectURL(n)}function y(t,e){v(t,new Blob([e],{type:"octet/stream"}))}function b(t){return"data:image/svg+xml;base64,"+btoa((new XMLSerializer).serializeToString(t))}function w(t){var e=document.createElement("img");return e.src=b(t),e}function x(t,e,n){var i=t.getBoundingClientRect();if(!n){var o=document.documentElement;n=new E.Point(o.clientWidth/2,o.clientHeight/2)}var r=new E.Point(n.x-i.left,n.y-i.top),s=new E.Point(r.x/i.width,r.y/i.height),a=t.style;a.transformOrigin=100*s.x+"% "+100*s.y+"%",a.transform="scale("+e+")"}function L(t){for(var e;e=t.firstChild;)t.removeChild(e)}function P(t){void 0===t&&(t=document);var e=t.querySelectorAll('[style*="translate3d"]');console.log("fixing font",t,e);for(var n=0;n<e.length;++n)_(e[n])}var E=t("leaflet"),T=t("./i18n");n.arrayEquals=i,n.uniquify=o,n.formatInteger=r,n.mouseToLatLng=s,n.callMeMaybe=a,n.once=l,n.onceEscapePress=u,n.resetStyle=h,n.triggerMouseEvent=c,n.getPlatformNames=d,n.circleByIndex=p,n.circleByDummy=f,n.platformByCircle=m,n.trim3d=_;var M;!function(t){function e(t){return t.match(/[0-9a-f]{1,2}/gi).map(function(t){return parseInt(t,16)})}function n(t){return t.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i).slice(1).map(Number)}function i(t){var i=function(t,i){return(i.startsWith("#")?e:n)(i).map(function(e,n){return t[n]+e})},o=t.reduce(i,[0,0,0]).map(function(e){return Math.floor(e/t.length)}),r=o[0],s=o[1],a=o[2];return"rgb("+r+", "+s+", "+a+")"}t.mean=i}(M=n.Color||(n.Color={})),n.flashTitle=g,n.downloadFile=v,n.downloadTextFile=y,n.svgToData=b,n.svgToImg=w,n.scaleOverlay=x,n.removeAllChildren=L,n.fixFontRendering=P},{"./i18n":62,leaflet:57}],82:[function(t,e,n){"use strict";var i=t("./res"),o=t("./i18n"),r=t("./i18n"),s=t("./metromap");L.Icon.Default.imagePath="http://cdn.leafletjs.com/leaflet/v0.7.7/images",L.Browser.ie&&alert("Does not work in IE (yet)");var a=t("./polyfills");a.default(),i.getConfig().then(function(t){return o.updateDictionary(t.url.dictionary).then(function(){document.title=r.translate(document.title),new s.default(t)})}),console.log("user: "+navigator.userLanguage),console.log("language: "+navigator.language),console.log("browser: "+navigator.browserLanguage),console.log("system: "+navigator.systemLanguage)},{"./i18n":62,"./metromap":65,"./polyfills":67,"./res":68}],83:[function(t,e,n){},{}]},{},[83,82]);
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/**
+ * alertifyjs 1.6.0 http://alertifyjs.com
+ * AlertifyJS is a javascript framework for developing pretty browser dialogs and notifications.
+ * Copyright 2015 Mohammad Younes <Mohammad@alertifyjs.com> (http://alertifyjs.com) 
+ * Licensed under MIT <http://opensource.org/licenses/mit-license.php>*/
+( function ( window ) {
+    'use strict';
+    
+    /**
+     * Keys enum
+     * @type {Object}
+     */
+    var keys = {
+        ENTER: 13,
+        ESC: 27,
+        F1: 112,
+        F12: 123,
+        LEFT: 37,
+        RIGHT: 39
+    };
+    /**
+     * Default options 
+     * @type {Object}
+     */
+    var defaults = {
+        modal:true,
+        basic:false,
+        frameless:false,
+        movable:true,
+        moveBounded:false,
+        resizable:true,
+        closable:true,
+        closableByDimmer:true,
+        maximizable:true,
+        startMaximized:false,
+        pinnable:true,
+        pinned:true,
+        padding: true,
+        overflow:true,
+        maintainFocus:true,
+        transition:'pulse',
+        autoReset:true,
+        notifier:{
+            delay:5,
+            position:'bottom-right'
+        },
+        glossary:{
+            title:'AlertifyJS',
+            ok: 'OK',
+            cancel: 'Cancel',
+            acccpt: 'Accept',
+            deny: 'Deny',
+            confirm: 'Confirm',
+            decline: 'Decline',
+            close: 'Close',
+            maximize: 'Maximize',
+            restore: 'Restore',
+        },
+        theme:{
+            input:'ajs-input',
+            ok:'ajs-ok',
+            cancel:'ajs-cancel',
+        }
+    };
+    
+    //holds open dialogs instances
+    var openDialogs = [];
+
+    /**
+     * [Helper]  Adds the specified class(es) to the element.
+     *
+     * @element {node}      The element
+     * @className {string}  One or more space-separated classes to be added to the class attribute of the element.
+     * 
+     * @return {undefined}
+     */
+    function addClass(element,classNames){
+        element.className += ' ' + classNames;
+    }
+    
+    /**
+     * [Helper]  Removes the specified class(es) from the element.
+     *
+     * @element {node}      The element
+     * @className {string}  One or more space-separated classes to be removed from the class attribute of the element.
+     * 
+     * @return {undefined}
+     */
+    function removeClass(element,classNames){
+        var classes = classNames.split(' ');
+        for(var x=0;x<classes.length;x+=1){
+            element.className = element.className.replace(' ' + classes[x], '');
+        }
+    }
+
+    /**
+     * [Helper]  Checks if the document is RTL
+     *
+     * @return {Boolean} True if the document is RTL, false otherwise.
+     */
+    function isRightToLeft(){
+        return window.getComputedStyle(document.body).direction === 'rtl';
+    }
+    /**
+     * [Helper]  Get the document current scrollTop
+     *
+     * @return {Number} current document scrollTop value
+     */
+    function getScrollTop(){
+        return ((document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop);
+    }
+
+    /**
+     * [Helper]  Get the document current scrollLeft
+     *
+     * @return {Number} current document scrollLeft value
+     */
+    function getScrollLeft(){
+        return ((document.documentElement && document.documentElement.scrollLeft) || document.body.scrollLeft);
+    }
+
+    /**
+    * Helper: clear contents
+    *
+    */
+    function clearContents(element){
+        while (element.lastChild) {
+            element.removeChild(element.lastChild);
+        }
+    }
+    /**
+     * Extends a given prototype by merging properties from base into sub.
+     *
+     * @sub {Object} sub The prototype being overwritten.
+     * @base {Object} base The prototype being written.
+     *
+     * @return {Object} The extended prototype.
+     */
+    function copy(src) {
+        if(null === src){
+            return src;
+        }
+        var cpy;
+        if(Array.isArray(src)){
+            cpy = [];
+            for(var x=0;x<src.length;x+=1){
+                cpy.push(copy(src[x]));
+            }
+            return cpy;
+        }
+      
+        if(src instanceof Date){
+            return new Date(src.getTime());
+        }
+      
+        if(src instanceof RegExp){
+            cpy = new RegExp(src.source);
+            cpy.global = src.global;
+            cpy.ignoreCase = src.ignoreCase;
+            cpy.multiline = src.multiline;
+            cpy.lastIndex = src.lastIndex;
+            return cpy;
+        }
+        
+        if(typeof src === 'object'){
+            cpy = {};
+            // copy dialog pototype over definition.
+            for (var prop in src) {
+                if (src.hasOwnProperty(prop)) {
+                    cpy[prop] = copy(src[prop]);
+                }
+            }
+            return cpy;
+        }
+        return src;
+    }
+    /**
+      * Helper: destruct the dialog
+      *
+      */
+    function destruct(instance, initialize){
+        //delete the dom and it's references.
+        var root = instance.elements.root;
+        root.parentNode.removeChild(root);
+        delete instance.elements;
+        //copy back initial settings.
+        instance.settings = copy(instance.__settings);
+        //re-reference init function.
+        instance.__init = initialize;
+        //delete __internal variable to allow re-initialization.
+        delete instance.__internal;
+    }
+
+    /**
+     * Use a closure to return proper event listener method. Try to use
+     * `addEventListener` by default but fallback to `attachEvent` for
+     * unsupported browser. The closure simply ensures that the test doesn't
+     * happen every time the method is called.
+     *
+     * @param    {Node}     el    Node element
+     * @param    {String}   event Event type
+     * @param    {Function} fn    Callback of event
+     * @return   {Function}
+     */
+    var on = (function () {
+        if (document.addEventListener) {
+            return function (el, event, fn, useCapture) {
+                el.addEventListener(event, fn, useCapture === true);
+            };
+        } else if (document.attachEvent) {
+            return function (el, event, fn) {
+                el.attachEvent('on' + event, fn);
+            };
+        }
+    }());
+
+    /**
+     * Use a closure to return proper event listener method. Try to use
+     * `removeEventListener` by default but fallback to `detachEvent` for
+     * unsupported browser. The closure simply ensures that the test doesn't
+     * happen every time the method is called.
+     *
+     * @param    {Node}     el    Node element
+     * @param    {String}   event Event type
+     * @param    {Function} fn    Callback of event
+     * @return   {Function}
+     */
+    var off = (function () {
+        if (document.removeEventListener) {
+            return function (el, event, fn, useCapture) {
+                el.removeEventListener(event, fn, useCapture === true);
+            };
+        } else if (document.detachEvent) {
+            return function (el, event, fn) {
+                el.detachEvent('on' + event, fn);
+            };
+        }
+    }());
+
+    /**
+     * Prevent default event from firing
+     *
+     * @param  {Event} event Event object
+     * @return {undefined}
+
+    function prevent ( event ) {
+        if ( event ) {
+            if ( event.preventDefault ) {
+                event.preventDefault();
+            } else {
+                event.returnValue = false;
+            }
+        }
+    }
+    */
+    var transition = (function () {
+        var t, type;
+        var supported = false;
+        var transitions = {
+            'animation'        : 'animationend',
+            'OAnimation'       : 'oAnimationEnd oanimationend',
+            'msAnimation'      : 'MSAnimationEnd',
+            'MozAnimation'     : 'animationend',
+            'WebkitAnimation'  : 'webkitAnimationEnd'
+        };
+
+        for (t in transitions) {
+            if (document.documentElement.style[t] !== undefined) {
+                type = transitions[t];
+                supported = true;
+                break;
+            }
+        }
+
+        return {
+            type: type,
+            supported: supported
+        };
+    }());
+
+    /**
+    * Creates event handler delegate that sends the instance as last argument.
+    * 
+    * @return {Function}    a function wrapper which sends the instance as last argument.
+    */
+    function delegate(context, method) {
+        return function () {
+            if (arguments.length > 0) {
+                var args = [];
+                for (var x = 0; x < arguments.length; x += 1) {
+                    args.push(arguments[x]);
+                }
+                args.push(context);
+                return method.apply(context, args);
+            }
+            return method.apply(context, [null, context]);
+        };
+    }
+    /**
+    * Helper for creating a dialog close event.
+    * 
+    * @return {object}
+    */
+    function createCloseEvent(index, button) {
+        return {
+            index: index,
+            button: button,
+            cancel: false
+        };
+    }
+
+
+    /**
+     * Super class for all dialogs
+     *
+     * @return {Object}		base dialog prototype
+     */
+    var dialog = (function () {
+        var //holds the list of used keys.
+            usedKeys = [],
+            //dummy variable, used to trigger dom reflow.
+            reflow = null,
+            //condition for detecting safari
+            isSafari = window.navigator.userAgent.indexOf('Safari') > -1 && window.navigator.userAgent.indexOf('Chrome') < 0,
+            //dialog building blocks
+            templates = {
+                dimmer:'<div class="ajs-dimmer"></div>',
+                /*tab index required to fire click event before body focus*/
+                modal: '<div class="ajs-modal" tabindex="0"></div>',
+                dialog: '<div class="ajs-dialog" tabindex="0"></div>',
+                reset: '<button class="ajs-reset"></button>',
+                commands: '<div class="ajs-commands"><button class="ajs-pin"></button><button class="ajs-maximize"></button><button class="ajs-close"></button></div>',
+                header: '<div class="ajs-header"></div>',
+                body: '<div class="ajs-body"></div>',
+                content: '<div class="ajs-content"></div>',
+                footer: '<div class="ajs-footer"></div>',
+                buttons: { primary: '<div class="ajs-primary ajs-buttons"></div>', auxiliary: '<div class="ajs-auxiliary ajs-buttons"></div>' },
+                button: '<button class="ajs-button"></button>',
+                resizeHandle: '<div class="ajs-handle"></div>',
+            },
+            //common class names
+            classes = {
+                base: 'alertify',
+                prefix: 'ajs-',
+                hidden: 'ajs-hidden',
+                noSelection: 'ajs-no-selection',
+                noOverflow: 'ajs-no-overflow',
+                noPadding:'ajs-no-padding',
+                modeless: 'ajs-modeless',
+                movable: 'ajs-movable',
+                resizable: 'ajs-resizable',
+                capture: 'ajs-capture',
+                fixed: 'ajs-fixed',
+                closable:'ajs-closable',
+                maximizable:'ajs-maximizable',
+                maximize: 'ajs-maximize',
+                restore: 'ajs-restore',
+                pinnable:'ajs-pinnable',
+                unpinned:'ajs-unpinned',
+                pin:'ajs-pin',
+                maximized: 'ajs-maximized',
+                animationIn: 'ajs-in',
+                animationOut: 'ajs-out',
+                shake:'ajs-shake',
+                basic:'ajs-basic',
+                frameless:'ajs-frameless'
+            };
+			
+        /**
+         * Helper: initializes the dialog instance
+         * 
+         * @return	{Number}	The total count of currently open modals.
+         */
+        function initialize(instance){
+            
+            if(!instance.__internal){
+				
+                //no need to expose init after this.
+                delete instance.__init;
+              
+                //keep a copy of initial dialog settings
+                if(!instance.__settings){
+                    instance.__settings = copy(instance.settings);
+                }
+                //in case the script was included before body.
+                //after first dialog gets initialized, it won't be null anymore!				
+                if(null === reflow){
+                    // set tabindex attribute on body element this allows script to give it
+                    // focus after the dialog is closed
+                    document.body.setAttribute( 'tabindex', '0' );
+                }
+				
+                //get dialog buttons/focus setup
+                var setup;
+                if(typeof instance.setup === 'function'){
+                    setup = instance.setup();
+                    setup.options = setup.options  || {};
+                    setup.focus = setup.focus  || {};
+                }else{
+                    setup = {
+                        buttons:[],
+                        focus:{
+                            element:null,
+                            select:false
+                        },
+                        options:{
+                        }
+                    };
+                }
+                
+                //initialize hooks object.
+                if(typeof instance.hooks !== 'object'){
+                    instance.hooks = {};
+                }
+
+                //copy buttons defintion
+                var buttonsDefinition = [];
+                if(Array.isArray(setup.buttons)){
+                    for(var b=0;b<setup.buttons.length;b+=1){
+                        var ref  = setup.buttons[b],
+                            cpy = {};
+                        for (var i in ref) {
+                            if (ref.hasOwnProperty(i)) {
+                                cpy[i] = ref[i];
+                            }
+                        }
+                        buttonsDefinition.push(cpy);
+                    }
+                }
+
+                var internal = instance.__internal = {
+                    /**
+                     * Flag holding the open state of the dialog
+                     * 
+                     * @type {Boolean}
+                     */
+                    isOpen:false,
+                    /**
+                     * Active element is the element that will receive focus after
+                     * closing the dialog. It defaults as the body tag, but gets updated
+                     * to the last focused element before the dialog was opened.
+                     *
+                     * @type {Node}
+                     */
+                    activeElement:document.body,
+                    timerIn:undefined,
+                    timerOut:undefined,
+                    buttons: buttonsDefinition,
+                    focus: setup.focus,
+                    options: {
+                        title: undefined,
+                        modal: undefined,
+                        basic:undefined,
+                        frameless:undefined,
+                        pinned: undefined,
+                        movable: undefined,
+                        moveBounded:undefined,
+                        resizable: undefined,
+                        autoReset: undefined,
+                        closable: undefined,
+                        closableByDimmer: undefined,
+                        maximizable: undefined,
+                        startMaximized: undefined,
+                        pinnable: undefined,
+                        transition: undefined,
+                        padding:undefined,
+                        overflow:undefined,
+                        onshow:undefined,
+                        onclose:undefined,
+                        onfocus:undefined,
+                    },
+                    resetHandler:undefined,
+                    beginMoveHandler:undefined,
+                    beginResizeHandler:undefined,
+                    bringToFrontHandler:undefined,
+                    modalClickHandler:undefined,
+                    buttonsClickHandler:undefined,
+                    commandsClickHandler:undefined,
+                    transitionInHandler:undefined,
+                    transitionOutHandler:undefined,
+                    destroy:undefined
+                };
+				
+                                
+                var elements = {};
+                //root node
+                elements.root = document.createElement('div');
+                
+                elements.root.className = classes.base + ' ' + classes.hidden + ' ';
+				
+                elements.root.innerHTML = templates.dimmer + templates.modal;
+                
+                //dimmer
+                elements.dimmer = elements.root.firstChild;
+				
+                //dialog
+                elements.modal = elements.root.lastChild;
+                elements.modal.innerHTML = templates.dialog;
+                elements.dialog = elements.modal.firstChild;
+                elements.dialog.innerHTML = templates.reset + templates.commands + templates.header + templates.body + templates.footer + templates.resizeHandle + templates.reset;
+
+                //reset links
+                elements.reset = [];
+                elements.reset.push(elements.dialog.firstChild);
+                elements.reset.push(elements.dialog.lastChild);
+                
+                //commands
+                elements.commands = {};
+                elements.commands.container = elements.reset[0].nextSibling;
+                elements.commands.pin = elements.commands.container.firstChild;
+                elements.commands.maximize = elements.commands.pin.nextSibling;
+                elements.commands.close = elements.commands.maximize.nextSibling;
+                
+                //header
+                elements.header = elements.commands.container.nextSibling;
+
+                //body
+                elements.body = elements.header.nextSibling;
+                elements.body.innerHTML = templates.content;
+                elements.content = elements.body.firstChild;
+
+                //footer
+                elements.footer = elements.body.nextSibling;
+                elements.footer.innerHTML = templates.buttons.auxiliary + templates.buttons.primary;
+                
+                //resize handle
+                elements.resizeHandle = elements.footer.nextSibling;
+
+                //buttons
+                elements.buttons = {};
+                elements.buttons.auxiliary = elements.footer.firstChild;
+                elements.buttons.primary = elements.buttons.auxiliary.nextSibling;
+                elements.buttons.primary.innerHTML = templates.button;
+                elements.buttonTemplate = elements.buttons.primary.firstChild;
+                //remove button template
+                elements.buttons.primary.removeChild(elements.buttonTemplate);
+                               
+                for(var x=0; x < instance.__internal.buttons.length; x+=1) {
+                    var button = instance.__internal.buttons[x];
+                    
+                    // add to the list of used keys.
+                    if(usedKeys.indexOf(button.key) < 0){
+                        usedKeys.push(button.key);
+                    }
+
+                    button.element = elements.buttonTemplate.cloneNode();
+                    button.element.innerHTML = button.text;
+                    if(typeof button.className === 'string' &&  button.className !== ''){
+                        addClass(button.element, button.className);
+                    }
+                    for(var key in button.attrs){
+                        if(key !== 'className' && button.attrs.hasOwnProperty(key)){
+                            button.element.setAttribute(key, button.attrs[key]);
+                        }
+                    }
+                    if(button.scope === 'auxiliary'){
+                        elements.buttons.auxiliary.appendChild(button.element);
+                    }else{
+                        elements.buttons.primary.appendChild(button.element);
+                    }
+                }
+                //make elements pubic
+                instance.elements = elements;
+                
+                //save event handlers delegates
+                internal.resetHandler = delegate(instance, onReset);
+                internal.beginMoveHandler = delegate(instance, beginMove);
+                internal.beginResizeHandler = delegate(instance, beginResize);
+                internal.bringToFrontHandler = delegate(instance, bringToFront);
+                internal.modalClickHandler = delegate(instance, modalClickHandler);
+                internal.buttonsClickHandler = delegate(instance, buttonsClickHandler);
+                internal.commandsClickHandler = delegate(instance, commandsClickHandler);
+                internal.transitionInHandler = delegate(instance, handleTransitionInEvent);
+                internal.transitionOutHandler = delegate(instance, handleTransitionOutEvent);
+
+                
+                //settings
+                instance.set('title', setup.options.title === undefined ? alertify.defaults.glossary.title : setup.options.title);
+				
+                instance.set('modal', setup.options.modal === undefined ? alertify.defaults.modal : setup.options.modal);
+                instance.set('basic', setup.options.basic === undefined ? alertify.defaults.basic : setup.options.basic);
+                instance.set('frameless', setup.options.frameless === undefined ? alertify.defaults.frameless : setup.options.frameless);
+							
+                instance.set('movable', setup.options.movable === undefined ? alertify.defaults.movable : setup.options.movable);
+                instance.set('moveBounded', setup.options.moveBounded === undefined ? alertify.defaults.moveBounded : setup.options.moveBounded);
+                instance.set('resizable', setup.options.resizable === undefined ? alertify.defaults.resizable : setup.options.resizable);
+                instance.set('autoReset', setup.options.autoReset === undefined ? alertify.defaults.autoReset : setup.options.autoReset);
+				
+                instance.set('closable', setup.options.closable === undefined ? alertify.defaults.closable : setup.options.closable);
+                instance.set('closableByDimmer', setup.options.closableByDimmer === undefined ? alertify.defaults.closableByDimmer : setup.options.closableByDimmer);
+                instance.set('maximizable', setup.options.maximizable === undefined ? alertify.defaults.maximizable : setup.options.maximizable);
+                instance.set('startMaximized', setup.options.startMaximized === undefined ? alertify.defaults.startMaximized : setup.options.startMaximized);
+				
+                instance.set('pinnable', setup.options.pinnable === undefined ? alertify.defaults.pinnable : setup.options.pinnable);
+                instance.set('pinned', setup.options.pinned === undefined ? alertify.defaults.pinned : setup.options.pinned);
+				
+                instance.set('transition', setup.options.transition === undefined ? alertify.defaults.transition : setup.options.transition);
+
+                instance.set('padding', setup.options.padding === undefined ? alertify.defaults.padding : setup.options.padding);
+                instance.set('overflow', setup.options.overflow === undefined ? alertify.defaults.overflow : setup.options.overflow);
+				
+
+                // allow dom customization
+                if(typeof instance.build === 'function'){
+                    instance.build();
+                }
+            }
+            
+            //add to the end of the DOM tree.
+            document.body.appendChild(instance.elements.root);
+        }
+
+        /**
+         * Helper: maintains scroll position
+         *
+         */
+        var scrollX, scrollY;
+        function saveScrollPosition(){
+            scrollX = getScrollLeft();
+            scrollY = getScrollTop();
+        }
+        function restoreScrollPosition(){
+            window.scrollTo(scrollX, scrollY);
+        }
+
+        /**
+         * Helper: adds/removes no-overflow class from body
+         *
+         */
+        function ensureNoOverflow(){
+            var requiresNoOverflow = 0;
+            for(var x=0;x<openDialogs.length;x+=1){
+                var instance = openDialogs[x];
+                if(instance.isModal() || instance.isMaximized()){
+                    requiresNoOverflow+=1;
+                }
+            }
+            if(requiresNoOverflow === 0){
+                //last open modal or last maximized one
+                removeClass(document.body, classes.noOverflow);
+            }else if(requiresNoOverflow > 0 && document.body.className.indexOf(classes.noOverflow) < 0){
+                //first open modal or first maximized one
+                addClass(document.body, classes.noOverflow);
+            }
+        }
+		
+        /**
+         * Sets the name of the transition used to show/hide the dialog
+         * 
+         * @param {Object} instance The dilog instance.
+         *
+         */
+        function updateTransition(instance, value, oldValue){
+            if(typeof oldValue === 'string'){
+                removeClass(instance.elements.root,classes.prefix +  oldValue);
+            }
+            addClass(instance.elements.root, classes.prefix + value);
+            reflow = instance.elements.root.offsetWidth;
+        }
+		
+        /**
+         * Toggles the dialog display mode
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function updateDisplayMode(instance){
+            if(instance.get('modal')){
+
+                //make modal
+                removeClass(instance.elements.root, classes.modeless);
+				
+                //only if open
+                if(instance.isOpen()){
+                    unbindModelessEvents(instance);
+					
+                    //in case a pinned modless dialog was made modal while open.
+                    updateAbsPositionFix(instance);
+					
+                    ensureNoOverflow();
+                }
+            }else{
+                //make modelss
+                addClass(instance.elements.root, classes.modeless);
+								
+                //only if open
+                if(instance.isOpen()){
+                    bindModelessEvents(instance);
+					
+                    //in case pin/unpin was called while a modal is open
+                    updateAbsPositionFix(instance);
+										
+                    ensureNoOverflow();
+                }
+            }
+        }
+
+        /**
+         * Toggles the dialog basic view mode 
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function updateBasicMode(instance){
+            if (instance.get('basic')) {
+                // add class
+                addClass(instance.elements.root, classes.basic);
+            } else {
+                // remove class
+                removeClass(instance.elements.root, classes.basic);
+            }
+        }
+
+        /**
+         * Toggles the dialog frameless view mode 
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function updateFramelessMode(instance){
+            if (instance.get('frameless')) {
+                // add class
+                addClass(instance.elements.root, classes.frameless);
+            } else {
+                // remove class
+                removeClass(instance.elements.root, classes.frameless);
+            }
+        }
+		
+        /**
+         * Helper: Brings the modeless dialog to front, attached to modeless dialogs.
+         *
+         * @param {Event} event Focus event
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function bringToFront(event, instance){
+            
+            // Do not bring to front if preceeded by an open modal
+            var index = openDialogs.indexOf(instance);
+            for(var x=index+1;x<openDialogs.length;x+=1){
+                if(openDialogs[x].isModal()){
+                    return;
+                }
+            }
+			
+            // Bring to front by making it the last child.
+            if(document.body.lastChild !== instance.elements.root){
+                document.body.appendChild(instance.elements.root);
+                //also make sure its at the end of the list
+                openDialogs.splice(openDialogs.indexOf(instance),1);
+                openDialogs.push(instance);
+                setFocus(instance);
+            }
+			
+            return false;
+        }
+		
+        /**
+         * Helper: reflects dialogs options updates
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {String} option The updated option name.
+         *
+         * @return	{undefined}	
+         */
+        function optionUpdated(instance, option, oldValue, newValue){
+            switch(option){
+            case 'title':
+                instance.setHeader(newValue);
+                break;
+            case 'modal':
+                updateDisplayMode(instance);
+                break;
+            case 'basic':
+                updateBasicMode(instance);
+                break;
+            case 'frameless':
+                updateFramelessMode(instance);
+                break;
+            case 'pinned':
+                updatePinned(instance);
+                break;
+            case 'closable':
+                updateClosable(instance);
+                break;
+            case 'maximizable':
+                updateMaximizable(instance);
+                break;
+            case 'pinnable':
+                updatePinnable(instance);
+                break;
+            case 'movable':
+                updateMovable(instance);
+                break;
+            case 'resizable':
+                updateResizable(instance);
+                break;
+            case 'transition':
+                updateTransition(instance,newValue, oldValue);
+                break;
+            case 'padding':
+                if(newValue){
+                    removeClass(instance.elements.root, classes.noPadding);
+                }else if(instance.elements.root.className.indexOf(classes.noPadding) < 0){
+                    addClass(instance.elements.root, classes.noPadding);
+                }
+                break;
+            case 'overflow':
+                if(newValue){
+                    removeClass(instance.elements.root, classes.noOverflow);
+                }else if(instance.elements.root.className.indexOf(classes.noOverflow) < 0){
+                    addClass(instance.elements.root, classes.noOverflow);
+                }
+                break;
+            case 'transition':
+                updateTransition(instance,newValue, oldValue);
+                break;
+            }
+
+            // internal on option updated event
+            if(typeof instance.hooks.onupdate === 'function'){
+                instance.hooks.onupdate.call(instance, option, oldValue, newValue);
+            }
+        }
+		
+        /**
+         * Helper: reflects dialogs options updates
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {Object} obj The object to set/get a value on/from.
+         * @param {Function} callback The callback function to call if the key was found.
+         * @param {String|Object} key A string specifying a propery name or a collection of key value pairs.
+         * @param {Object} value Optional, the value associated with the key (in case it was a string).
+         * @param {String} option The updated option name.
+         *
+         * @return	{Object} result object 
+         *	The result objects has an 'op' property, indicating of this is a SET or GET operation.
+         *		GET: 
+         *		- found: a flag indicating if the key was found or not.
+         *		- value: the property value.
+         *		SET:
+         *		- items: a list of key value pairs of the properties being set.
+         *				each contains:
+         *					- found: a flag indicating if the key was found or not.
+         *					- key: the property key.
+         *					- value: the property value.
+         */
+        function update(instance, obj, callback, key, value){
+            var result = {op:undefined, items: [] };
+            if(typeof value === 'undefined' && typeof key === 'string') {
+                //get
+                result.op = 'get';
+                if(obj.hasOwnProperty(key)){
+                    result.found = true;
+                    result.value = obj[key];
+                }else{
+                    result.found = false;
+                    result.value = undefined;
+                }
+            }
+            else
+            {
+                var old;
+                //set
+                result.op = 'set';
+                if(typeof key === 'object'){
+                    //set multiple
+                    var args = key;
+                    for (var prop in args) {
+                        if (obj.hasOwnProperty(prop)) {
+                            if(obj[prop] !== args[prop]){
+                                old = obj[prop];
+                                obj[prop] = args[prop];
+                                callback.call(instance,prop, old, args[prop]);
+                            }
+                            result.items.push({ 'key': prop, 'value': args[prop], 'found':true});
+                        }else{
+                            result.items.push({ 'key': prop, 'value': args[prop], 'found':false});
+                        }
+                    }
+                } else if (typeof key === 'string'){
+                    //set single
+                    if (obj.hasOwnProperty(key)) {
+                        if(obj[key] !== value){
+                            old  = obj[key];
+                            obj[key] = value;
+                            callback.call(instance,key, old, value);
+                        }
+                        result.items.push({'key': key, 'value': value , 'found':true});
+						
+                    }else{
+                        result.items.push({'key': key, 'value': value , 'found':false});
+                    }
+                } else {
+                    //invalid params
+                    throw new Error('args must be a string or object');
+                }
+            }
+            return result;
+        }
+		
+
+        /**
+         * Triggers a close event.
+         *
+         * @param {Object} instance	The dilog instance.
+         * 
+         * @return {undefined}
+         */
+        function triggerClose(instance) {
+            var found;
+            triggerCallback(instance, function (button) {
+                return found = (button.invokeOnClose === true);
+            });
+            //none of the buttons registered as onclose callback
+            //close the dialog
+            if (!found && instance.isOpen()) {
+                instance.close();
+            }
+        }
+
+        /**
+         * Dialogs commands event handler, attached to the dialog commands element.
+         *
+         * @param {Event} event	DOM event object.
+         * @param {Object} instance	The dilog instance.
+         * 
+         * @return {undefined}
+         */
+        function commandsClickHandler(event, instance) {
+            var target = event.srcElement || event.target;
+            switch (target) {
+            case instance.elements.commands.pin:
+                if (!instance.isPinned()) {
+                    pin(instance);
+                } else {
+                    unpin(instance);
+                }
+                break;
+            case instance.elements.commands.maximize:
+                if (!instance.isMaximized()) {
+                    maximize(instance);
+                } else {
+                    restore(instance);
+                }
+                break;
+            case instance.elements.commands.close:
+                triggerClose(instance);
+                break;
+            }
+            return false;
+        }
+
+        /**
+         * Helper: pins the modeless dialog.
+         *
+         * @param {Object} instance	The dialog instance.
+         * 
+         * @return {undefined}
+         */
+        function pin(instance) {
+            //pin the dialog
+            instance.set('pinned', true);
+        }
+
+        /**
+         * Helper: unpins the modeless dialog.
+         *
+         * @param {Object} instance	The dilog instance.
+         * 
+         * @return {undefined}
+         */
+        function unpin(instance) {
+            //unpin the dialog 
+            instance.set('pinned', false);
+        }
+
+
+        /**
+         * Helper: enlarges the dialog to fill the entire screen.
+         *
+         * @param {Object} instance	The dilog instance.
+         * 
+         * @return {undefined}
+         */
+        function maximize(instance) {
+            //maximize the dialog 
+            addClass(instance.elements.root, classes.maximized);
+            if (instance.isOpen()) {
+                ensureNoOverflow();
+            }
+        }
+
+        /**
+         * Helper: returns the dialog to its former size.
+         *
+         * @param {Object} instance	The dilog instance.
+         * 
+         * @return {undefined}
+         */
+        function restore(instance) {
+            //maximize the dialog 
+            removeClass(instance.elements.root, classes.maximized);
+            if (instance.isOpen()) {
+                ensureNoOverflow();
+            }
+        }
+
+        /**
+         * Show or hide the maximize box.
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {Boolean} on True to add the behavior, removes it otherwise.
+         *
+         * @return {undefined}
+         */
+        function updatePinnable(instance) {
+            if (instance.get('pinnable')) {
+                // add class
+                addClass(instance.elements.root, classes.pinnable);
+            } else {
+                // remove class
+                removeClass(instance.elements.root, classes.pinnable);
+            }
+        }
+
+        /**
+         * Helper: Fixes the absolutly positioned modal div position.
+         *
+         * @param {Object} instance The dialog instance.
+         *
+         * @return {undefined}
+         */
+        function addAbsPositionFix(instance) {
+            var scrollLeft = getScrollLeft();
+            instance.elements.modal.style.marginTop = getScrollTop() + 'px';
+            instance.elements.modal.style.marginLeft = scrollLeft + 'px';
+            instance.elements.modal.style.marginRight = (-scrollLeft) + 'px';
+        }
+
+        /**
+         * Helper: Removes the absolutly positioned modal div position fix.
+         *
+         * @param {Object} instance The dialog instance.
+         *
+         * @return {undefined}
+         */
+        function removeAbsPositionFix(instance) {
+            var marginTop = parseInt(instance.elements.modal.style.marginTop, 10);
+            var marginLeft = parseInt(instance.elements.modal.style.marginLeft, 10);
+            instance.elements.modal.style.marginTop = '';
+            instance.elements.modal.style.marginLeft = '';
+            instance.elements.modal.style.marginRight = '';
+
+            if (instance.isOpen()) {
+                var top = 0,
+                    left = 0
+                ;
+                if (instance.elements.dialog.style.top !== '') {
+                    top = parseInt(instance.elements.dialog.style.top, 10);
+                }
+                instance.elements.dialog.style.top = (top + (marginTop - getScrollTop())) + 'px';
+
+                if (instance.elements.dialog.style.left !== '') {
+                    left = parseInt(instance.elements.dialog.style.left, 10);
+                }
+                instance.elements.dialog.style.left = (left + (marginLeft - getScrollLeft())) + 'px';
+            }
+        }
+        /**
+         * Helper: Adds/Removes the absolutly positioned modal div position fix based on its pinned setting.
+         *
+         * @param {Object} instance The dialog instance.
+         *
+         * @return {undefined}
+         */
+        function updateAbsPositionFix(instance) {
+            // if modeless and unpinned add fix
+            if (!instance.get('modal') && !instance.get('pinned')) {
+                addAbsPositionFix(instance);
+            } else {
+                removeAbsPositionFix(instance);
+            }
+        }
+        /**
+         * Toggles the dialog position lock | modeless only.
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {Boolean} on True to make it modal, false otherwise.
+         *
+         * @return {undefined}
+         */
+        function updatePinned(instance) {
+            if (instance.get('pinned')) {
+                removeClass(instance.elements.root, classes.unpinned);
+                if (instance.isOpen()) {
+                    removeAbsPositionFix(instance);
+                }
+            } else {
+                addClass(instance.elements.root, classes.unpinned);
+                if (instance.isOpen() && !instance.isModal()) {
+                    addAbsPositionFix(instance);
+                }
+            }
+        }
+
+        /**
+         * Show or hide the maximize box.
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {Boolean} on True to add the behavior, removes it otherwise.
+         *
+         * @return {undefined}
+         */
+        function updateMaximizable(instance) {
+            if (instance.get('maximizable')) {
+                // add class
+                addClass(instance.elements.root, classes.maximizable);
+            } else {
+                // remove class
+                removeClass(instance.elements.root, classes.maximizable);
+            }
+        }
+
+        /**
+         * Show or hide the close box.
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {Boolean} on True to add the behavior, removes it otherwise.
+         *
+         * @return {undefined}
+         */
+        function updateClosable(instance) {
+            if (instance.get('closable')) {
+                // add class
+                addClass(instance.elements.root, classes.closable);
+                bindClosableEvents(instance);
+            } else {
+                // remove class
+                removeClass(instance.elements.root, classes.closable);
+                unbindClosableEvents(instance);
+            }
+        }
+
+        // flag to cancel click event if already handled by end resize event (the mousedown, mousemove, mouseup sequence fires a click event.).
+        var cancelClick = false;
+
+        /**
+         * Helper: closes the modal dialog when clicking the modal
+         *
+         * @param {Event} event	DOM event object.
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function modalClickHandler(event, instance) {
+            var target = event.srcElement || event.target;
+            if (!cancelClick && target === instance.elements.modal && instance.get('closableByDimmer') === true) {
+                triggerClose(instance);
+            }
+            cancelClick = false;
+            return false;
+        }
+
+        // flag to cancel keyup event if already handled by click event (pressing Enter on a focusted button).
+        var cancelKeyup = false;
+        /** 
+         * Helper: triggers a button callback
+         *
+         * @param {Object}		The dilog instance.
+         * @param {Function}	Callback to check which button triggered the event.
+         *
+         * @return {undefined}
+         */
+        function triggerCallback(instance, check) {
+            for (var idx = 0; idx < instance.__internal.buttons.length; idx += 1) {
+                var button = instance.__internal.buttons[idx];
+                if (!button.element.disabled && check(button)) {
+                    var closeEvent = createCloseEvent(idx, button);
+                    if (typeof instance.callback === 'function') {
+                        instance.callback.apply(instance, [closeEvent]);
+                    }
+                    //close the dialog only if not canceled.
+                    if (closeEvent.cancel === false) {
+                        instance.close();
+                    }
+                    break;
+                }
+            }
+        }
+
+        /**
+         * Clicks event handler, attached to the dialog footer.
+         *
+         * @param {Event}		DOM event object.
+         * @param {Object}		The dilog instance.
+         * 
+         * @return {undefined}
+         */
+        function buttonsClickHandler(event, instance) {
+            var target = event.srcElement || event.target;
+            triggerCallback(instance, function (button) {
+                // if this button caused the click, cancel keyup event
+                return button.element === target && (cancelKeyup = true);
+            });
+        }
+
+        /**
+         * Keyup event handler, attached to the document.body
+         *
+         * @param {Event}		DOM event object.
+         * @param {Object}		The dilog instance.
+         * 
+         * @return {undefined}
+         */
+        function keyupHandler(event) {
+            //hitting enter while button has focus will trigger keyup too.
+            //ignore if handled by clickHandler
+            if (cancelKeyup) {
+                cancelKeyup = false;
+                return;
+            }
+            var instance = openDialogs[openDialogs.length - 1];
+            var keyCode = event.keyCode;
+            if (instance.__internal.buttons.length === 0 && keyCode === keys.ESC && instance.get('closable') === true) {
+                triggerClose(instance);
+                return false;
+            }else if (usedKeys.indexOf(keyCode) > -1) {
+                triggerCallback(instance, function (button) {
+                    return button.key === keyCode;
+                });
+                return false;
+            }
+        }
+        /**
+        * Keydown event handler, attached to the document.body
+        *
+        * @param {Event}		DOM event object.
+        * @param {Object}		The dilog instance.
+        * 
+        * @return {undefined}
+        */
+        function keydownHandler(event) {
+            var instance = openDialogs[openDialogs.length - 1];
+            var keyCode = event.keyCode;
+            if (keyCode === keys.LEFT || keyCode === keys.RIGHT) {
+                var buttons = instance.__internal.buttons;
+                for (var x = 0; x < buttons.length; x += 1) {
+                    if (document.activeElement === buttons[x].element) {
+                        switch (keyCode) {
+                        case keys.LEFT:
+                            buttons[(x || buttons.length) - 1].element.focus();
+                            return;
+                        case keys.RIGHT:
+                            buttons[(x + 1) % buttons.length].element.focus();
+                            return;
+                        }
+                    }
+                }
+            }else if (keyCode < keys.F12 + 1 && keyCode > keys.F1 - 1 && usedKeys.indexOf(keyCode) > -1) {
+                event.preventDefault();
+                event.stopPropagation();
+                triggerCallback(instance, function (button) {
+                    return button.key === keyCode;
+                });
+                return false;
+            }
+        }
+
+
+        /**
+         * Sets focus to proper dialog element
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {Node} [resetTarget=undefined] DOM element to reset focus to.
+         *
+         * @return {undefined}
+         */
+        function setFocus(instance, resetTarget) {
+            // reset target has already been determined.
+            if (resetTarget) {
+                resetTarget.focus();
+            } else {
+                // current instance focus settings
+                var focus = instance.__internal.focus;
+                // the focus element.
+                var element = focus.element;
+
+                switch (typeof focus.element) {
+                // a number means a button index
+                case 'number':
+                    if (instance.__internal.buttons.length > focus.element) {
+                        //in basic view, skip focusing the buttons.
+                        if (instance.get('basic') === true) {
+                            element = instance.elements.reset[0];
+                        } else {
+                            element = instance.__internal.buttons[focus.element].element;
+                        }
+                    }
+                    break;
+                // a string means querySelector to select from dialog body contents.
+                case 'string':
+                    element = instance.elements.body.querySelector(focus.element);
+                    break;
+                // a function should return the focus element.
+                case 'function':
+                    element = focus.element.call(instance);
+                    break;
+                }
+                
+                // if no focus element, default to first reset element.
+                if ((typeof element === 'undefined' || element === null) && instance.__internal.buttons.length === 0) {
+                    element = instance.elements.reset[0];
+                }
+                // focus
+                if (element && element.focus) {
+                    element.focus();
+                    // if selectable
+                    if (focus.select && element.select) {
+                        element.select();
+                    }
+                }
+            }
+        }
+
+        /**
+         * Focus event handler, attached to document.body and dialogs own reset links.
+         * handles the focus for modal dialogs only.
+         *
+         * @param {Event} event DOM focus event object.
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function onReset(event, instance) {
+
+            // should work on last modal if triggered from document.body 
+            if (!instance) {
+                for (var x = openDialogs.length - 1; x > -1; x -= 1) {
+                    if (openDialogs[x].isModal()) {
+                        instance = openDialogs[x];
+                        break;
+                    }
+                }
+            }
+            // if modal
+            if (instance && instance.isModal()) {
+                // determine reset target to enable forward/backward tab cycle.
+                var resetTarget, target = event.srcElement || event.target;
+                var lastResetElement = target === instance.elements.reset[1] || (instance.__internal.buttons.length === 0 && target === document.body);
+
+                // if last reset link, then go to maximize or close
+                if (lastResetElement) {
+                    if (instance.get('maximizable')) {
+                        resetTarget = instance.elements.commands.maximize;
+                    } else if (instance.get('closable')) {
+                        resetTarget = instance.elements.commands.close;
+                    }
+                }
+                // if no reset target found, try finding the best button
+                if (resetTarget === undefined) {
+                    if (typeof instance.__internal.focus.element === 'number') {
+                        // button focus element, go to first available button
+                        if (target === instance.elements.reset[0]) {
+                            resetTarget = instance.elements.buttons.auxiliary.firstChild || instance.elements.buttons.primary.firstChild;
+                        } else if (lastResetElement) {
+                            //restart the cycle by going to first reset link
+                            resetTarget = instance.elements.reset[0];
+                        }
+                    } else {
+                        // will reach here when tapping backwards, so go to last child
+                        // The focus element SHOULD NOT be a button (logically!).
+                        if (target === instance.elements.reset[0]) {
+                            resetTarget = instance.elements.buttons.primary.lastChild || instance.elements.buttons.auxiliary.lastChild;
+                        }
+                    }
+                }
+                // focus
+                setFocus(instance, resetTarget);
+            }
+        }
+        /**
+         * Transition in transitionend event handler. 
+         *
+         * @param {Event}		TransitionEnd event object.
+         * @param {Object}		The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function handleTransitionInEvent(event, instance) {
+            // clear the timer
+            clearTimeout(instance.__internal.timerIn);
+
+            // once transition is complete, set focus
+            setFocus(instance);
+
+            //restore scroll to prevent document jump
+            restoreScrollPosition();
+
+            // allow handling key up after transition ended.
+            cancelKeyup = false;
+
+            // allow custom `onfocus` method
+            if (typeof instance.get('onfocus') === 'function') {
+                instance.get('onfocus').call(instance);
+            }
+
+            // unbind the event
+            off(instance.elements.dialog, transition.type, instance.__internal.transitionInHandler);
+
+            removeClass(instance.elements.root, classes.animationIn);
+        }
+
+        /**
+         * Transition out transitionend event handler. 
+         *
+         * @param {Event}		TransitionEnd event object.
+         * @param {Object}		The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function handleTransitionOutEvent(event, instance) {
+            // clear the timer
+            clearTimeout(instance.__internal.timerOut);
+            // unbind the event
+            off(instance.elements.dialog, transition.type, instance.__internal.transitionOutHandler);
+
+            // reset move updates
+            resetMove(instance);
+            // reset resize updates
+            resetResize(instance);
+
+            // restore if maximized
+            if (instance.isMaximized() && !instance.get('startMaximized')) {
+                restore(instance);
+            }
+
+            // return focus to the last active element
+            if (alertify.defaults.maintainFocus && instance.__internal.activeElement) {
+                instance.__internal.activeElement.focus();
+                instance.__internal.activeElement = null;
+            }
+            
+            //destory the instance
+            if (typeof instance.__internal.destroy === 'function') {
+                instance.__internal.destroy.apply(instance);
+            }
+        }
+        /* Controls moving a dialog around */
+        //holde the current moving instance
+        var movable = null,
+            //holds the current X offset when move starts
+            offsetX = 0,
+            //holds the current Y offset when move starts
+            offsetY = 0,
+            xProp = 'pageX',
+            yProp = 'pageY',
+            bounds = null,
+            refreshTop = false,
+            moveDelegate = null
+        ;
+
+        /**
+         * Helper: sets the element top/left coordinates
+         *
+         * @param {Event} event	DOM event object.
+         * @param {Node} element The element being moved.
+         * 
+         * @return {undefined}
+         */
+        function moveElement(event, element) {
+            var left = (event[xProp] - offsetX),
+                top  = (event[yProp] - offsetY);
+
+            if(refreshTop){
+                top -= document.body.scrollTop;
+            }
+           
+            element.style.left = left + 'px';
+            element.style.top = top + 'px';
+           
+        }
+        /**
+         * Helper: sets the element top/left coordinates within screen bounds
+         *
+         * @param {Event} event	DOM event object.
+         * @param {Node} element The element being moved.
+         * 
+         * @return {undefined}
+         */
+        function moveElementBounded(event, element) {
+            var left = (event[xProp] - offsetX),
+                top  = (event[yProp] - offsetY);
+
+            if(refreshTop){
+                top -= document.body.scrollTop;
+            }
+            
+            element.style.left = Math.min(bounds.maxLeft, Math.max(bounds.minLeft, left)) + 'px';
+            if(refreshTop){
+                element.style.top = Math.min(bounds.maxTop, Math.max(bounds.minTop, top)) + 'px';
+            }else{
+                element.style.top = Math.max(bounds.minTop, top) + 'px';
+            }
+        }
+            
+
+        /**
+         * Triggers the start of a move event, attached to the header element mouse down event.
+         * Adds no-selection class to the body, disabling selection while moving.
+         *
+         * @param {Event} event	DOM event object.
+         * @param {Object} instance The dilog instance.
+         * 
+         * @return {Boolean} false
+         */
+        function beginMove(event, instance) {
+            if (resizable === null && !instance.isMaximized() && instance.get('movable')) {
+                var eventSrc, left=0, top=0;
+                if (event.type === 'touchstart') {
+                    event.preventDefault();
+                    eventSrc = event.targetTouches[0];
+                    xProp = 'clientX';
+                    yProp = 'clientY';
+                } else if (event.button === 0) {
+                    eventSrc = event;
+                }
+
+                if (eventSrc) {
+
+                    var element = instance.elements.dialog;
+                    addClass(element, classes.capture);
+
+                    if (element.style.left) {
+                        left = parseInt(element.style.left, 10);
+                    }
+
+                    if (element.style.top) {
+                        top = parseInt(element.style.top, 10);
+                    }
+                    
+                    offsetX = eventSrc[xProp] - left;
+                    offsetY = eventSrc[yProp] - top;
+
+                    if(instance.isModal()){
+                        offsetY += instance.elements.modal.scrollTop;
+                    }else if(instance.isPinned()){
+                        offsetY -= document.body.scrollTop;
+                    }
+                    
+                    if(instance.get('moveBounded')){
+                        var current = element,
+                            offsetLeft = -left,
+                            offsetTop = -top;
+                        
+                        //calc offset
+                        do {
+                            offsetLeft += current.offsetLeft;
+                            offsetTop += current.offsetTop;
+                        } while (current = current.offsetParent);
+                        
+                        bounds = {
+                            maxLeft : offsetLeft,
+                            minLeft : -offsetLeft,
+                            maxTop  : document.documentElement.clientHeight - element.clientHeight - offsetTop,
+                            minTop  : -offsetTop
+                        };
+                        moveDelegate = moveElementBounded;
+                    }else{
+                        bounds = null;
+                        moveDelegate = moveElement;
+                    }
+                    
+                    refreshTop = !instance.isModal() && instance.isPinned();
+                    movable = instance;
+                    moveDelegate(eventSrc, element);
+                    addClass(document.body, classes.noSelection);
+                    return false;
+                }
+            }
+        }
+
+        /**
+         * The actual move handler,  attached to document.body mousemove event.
+         *
+         * @param {Event} event	DOM event object.
+         * 
+         * @return {undefined}
+         */
+        function move(event) {
+            if (movable) {
+                var eventSrc;
+                if (event.type === 'touchmove') {
+                    event.preventDefault();
+                    eventSrc = event.targetTouches[0];
+                } else if (event.button === 0) {
+                    eventSrc = event;
+                }
+                if (eventSrc) {
+                    moveDelegate(eventSrc, movable.elements.dialog);
+                }
+            }
+        }
+
+        /**
+         * Triggers the end of a move event,  attached to document.body mouseup event.
+         * Removes no-selection class from document.body, allowing selection.
+         *
+         * @return {undefined}
+         */
+        function endMove() {
+            if (movable) {
+                var element = movable.elements.dialog;
+                movable = bounds = null;
+                removeClass(document.body, classes.noSelection);
+                removeClass(element, classes.capture);
+            }
+        }
+
+        /**
+         * Resets any changes made by moving the element to its original state,
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function resetMove(instance) {
+            movable = null;
+            var element = instance.elements.dialog;
+            element.style.left = element.style.top = '';
+        }
+
+        /**
+         * Updates the dialog move behavior.
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {Boolean} on True to add the behavior, removes it otherwise.
+         *
+         * @return {undefined}
+         */
+        function updateMovable(instance) {
+            if (instance.get('movable')) {
+                // add class
+                addClass(instance.elements.root, classes.movable);
+                if (instance.isOpen()) {
+                    bindMovableEvents(instance);
+                }
+            } else {
+
+                //reset
+                resetMove(instance);
+                // remove class
+                removeClass(instance.elements.root, classes.movable);
+                if (instance.isOpen()) {
+                    unbindMovableEvents(instance);
+                }
+            }
+        }
+
+        /* Controls moving a dialog around */
+        //holde the current instance being resized		
+        var resizable = null,
+            //holds the staring left offset when resize starts.
+            startingLeft = Number.Nan,
+            //holds the staring width when resize starts.
+            startingWidth = 0,
+            //holds the initial width when resized for the first time.
+            minWidth = 0,
+            //holds the offset of the resize handle.
+            handleOffset = 0
+        ;
+
+        /**
+         * Helper: sets the element width/height and updates left coordinate if neccessary.
+         *
+         * @param {Event} event	DOM mousemove event object.
+         * @param {Node} element The element being moved.
+         * @param {Boolean} pinned A flag indicating if the element being resized is pinned to the screen.
+         * 
+         * @return {undefined}
+         */
+        function resizeElement(event, element, pageRelative) {
+
+            //calculate offsets from 0,0
+            var current = element;
+            var offsetLeft = 0;
+            var offsetTop = 0;
+            do {
+                offsetLeft += current.offsetLeft;
+                offsetTop += current.offsetTop;
+            } while (current = current.offsetParent);
+
+            // determine X,Y coordinates.
+            var X, Y;
+            if (pageRelative === true) {
+                X = event.pageX;
+                Y = event.pageY;
+            } else {
+                X = event.clientX;
+                Y = event.clientY;
+            }
+            // rtl handling
+            var isRTL = isRightToLeft();
+            if (isRTL) {
+                // reverse X 
+                X = document.body.offsetWidth - X;
+                // if has a starting left, calculate offsetRight
+                if (!isNaN(startingLeft)) {
+                    offsetLeft = document.body.offsetWidth - offsetLeft - element.offsetWidth;
+                }
+            }
+
+            // set width/height
+            element.style.height = (Y - offsetTop + handleOffset) + 'px';
+            element.style.width = (X - offsetLeft + handleOffset) + 'px';
+
+            // if the element being resized has a starting left, maintain it.
+            // the dialog is centered, divide by half the offset to maintain the margins.
+            if (!isNaN(startingLeft)) {
+                var diff = Math.abs(element.offsetWidth - startingWidth) * 0.5;
+                if (isRTL) {
+                    //negate the diff, why?
+                    //when growing it should decrease left
+                    //when shrinking it should increase left
+                    diff *= -1;
+                }
+                if (element.offsetWidth > startingWidth) {
+                    //growing
+                    element.style.left = (startingLeft + diff) + 'px';
+                } else if (element.offsetWidth >= minWidth) {
+                    //shrinking
+                    element.style.left = (startingLeft - diff) + 'px';
+                }
+            }
+        }
+
+        /**
+         * Triggers the start of a resize event, attached to the resize handle element mouse down event.
+         * Adds no-selection class to the body, disabling selection while moving.
+         *
+         * @param {Event} event	DOM event object.
+         * @param {Object} instance The dilog instance.
+         * 
+         * @return {Boolean} false
+         */
+        function beginResize(event, instance) {
+            if (!instance.isMaximized()) {
+                var eventSrc;
+                if (event.type === 'touchstart') {
+                    event.preventDefault();
+                    eventSrc = event.targetTouches[0];
+                } else if (event.button === 0) {
+                    eventSrc = event;
+                }
+                if (eventSrc) {
+                    resizable = instance;
+                    handleOffset = instance.elements.resizeHandle.offsetHeight / 2;
+                    var element = instance.elements.dialog;
+                    addClass(element, classes.capture);
+                    startingLeft = parseInt(element.style.left, 10);
+                    element.style.height = element.offsetHeight + 'px';
+                    element.style.minHeight = instance.elements.header.offsetHeight + instance.elements.footer.offsetHeight + 'px';
+                    element.style.width = (startingWidth = element.offsetWidth) + 'px';
+
+                    if (element.style.maxWidth !== 'none') {
+                        element.style.minWidth = (minWidth = element.offsetWidth) + 'px';
+                    }
+                    element.style.maxWidth = 'none';
+                    addClass(document.body, classes.noSelection);
+                    return false;
+                }
+            }
+        }
+
+        /**
+         * The actual resize handler,  attached to document.body mousemove event.
+         *
+         * @param {Event} event	DOM event object.
+         * 
+         * @return {undefined}
+         */
+        function resize(event) {
+            if (resizable) {
+                var eventSrc;
+                if (event.type === 'touchmove') {
+                    event.preventDefault();
+                    eventSrc = event.targetTouches[0];
+                } else if (event.button === 0) {
+                    eventSrc = event;
+                }
+                if (eventSrc) {
+                    resizeElement(eventSrc, resizable.elements.dialog, !resizable.get('modal') && !resizable.get('pinned'));
+                }
+            }
+        }
+
+        /**
+         * Triggers the end of a resize event,  attached to document.body mouseup event.
+         * Removes no-selection class from document.body, allowing selection.
+         *
+         * @return {undefined}
+         */
+        function endResize() {
+            if (resizable) {
+                var element = resizable.elements.dialog;
+                resizable = null;
+                removeClass(document.body, classes.noSelection);
+                removeClass(element, classes.capture);
+                cancelClick = true;
+            }
+        }
+
+        /**
+         * Resets any changes made by resizing the element to its original state.
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function resetResize(instance) {
+            resizable = null;
+            var element = instance.elements.dialog;
+            if (element.style.maxWidth === 'none') {
+                //clear inline styles.
+                element.style.maxWidth = element.style.minWidth = element.style.width = element.style.height = element.style.minHeight = element.style.left = '';
+                //reset variables.
+                startingLeft = Number.Nan;
+                startingWidth = minWidth = handleOffset = 0;
+            }
+        }
+
+
+        /**
+         * Updates the dialog move behavior.
+         *
+         * @param {Object} instance The dilog instance.
+         * @param {Boolean} on True to add the behavior, removes it otherwise.
+         *
+         * @return {undefined}
+         */
+        function updateResizable(instance) {
+            if (instance.get('resizable')) {
+                // add class
+                addClass(instance.elements.root, classes.resizable);
+                if (instance.isOpen()) {
+                    bindResizableEvents(instance);
+                }
+            } else {
+                //reset
+                resetResize(instance);
+                // remove class
+                removeClass(instance.elements.root, classes.resizable);
+                if (instance.isOpen()) {
+                    unbindResizableEvents(instance);
+                }
+            }
+        }
+
+        /**
+         * Reset move/resize on window resize.
+         *
+         * @param {Event} event	window resize event object.
+         *
+         * @return {undefined}
+         */
+        function windowResize(/*event*/) {
+            for (var x = 0; x < openDialogs.length; x += 1) {
+                var instance = openDialogs[x];
+                if (instance.get('autoReset')) {
+                    resetMove(instance);
+                    resetResize(instance);
+                }
+            }
+        }
+        /**
+         * Bind dialogs events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function bindEvents(instance) {
+            // if first dialog, hook global handlers
+            if (openDialogs.length === 1) {
+                //global
+                on(window, 'resize', windowResize);
+                on(document.body, 'keyup', keyupHandler);
+                on(document.body, 'keydown', keydownHandler);
+                on(document.body, 'focus', onReset);
+
+                //move
+                on(document.documentElement, 'mousemove', move);
+                on(document.documentElement, 'touchmove', move);
+                on(document.documentElement, 'mouseup', endMove);
+                on(document.documentElement, 'touchend', endMove);
+                //resize
+                on(document.documentElement, 'mousemove', resize);
+                on(document.documentElement, 'touchmove', resize);
+                on(document.documentElement, 'mouseup', endResize);
+                on(document.documentElement, 'touchend', endResize);
+            }
+
+            // common events
+            on(instance.elements.commands.container, 'click', instance.__internal.commandsClickHandler);
+            on(instance.elements.footer, 'click', instance.__internal.buttonsClickHandler);
+            on(instance.elements.reset[0], 'focus', instance.__internal.resetHandler);
+            on(instance.elements.reset[1], 'focus', instance.__internal.resetHandler);
+
+            //prevent handling key up when dialog is being opened by a key stroke.
+            cancelKeyup = true;
+            // hook in transition handler
+            on(instance.elements.dialog, transition.type, instance.__internal.transitionInHandler);
+
+            // modelss only events
+            if (!instance.get('modal')) {
+                bindModelessEvents(instance);
+            }
+
+            // resizable
+            if (instance.get('resizable')) {
+                bindResizableEvents(instance);
+            }
+
+            // movable
+            if (instance.get('movable')) {
+                bindMovableEvents(instance);
+            }
+        }
+
+        /**
+         * Unbind dialogs events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function unbindEvents(instance) {
+            // if last dialog, remove global handlers
+            if (openDialogs.length === 1) {
+                //global
+                off(window, 'resize', windowResize);
+                off(document.body, 'keyup', keyupHandler);
+                off(document.body, 'keydown', keydownHandler);
+                off(document.body, 'focus', onReset);
+                //move
+                off(document.documentElement, 'mousemove', move);
+                off(document.documentElement, 'mouseup', endMove);
+                //resize
+                off(document.documentElement, 'mousemove', resize);
+                off(document.documentElement, 'mouseup', endResize);
+            }
+
+            // common events
+            off(instance.elements.commands.container, 'click', instance.__internal.commandsClickHandler);
+            off(instance.elements.footer, 'click', instance.__internal.buttonsClickHandler);
+            off(instance.elements.reset[0], 'focus', instance.__internal.resetHandler);
+            off(instance.elements.reset[1], 'focus', instance.__internal.resetHandler);
+
+            // hook out transition handler
+            on(instance.elements.dialog, transition.type, instance.__internal.transitionOutHandler);
+
+            // modelss only events
+            if (!instance.get('modal')) {
+                unbindModelessEvents(instance);
+            }
+
+            // movable
+            if (instance.get('movable')) {
+                unbindMovableEvents(instance);
+            }
+
+            // resizable
+            if (instance.get('resizable')) {
+                unbindResizableEvents(instance);
+            }
+
+        }
+
+        /**
+         * Bind modeless specific events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function bindModelessEvents(instance) {
+            on(instance.elements.dialog, 'focus', instance.__internal.bringToFrontHandler, true);
+        }
+
+        /**
+         * Unbind modeless specific events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function unbindModelessEvents(instance) {
+            off(instance.elements.dialog, 'focus', instance.__internal.bringToFrontHandler, true);
+        }
+
+
+
+        /**
+         * Bind movable specific events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function bindMovableEvents(instance) {
+            on(instance.elements.header, 'mousedown', instance.__internal.beginMoveHandler);
+            on(instance.elements.header, 'touchstart', instance.__internal.beginMoveHandler);
+        }
+
+        /**
+         * Unbind movable specific events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function unbindMovableEvents(instance) {
+            off(instance.elements.header, 'mousedown', instance.__internal.beginMoveHandler);
+            off(instance.elements.header, 'touchstart', instance.__internal.beginMoveHandler);
+        }
+
+
+
+        /**
+         * Bind resizable specific events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function bindResizableEvents(instance) {
+            on(instance.elements.resizeHandle, 'mousedown', instance.__internal.beginResizeHandler);
+            on(instance.elements.resizeHandle, 'touchstart', instance.__internal.beginResizeHandler);
+        }
+
+        /**
+         * Unbind resizable specific events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function unbindResizableEvents(instance) {
+            off(instance.elements.resizeHandle, 'mousedown', instance.__internal.beginResizeHandler);
+            off(instance.elements.resizeHandle, 'touchstart', instance.__internal.beginResizeHandler);
+        }
+
+        /**
+         * Bind closable events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function bindClosableEvents(instance) {
+            on(instance.elements.modal, 'click', instance.__internal.modalClickHandler);
+        }
+
+        /**
+         * Unbind closable specific events
+         *
+         * @param {Object} instance The dilog instance.
+         *
+         * @return {undefined}
+         */
+        function unbindClosableEvents(instance) {
+            off(instance.elements.modal, 'click', instance.__internal.modalClickHandler);
+        }
+        // dialog API
+        return {
+            __init:initialize,
+            /**
+             * Check if dialog is currently open
+             *
+             * @return {Boolean}
+             */
+            isOpen: function () {
+                return this.__internal.isOpen;
+            },
+            isModal: function (){
+                return this.elements.root.className.indexOf(classes.modeless) < 0;
+            },
+            isMaximized:function(){
+                return this.elements.root.className.indexOf(classes.maximized) > -1;
+            },
+            isPinned:function(){
+                return this.elements.root.className.indexOf(classes.unpinned) < 0;
+            },
+            maximize:function(){
+                if(!this.isMaximized()){
+                    maximize(this);
+                }
+                return this;
+            },
+            restore:function(){
+                if(this.isMaximized()){
+                    restore(this);
+                }
+                return this;
+            },
+            pin:function(){
+                if(!this.isPinned()){
+                    pin(this);
+                }
+                return this;
+            },
+            unpin:function(){
+                if(this.isPinned()){
+                    unpin(this);
+                }
+                return this;
+            },
+            bringToFront:function(){
+                bringToFront(null, this);
+                return this;
+            },
+            /**
+             * Move the dialog to a specific x/y coordinates
+             *
+             * @param {Number} x    The new dialog x coordinate in pixels.
+             * @param {Number} y    The new dialog y coordinate in pixels.
+             *
+             * @return {Object} The dialog instance.
+             */
+            moveTo:function(x,y){
+                if(!isNaN(x) && !isNaN(y)){
+                    var element = this.elements.dialog,
+                        current = element,
+                        offsetLeft = 0,
+                        offsetTop = 0;
+                    
+                    //subtract existing left,top
+                    if (element.style.left) {
+                        offsetLeft -= parseInt(element.style.left, 10);
+                    }
+                    if (element.style.top) {
+                        offsetTop -= parseInt(element.style.top, 10);
+                    }
+                    //calc offset
+                    do {
+                        offsetLeft += current.offsetLeft;
+                        offsetTop += current.offsetTop;
+                    } while (current = current.offsetParent);
+
+                    //calc left, top
+                    var left = (x - offsetLeft);
+                    var top  = (y - offsetTop);
+
+                    //// rtl handling
+                    if (isRightToLeft()) {
+                        left *= -1;
+                    }
+
+                    element.style.left = left + 'px';
+                    element.style.top = top + 'px';
+                }
+                return this;
+            },
+            /**
+             * Resize the dialog to a specific width/height (the dialog must be 'resizable').
+             * The dialog can be resized to:
+             *  A minimum width equal to the initial display width
+             *  A minimum height equal to the sum of header/footer heights.
+             *
+             *
+             * @param {Number or String} width    The new dialog width in pixels or in percent.
+             * @param {Number or String} height   The new dialog height in pixels or in percent.
+             *
+             * @return {Object} The dialog instance.
+             */
+            resizeTo:function(width,height){
+                var w = parseFloat(width),
+                    h = parseFloat(height),
+                    regex = /(\d*\.\d+|\d+)%/
+                ;
+
+                if(!isNaN(w) && !isNaN(h) && this.get('resizable') === true){
+
+                    if(('' + width).match(regex)){
+                        w = w / 100 * document.documentElement.clientWidth ;
+                    }
+
+                    if(('' + height).match(regex)){
+                        h = h / 100 * document.documentElement.clientHeight;
+                    }
+
+                    var element = this.elements.dialog;
+                    if (element.style.maxWidth !== 'none') {
+                        element.style.minWidth = (minWidth = element.offsetWidth) + 'px';
+                    }
+                    element.style.maxWidth = 'none';
+                    element.style.minHeight = this.elements.header.offsetHeight + this.elements.footer.offsetHeight + 'px';
+                    element.style.width = w + 'px';
+                    element.style.height = h + 'px';
+                }
+                return this;
+            },
+            /**
+             * Gets or Sets dialog settings/options 
+             *
+             * @param {String|Object} key A string specifying a propery name or a collection of key/value pairs.
+             * @param {Object} value Optional, the value associated with the key (in case it was a string).
+             *
+             * @return {undefined}
+             */
+            setting : function (key, value) {
+                var self = this;
+                var result = update(this, this.__internal.options, function(k,o,n){ optionUpdated(self,k,o,n); }, key, value);
+                if(result.op === 'get'){
+                    if(result.found){
+                        return result.value;
+                    }else if(typeof this.settings !== 'undefined'){
+                        return update(this, this.settings, this.settingUpdated || function(){}, key, value).value;
+                    }else{
+                        return undefined;
+                    }
+                }else if(result.op === 'set'){
+                    if(result.items.length > 0){
+                        var callback = this.settingUpdated || function(){};
+                        for(var x=0;x<result.items.length;x+=1){
+                            var item = result.items[x];
+                            if(!item.found && typeof this.settings !== 'undefined'){
+                                update(this, this.settings, callback, item.key, item.value);
+                            }
+                        }
+                    }
+                    return this;
+                }
+            },
+            /**
+             * [Alias] Sets dialog settings/options 
+             */
+            set:function(key, value){
+                this.setting(key,value);
+                return this;
+            },
+            /**
+             * [Alias] Gets dialog settings/options 
+             */
+            get:function(key){
+                return this.setting(key);
+            },
+            /**
+            * Sets dialog header
+            * @content {string or element}
+            *
+            * @return {undefined}
+            */
+            setHeader:function(content){
+                if(typeof content === 'string'){
+                    clearContents(this.elements.header);
+                    this.elements.header.innerHTML = content;
+                }else if (content instanceof window.HTMLElement && this.elements.header.firstChild !== content){
+                    clearContents(this.elements.header);
+                    this.elements.header.appendChild(content);
+                }
+                return this;
+            },
+            /**
+            * Sets dialog contents
+            * @content {string or element}
+            *
+            * @return {undefined}
+            */
+            setContent:function(content){
+                if(typeof content === 'string'){
+                    clearContents(this.elements.content);
+                    this.elements.content.innerHTML = content;
+                }else if (content instanceof window.HTMLElement && this.elements.content.firstChild !== content){
+                    clearContents(this.elements.content);
+                    this.elements.content.appendChild(content);
+                }
+                return this;
+            },
+            /**
+             * Show the dialog as modal
+             *
+             * @return {Object} the dialog instance.
+             */
+            showModal: function(className){
+                return this.show(true, className);
+            },
+            /**
+             * Show the dialog
+             *
+             * @return {Object} the dialog instance.
+             */
+            show: function (modal, className) {
+                
+                // ensure initialization
+                initialize(this);
+								
+                if ( !this.__internal.isOpen ) {
+					
+                    // add to open dialogs
+                    this.__internal.isOpen = true;
+                    openDialogs.push(this);
+
+                    // save last focused element
+                    if(alertify.defaults.maintainFocus){
+                        this.__internal.activeElement = document.activeElement;
+                    }
+
+                    //allow custom dom manipulation updates before showing the dialog.
+                    if(typeof this.prepare === 'function'){
+                        this.prepare();
+                    }
+
+                    bindEvents(this);
+
+                    if(modal !== undefined){
+                        this.set('modal', modal);
+                    }
+					
+                    //save scroll to prevent document jump
+                    saveScrollPosition();
+
+                    ensureNoOverflow();
+					
+                    // allow custom dialog class on show
+                    if(typeof className === 'string' && className !== ''){
+                        this.__internal.className = className;
+                        addClass(this.elements.root, className);
+                    }
+
+                    // maximize if start maximized
+                    if ( this.get('startMaximized')) {
+                        this.maximize();
+                    }else if(this.isMaximized()){
+                        restore(this);
+                    }
+					
+                    updateAbsPositionFix(this);
+
+                    removeClass(this.elements.root, classes.animationOut);
+                    addClass(this.elements.root, classes.animationIn);
+
+                    // set 1s fallback in case transition event doesn't fire
+                    clearTimeout( this.__internal.timerIn);
+                    this.__internal.timerIn = setTimeout( this.__internal.transitionInHandler, transition.supported ? 1000 : 100 );
+
+                    if(isSafari){
+                        // force desktop safari reflow
+                        var root = this.elements.root;
+                        root.style.display  = 'none';
+                        setTimeout(function(){root.style.display  = 'block';}, 0);
+                    }
+
+                    //reflow
+                    reflow = this.elements.root.offsetWidth;
+                  
+                    // show dialog
+                    removeClass(this.elements.root, classes.hidden);
+
+                    // internal on show event
+                    if(typeof this.hooks.onshow === 'function'){
+                        this.hooks.onshow.call(this);
+                    }
+
+                    // allow custom `onshow` method
+                    if ( typeof this.get('onshow') === 'function' ) {
+                        this.get('onshow').call(this);
+                    }
+
+                }else{
+                    // reset move updates
+                    resetMove(this);
+                    // reset resize updates
+                    resetResize(this);
+                    // shake the dialog to indicate its already open
+                    addClass(this.elements.dialog, classes.shake);
+                    var self = this;
+                    setTimeout(function(){
+                        removeClass(self.elements.dialog, classes.shake);
+                    },200);
+                }
+                return this;
+            },
+            /**
+             * Close the dialog
+             *
+             * @return {Object} The dialog instance
+             */
+            close: function () {
+                if (this.__internal.isOpen ) {
+					
+                    unbindEvents(this);
+					
+                    removeClass(this.elements.root, classes.animationIn);
+                    addClass(this.elements.root, classes.animationOut);
+
+                    // set 1s fallback in case transition event doesn't fire
+                    clearTimeout( this.__internal.timerOut );
+                    this.__internal.timerOut = setTimeout( this.__internal.transitionOutHandler, transition.supported ? 1000 : 100 );
+                    // hide dialog
+                    addClass(this.elements.root, classes.hidden);
+                    //reflow
+                    reflow = this.elements.modal.offsetWidth;
+
+                    // remove custom dialog class on hide
+                    if (typeof this.__internal.className !== 'undefined' && this.__internal.className !== '') {
+                        removeClass(this.elements.root, this.__internal.className);
+                    }
+
+                    // internal on close event
+                    if(typeof this.hooks.onclose === 'function'){
+                        this.hooks.onclose.call(this);
+                    }
+
+                    // allow custom `onclose` method
+                    if ( typeof this.get('onclose') === 'function' ) {
+                        this.get('onclose').call(this);
+                    }
+					
+                    //remove from open dialogs               
+                    openDialogs.splice(openDialogs.indexOf(this),1);
+                    this.__internal.isOpen = false;
+					
+                    ensureNoOverflow();
+					
+                }
+                return this;
+            },
+            /**
+             * Close all open dialogs except this.
+             *
+             * @return {undefined}
+             */
+            closeOthers:function(){
+                alertify.closeAll(this);
+                return this;
+            },
+            /**
+             * Destroys this dialog instance
+             *
+             * @return {undefined}
+             */
+            destroy:function(){
+                if (this.__internal.isOpen ) {
+                    //mark dialog for destruction, this will be called on tranistionOut event.
+                    this.__internal.destroy = function(){
+                        destruct(this, initialize);
+                    };
+                    //close the dialog to unbind all events.
+                    this.close();
+                }else{
+                    destruct(this, initialize);
+                }
+                return this;
+            },
+        };
+	} () );
+    var notifier = (function () {
+        var reflow,
+            element,
+            openInstances = [],
+            classes = {
+                base: 'alertify-notifier',
+                message: 'ajs-message',
+                top: 'ajs-top',
+                right: 'ajs-right',
+                bottom: 'ajs-bottom',
+                left: 'ajs-left',
+                visible: 'ajs-visible',
+                hidden: 'ajs-hidden'
+            };
+        /**
+         * Helper: initializes the notifier instance
+         * 
+         */
+        function initialize(instance) {
+
+            if (!instance.__internal) {
+                instance.__internal = {
+                    position: alertify.defaults.notifier.position,
+                    delay: alertify.defaults.notifier.delay,
+                };
+
+                element = document.createElement('DIV');
+
+                updatePosition(instance);
+            }
+
+            //add to DOM tree.
+            if (element.parentNode !== document.body) {
+                document.body.appendChild(element);
+            }
+        }
+        
+        function pushInstance(instance) {
+            instance.__internal.pushed = true;
+            openInstances.push(instance);
+        }
+        function popInstance(instance) {
+            openInstances.splice(openInstances.indexOf(instance), 1);
+            instance.__internal.pushed = false;
+        }
+        /**
+         * Helper: update the notifier instance position
+         * 
+         */
+        function updatePosition(instance) {
+            element.className = classes.base;
+            switch (instance.__internal.position) {
+            case 'top-right':
+                addClass(element, classes.top + ' ' + classes.right);
+                break;
+            case 'top-left':
+                addClass(element, classes.top + ' ' + classes.left);
+                break;
+            case 'bottom-left':
+                addClass(element, classes.bottom + ' ' + classes.left);
+                break;
+
+            default:
+            case 'bottom-right':
+                addClass(element, classes.bottom + ' ' + classes.right);
+                break;
+            }
+        }
+
+        /**
+        * creates a new notification message
+        *
+        * @param  {DOMElement} message	The notifier message element
+        * @param  {Number} wait   Time (in ms) to wait before the message is dismissed, a value of 0 means keep open till clicked.
+        * @param  {Function} callback A callback function to be invoked when the message is dismissed.
+        *
+        * @return {undefined}
+        */
+        function create(div, callback) {
+
+            function clickDelegate(event, instance) {
+                instance.dismiss(true);
+            }
+
+            function transitionDone(event, instance) {
+                // unbind event
+                off(instance.element, transition.type, transitionDone);
+                // remove the message
+                element.removeChild(instance.element);
+            }
+
+            function initialize(instance) {
+                if (!instance.__internal) {
+                    instance.__internal = {
+                        pushed: false,
+                        delay : undefined,
+                        timer: undefined,
+                        clickHandler: undefined,
+                        transitionEndHandler: undefined,
+                        transitionTimeout: undefined
+                    };
+                    instance.__internal.clickHandler = delegate(instance, clickDelegate);
+                    instance.__internal.transitionEndHandler = delegate(instance, transitionDone);
+                }
+                return instance;
+            }
+            function clearTimers(instance) {
+                clearTimeout(instance.__internal.timer);
+                clearTimeout(instance.__internal.transitionTimeout);
+            }
+            return initialize({
+                /* notification DOM element*/
+                element: div,
+                /*
+                 * Pushes a notification message 
+                 * @param {string or DOMElement} content The notification message content
+                 * @param {Number} wait The time (in seconds) to wait before the message is dismissed, a value of 0 means keep open till clicked.
+                 * 
+                 */
+                push: function (_content, _wait) {
+                    if (!this.__internal.pushed) {
+
+                        pushInstance(this);
+                        clearTimers(this);
+
+                        var content, wait;
+                        switch (arguments.length) {
+                        case 0:
+                            wait = this.__internal.delay;
+                            break;
+                        case 1:
+                            if (typeof (_content) === 'number') {
+                                wait = _content;
+                            } else {
+                                content = _content;
+                                wait = this.__internal.delay;
+                            }
+                            break;
+                        case 2:
+                            content = _content;
+                            wait = _wait;
+                            break;
+                        }
+                        // set contents
+                        if (typeof content !== 'undefined') {
+                            this.setContent(content);
+                        }
+                        // append or insert
+                        if (notifier.__internal.position.indexOf('top') < 0) {
+                            element.appendChild(this.element);
+                        } else {
+                            element.insertBefore(this.element, element.firstChild);
+                        }
+                        reflow = this.element.offsetWidth;
+                        addClass(this.element, classes.visible);
+                        // attach click event
+                        on(this.element, 'click', this.__internal.clickHandler);
+                        return this.delay(wait);
+                    }
+                    return this;
+                },
+                /*
+                 * {Function} callback function to be invoked before dismissing the notification message.
+                 * Remarks: A return value === 'false' will cancel the dismissal
+                 * 
+                 */
+                ondismiss: function () { },
+                /*
+                 * {Function} callback function to be invoked when the message is dismissed.
+                 * 
+                 */
+                callback: callback,
+                /*
+                 * Dismisses the notification message 
+                 * @param {Boolean} clicked A flag indicating if the dismissal was caused by a click.
+                 * 
+                 */
+                dismiss: function (clicked) {
+                    if (this.__internal.pushed) {
+                        clearTimers(this);
+                        if (!(typeof this.ondismiss === 'function' && this.ondismiss.call(this) === false)) {
+                            //detach click event
+                            off(this.element, 'click', this.__internal.clickHandler);
+                            // ensure element exists
+                            if (typeof this.element !== 'undefined' && this.element.parentNode === element) {
+                                //transition end or fallback
+                                this.__internal.transitionTimeout = setTimeout(this.__internal.transitionEndHandler, transition.supported ? 1000 : 100);
+                                removeClass(this.element, classes.visible);
+
+                                // custom callback on dismiss
+                                if (typeof this.callback === 'function') {
+                                    this.callback.call(this, clicked);
+                                }
+                            }
+                            popInstance(this);
+                        }
+                    }
+                    return this;
+                },
+                /*
+                 * Delays the notification message dismissal
+                 * @param {Number} wait The time (in seconds) to wait before the message is dismissed, a value of 0 means keep open till clicked.
+                 * 
+                 */
+                delay: function (wait) {
+                    clearTimers(this);
+                    this.__internal.delay = typeof wait !== 'undefined' && !isNaN(+wait) ? +wait : notifier.__internal.delay;
+                    if (this.__internal.delay > 0) {
+                        var  self = this;
+                        this.__internal.timer = setTimeout(function () { self.dismiss(); }, this.__internal.delay * 1000);
+                    }
+                    return this;
+                },
+                /*
+                 * Sets the notification message contents
+                 * @param {string or DOMElement} content The notification message content
+                 * 
+                 */
+                setContent: function (content) {
+                    if (typeof content === 'string') {
+                        clearContents(this.element);
+                        this.element.innerHTML = content;
+                    } else if (content instanceof window.HTMLElement && this.element.firstChild !== content) {
+                        clearContents(this.element);
+                        this.element.appendChild(content);
+                    }
+                    return this;
+                },
+                /*
+                 * Dismisses all open notifications except this.
+                 * 
+                 */
+                dismissOthers: function () {
+                    notifier.dismissAll(this);
+                    return this;
+                }
+            });
+        }
+
+        //notifier api
+        return {
+            /**
+             * Gets or Sets notifier settings. 
+             *
+             * @param {string} key The setting name
+             * @param {Variant} value The setting value.
+             *
+             * @return {Object}	if the called as a setter, return the notifier instance.
+             */
+            setting: function (key, value) {
+                //ensure init
+                initialize(this);
+
+                if (typeof value === 'undefined') {
+                    //get
+                    return this.__internal[key];
+                } else {
+                    //set
+                    switch (key) {
+                    case 'position':
+                        this.__internal.position = value;
+                        updatePosition(this);
+                        break;
+                    case 'delay':
+                        this.__internal.delay = value;
+                        break;
+                    }
+                }
+                return this;
+            },
+            /**
+             * [Alias] Sets dialog settings/options 
+             */
+            set:function(key,value){
+                this.setting(key,value);
+                return this;
+            },
+            /**
+             * [Alias] Gets dialog settings/options 
+             */
+            get:function(key){
+                return this.setting(key);
+            },
+            /**
+             * Creates a new notification message
+             *
+             * @param {string} type The type of notification message (simply a CSS class name 'ajs-{type}' to be added).
+             * @param {Function} callback  A callback function to be invoked when the message is dismissed.
+             *
+             * @return {undefined}
+             */
+            create: function (type, callback) {
+                //ensure notifier init
+                initialize(this);
+                //create new notification message
+                var div = document.createElement('div');
+                div.className = classes.message + ((typeof type === 'string' && type !== '') ? ' ajs-' + type : '');
+                return create(div, callback);
+            },
+            /**
+             * Dismisses all open notifications.
+             *
+             * @param {Object} excpet [optional] The notification object to exclude from dismissal.
+             *
+             */
+            dismissAll: function (except) {
+                var clone = openInstances.slice(0);
+                for (var x = 0; x < clone.length; x += 1) {
+                    var  instance = clone[x];
+                    if (except === undefined || except !== instance) {
+                        instance.dismiss();
+                    }
+                }
+            }
+        };
+    })();
+    /**
+     * Alertify public API
+     * This contains everything that is exposed through the alertify object.
+     *
+     * @return {Object}
+     */
+    function Alertify() {
+
+        // holds a references of created dialogs
+        var dialogs = {};
+
+        /**
+         * Extends a given prototype by merging properties from base into sub.
+         *
+         * @sub {Object} sub The prototype being overwritten.
+         * @base {Object} base The prototype being written.
+         *
+         * @return {Object} The extended prototype.
+         */
+        function extend(sub, base) {
+            // copy dialog pototype over definition.
+            for (var prop in base) {
+                if (base.hasOwnProperty(prop)) {
+                    sub[prop] = base[prop];
+                }
+            }
+            return sub;
+        }
+
+
+        /**
+        * Helper: returns a dialog instance from saved dialogs.
+        * and initializes the dialog if its not already initialized.
+        *
+        * @name {String} name The dialog name.
+        *
+        * @return {Object} The dialog instance.
+        */
+        function get_dialog(name) {
+            var dialog = dialogs[name].dialog;
+            //initialize the dialog if its not already initialized.
+            if (dialog && typeof dialog.__init === 'function') {
+                dialog.__init(dialog);
+            }
+            return dialog;
+        }
+
+        /**
+         * Helper:  registers a new dialog definition.
+         *
+         * @name {String} name The dialog name.
+         * @Factory {Function} Factory a function resposible for creating dialog prototype.
+         * @transient {Boolean} transient True to create a new dialog instance each time the dialog is invoked, false otherwise.
+         * @base {String} base the name of another dialog to inherit from.
+         *
+         * @return {Object} The dialog definition.
+         */
+        function register(name, Factory, transient, base) {
+            var definition = {
+                dialog: null,
+                factory: Factory
+            };
+
+            //if this is based on an existing dialog, create a new definition
+            //by applying the new protoype over the existing one.
+            if (base !== undefined) {
+                definition.factory = function () {
+                    return extend(new dialogs[base].factory(), new Factory());
+                };
+            }
+
+            if (!transient) {
+                //create a new definition based on dialog
+                definition.dialog = extend(new definition.factory(), dialog);
+            }
+            return dialogs[name] = definition;
+        }
+
+        return {
+            /**
+             * Alertify defaults
+             * 
+             * @type {Object}
+             */
+            defaults: defaults,
+            /**
+             * Dialogs factory 
+             *
+             * @param {string}      Dialog name.
+             * @param {Function}    A Dialog factory function.
+             * @param {Boolean}     Indicates whether to create a singleton or transient dialog.
+             * @param {String}      The name of the base type to inherit from.
+             */
+            dialog: function (name, Factory, transient, base) {
+
+                // get request, create a new instance and return it.
+                if (typeof Factory !== 'function') {
+                    return get_dialog(name);
+                }
+
+                if (this.hasOwnProperty(name)) {
+                    throw new Error('alertify.dialog: name already exists');
+                }
+
+                // register the dialog
+                var definition = register(name, Factory, transient, base);
+
+                if (transient) {
+
+                    // make it public
+                    this[name] = function () {
+                        //if passed with no params, consider it a get request
+                        if (arguments.length === 0) {
+                            return definition.dialog;
+                        } else {
+                            var instance = extend(new definition.factory(), dialog);
+                            //ensure init
+                            if (instance && typeof instance.__init === 'function') {
+                                instance.__init(instance);
+                            }
+                            instance['main'].apply(instance, arguments);
+                            return instance['show'].apply(instance);
+                        }
+                    };
+                } else {
+                    // make it public
+                    this[name] = function () {
+                        //ensure init
+                        if (definition.dialog && typeof definition.dialog.__init === 'function') {
+                            definition.dialog.__init(definition.dialog);
+                        }
+                        //if passed with no params, consider it a get request
+                        if (arguments.length === 0) {
+                            return definition.dialog;
+                        } else {
+                            var dialog = definition.dialog;
+                            dialog['main'].apply(definition.dialog, arguments);
+                            return dialog['show'].apply(definition.dialog);
+                        }
+                    };
+                }
+            },
+            /**
+             * Close all open dialogs.
+             *
+             * @param {Object} excpet [optional] The dialog object to exclude from closing.
+             *
+             * @return {undefined}
+             */
+            closeAll: function (except) {
+                var clone = openDialogs.slice(0);
+                for (var x = 0; x < clone.length; x += 1) {
+                    var instance = clone[x];
+                    if (except === undefined || except !== instance) {
+                        instance.close();
+                    }
+                }
+            },
+            /**
+             * Gets or Sets dialog settings/options. if the dialog is transient, this call does nothing.
+             *
+             * @param {string} name The dialog name.
+             * @param {String|Object} key A string specifying a propery name or a collection of key/value pairs.
+             * @param {Variant} value Optional, the value associated with the key (in case it was a string).
+             *
+             * @return {undefined}
+             */
+            setting: function (name, key, value) {
+
+                if (name === 'notifier') {
+                    return notifier.setting(key, value);
+                }
+
+                var dialog = get_dialog(name);
+                if (dialog) {
+                    return dialog.setting(key, value);
+                }
+            },
+            /**
+             * [Alias] Sets dialog settings/options 
+             */
+            set: function(name,key,value){
+                return this.setting(name, key,value);
+            },
+            /**
+             * [Alias] Gets dialog settings/options 
+             */
+            get: function(name, key){
+                return this.setting(name, key);
+            },
+            /**
+             * Creates a new notification message.
+             * If a type is passed, a class name "ajs-{type}" will be added.
+             * This allows for custom look and feel for various types of notifications.
+             *
+             * @param  {String | DOMElement}    [message=undefined]		Message text
+             * @param  {String}                 [type='']				Type of log message
+             * @param  {String}                 [wait='']				Time (in seconds) to wait before auto-close
+             * @param  {Function}               [callback=undefined]	A callback function to be invoked when the log is closed.
+             *
+             * @return {Object} Notification object.
+             */
+            notify: function (message, type, wait, callback) {
+                return notifier.create(type, callback).push(message, wait);
+            },
+            /**
+             * Creates a new notification message.
+             *
+             * @param  {String}		[message=undefined]		Message text
+             * @param  {String}     [wait='']				Time (in seconds) to wait before auto-close
+             * @param  {Function}	[callback=undefined]	A callback function to be invoked when the log is closed.
+             *
+             * @return {Object} Notification object.
+             */
+            message: function (message, wait, callback) {
+                return notifier.create(null, callback).push(message, wait);
+            },
+            /**
+             * Creates a new notification message of type 'success'.
+             *
+             * @param  {String}		[message=undefined]		Message text
+             * @param  {String}     [wait='']				Time (in seconds) to wait before auto-close
+             * @param  {Function}	[callback=undefined]	A callback function to be invoked when the log is closed.
+             *
+             * @return {Object} Notification object.
+             */
+            success: function (message, wait, callback) {
+                return notifier.create('success', callback).push(message, wait);
+            },
+            /**
+             * Creates a new notification message of type 'error'.
+             *
+             * @param  {String}		[message=undefined]		Message text
+             * @param  {String}     [wait='']				Time (in seconds) to wait before auto-close
+             * @param  {Function}	[callback=undefined]	A callback function to be invoked when the log is closed.
+             *
+             * @return {Object} Notification object.
+             */
+            error: function (message, wait, callback) {
+                return notifier.create('error', callback).push(message, wait);
+            },
+            /**
+             * Creates a new notification message of type 'warning'.
+             *
+             * @param  {String}		[message=undefined]		Message text
+             * @param  {String}     [wait='']				Time (in seconds) to wait before auto-close
+             * @param  {Function}	[callback=undefined]	A callback function to be invoked when the log is closed.
+             *
+             * @return {Object} Notification object.
+             */
+            warning: function (message, wait, callback) {
+                return notifier.create('warning', callback).push(message, wait);
+            },
+            /**
+             * Dismisses all open notifications
+             *
+             * @return {undefined}
+             */
+            dismissAll: function () {
+                notifier.dismissAll();
+            }
+        };
+    }
+    var alertify = new Alertify();
+
+    /**
+    * Alert dialog definition
+    *
+    * invoked by:
+    *	alertify.alert(message);
+    *	alertify.alert(title, message);
+    *	alertify.alert(message, onok);
+    *	alertify.alert(title, message, onok);
+     */
+    alertify.dialog('alert', function () {
+        return {
+            main: function (_title, _message, _onok) {
+                var title, message, onok;
+                switch (arguments.length) {
+                case 1:
+                    message = _title;
+                    break;
+                case 2:
+                    if (typeof _message === 'function') {
+                        message = _title;
+                        onok = _message;
+                    } else {
+                        title = _title;
+                        message = _message;
+                    }
+                    break;
+                case 3:
+                    title = _title;
+                    message = _message;
+                    onok = _onok;
+                    break;
+                }
+                this.set('title', title);
+                this.set('message', message);
+                this.set('onok', onok);
+                return this;
+            },
+            setup: function () {
+                return {
+                    buttons: [
+                        {
+                            text: alertify.defaults.glossary.ok,
+                            key: keys.ESC,
+                            invokeOnClose: true,
+                            className: alertify.defaults.theme.ok,
+                        }
+                    ],
+                    focus: {
+                        element: 0,
+                        select: false
+                    },
+                    options: {
+                        maximizable: false,
+                        resizable: false
+                    }
+                };
+            },
+            build: function () {
+                // nothing
+            },
+            prepare: function () {
+                //nothing
+            },
+            setMessage: function (message) {
+                this.setContent(message);
+            },
+            settings: {
+                message: undefined,
+                onok: undefined,
+                label: undefined,
+            },
+            settingUpdated: function (key, oldValue, newValue) {
+                switch (key) {
+                case 'message':
+                    this.setMessage(newValue);
+                    break;
+                case 'label':
+                    if (this.__internal.buttons[0].element) {
+                        this.__internal.buttons[0].element.innerHTML = newValue;
+                    }
+                    break;
+                }
+            },
+            callback: function (closeEvent) {
+                if (typeof this.get('onok') === 'function') {
+                    var returnValue = this.get('onok').call(this, closeEvent);
+                    if (typeof returnValue !== 'undefined') {
+                        closeEvent.cancel = !returnValue;
+                    }
+                }
+            }
+        };
+    });
+    /**
+     * Confirm dialog object
+     *
+     *	alertify.confirm(message);
+     *	alertify.confirm(message, onok);
+     *	alertify.confirm(message, onok, oncancel);
+     *	alertify.confirm(title, message, onok, oncancel);
+     */
+    alertify.dialog('confirm', function () {
+
+        var autoConfirm = {
+            timer: null,
+            index: null,
+            text: null,
+            duration: null,
+            task: function (event, self) {
+                if (self.isOpen()) {
+                    self.__internal.buttons[autoConfirm.index].element.innerHTML = autoConfirm.text + ' (&#8207;' + autoConfirm.duration + '&#8207;) ';
+                    autoConfirm.duration -= 1;
+                    if (autoConfirm.duration === -1) {
+                        clearAutoConfirm(self);
+                        var button = self.__internal.buttons[autoConfirm.index];
+                        var closeEvent = createCloseEvent(autoConfirm.index, button);
+
+                        if (typeof self.callback === 'function') {
+                            self.callback.apply(self, [closeEvent]);
+                        }
+                        //close the dialog.
+                        if (closeEvent.close !== false) {
+                            self.close();
+                        }
+                    }
+                } else {
+                    clearAutoConfirm(self);
+                }
+            }
+        };
+
+        function clearAutoConfirm(self) {
+            if (autoConfirm.timer !== null) {
+                clearInterval(autoConfirm.timer);
+                autoConfirm.timer = null;
+                self.__internal.buttons[autoConfirm.index].element.innerHTML = autoConfirm.text;
+            }
+        }
+
+        function startAutoConfirm(self, index, duration) {
+            clearAutoConfirm(self);
+            autoConfirm.duration = duration;
+            autoConfirm.index = index;
+            autoConfirm.text = self.__internal.buttons[index].element.innerHTML;
+            autoConfirm.timer = setInterval(delegate(self, autoConfirm.task), 1000);
+            autoConfirm.task(null, self);
+        }
+
+
+        return {
+            main: function (_title, _message, _onok, _oncancel) {
+                var title, message, onok, oncancel;
+                switch (arguments.length) {
+                case 1:
+                    message = _title;
+                    break;
+                case 2:
+                    message = _title;
+                    onok = _message;
+                    break;
+                case 3:
+                    message = _title;
+                    onok = _message;
+                    oncancel = _onok;
+                    break;
+                case 4:
+                    title = _title;
+                    message = _message;
+                    onok = _onok;
+                    oncancel = _oncancel;
+                    break;
+                }
+                this.set('title', title);
+                this.set('message', message);
+                this.set('onok', onok);
+                this.set('oncancel', oncancel);
+                return this;
+            },
+            setup: function () {
+                return {
+                    buttons: [
+                        {
+                            text: alertify.defaults.glossary.ok,
+                            key: keys.ENTER,
+                            className: alertify.defaults.theme.ok,
+                        },
+                        {
+                            text: alertify.defaults.glossary.cancel,
+                            key: keys.ESC,
+                            invokeOnClose: true,
+                            className: alertify.defaults.theme.cancel,
+                        }
+                    ],
+                    focus: {
+                        element: 0,
+                        select: false
+                    },
+                    options: {
+                        maximizable: false,
+                        resizable: false
+                    }
+                };
+            },
+            build: function () {
+                //nothing
+            },
+            prepare: function () {
+                //nothing
+            },
+            setMessage: function (message) {
+                this.setContent(message);
+            },
+            settings: {
+                message: null,
+                labels: null,
+                onok: null,
+                oncancel: null,
+                defaultFocus: null,
+                reverseButtons: null,
+            },
+            settingUpdated: function (key, oldValue, newValue) {
+                switch (key) {
+                case 'message':
+                    this.setMessage(newValue);
+                    break;
+                case 'labels':
+                    if ('ok' in newValue && this.__internal.buttons[0].element) {
+                        this.__internal.buttons[0].text = newValue.ok;
+                        this.__internal.buttons[0].element.innerHTML = newValue.ok;
+                    }
+                    if ('cancel' in newValue && this.__internal.buttons[1].element) {
+                        this.__internal.buttons[1].text = newValue.cancel;
+                        this.__internal.buttons[1].element.innerHTML = newValue.cancel;
+                    }
+                    break;
+                case 'reverseButtons':
+                    if (newValue === true) {
+                        this.elements.buttons.primary.appendChild(this.__internal.buttons[0].element);
+                    } else {
+                        this.elements.buttons.primary.appendChild(this.__internal.buttons[1].element);
+                    }
+                    break;
+                case 'defaultFocus':
+                    this.__internal.focus.element = newValue === 'ok' ? 0 : 1;
+                    break;
+                }
+            },
+            callback: function (closeEvent) {
+                clearAutoConfirm(this);
+                var returnValue;
+                switch (closeEvent.index) {
+                case 0:
+                    if (typeof this.get('onok') === 'function') {
+                        returnValue = this.get('onok').call(this, closeEvent);
+                        if (typeof returnValue !== 'undefined') {
+                            closeEvent.cancel = !returnValue;
+                        }
+                    }
+                    break;
+                case 1:
+                    if (typeof this.get('oncancel') === 'function') {
+                        returnValue = this.get('oncancel').call(this, closeEvent);
+                        if (typeof returnValue !== 'undefined') {
+                            closeEvent.cancel = !returnValue;
+                        }
+                    }
+                    break;
+                }
+            },
+            autoOk: function (duration) {
+                startAutoConfirm(this, 0, duration);
+                return this;
+            },
+            autoCancel: function (duration) {
+                startAutoConfirm(this, 1, duration);
+                return this;
+            }
+        };
+    });
+    /**
+     * Prompt dialog object
+     *
+     * invoked by:
+     *	alertify.prompt(message);
+     *	alertify.prompt(message, value);
+     *	alertify.prompt(message, value, onok);
+     *	alertify.prompt(message, value, onok, oncancel);
+     *	alertify.prompt(title, message, value, onok, oncancel);
+     */
+    alertify.dialog('prompt', function () {
+        var input = document.createElement('INPUT');
+        var p = document.createElement('P');
+        return {
+            main: function (_title, _message, _value, _onok, _oncancel) {
+                var title, message, value, onok, oncancel;
+                switch (arguments.length) {
+                case 1:
+                    message = _title;
+                    break;
+                case 2:
+                    message = _title;
+                    value = _message;
+                    break;
+                case 3:
+                    message = _title;
+                    value = _message;
+                    onok = _value;
+                    break;
+                case 4:
+                    message = _title;
+                    value = _message;
+                    onok = _value;
+                    oncancel = _onok;
+                    break;
+                case 5:
+                    title = _title;
+                    message = _message;
+                    value = _value;
+                    onok = _onok;
+                    oncancel = _oncancel;
+                    break;
+                }
+                this.set('title', title);
+                this.set('message', message);
+                this.set('value', value);
+                this.set('onok', onok);
+                this.set('oncancel', oncancel);
+                return this;
+            },
+            setup: function () {
+                return {
+                    buttons: [
+                        {
+                            text: alertify.defaults.glossary.ok,
+                            key: keys.ENTER,
+                            className: alertify.defaults.theme.ok,
+                        },
+                        {
+                            text: alertify.defaults.glossary.cancel,
+                            key: keys.ESC,
+                            invokeOnClose: true,
+                            className: alertify.defaults.theme.cancel,
+                        }
+                    ],
+                    focus: {
+                        element: input,
+                        select: true
+                    },
+                    options: {
+                        maximizable: false,
+                        resizable: false
+                    }
+                };
+            },
+            build: function () {
+                input.className = alertify.defaults.theme.input;
+                input.setAttribute('type', 'text');
+                input.value = this.get('value');
+                this.elements.content.appendChild(p);
+                this.elements.content.appendChild(input);
+            },
+            prepare: function () {
+                //nothing
+            },
+            setMessage: function (message) {
+                if (typeof message === 'string') {
+                    clearContents(p);
+                    p.innerHTML = message;
+                } else if (message instanceof window.HTMLElement && p.firstChild !== message) {
+                    clearContents(p);
+                    p.appendChild(message);
+                }
+            },
+            settings: {
+                message: undefined,
+                labels: undefined,
+                onok: undefined,
+                oncancel: undefined,
+                value: '',
+                type:'text',
+                reverseButtons: undefined,
+            },
+            settingUpdated: function (key, oldValue, newValue) {
+                switch (key) {
+                case 'message':
+                    this.setMessage(newValue);
+                    break;
+                case 'value':
+                    input.value = newValue;
+                    break;
+                case 'type':
+                    switch (newValue) {
+                    case 'text':
+                    case 'color':
+                    case 'date':
+                    case 'datetime-local':
+                    case 'email':
+                    case 'month':
+                    case 'number':
+                    case 'password':
+                    case 'search':
+                    case 'tel':
+                    case 'time':
+                    case 'week':
+                        input.type = newValue;
+                        break;
+                    default:
+                        input.type = 'text';
+                        break;
+                    }
+                    break;
+                case 'labels':
+                    if (newValue.ok && this.__internal.buttons[0].element) {
+                        this.__internal.buttons[0].element.innerHTML = newValue.ok;
+                    }
+                    if (newValue.cancel && this.__internal.buttons[1].element) {
+                        this.__internal.buttons[1].element.innerHTML = newValue.cancel;
+                    }
+                    break;
+                case 'reverseButtons':
+                    if (newValue === true) {
+                        this.elements.buttons.primary.appendChild(this.__internal.buttons[0].element);
+                    } else {
+                        this.elements.buttons.primary.appendChild(this.__internal.buttons[1].element);
+                    }
+                    break;
+                }
+            },
+            callback: function (closeEvent) {
+                var returnValue;
+                switch (closeEvent.index) {
+                case 0:
+                    this.settings.value = input.value;
+                    if (typeof this.get('onok') === 'function') {
+                        returnValue = this.get('onok').call(this, closeEvent, this.settings.value);
+                        if (typeof returnValue !== 'undefined') {
+                            closeEvent.cancel = !returnValue;
+                        }
+                    }
+                    break;
+                case 1:
+                    if (typeof this.get('oncancel') === 'function') {
+                        returnValue = this.get('oncancel').call(this, closeEvent);
+                        if (typeof returnValue !== 'undefined') {
+                            closeEvent.cancel = !returnValue;
+                        }
+                    }
+                    break;
+                }
+            }
+        };
+    });
+
+    // CommonJS
+    if ( typeof module === 'object' && typeof module.exports === 'object' ) {
+        module.exports = alertify;
+    // AMD
+    } else if ( typeof define === 'function' && define.amd) {
+        define( [], function () {
+            return alertify;
+        } );
+    // window
+    } else if ( !window.alertify ) {
+        window.alertify = alertify;
+    }
+
+} ( typeof window !== 'undefined' ? window : this ) );
+
+},{}],2:[function(require,module,exports){
+/*
+ * classList.js: Cross-browser full element.classList implementation.
+ * 2014-07-23
+ *
+ * By Eli Grey, http://eligrey.com
+ * Public Domain.
+ * NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+ */
+
+/*global self, document, DOMException */
+
+/*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js*/
+
+/* Copied from MDN:
+ * https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
+ */
+
+if ("document" in window.self) {
+
+  // Full polyfill for browsers with no classList support
+  if (!("classList" in document.createElement("_"))) {
+
+  (function (view) {
+
+    "use strict";
+
+    if (!('Element' in view)) return;
+
+    var
+        classListProp = "classList"
+      , protoProp = "prototype"
+      , elemCtrProto = view.Element[protoProp]
+      , objCtr = Object
+      , strTrim = String[protoProp].trim || function () {
+        return this.replace(/^\s+|\s+$/g, "");
+      }
+      , arrIndexOf = Array[protoProp].indexOf || function (item) {
+        var
+            i = 0
+          , len = this.length
+        ;
+        for (; i < len; i++) {
+          if (i in this && this[i] === item) {
+            return i;
+          }
+        }
+        return -1;
+      }
+      // Vendors: please allow content code to instantiate DOMExceptions
+      , DOMEx = function (type, message) {
+        this.name = type;
+        this.code = DOMException[type];
+        this.message = message;
+      }
+      , checkTokenAndGetIndex = function (classList, token) {
+        if (token === "") {
+          throw new DOMEx(
+              "SYNTAX_ERR"
+            , "An invalid or illegal string was specified"
+          );
+        }
+        if (/\s/.test(token)) {
+          throw new DOMEx(
+              "INVALID_CHARACTER_ERR"
+            , "String contains an invalid character"
+          );
+        }
+        return arrIndexOf.call(classList, token);
+      }
+      , ClassList = function (elem) {
+        var
+            trimmedClasses = strTrim.call(elem.getAttribute("class") || "")
+          , classes = trimmedClasses ? trimmedClasses.split(/\s+/) : []
+          , i = 0
+          , len = classes.length
+        ;
+        for (; i < len; i++) {
+          this.push(classes[i]);
+        }
+        this._updateClassName = function () {
+          elem.setAttribute("class", this.toString());
+        };
+      }
+      , classListProto = ClassList[protoProp] = []
+      , classListGetter = function () {
+        return new ClassList(this);
+      }
+    ;
+    // Most DOMException implementations don't allow calling DOMException's toString()
+    // on non-DOMExceptions. Error's toString() is sufficient here.
+    DOMEx[protoProp] = Error[protoProp];
+    classListProto.item = function (i) {
+      return this[i] || null;
+    };
+    classListProto.contains = function (token) {
+      token += "";
+      return checkTokenAndGetIndex(this, token) !== -1;
+    };
+    classListProto.add = function () {
+      var
+          tokens = arguments
+        , i = 0
+        , l = tokens.length
+        , token
+        , updated = false
+      ;
+      do {
+        token = tokens[i] + "";
+        if (checkTokenAndGetIndex(this, token) === -1) {
+          this.push(token);
+          updated = true;
+        }
+      }
+      while (++i < l);
+
+      if (updated) {
+        this._updateClassName();
+      }
+    };
+    classListProto.remove = function () {
+      var
+          tokens = arguments
+        , i = 0
+        , l = tokens.length
+        , token
+        , updated = false
+        , index
+      ;
+      do {
+        token = tokens[i] + "";
+        index = checkTokenAndGetIndex(this, token);
+        while (index !== -1) {
+          this.splice(index, 1);
+          updated = true;
+          index = checkTokenAndGetIndex(this, token);
+        }
+      }
+      while (++i < l);
+
+      if (updated) {
+        this._updateClassName();
+      }
+    };
+    classListProto.toggle = function (token, force) {
+      token += "";
+
+      var
+          result = this.contains(token)
+        , method = result ?
+          force !== true && "remove"
+        :
+          force !== false && "add"
+      ;
+
+      if (method) {
+        this[method](token);
+      }
+
+      if (force === true || force === false) {
+        return force;
+      } else {
+        return !result;
+      }
+    };
+    classListProto.toString = function () {
+      return this.join(" ");
+    };
+
+    if (objCtr.defineProperty) {
+      var classListPropDesc = {
+          get: classListGetter
+        , enumerable: true
+        , configurable: true
+      };
+      try {
+        objCtr.defineProperty(elemCtrProto, classListProp, classListPropDesc);
+      } catch (ex) { // IE 8 doesn't support enumerable:true
+        if (ex.number === -0x7FF5EC54) {
+          classListPropDesc.enumerable = false;
+          objCtr.defineProperty(elemCtrProto, classListProp, classListPropDesc);
+        }
+      }
+    } else if (objCtr[protoProp].__defineGetter__) {
+      elemCtrProto.__defineGetter__(classListProp, classListGetter);
+    }
+
+    }(window.self));
+
+    } else {
+    // There is full or partial native classList support, so just check if we need
+    // to normalize the add/remove and toggle APIs.
+
+    (function () {
+      "use strict";
+
+      var testElement = document.createElement("_");
+
+      testElement.classList.add("c1", "c2");
+
+      // Polyfill for IE 10/11 and Firefox <26, where classList.add and
+      // classList.remove exist but support only one argument at a time.
+      if (!testElement.classList.contains("c2")) {
+        var createMethod = function(method) {
+          var original = DOMTokenList.prototype[method];
+
+          DOMTokenList.prototype[method] = function(token) {
+            var i, len = arguments.length;
+
+            for (i = 0; i < len; i++) {
+              token = arguments[i];
+              original.call(this, token);
+            }
+          };
+        };
+        createMethod('add');
+        createMethod('remove');
+      }
+
+      testElement.classList.toggle("c3", false);
+
+      // Polyfill for IE 10 and Firefox <24, where classList.toggle does not
+      // support the second argument.
+      if (testElement.classList.contains("c3")) {
+        var _toggle = DOMTokenList.prototype.toggle;
+
+        DOMTokenList.prototype.toggle = function(token, force) {
+          if (1 in arguments && !this.contains(token) === !force) {
+            return force;
+          } else {
+            return _toggle.call(this, token);
+          }
+        };
+
+      }
+
+      testElement = null;
+    }());
+  }
+}
+
+},{}],3:[function(require,module,exports){
+'use strict';
+
+var copy       = require('es5-ext/object/copy')
+  , map        = require('es5-ext/object/map')
+  , callable   = require('es5-ext/object/valid-callable')
+  , validValue = require('es5-ext/object/valid-value')
+
+  , bind = Function.prototype.bind, defineProperty = Object.defineProperty
+  , hasOwnProperty = Object.prototype.hasOwnProperty
+  , define;
+
+define = function (name, desc, bindTo) {
+	var value = validValue(desc) && callable(desc.value), dgs;
+	dgs = copy(desc);
+	delete dgs.writable;
+	delete dgs.value;
+	dgs.get = function () {
+		if (hasOwnProperty.call(this, name)) return value;
+		desc.value = bind.call(value, (bindTo == null) ? this : this[bindTo]);
+		defineProperty(this, name, desc);
+		return this[name];
+	};
+	return dgs;
+};
+
+module.exports = function (props/*, bindTo*/) {
+	var bindTo = arguments[1];
+	return map(props, function (desc, name) {
+		return define(name, desc, bindTo);
+	});
+};
+
+},{"es5-ext/object/copy":18,"es5-ext/object/map":26,"es5-ext/object/valid-callable":31,"es5-ext/object/valid-value":32}],4:[function(require,module,exports){
+'use strict';
+
+var assign        = require('es5-ext/object/assign')
+  , normalizeOpts = require('es5-ext/object/normalize-options')
+  , isCallable    = require('es5-ext/object/is-callable')
+  , contains      = require('es5-ext/string/#/contains')
+
+  , d;
+
+d = module.exports = function (dscr, value/*, options*/) {
+	var c, e, w, options, desc;
+	if ((arguments.length < 2) || (typeof dscr !== 'string')) {
+		options = value;
+		value = dscr;
+		dscr = null;
+	} else {
+		options = arguments[2];
+	}
+	if (dscr == null) {
+		c = w = true;
+		e = false;
+	} else {
+		c = contains.call(dscr, 'c');
+		e = contains.call(dscr, 'e');
+		w = contains.call(dscr, 'w');
+	}
+
+	desc = { value: value, configurable: c, enumerable: e, writable: w };
+	return !options ? desc : assign(normalizeOpts(options), desc);
+};
+
+d.gs = function (dscr, get, set/*, options*/) {
+	var c, e, options, desc;
+	if (typeof dscr !== 'string') {
+		options = set;
+		set = get;
+		get = dscr;
+		dscr = null;
+	} else {
+		options = arguments[3];
+	}
+	if (get == null) {
+		get = undefined;
+	} else if (!isCallable(get)) {
+		options = get;
+		get = set = undefined;
+	} else if (set == null) {
+		set = undefined;
+	} else if (!isCallable(set)) {
+		options = set;
+		set = undefined;
+	}
+	if (dscr == null) {
+		c = true;
+		e = false;
+	} else {
+		c = contains.call(dscr, 'c');
+		e = contains.call(dscr, 'e');
+	}
+
+	desc = { get: get, set: set, configurable: c, enumerable: e };
+	return !options ? desc : assign(normalizeOpts(options), desc);
+};
+
+},{"es5-ext/object/assign":15,"es5-ext/object/is-callable":21,"es5-ext/object/normalize-options":27,"es5-ext/string/#/contains":33}],5:[function(require,module,exports){
+// Inspired by Google Closure:
+// http://closure-library.googlecode.com/svn/docs/
+// closure_goog_array_array.js.html#goog.array.clear
+
+'use strict';
+
+var value = require('../../object/valid-value');
+
+module.exports = function () {
+	value(this).length = 0;
+	return this;
+};
+
+},{"../../object/valid-value":32}],6:[function(require,module,exports){
+'use strict';
+
+var toPosInt = require('../../number/to-pos-integer')
+  , value    = require('../../object/valid-value')
+
+  , indexOf = Array.prototype.indexOf
+  , hasOwnProperty = Object.prototype.hasOwnProperty
+  , abs = Math.abs, floor = Math.floor;
+
+module.exports = function (searchElement/*, fromIndex*/) {
+	var i, l, fromIndex, val;
+	if (searchElement === searchElement) { //jslint: ignore
+		return indexOf.apply(this, arguments);
+	}
+
+	l = toPosInt(value(this).length);
+	fromIndex = arguments[1];
+	if (isNaN(fromIndex)) fromIndex = 0;
+	else if (fromIndex >= 0) fromIndex = floor(fromIndex);
+	else fromIndex = toPosInt(this.length) - floor(abs(fromIndex));
+
+	for (i = fromIndex; i < l; ++i) {
+		if (hasOwnProperty.call(this, i)) {
+			val = this[i];
+			if (val !== val) return i; //jslint: ignore
+		}
+	}
+	return -1;
+};
+
+},{"../../number/to-pos-integer":13,"../../object/valid-value":32}],7:[function(require,module,exports){
+'use strict';
+
+var toString = Object.prototype.toString
+
+  , id = toString.call((function () { return arguments; }()));
+
+module.exports = function (x) { return (toString.call(x) === id); };
+
+},{}],8:[function(require,module,exports){
+'use strict';
+
+module.exports = new Function("return this")();
+
+},{}],9:[function(require,module,exports){
+'use strict';
+
+module.exports = require('./is-implemented')()
+	? Math.sign
+	: require('./shim');
+
+},{"./is-implemented":10,"./shim":11}],10:[function(require,module,exports){
+'use strict';
+
+module.exports = function () {
+	var sign = Math.sign;
+	if (typeof sign !== 'function') return false;
+	return ((sign(10) === 1) && (sign(-20) === -1));
+};
+
+},{}],11:[function(require,module,exports){
+'use strict';
+
+module.exports = function (value) {
+	value = Number(value);
+	if (isNaN(value) || (value === 0)) return value;
+	return (value > 0) ? 1 : -1;
+};
+
+},{}],12:[function(require,module,exports){
+'use strict';
+
+var sign = require('../math/sign')
+
+  , abs = Math.abs, floor = Math.floor;
+
+module.exports = function (value) {
+	if (isNaN(value)) return 0;
+	value = Number(value);
+	if ((value === 0) || !isFinite(value)) return value;
+	return sign(value) * floor(abs(value));
+};
+
+},{"../math/sign":9}],13:[function(require,module,exports){
+'use strict';
+
+var toInteger = require('./to-integer')
+
+  , max = Math.max;
+
+module.exports = function (value) { return max(0, toInteger(value)); };
+
+},{"./to-integer":12}],14:[function(require,module,exports){
+// Internal method, used by iteration functions.
+// Calls a function for each key-value pair found in object
+// Optionally takes compareFn to iterate object in specific order
+
+'use strict';
+
+var callable = require('./valid-callable')
+  , value    = require('./valid-value')
+
+  , bind = Function.prototype.bind, call = Function.prototype.call, keys = Object.keys
+  , propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+module.exports = function (method, defVal) {
+	return function (obj, cb/*, thisArg, compareFn*/) {
+		var list, thisArg = arguments[2], compareFn = arguments[3];
+		obj = Object(value(obj));
+		callable(cb);
+
+		list = keys(obj);
+		if (compareFn) {
+			list.sort((typeof compareFn === 'function') ? bind.call(compareFn, obj) : undefined);
+		}
+		if (typeof method !== 'function') method = list[method];
+		return call.call(method, list, function (key, index) {
+			if (!propertyIsEnumerable.call(obj, key)) return defVal;
+			return call.call(cb, thisArg, obj[key], key, obj, index);
+		});
+	};
+};
+
+},{"./valid-callable":31,"./valid-value":32}],15:[function(require,module,exports){
+'use strict';
+
+module.exports = require('./is-implemented')()
+	? Object.assign
+	: require('./shim');
+
+},{"./is-implemented":16,"./shim":17}],16:[function(require,module,exports){
+'use strict';
+
+module.exports = function () {
+	var assign = Object.assign, obj;
+	if (typeof assign !== 'function') return false;
+	obj = { foo: 'raz' };
+	assign(obj, { bar: 'dwa' }, { trzy: 'trzy' });
+	return (obj.foo + obj.bar + obj.trzy) === 'razdwatrzy';
+};
+
+},{}],17:[function(require,module,exports){
+'use strict';
+
+var keys  = require('../keys')
+  , value = require('../valid-value')
+
+  , max = Math.max;
+
+module.exports = function (dest, src/*, …srcn*/) {
+	var error, i, l = max(arguments.length, 2), assign;
+	dest = Object(value(dest));
+	assign = function (key) {
+		try { dest[key] = src[key]; } catch (e) {
+			if (!error) error = e;
+		}
+	};
+	for (i = 1; i < l; ++i) {
+		src = arguments[i];
+		keys(src).forEach(assign);
+	}
+	if (error !== undefined) throw error;
+	return dest;
+};
+
+},{"../keys":23,"../valid-value":32}],18:[function(require,module,exports){
+'use strict';
+
+var assign = require('./assign')
+  , value  = require('./valid-value');
+
+module.exports = function (obj) {
+	var copy = Object(value(obj));
+	if (copy !== obj) return copy;
+	return assign({}, obj);
+};
+
+},{"./assign":15,"./valid-value":32}],19:[function(require,module,exports){
+// Workaround for http://code.google.com/p/v8/issues/detail?id=2804
+
+'use strict';
+
+var create = Object.create, shim;
+
+if (!require('./set-prototype-of/is-implemented')()) {
+	shim = require('./set-prototype-of/shim');
+}
+
+module.exports = (function () {
+	var nullObject, props, desc;
+	if (!shim) return create;
+	if (shim.level !== 1) return create;
+
+	nullObject = {};
+	props = {};
+	desc = { configurable: false, enumerable: false, writable: true,
+		value: undefined };
+	Object.getOwnPropertyNames(Object.prototype).forEach(function (name) {
+		if (name === '__proto__') {
+			props[name] = { configurable: true, enumerable: false, writable: true,
+				value: undefined };
+			return;
+		}
+		props[name] = desc;
+	});
+	Object.defineProperties(nullObject, props);
+
+	Object.defineProperty(shim, 'nullPolyfill', { configurable: false,
+		enumerable: false, writable: false, value: nullObject });
+
+	return function (prototype, props) {
+		return create((prototype === null) ? nullObject : prototype, props);
+	};
+}());
+
+},{"./set-prototype-of/is-implemented":29,"./set-prototype-of/shim":30}],20:[function(require,module,exports){
+'use strict';
+
+module.exports = require('./_iterate')('forEach');
+
+},{"./_iterate":14}],21:[function(require,module,exports){
+// Deprecated
+
+'use strict';
+
+module.exports = function (obj) { return typeof obj === 'function'; };
+
+},{}],22:[function(require,module,exports){
+'use strict';
+
+var map = { function: true, object: true };
+
+module.exports = function (x) {
+	return ((x != null) && map[typeof x]) || false;
+};
+
+},{}],23:[function(require,module,exports){
+'use strict';
+
+module.exports = require('./is-implemented')()
+	? Object.keys
+	: require('./shim');
+
+},{"./is-implemented":24,"./shim":25}],24:[function(require,module,exports){
+'use strict';
+
+module.exports = function () {
+	try {
+		Object.keys('primitive');
+		return true;
+	} catch (e) { return false; }
+};
+
+},{}],25:[function(require,module,exports){
+'use strict';
+
+var keys = Object.keys;
+
+module.exports = function (object) {
+	return keys(object == null ? object : Object(object));
+};
+
+},{}],26:[function(require,module,exports){
+'use strict';
+
+var callable = require('./valid-callable')
+  , forEach  = require('./for-each')
+
+  , call = Function.prototype.call;
+
+module.exports = function (obj, cb/*, thisArg*/) {
+	var o = {}, thisArg = arguments[2];
+	callable(cb);
+	forEach(obj, function (value, key, obj, index) {
+		o[key] = call.call(cb, thisArg, value, key, obj, index);
+	});
+	return o;
+};
+
+},{"./for-each":20,"./valid-callable":31}],27:[function(require,module,exports){
+'use strict';
+
+var forEach = Array.prototype.forEach, create = Object.create;
+
+var process = function (src, obj) {
+	var key;
+	for (key in src) obj[key] = src[key];
+};
+
+module.exports = function (options/*, …options*/) {
+	var result = create(null);
+	forEach.call(arguments, function (options) {
+		if (options == null) return;
+		process(Object(options), result);
+	});
+	return result;
+};
+
+},{}],28:[function(require,module,exports){
+'use strict';
+
+module.exports = require('./is-implemented')()
+	? Object.setPrototypeOf
+	: require('./shim');
+
+},{"./is-implemented":29,"./shim":30}],29:[function(require,module,exports){
+'use strict';
+
+var create = Object.create, getPrototypeOf = Object.getPrototypeOf
+  , x = {};
+
+module.exports = function (/*customCreate*/) {
+	var setPrototypeOf = Object.setPrototypeOf
+	  , customCreate = arguments[0] || create;
+	if (typeof setPrototypeOf !== 'function') return false;
+	return getPrototypeOf(setPrototypeOf(customCreate(null), x)) === x;
+};
+
+},{}],30:[function(require,module,exports){
+// Big thanks to @WebReflection for sorting this out
+// https://gist.github.com/WebReflection/5593554
+
+'use strict';
+
+var isObject      = require('../is-object')
+  , value         = require('../valid-value')
+
+  , isPrototypeOf = Object.prototype.isPrototypeOf
+  , defineProperty = Object.defineProperty
+  , nullDesc = { configurable: true, enumerable: false, writable: true,
+		value: undefined }
+  , validate;
+
+validate = function (obj, prototype) {
+	value(obj);
+	if ((prototype === null) || isObject(prototype)) return obj;
+	throw new TypeError('Prototype must be null or an object');
+};
+
+module.exports = (function (status) {
+	var fn, set;
+	if (!status) return null;
+	if (status.level === 2) {
+		if (status.set) {
+			set = status.set;
+			fn = function (obj, prototype) {
+				set.call(validate(obj, prototype), prototype);
+				return obj;
+			};
+		} else {
+			fn = function (obj, prototype) {
+				validate(obj, prototype).__proto__ = prototype;
+				return obj;
+			};
+		}
+	} else {
+		fn = function self(obj, prototype) {
+			var isNullBase;
+			validate(obj, prototype);
+			isNullBase = isPrototypeOf.call(self.nullPolyfill, obj);
+			if (isNullBase) delete self.nullPolyfill.__proto__;
+			if (prototype === null) prototype = self.nullPolyfill;
+			obj.__proto__ = prototype;
+			if (isNullBase) defineProperty(self.nullPolyfill, '__proto__', nullDesc);
+			return obj;
+		};
+	}
+	return Object.defineProperty(fn, 'level', { configurable: false,
+		enumerable: false, writable: false, value: status.level });
+}((function () {
+	var x = Object.create(null), y = {}, set
+	  , desc = Object.getOwnPropertyDescriptor(Object.prototype, '__proto__');
+
+	if (desc) {
+		try {
+			set = desc.set; // Opera crashes at this point
+			set.call(x, y);
+		} catch (ignore) { }
+		if (Object.getPrototypeOf(x) === y) return { set: set, level: 2 };
+	}
+
+	x.__proto__ = y;
+	if (Object.getPrototypeOf(x) === y) return { level: 2 };
+
+	x = {};
+	x.__proto__ = y;
+	if (Object.getPrototypeOf(x) === y) return { level: 1 };
+
+	return false;
+}())));
+
+require('../create');
+
+},{"../create":19,"../is-object":22,"../valid-value":32}],31:[function(require,module,exports){
+'use strict';
+
+module.exports = function (fn) {
+	if (typeof fn !== 'function') throw new TypeError(fn + " is not a function");
+	return fn;
+};
+
+},{}],32:[function(require,module,exports){
+'use strict';
+
+module.exports = function (value) {
+	if (value == null) throw new TypeError("Cannot use null or undefined");
+	return value;
+};
+
+},{}],33:[function(require,module,exports){
+'use strict';
+
+module.exports = require('./is-implemented')()
+	? String.prototype.contains
+	: require('./shim');
+
+},{"./is-implemented":34,"./shim":35}],34:[function(require,module,exports){
+'use strict';
+
+var str = 'razdwatrzy';
+
+module.exports = function () {
+	if (typeof str.contains !== 'function') return false;
+	return ((str.contains('dwa') === true) && (str.contains('foo') === false));
+};
+
+},{}],35:[function(require,module,exports){
+'use strict';
+
+var indexOf = String.prototype.indexOf;
+
+module.exports = function (searchString/*, position*/) {
+	return indexOf.call(this, searchString, arguments[1]) > -1;
+};
+
+},{}],36:[function(require,module,exports){
+'use strict';
+
+var toString = Object.prototype.toString
+
+  , id = toString.call('');
+
+module.exports = function (x) {
+	return (typeof x === 'string') || (x && (typeof x === 'object') &&
+		((x instanceof String) || (toString.call(x) === id))) || false;
+};
+
+},{}],37:[function(require,module,exports){
+'use strict';
+
+var setPrototypeOf = require('es5-ext/object/set-prototype-of')
+  , contains       = require('es5-ext/string/#/contains')
+  , d              = require('d')
+  , Iterator       = require('./')
+
+  , defineProperty = Object.defineProperty
+  , ArrayIterator;
+
+ArrayIterator = module.exports = function (arr, kind) {
+	if (!(this instanceof ArrayIterator)) return new ArrayIterator(arr, kind);
+	Iterator.call(this, arr);
+	if (!kind) kind = 'value';
+	else if (contains.call(kind, 'key+value')) kind = 'key+value';
+	else if (contains.call(kind, 'key')) kind = 'key';
+	else kind = 'value';
+	defineProperty(this, '__kind__', d('', kind));
+};
+if (setPrototypeOf) setPrototypeOf(ArrayIterator, Iterator);
+
+ArrayIterator.prototype = Object.create(Iterator.prototype, {
+	constructor: d(ArrayIterator),
+	_resolve: d(function (i) {
+		if (this.__kind__ === 'value') return this.__list__[i];
+		if (this.__kind__ === 'key+value') return [i, this.__list__[i]];
+		return i;
+	}),
+	toString: d(function () { return '[object Array Iterator]'; })
+});
+
+},{"./":40,"d":4,"es5-ext/object/set-prototype-of":28,"es5-ext/string/#/contains":33}],38:[function(require,module,exports){
+'use strict';
+
+var isArguments = require('es5-ext/function/is-arguments')
+  , callable    = require('es5-ext/object/valid-callable')
+  , isString    = require('es5-ext/string/is-string')
+  , get         = require('./get')
+
+  , isArray = Array.isArray, call = Function.prototype.call
+  , some = Array.prototype.some;
+
+module.exports = function (iterable, cb/*, thisArg*/) {
+	var mode, thisArg = arguments[2], result, doBreak, broken, i, l, char, code;
+	if (isArray(iterable) || isArguments(iterable)) mode = 'array';
+	else if (isString(iterable)) mode = 'string';
+	else iterable = get(iterable);
+
+	callable(cb);
+	doBreak = function () { broken = true; };
+	if (mode === 'array') {
+		some.call(iterable, function (value) {
+			call.call(cb, thisArg, value, doBreak);
+			if (broken) return true;
+		});
+		return;
+	}
+	if (mode === 'string') {
+		l = iterable.length;
+		for (i = 0; i < l; ++i) {
+			char = iterable[i];
+			if ((i + 1) < l) {
+				code = char.charCodeAt(0);
+				if ((code >= 0xD800) && (code <= 0xDBFF)) char += iterable[++i];
+			}
+			call.call(cb, thisArg, char, doBreak);
+			if (broken) break;
+		}
+		return;
+	}
+	result = iterable.next();
+
+	while (!result.done) {
+		call.call(cb, thisArg, result.value, doBreak);
+		if (broken) return;
+		result = iterable.next();
+	}
+};
+
+},{"./get":39,"es5-ext/function/is-arguments":7,"es5-ext/object/valid-callable":31,"es5-ext/string/is-string":36}],39:[function(require,module,exports){
+'use strict';
+
+var isArguments    = require('es5-ext/function/is-arguments')
+  , isString       = require('es5-ext/string/is-string')
+  , ArrayIterator  = require('./array')
+  , StringIterator = require('./string')
+  , iterable       = require('./valid-iterable')
+  , iteratorSymbol = require('es6-symbol').iterator;
+
+module.exports = function (obj) {
+	if (typeof iterable(obj)[iteratorSymbol] === 'function') return obj[iteratorSymbol]();
+	if (isArguments(obj)) return new ArrayIterator(obj);
+	if (isString(obj)) return new StringIterator(obj);
+	return new ArrayIterator(obj);
+};
+
+},{"./array":37,"./string":42,"./valid-iterable":43,"es5-ext/function/is-arguments":7,"es5-ext/string/is-string":36,"es6-symbol":50}],40:[function(require,module,exports){
+'use strict';
+
+var clear    = require('es5-ext/array/#/clear')
+  , assign   = require('es5-ext/object/assign')
+  , callable = require('es5-ext/object/valid-callable')
+  , value    = require('es5-ext/object/valid-value')
+  , d        = require('d')
+  , autoBind = require('d/auto-bind')
+  , Symbol   = require('es6-symbol')
+
+  , defineProperty = Object.defineProperty
+  , defineProperties = Object.defineProperties
+  , Iterator;
+
+module.exports = Iterator = function (list, context) {
+	if (!(this instanceof Iterator)) return new Iterator(list, context);
+	defineProperties(this, {
+		__list__: d('w', value(list)),
+		__context__: d('w', context),
+		__nextIndex__: d('w', 0)
+	});
+	if (!context) return;
+	callable(context.on);
+	context.on('_add', this._onAdd);
+	context.on('_delete', this._onDelete);
+	context.on('_clear', this._onClear);
+};
+
+defineProperties(Iterator.prototype, assign({
+	constructor: d(Iterator),
+	_next: d(function () {
+		var i;
+		if (!this.__list__) return;
+		if (this.__redo__) {
+			i = this.__redo__.shift();
+			if (i !== undefined) return i;
+		}
+		if (this.__nextIndex__ < this.__list__.length) return this.__nextIndex__++;
+		this._unBind();
+	}),
+	next: d(function () { return this._createResult(this._next()); }),
+	_createResult: d(function (i) {
+		if (i === undefined) return { done: true, value: undefined };
+		return { done: false, value: this._resolve(i) };
+	}),
+	_resolve: d(function (i) { return this.__list__[i]; }),
+	_unBind: d(function () {
+		this.__list__ = null;
+		delete this.__redo__;
+		if (!this.__context__) return;
+		this.__context__.off('_add', this._onAdd);
+		this.__context__.off('_delete', this._onDelete);
+		this.__context__.off('_clear', this._onClear);
+		this.__context__ = null;
+	}),
+	toString: d(function () { return '[object Iterator]'; })
+}, autoBind({
+	_onAdd: d(function (index) {
+		if (index >= this.__nextIndex__) return;
+		++this.__nextIndex__;
+		if (!this.__redo__) {
+			defineProperty(this, '__redo__', d('c', [index]));
+			return;
+		}
+		this.__redo__.forEach(function (redo, i) {
+			if (redo >= index) this.__redo__[i] = ++redo;
+		}, this);
+		this.__redo__.push(index);
+	}),
+	_onDelete: d(function (index) {
+		var i;
+		if (index >= this.__nextIndex__) return;
+		--this.__nextIndex__;
+		if (!this.__redo__) return;
+		i = this.__redo__.indexOf(index);
+		if (i !== -1) this.__redo__.splice(i, 1);
+		this.__redo__.forEach(function (redo, i) {
+			if (redo > index) this.__redo__[i] = --redo;
+		}, this);
+	}),
+	_onClear: d(function () {
+		if (this.__redo__) clear.call(this.__redo__);
+		this.__nextIndex__ = 0;
+	})
+})));
+
+defineProperty(Iterator.prototype, Symbol.iterator, d(function () {
+	return this;
+}));
+defineProperty(Iterator.prototype, Symbol.toStringTag, d('', 'Iterator'));
+
+},{"d":4,"d/auto-bind":3,"es5-ext/array/#/clear":5,"es5-ext/object/assign":15,"es5-ext/object/valid-callable":31,"es5-ext/object/valid-value":32,"es6-symbol":50}],41:[function(require,module,exports){
+'use strict';
+
+var isArguments    = require('es5-ext/function/is-arguments')
+  , isString       = require('es5-ext/string/is-string')
+  , iteratorSymbol = require('es6-symbol').iterator
+
+  , isArray = Array.isArray;
+
+module.exports = function (value) {
+	if (value == null) return false;
+	if (isArray(value)) return true;
+	if (isString(value)) return true;
+	if (isArguments(value)) return true;
+	return (typeof value[iteratorSymbol] === 'function');
+};
+
+},{"es5-ext/function/is-arguments":7,"es5-ext/string/is-string":36,"es6-symbol":50}],42:[function(require,module,exports){
+// Thanks @mathiasbynens
+// http://mathiasbynens.be/notes/javascript-unicode#iterating-over-symbols
+
+'use strict';
+
+var setPrototypeOf = require('es5-ext/object/set-prototype-of')
+  , d              = require('d')
+  , Iterator       = require('./')
+
+  , defineProperty = Object.defineProperty
+  , StringIterator;
+
+StringIterator = module.exports = function (str) {
+	if (!(this instanceof StringIterator)) return new StringIterator(str);
+	str = String(str);
+	Iterator.call(this, str);
+	defineProperty(this, '__length__', d('', str.length));
+
+};
+if (setPrototypeOf) setPrototypeOf(StringIterator, Iterator);
+
+StringIterator.prototype = Object.create(Iterator.prototype, {
+	constructor: d(StringIterator),
+	_next: d(function () {
+		if (!this.__list__) return;
+		if (this.__nextIndex__ < this.__length__) return this.__nextIndex__++;
+		this._unBind();
+	}),
+	_resolve: d(function (i) {
+		var char = this.__list__[i], code;
+		if (this.__nextIndex__ === this.__length__) return char;
+		code = char.charCodeAt(0);
+		if ((code >= 0xD800) && (code <= 0xDBFF)) return char + this.__list__[this.__nextIndex__++];
+		return char;
+	}),
+	toString: d(function () { return '[object String Iterator]'; })
+});
+
+},{"./":40,"d":4,"es5-ext/object/set-prototype-of":28}],43:[function(require,module,exports){
+'use strict';
+
+var isIterable = require('./is-iterable');
+
+module.exports = function (value) {
+	if (!isIterable(value)) throw new TypeError(value + " is not iterable");
+	return value;
+};
+
+},{"./is-iterable":41}],44:[function(require,module,exports){
+(function (process,global){
+/*!
+ * @overview es6-promise - a tiny implementation of Promises/A+.
+ * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
+ * @license   Licensed under MIT license
+ *            See https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE
+ * @version   3.0.2
+ */
+
+(function() {
+    "use strict";
+    function lib$es6$promise$utils$$objectOrFunction(x) {
+      return typeof x === 'function' || (typeof x === 'object' && x !== null);
+    }
+
+    function lib$es6$promise$utils$$isFunction(x) {
+      return typeof x === 'function';
+    }
+
+    function lib$es6$promise$utils$$isMaybeThenable(x) {
+      return typeof x === 'object' && x !== null;
+    }
+
+    var lib$es6$promise$utils$$_isArray;
+    if (!Array.isArray) {
+      lib$es6$promise$utils$$_isArray = function (x) {
+        return Object.prototype.toString.call(x) === '[object Array]';
+      };
+    } else {
+      lib$es6$promise$utils$$_isArray = Array.isArray;
+    }
+
+    var lib$es6$promise$utils$$isArray = lib$es6$promise$utils$$_isArray;
+    var lib$es6$promise$asap$$len = 0;
+    var lib$es6$promise$asap$$toString = {}.toString;
+    var lib$es6$promise$asap$$vertxNext;
+    var lib$es6$promise$asap$$customSchedulerFn;
+
+    var lib$es6$promise$asap$$asap = function asap(callback, arg) {
+      lib$es6$promise$asap$$queue[lib$es6$promise$asap$$len] = callback;
+      lib$es6$promise$asap$$queue[lib$es6$promise$asap$$len + 1] = arg;
+      lib$es6$promise$asap$$len += 2;
+      if (lib$es6$promise$asap$$len === 2) {
+        // If len is 2, that means that we need to schedule an async flush.
+        // If additional callbacks are queued before the queue is flushed, they
+        // will be processed by this flush that we are scheduling.
+        if (lib$es6$promise$asap$$customSchedulerFn) {
+          lib$es6$promise$asap$$customSchedulerFn(lib$es6$promise$asap$$flush);
+        } else {
+          lib$es6$promise$asap$$scheduleFlush();
+        }
+      }
+    }
+
+    function lib$es6$promise$asap$$setScheduler(scheduleFn) {
+      lib$es6$promise$asap$$customSchedulerFn = scheduleFn;
+    }
+
+    function lib$es6$promise$asap$$setAsap(asapFn) {
+      lib$es6$promise$asap$$asap = asapFn;
+    }
+
+    var lib$es6$promise$asap$$browserWindow = (typeof window !== 'undefined') ? window : undefined;
+    var lib$es6$promise$asap$$browserGlobal = lib$es6$promise$asap$$browserWindow || {};
+    var lib$es6$promise$asap$$BrowserMutationObserver = lib$es6$promise$asap$$browserGlobal.MutationObserver || lib$es6$promise$asap$$browserGlobal.WebKitMutationObserver;
+    var lib$es6$promise$asap$$isNode = typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
+
+    // test for web worker but not in IE10
+    var lib$es6$promise$asap$$isWorker = typeof Uint8ClampedArray !== 'undefined' &&
+      typeof importScripts !== 'undefined' &&
+      typeof MessageChannel !== 'undefined';
+
+    // node
+    function lib$es6$promise$asap$$useNextTick() {
+      // node version 0.10.x displays a deprecation warning when nextTick is used recursively
+      // see https://github.com/cujojs/when/issues/410 for details
+      return function() {
+        process.nextTick(lib$es6$promise$asap$$flush);
+      };
+    }
+
+    // vertx
+    function lib$es6$promise$asap$$useVertxTimer() {
+      return function() {
+        lib$es6$promise$asap$$vertxNext(lib$es6$promise$asap$$flush);
+      };
+    }
+
+    function lib$es6$promise$asap$$useMutationObserver() {
+      var iterations = 0;
+      var observer = new lib$es6$promise$asap$$BrowserMutationObserver(lib$es6$promise$asap$$flush);
+      var node = document.createTextNode('');
+      observer.observe(node, { characterData: true });
+
+      return function() {
+        node.data = (iterations = ++iterations % 2);
+      };
+    }
+
+    // web worker
+    function lib$es6$promise$asap$$useMessageChannel() {
+      var channel = new MessageChannel();
+      channel.port1.onmessage = lib$es6$promise$asap$$flush;
+      return function () {
+        channel.port2.postMessage(0);
+      };
+    }
+
+    function lib$es6$promise$asap$$useSetTimeout() {
+      return function() {
+        setTimeout(lib$es6$promise$asap$$flush, 1);
+      };
+    }
+
+    var lib$es6$promise$asap$$queue = new Array(1000);
+    function lib$es6$promise$asap$$flush() {
+      for (var i = 0; i < lib$es6$promise$asap$$len; i+=2) {
+        var callback = lib$es6$promise$asap$$queue[i];
+        var arg = lib$es6$promise$asap$$queue[i+1];
+
+        callback(arg);
+
+        lib$es6$promise$asap$$queue[i] = undefined;
+        lib$es6$promise$asap$$queue[i+1] = undefined;
+      }
+
+      lib$es6$promise$asap$$len = 0;
+    }
+
+    function lib$es6$promise$asap$$attemptVertx() {
+      try {
+        var r = require;
+        var vertx = r('vertx');
+        lib$es6$promise$asap$$vertxNext = vertx.runOnLoop || vertx.runOnContext;
+        return lib$es6$promise$asap$$useVertxTimer();
+      } catch(e) {
+        return lib$es6$promise$asap$$useSetTimeout();
+      }
+    }
+
+    var lib$es6$promise$asap$$scheduleFlush;
+    // Decide what async method to use to triggering processing of queued callbacks:
+    if (lib$es6$promise$asap$$isNode) {
+      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useNextTick();
+    } else if (lib$es6$promise$asap$$BrowserMutationObserver) {
+      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useMutationObserver();
+    } else if (lib$es6$promise$asap$$isWorker) {
+      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useMessageChannel();
+    } else if (lib$es6$promise$asap$$browserWindow === undefined && typeof require === 'function') {
+      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$attemptVertx();
+    } else {
+      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useSetTimeout();
+    }
+
+    function lib$es6$promise$$internal$$noop() {}
+
+    var lib$es6$promise$$internal$$PENDING   = void 0;
+    var lib$es6$promise$$internal$$FULFILLED = 1;
+    var lib$es6$promise$$internal$$REJECTED  = 2;
+
+    var lib$es6$promise$$internal$$GET_THEN_ERROR = new lib$es6$promise$$internal$$ErrorObject();
+
+    function lib$es6$promise$$internal$$selfFulfillment() {
+      return new TypeError("You cannot resolve a promise with itself");
+    }
+
+    function lib$es6$promise$$internal$$cannotReturnOwn() {
+      return new TypeError('A promises callback cannot return that same promise.');
+    }
+
+    function lib$es6$promise$$internal$$getThen(promise) {
+      try {
+        return promise.then;
+      } catch(error) {
+        lib$es6$promise$$internal$$GET_THEN_ERROR.error = error;
+        return lib$es6$promise$$internal$$GET_THEN_ERROR;
+      }
+    }
+
+    function lib$es6$promise$$internal$$tryThen(then, value, fulfillmentHandler, rejectionHandler) {
+      try {
+        then.call(value, fulfillmentHandler, rejectionHandler);
+      } catch(e) {
+        return e;
+      }
+    }
+
+    function lib$es6$promise$$internal$$handleForeignThenable(promise, thenable, then) {
+       lib$es6$promise$asap$$asap(function(promise) {
+        var sealed = false;
+        var error = lib$es6$promise$$internal$$tryThen(then, thenable, function(value) {
+          if (sealed) { return; }
+          sealed = true;
+          if (thenable !== value) {
+            lib$es6$promise$$internal$$resolve(promise, value);
+          } else {
+            lib$es6$promise$$internal$$fulfill(promise, value);
+          }
+        }, function(reason) {
+          if (sealed) { return; }
+          sealed = true;
+
+          lib$es6$promise$$internal$$reject(promise, reason);
+        }, 'Settle: ' + (promise._label || ' unknown promise'));
+
+        if (!sealed && error) {
+          sealed = true;
+          lib$es6$promise$$internal$$reject(promise, error);
+        }
+      }, promise);
+    }
+
+    function lib$es6$promise$$internal$$handleOwnThenable(promise, thenable) {
+      if (thenable._state === lib$es6$promise$$internal$$FULFILLED) {
+        lib$es6$promise$$internal$$fulfill(promise, thenable._result);
+      } else if (thenable._state === lib$es6$promise$$internal$$REJECTED) {
+        lib$es6$promise$$internal$$reject(promise, thenable._result);
+      } else {
+        lib$es6$promise$$internal$$subscribe(thenable, undefined, function(value) {
+          lib$es6$promise$$internal$$resolve(promise, value);
+        }, function(reason) {
+          lib$es6$promise$$internal$$reject(promise, reason);
+        });
+      }
+    }
+
+    function lib$es6$promise$$internal$$handleMaybeThenable(promise, maybeThenable) {
+      if (maybeThenable.constructor === promise.constructor) {
+        lib$es6$promise$$internal$$handleOwnThenable(promise, maybeThenable);
+      } else {
+        var then = lib$es6$promise$$internal$$getThen(maybeThenable);
+
+        if (then === lib$es6$promise$$internal$$GET_THEN_ERROR) {
+          lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$GET_THEN_ERROR.error);
+        } else if (then === undefined) {
+          lib$es6$promise$$internal$$fulfill(promise, maybeThenable);
+        } else if (lib$es6$promise$utils$$isFunction(then)) {
+          lib$es6$promise$$internal$$handleForeignThenable(promise, maybeThenable, then);
+        } else {
+          lib$es6$promise$$internal$$fulfill(promise, maybeThenable);
+        }
+      }
+    }
+
+    function lib$es6$promise$$internal$$resolve(promise, value) {
+      if (promise === value) {
+        lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$selfFulfillment());
+      } else if (lib$es6$promise$utils$$objectOrFunction(value)) {
+        lib$es6$promise$$internal$$handleMaybeThenable(promise, value);
+      } else {
+        lib$es6$promise$$internal$$fulfill(promise, value);
+      }
+    }
+
+    function lib$es6$promise$$internal$$publishRejection(promise) {
+      if (promise._onerror) {
+        promise._onerror(promise._result);
+      }
+
+      lib$es6$promise$$internal$$publish(promise);
+    }
+
+    function lib$es6$promise$$internal$$fulfill(promise, value) {
+      if (promise._state !== lib$es6$promise$$internal$$PENDING) { return; }
+
+      promise._result = value;
+      promise._state = lib$es6$promise$$internal$$FULFILLED;
+
+      if (promise._subscribers.length !== 0) {
+        lib$es6$promise$asap$$asap(lib$es6$promise$$internal$$publish, promise);
+      }
+    }
+
+    function lib$es6$promise$$internal$$reject(promise, reason) {
+      if (promise._state !== lib$es6$promise$$internal$$PENDING) { return; }
+      promise._state = lib$es6$promise$$internal$$REJECTED;
+      promise._result = reason;
+
+      lib$es6$promise$asap$$asap(lib$es6$promise$$internal$$publishRejection, promise);
+    }
+
+    function lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection) {
+      var subscribers = parent._subscribers;
+      var length = subscribers.length;
+
+      parent._onerror = null;
+
+      subscribers[length] = child;
+      subscribers[length + lib$es6$promise$$internal$$FULFILLED] = onFulfillment;
+      subscribers[length + lib$es6$promise$$internal$$REJECTED]  = onRejection;
+
+      if (length === 0 && parent._state) {
+        lib$es6$promise$asap$$asap(lib$es6$promise$$internal$$publish, parent);
+      }
+    }
+
+    function lib$es6$promise$$internal$$publish(promise) {
+      var subscribers = promise._subscribers;
+      var settled = promise._state;
+
+      if (subscribers.length === 0) { return; }
+
+      var child, callback, detail = promise._result;
+
+      for (var i = 0; i < subscribers.length; i += 3) {
+        child = subscribers[i];
+        callback = subscribers[i + settled];
+
+        if (child) {
+          lib$es6$promise$$internal$$invokeCallback(settled, child, callback, detail);
+        } else {
+          callback(detail);
+        }
+      }
+
+      promise._subscribers.length = 0;
+    }
+
+    function lib$es6$promise$$internal$$ErrorObject() {
+      this.error = null;
+    }
+
+    var lib$es6$promise$$internal$$TRY_CATCH_ERROR = new lib$es6$promise$$internal$$ErrorObject();
+
+    function lib$es6$promise$$internal$$tryCatch(callback, detail) {
+      try {
+        return callback(detail);
+      } catch(e) {
+        lib$es6$promise$$internal$$TRY_CATCH_ERROR.error = e;
+        return lib$es6$promise$$internal$$TRY_CATCH_ERROR;
+      }
+    }
+
+    function lib$es6$promise$$internal$$invokeCallback(settled, promise, callback, detail) {
+      var hasCallback = lib$es6$promise$utils$$isFunction(callback),
+          value, error, succeeded, failed;
+
+      if (hasCallback) {
+        value = lib$es6$promise$$internal$$tryCatch(callback, detail);
+
+        if (value === lib$es6$promise$$internal$$TRY_CATCH_ERROR) {
+          failed = true;
+          error = value.error;
+          value = null;
+        } else {
+          succeeded = true;
+        }
+
+        if (promise === value) {
+          lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$cannotReturnOwn());
+          return;
+        }
+
+      } else {
+        value = detail;
+        succeeded = true;
+      }
+
+      if (promise._state !== lib$es6$promise$$internal$$PENDING) {
+        // noop
+      } else if (hasCallback && succeeded) {
+        lib$es6$promise$$internal$$resolve(promise, value);
+      } else if (failed) {
+        lib$es6$promise$$internal$$reject(promise, error);
+      } else if (settled === lib$es6$promise$$internal$$FULFILLED) {
+        lib$es6$promise$$internal$$fulfill(promise, value);
+      } else if (settled === lib$es6$promise$$internal$$REJECTED) {
+        lib$es6$promise$$internal$$reject(promise, value);
+      }
+    }
+
+    function lib$es6$promise$$internal$$initializePromise(promise, resolver) {
+      try {
+        resolver(function resolvePromise(value){
+          lib$es6$promise$$internal$$resolve(promise, value);
+        }, function rejectPromise(reason) {
+          lib$es6$promise$$internal$$reject(promise, reason);
+        });
+      } catch(e) {
+        lib$es6$promise$$internal$$reject(promise, e);
+      }
+    }
+
+    function lib$es6$promise$enumerator$$Enumerator(Constructor, input) {
+      var enumerator = this;
+
+      enumerator._instanceConstructor = Constructor;
+      enumerator.promise = new Constructor(lib$es6$promise$$internal$$noop);
+
+      if (enumerator._validateInput(input)) {
+        enumerator._input     = input;
+        enumerator.length     = input.length;
+        enumerator._remaining = input.length;
+
+        enumerator._init();
+
+        if (enumerator.length === 0) {
+          lib$es6$promise$$internal$$fulfill(enumerator.promise, enumerator._result);
+        } else {
+          enumerator.length = enumerator.length || 0;
+          enumerator._enumerate();
+          if (enumerator._remaining === 0) {
+            lib$es6$promise$$internal$$fulfill(enumerator.promise, enumerator._result);
+          }
+        }
+      } else {
+        lib$es6$promise$$internal$$reject(enumerator.promise, enumerator._validationError());
+      }
+    }
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._validateInput = function(input) {
+      return lib$es6$promise$utils$$isArray(input);
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._validationError = function() {
+      return new Error('Array Methods must be provided an Array');
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._init = function() {
+      this._result = new Array(this.length);
+    };
+
+    var lib$es6$promise$enumerator$$default = lib$es6$promise$enumerator$$Enumerator;
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._enumerate = function() {
+      var enumerator = this;
+
+      var length  = enumerator.length;
+      var promise = enumerator.promise;
+      var input   = enumerator._input;
+
+      for (var i = 0; promise._state === lib$es6$promise$$internal$$PENDING && i < length; i++) {
+        enumerator._eachEntry(input[i], i);
+      }
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._eachEntry = function(entry, i) {
+      var enumerator = this;
+      var c = enumerator._instanceConstructor;
+
+      if (lib$es6$promise$utils$$isMaybeThenable(entry)) {
+        if (entry.constructor === c && entry._state !== lib$es6$promise$$internal$$PENDING) {
+          entry._onerror = null;
+          enumerator._settledAt(entry._state, i, entry._result);
+        } else {
+          enumerator._willSettleAt(c.resolve(entry), i);
+        }
+      } else {
+        enumerator._remaining--;
+        enumerator._result[i] = entry;
+      }
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._settledAt = function(state, i, value) {
+      var enumerator = this;
+      var promise = enumerator.promise;
+
+      if (promise._state === lib$es6$promise$$internal$$PENDING) {
+        enumerator._remaining--;
+
+        if (state === lib$es6$promise$$internal$$REJECTED) {
+          lib$es6$promise$$internal$$reject(promise, value);
+        } else {
+          enumerator._result[i] = value;
+        }
+      }
+
+      if (enumerator._remaining === 0) {
+        lib$es6$promise$$internal$$fulfill(promise, enumerator._result);
+      }
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._willSettleAt = function(promise, i) {
+      var enumerator = this;
+
+      lib$es6$promise$$internal$$subscribe(promise, undefined, function(value) {
+        enumerator._settledAt(lib$es6$promise$$internal$$FULFILLED, i, value);
+      }, function(reason) {
+        enumerator._settledAt(lib$es6$promise$$internal$$REJECTED, i, reason);
+      });
+    };
+    function lib$es6$promise$promise$all$$all(entries) {
+      return new lib$es6$promise$enumerator$$default(this, entries).promise;
+    }
+    var lib$es6$promise$promise$all$$default = lib$es6$promise$promise$all$$all;
+    function lib$es6$promise$promise$race$$race(entries) {
+      /*jshint validthis:true */
+      var Constructor = this;
+
+      var promise = new Constructor(lib$es6$promise$$internal$$noop);
+
+      if (!lib$es6$promise$utils$$isArray(entries)) {
+        lib$es6$promise$$internal$$reject(promise, new TypeError('You must pass an array to race.'));
+        return promise;
+      }
+
+      var length = entries.length;
+
+      function onFulfillment(value) {
+        lib$es6$promise$$internal$$resolve(promise, value);
+      }
+
+      function onRejection(reason) {
+        lib$es6$promise$$internal$$reject(promise, reason);
+      }
+
+      for (var i = 0; promise._state === lib$es6$promise$$internal$$PENDING && i < length; i++) {
+        lib$es6$promise$$internal$$subscribe(Constructor.resolve(entries[i]), undefined, onFulfillment, onRejection);
+      }
+
+      return promise;
+    }
+    var lib$es6$promise$promise$race$$default = lib$es6$promise$promise$race$$race;
+    function lib$es6$promise$promise$resolve$$resolve(object) {
+      /*jshint validthis:true */
+      var Constructor = this;
+
+      if (object && typeof object === 'object' && object.constructor === Constructor) {
+        return object;
+      }
+
+      var promise = new Constructor(lib$es6$promise$$internal$$noop);
+      lib$es6$promise$$internal$$resolve(promise, object);
+      return promise;
+    }
+    var lib$es6$promise$promise$resolve$$default = lib$es6$promise$promise$resolve$$resolve;
+    function lib$es6$promise$promise$reject$$reject(reason) {
+      /*jshint validthis:true */
+      var Constructor = this;
+      var promise = new Constructor(lib$es6$promise$$internal$$noop);
+      lib$es6$promise$$internal$$reject(promise, reason);
+      return promise;
+    }
+    var lib$es6$promise$promise$reject$$default = lib$es6$promise$promise$reject$$reject;
+
+    var lib$es6$promise$promise$$counter = 0;
+
+    function lib$es6$promise$promise$$needsResolver() {
+      throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
+    }
+
+    function lib$es6$promise$promise$$needsNew() {
+      throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
+    }
+
+    var lib$es6$promise$promise$$default = lib$es6$promise$promise$$Promise;
+    /**
+      Promise objects represent the eventual result of an asynchronous operation. The
+      primary way of interacting with a promise is through its `then` method, which
+      registers callbacks to receive either a promise's eventual value or the reason
+      why the promise cannot be fulfilled.
+
+      Terminology
+      -----------
+
+      - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
+      - `thenable` is an object or function that defines a `then` method.
+      - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
+      - `exception` is a value that is thrown using the throw statement.
+      - `reason` is a value that indicates why a promise was rejected.
+      - `settled` the final resting state of a promise, fulfilled or rejected.
+
+      A promise can be in one of three states: pending, fulfilled, or rejected.
+
+      Promises that are fulfilled have a fulfillment value and are in the fulfilled
+      state.  Promises that are rejected have a rejection reason and are in the
+      rejected state.  A fulfillment value is never a thenable.
+
+      Promises can also be said to *resolve* a value.  If this value is also a
+      promise, then the original promise's settled state will match the value's
+      settled state.  So a promise that *resolves* a promise that rejects will
+      itself reject, and a promise that *resolves* a promise that fulfills will
+      itself fulfill.
+
+
+      Basic Usage:
+      ------------
+
+      ```js
+      var promise = new Promise(function(resolve, reject) {
+        // on success
+        resolve(value);
+
+        // on failure
+        reject(reason);
+      });
+
+      promise.then(function(value) {
+        // on fulfillment
+      }, function(reason) {
+        // on rejection
+      });
+      ```
+
+      Advanced Usage:
+      ---------------
+
+      Promises shine when abstracting away asynchronous interactions such as
+      `XMLHttpRequest`s.
+
+      ```js
+      function getJSON(url) {
+        return new Promise(function(resolve, reject){
+          var xhr = new XMLHttpRequest();
+
+          xhr.open('GET', url);
+          xhr.onreadystatechange = handler;
+          xhr.responseType = 'json';
+          xhr.setRequestHeader('Accept', 'application/json');
+          xhr.send();
+
+          function handler() {
+            if (this.readyState === this.DONE) {
+              if (this.status === 200) {
+                resolve(this.response);
+              } else {
+                reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
+              }
+            }
+          };
+        });
+      }
+
+      getJSON('/posts.json').then(function(json) {
+        // on fulfillment
+      }, function(reason) {
+        // on rejection
+      });
+      ```
+
+      Unlike callbacks, promises are great composable primitives.
+
+      ```js
+      Promise.all([
+        getJSON('/posts'),
+        getJSON('/comments')
+      ]).then(function(values){
+        values[0] // => postsJSON
+        values[1] // => commentsJSON
+
+        return values;
+      });
+      ```
+
+      @class Promise
+      @param {function} resolver
+      Useful for tooling.
+      @constructor
+    */
+    function lib$es6$promise$promise$$Promise(resolver) {
+      this._id = lib$es6$promise$promise$$counter++;
+      this._state = undefined;
+      this._result = undefined;
+      this._subscribers = [];
+
+      if (lib$es6$promise$$internal$$noop !== resolver) {
+        if (!lib$es6$promise$utils$$isFunction(resolver)) {
+          lib$es6$promise$promise$$needsResolver();
+        }
+
+        if (!(this instanceof lib$es6$promise$promise$$Promise)) {
+          lib$es6$promise$promise$$needsNew();
+        }
+
+        lib$es6$promise$$internal$$initializePromise(this, resolver);
+      }
+    }
+
+    lib$es6$promise$promise$$Promise.all = lib$es6$promise$promise$all$$default;
+    lib$es6$promise$promise$$Promise.race = lib$es6$promise$promise$race$$default;
+    lib$es6$promise$promise$$Promise.resolve = lib$es6$promise$promise$resolve$$default;
+    lib$es6$promise$promise$$Promise.reject = lib$es6$promise$promise$reject$$default;
+    lib$es6$promise$promise$$Promise._setScheduler = lib$es6$promise$asap$$setScheduler;
+    lib$es6$promise$promise$$Promise._setAsap = lib$es6$promise$asap$$setAsap;
+    lib$es6$promise$promise$$Promise._asap = lib$es6$promise$asap$$asap;
+
+    lib$es6$promise$promise$$Promise.prototype = {
+      constructor: lib$es6$promise$promise$$Promise,
+
+    /**
+      The primary way of interacting with a promise is through its `then` method,
+      which registers callbacks to receive either a promise's eventual value or the
+      reason why the promise cannot be fulfilled.
+
+      ```js
+      findUser().then(function(user){
+        // user is available
+      }, function(reason){
+        // user is unavailable, and you are given the reason why
+      });
+      ```
+
+      Chaining
+      --------
+
+      The return value of `then` is itself a promise.  This second, 'downstream'
+      promise is resolved with the return value of the first promise's fulfillment
+      or rejection handler, or rejected if the handler throws an exception.
+
+      ```js
+      findUser().then(function (user) {
+        return user.name;
+      }, function (reason) {
+        return 'default name';
+      }).then(function (userName) {
+        // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
+        // will be `'default name'`
+      });
+
+      findUser().then(function (user) {
+        throw new Error('Found user, but still unhappy');
+      }, function (reason) {
+        throw new Error('`findUser` rejected and we're unhappy');
+      }).then(function (value) {
+        // never reached
+      }, function (reason) {
+        // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
+        // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
+      });
+      ```
+      If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
+
+      ```js
+      findUser().then(function (user) {
+        throw new PedagogicalException('Upstream error');
+      }).then(function (value) {
+        // never reached
+      }).then(function (value) {
+        // never reached
+      }, function (reason) {
+        // The `PedgagocialException` is propagated all the way down to here
+      });
+      ```
+
+      Assimilation
+      ------------
+
+      Sometimes the value you want to propagate to a downstream promise can only be
+      retrieved asynchronously. This can be achieved by returning a promise in the
+      fulfillment or rejection handler. The downstream promise will then be pending
+      until the returned promise is settled. This is called *assimilation*.
+
+      ```js
+      findUser().then(function (user) {
+        return findCommentsByAuthor(user);
+      }).then(function (comments) {
+        // The user's comments are now available
+      });
+      ```
+
+      If the assimliated promise rejects, then the downstream promise will also reject.
+
+      ```js
+      findUser().then(function (user) {
+        return findCommentsByAuthor(user);
+      }).then(function (comments) {
+        // If `findCommentsByAuthor` fulfills, we'll have the value here
+      }, function (reason) {
+        // If `findCommentsByAuthor` rejects, we'll have the reason here
+      });
+      ```
+
+      Simple Example
+      --------------
+
+      Synchronous Example
+
+      ```javascript
+      var result;
+
+      try {
+        result = findResult();
+        // success
+      } catch(reason) {
+        // failure
+      }
+      ```
+
+      Errback Example
+
+      ```js
+      findResult(function(result, err){
+        if (err) {
+          // failure
+        } else {
+          // success
+        }
+      });
+      ```
+
+      Promise Example;
+
+      ```javascript
+      findResult().then(function(result){
+        // success
+      }, function(reason){
+        // failure
+      });
+      ```
+
+      Advanced Example
+      --------------
+
+      Synchronous Example
+
+      ```javascript
+      var author, books;
+
+      try {
+        author = findAuthor();
+        books  = findBooksByAuthor(author);
+        // success
+      } catch(reason) {
+        // failure
+      }
+      ```
+
+      Errback Example
+
+      ```js
+
+      function foundBooks(books) {
+
+      }
+
+      function failure(reason) {
+
+      }
+
+      findAuthor(function(author, err){
+        if (err) {
+          failure(err);
+          // failure
+        } else {
+          try {
+            findBoooksByAuthor(author, function(books, err) {
+              if (err) {
+                failure(err);
+              } else {
+                try {
+                  foundBooks(books);
+                } catch(reason) {
+                  failure(reason);
+                }
+              }
+            });
+          } catch(error) {
+            failure(err);
+          }
+          // success
+        }
+      });
+      ```
+
+      Promise Example;
+
+      ```javascript
+      findAuthor().
+        then(findBooksByAuthor).
+        then(function(books){
+          // found books
+      }).catch(function(reason){
+        // something went wrong
+      });
+      ```
+
+      @method then
+      @param {Function} onFulfilled
+      @param {Function} onRejected
+      Useful for tooling.
+      @return {Promise}
+    */
+      then: function(onFulfillment, onRejection) {
+        var parent = this;
+        var state = parent._state;
+
+        if (state === lib$es6$promise$$internal$$FULFILLED && !onFulfillment || state === lib$es6$promise$$internal$$REJECTED && !onRejection) {
+          return this;
+        }
+
+        var child = new this.constructor(lib$es6$promise$$internal$$noop);
+        var result = parent._result;
+
+        if (state) {
+          var callback = arguments[state - 1];
+          lib$es6$promise$asap$$asap(function(){
+            lib$es6$promise$$internal$$invokeCallback(state, child, callback, result);
+          });
+        } else {
+          lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection);
+        }
+
+        return child;
+      },
+
+    /**
+      `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
+      as the catch block of a try/catch statement.
+
+      ```js
+      function findAuthor(){
+        throw new Error('couldn't find that author');
+      }
+
+      // synchronous
+      try {
+        findAuthor();
+      } catch(reason) {
+        // something went wrong
+      }
+
+      // async with promises
+      findAuthor().catch(function(reason){
+        // something went wrong
+      });
+      ```
+
+      @method catch
+      @param {Function} onRejection
+      Useful for tooling.
+      @return {Promise}
+    */
+      'catch': function(onRejection) {
+        return this.then(null, onRejection);
+      }
+    };
+    function lib$es6$promise$polyfill$$polyfill() {
+      var local;
+
+      if (typeof global !== 'undefined') {
+          local = global;
+      } else if (typeof self !== 'undefined') {
+          local = self;
+      } else {
+          try {
+              local = Function('return this')();
+          } catch (e) {
+              throw new Error('polyfill failed because global object is unavailable in this environment');
+          }
+      }
+
+      var P = local.Promise;
+
+      if (P && Object.prototype.toString.call(P.resolve()) === '[object Promise]' && !P.cast) {
+        return;
+      }
+
+      local.Promise = lib$es6$promise$promise$$default;
+    }
+    var lib$es6$promise$polyfill$$default = lib$es6$promise$polyfill$$polyfill;
+
+    var lib$es6$promise$umd$$ES6Promise = {
+      'Promise': lib$es6$promise$promise$$default,
+      'polyfill': lib$es6$promise$polyfill$$default
+    };
+
+    /* global define:true module:true window: true */
+    if (typeof define === 'function' && define['amd']) {
+      define(function() { return lib$es6$promise$umd$$ES6Promise; });
+    } else if (typeof module !== 'undefined' && module['exports']) {
+      module['exports'] = lib$es6$promise$umd$$ES6Promise;
+    } else if (typeof this !== 'undefined') {
+      this['ES6Promise'] = lib$es6$promise$umd$$ES6Promise;
+    }
+
+    lib$es6$promise$polyfill$$default();
+}).call(this);
+
+
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"_process":58}],45:[function(require,module,exports){
+'use strict';
+
+if (!require('./is-implemented')()) {
+	Object.defineProperty(require('es5-ext/global'), 'Set',
+		{ value: require('./polyfill'), configurable: true, enumerable: false,
+			writable: true });
+}
+
+},{"./is-implemented":46,"./polyfill":49,"es5-ext/global":8}],46:[function(require,module,exports){
+'use strict';
+
+module.exports = function () {
+	var set, iterator, result;
+	if (typeof Set !== 'function') return false;
+	set = new Set(['raz', 'dwa', 'trzy']);
+	if (String(set) !== '[object Set]') return false;
+	if (set.size !== 3) return false;
+	if (typeof set.add !== 'function') return false;
+	if (typeof set.clear !== 'function') return false;
+	if (typeof set.delete !== 'function') return false;
+	if (typeof set.entries !== 'function') return false;
+	if (typeof set.forEach !== 'function') return false;
+	if (typeof set.has !== 'function') return false;
+	if (typeof set.keys !== 'function') return false;
+	if (typeof set.values !== 'function') return false;
+
+	iterator = set.values();
+	result = iterator.next();
+	if (result.done !== false) return false;
+	if (result.value !== 'raz') return false;
+
+	return true;
+};
+
+},{}],47:[function(require,module,exports){
+// Exports true if environment provides native `Set` implementation,
+// whatever that is.
+
+'use strict';
+
+module.exports = (function () {
+	if (typeof Set === 'undefined') return false;
+	return (Object.prototype.toString.call(Set.prototype) === '[object Set]');
+}());
+
+},{}],48:[function(require,module,exports){
+'use strict';
+
+var setPrototypeOf    = require('es5-ext/object/set-prototype-of')
+  , contains          = require('es5-ext/string/#/contains')
+  , d                 = require('d')
+  , Iterator          = require('es6-iterator')
+  , toStringTagSymbol = require('es6-symbol').toStringTag
+
+  , defineProperty = Object.defineProperty
+  , SetIterator;
+
+SetIterator = module.exports = function (set, kind) {
+	if (!(this instanceof SetIterator)) return new SetIterator(set, kind);
+	Iterator.call(this, set.__setData__, set);
+	if (!kind) kind = 'value';
+	else if (contains.call(kind, 'key+value')) kind = 'key+value';
+	else kind = 'value';
+	defineProperty(this, '__kind__', d('', kind));
+};
+if (setPrototypeOf) setPrototypeOf(SetIterator, Iterator);
+
+SetIterator.prototype = Object.create(Iterator.prototype, {
+	constructor: d(SetIterator),
+	_resolve: d(function (i) {
+		if (this.__kind__ === 'value') return this.__list__[i];
+		return [this.__list__[i], this.__list__[i]];
+	}),
+	toString: d(function () { return '[object Set Iterator]'; })
+});
+defineProperty(SetIterator.prototype, toStringTagSymbol, d('c', 'Set Iterator'));
+
+},{"d":4,"es5-ext/object/set-prototype-of":28,"es5-ext/string/#/contains":33,"es6-iterator":40,"es6-symbol":50}],49:[function(require,module,exports){
+'use strict';
+
+var clear          = require('es5-ext/array/#/clear')
+  , eIndexOf       = require('es5-ext/array/#/e-index-of')
+  , setPrototypeOf = require('es5-ext/object/set-prototype-of')
+  , callable       = require('es5-ext/object/valid-callable')
+  , d              = require('d')
+  , ee             = require('event-emitter')
+  , Symbol         = require('es6-symbol')
+  , iterator       = require('es6-iterator/valid-iterable')
+  , forOf          = require('es6-iterator/for-of')
+  , Iterator       = require('./lib/iterator')
+  , isNative       = require('./is-native-implemented')
+
+  , call = Function.prototype.call
+  , defineProperty = Object.defineProperty, getPrototypeOf = Object.getPrototypeOf
+  , SetPoly, getValues;
+
+module.exports = SetPoly = function (/*iterable*/) {
+	var iterable = arguments[0], self;
+	if (!(this instanceof SetPoly)) throw new TypeError('Constructor requires \'new\'');
+	if (isNative && setPrototypeOf) self = setPrototypeOf(new Set(), getPrototypeOf(this));
+	else self = this;
+	if (iterable != null) iterator(iterable);
+	defineProperty(self, '__setData__', d('c', []));
+	if (!iterable) return self;
+	forOf(iterable, function (value) {
+		if (eIndexOf.call(this, value) !== -1) return;
+		this.push(value);
+	}, self.__setData__);
+	return self;
+};
+
+if (isNative) {
+	if (setPrototypeOf) setPrototypeOf(SetPoly, Set);
+	SetPoly.prototype = Object.create(Set.prototype, { constructor: d(SetPoly) });
+}
+
+ee(Object.defineProperties(SetPoly.prototype, {
+	add: d(function (value) {
+		if (this.has(value)) return this;
+		this.emit('_add', this.__setData__.push(value) - 1, value);
+		return this;
+	}),
+	clear: d(function () {
+		if (!this.__setData__.length) return;
+		clear.call(this.__setData__);
+		this.emit('_clear');
+	}),
+	delete: d(function (value) {
+		var index = eIndexOf.call(this.__setData__, value);
+		if (index === -1) return false;
+		this.__setData__.splice(index, 1);
+		this.emit('_delete', index, value);
+		return true;
+	}),
+	entries: d(function () { return new Iterator(this, 'key+value'); }),
+	forEach: d(function (cb/*, thisArg*/) {
+		var thisArg = arguments[1], iterator, result, value;
+		callable(cb);
+		iterator = this.values();
+		result = iterator._next();
+		while (result !== undefined) {
+			value = iterator._resolve(result);
+			call.call(cb, thisArg, value, value, this);
+			result = iterator._next();
+		}
+	}),
+	has: d(function (value) {
+		return (eIndexOf.call(this.__setData__, value) !== -1);
+	}),
+	keys: d(getValues = function () { return this.values(); }),
+	size: d.gs(function () { return this.__setData__.length; }),
+	values: d(function () { return new Iterator(this); }),
+	toString: d(function () { return '[object Set]'; })
+}));
+defineProperty(SetPoly.prototype, Symbol.iterator, d(getValues));
+defineProperty(SetPoly.prototype, Symbol.toStringTag, d('c', 'Set'));
+
+},{"./is-native-implemented":47,"./lib/iterator":48,"d":4,"es5-ext/array/#/clear":5,"es5-ext/array/#/e-index-of":6,"es5-ext/object/set-prototype-of":28,"es5-ext/object/valid-callable":31,"es6-iterator/for-of":38,"es6-iterator/valid-iterable":43,"es6-symbol":50,"event-emitter":55}],50:[function(require,module,exports){
+'use strict';
+
+module.exports = require('./is-implemented')() ? Symbol : require('./polyfill');
+
+},{"./is-implemented":51,"./polyfill":53}],51:[function(require,module,exports){
+'use strict';
+
+module.exports = function () {
+	var symbol;
+	if (typeof Symbol !== 'function') return false;
+	symbol = Symbol('test symbol');
+	try { String(symbol); } catch (e) { return false; }
+	if (typeof Symbol.iterator === 'symbol') return true;
+
+	// Return 'true' for polyfills
+	if (typeof Symbol.isConcatSpreadable !== 'object') return false;
+	if (typeof Symbol.iterator !== 'object') return false;
+	if (typeof Symbol.toPrimitive !== 'object') return false;
+	if (typeof Symbol.toStringTag !== 'object') return false;
+	if (typeof Symbol.unscopables !== 'object') return false;
+
+	return true;
+};
+
+},{}],52:[function(require,module,exports){
+'use strict';
+
+module.exports = function (x) {
+	return (x && ((typeof x === 'symbol') || (x['@@toStringTag'] === 'Symbol'))) || false;
+};
+
+},{}],53:[function(require,module,exports){
+// ES2015 Symbol polyfill for environments that do not support it (or partially support it_
+
+'use strict';
+
+var d              = require('d')
+  , validateSymbol = require('./validate-symbol')
+
+  , create = Object.create, defineProperties = Object.defineProperties
+  , defineProperty = Object.defineProperty, objPrototype = Object.prototype
+  , NativeSymbol, SymbolPolyfill, HiddenSymbol, globalSymbols = create(null);
+
+if (typeof Symbol === 'function') NativeSymbol = Symbol;
+
+var generateName = (function () {
+	var created = create(null);
+	return function (desc) {
+		var postfix = 0, name, ie11BugWorkaround;
+		while (created[desc + (postfix || '')]) ++postfix;
+		desc += (postfix || '');
+		created[desc] = true;
+		name = '@@' + desc;
+		defineProperty(objPrototype, name, d.gs(null, function (value) {
+			// For IE11 issue see:
+			// https://connect.microsoft.com/IE/feedbackdetail/view/1928508/
+			//    ie11-broken-getters-on-dom-objects
+			// https://github.com/medikoo/es6-symbol/issues/12
+			if (ie11BugWorkaround) return;
+			ie11BugWorkaround = true;
+			defineProperty(this, name, d(value));
+			ie11BugWorkaround = false;
+		}));
+		return name;
+	};
+}());
+
+// Internal constructor (not one exposed) for creating Symbol instances.
+// This one is used to ensure that `someSymbol instanceof Symbol` always return false
+HiddenSymbol = function Symbol(description) {
+	if (this instanceof HiddenSymbol) throw new TypeError('TypeError: Symbol is not a constructor');
+	return SymbolPolyfill(description);
+};
+
+// Exposed `Symbol` constructor
+// (returns instances of HiddenSymbol)
+module.exports = SymbolPolyfill = function Symbol(description) {
+	var symbol;
+	if (this instanceof Symbol) throw new TypeError('TypeError: Symbol is not a constructor');
+	symbol = create(HiddenSymbol.prototype);
+	description = (description === undefined ? '' : String(description));
+	return defineProperties(symbol, {
+		__description__: d('', description),
+		__name__: d('', generateName(description))
+	});
+};
+defineProperties(SymbolPolyfill, {
+	for: d(function (key) {
+		if (globalSymbols[key]) return globalSymbols[key];
+		return (globalSymbols[key] = SymbolPolyfill(String(key)));
+	}),
+	keyFor: d(function (s) {
+		var key;
+		validateSymbol(s);
+		for (key in globalSymbols) if (globalSymbols[key] === s) return key;
+	}),
+
+	// If there's native implementation of given symbol, let's fallback to it
+	// to ensure proper interoperability with other native functions e.g. Array.from
+	hasInstance: d('', (NativeSymbol && NativeSymbol.hasInstance) || SymbolPolyfill('hasInstance')),
+	isConcatSpreadable: d('', (NativeSymbol && NativeSymbol.isConcatSpreadable) ||
+		SymbolPolyfill('isConcatSpreadable')),
+	iterator: d('', (NativeSymbol && NativeSymbol.iterator) || SymbolPolyfill('iterator')),
+	match: d('', (NativeSymbol && NativeSymbol.match) || SymbolPolyfill('match')),
+	replace: d('', (NativeSymbol && NativeSymbol.replace) || SymbolPolyfill('replace')),
+	search: d('', (NativeSymbol && NativeSymbol.search) || SymbolPolyfill('search')),
+	species: d('', (NativeSymbol && NativeSymbol.species) || SymbolPolyfill('species')),
+	split: d('', (NativeSymbol && NativeSymbol.split) || SymbolPolyfill('split')),
+	toPrimitive: d('', (NativeSymbol && NativeSymbol.toPrimitive) || SymbolPolyfill('toPrimitive')),
+	toStringTag: d('', (NativeSymbol && NativeSymbol.toStringTag) || SymbolPolyfill('toStringTag')),
+	unscopables: d('', (NativeSymbol && NativeSymbol.unscopables) || SymbolPolyfill('unscopables'))
+});
+
+// Internal tweaks for real symbol producer
+defineProperties(HiddenSymbol.prototype, {
+	constructor: d(SymbolPolyfill),
+	toString: d('', function () { return this.__name__; })
+});
+
+// Proper implementation of methods exposed on Symbol.prototype
+// They won't be accessible on produced symbol instances as they derive from HiddenSymbol.prototype
+defineProperties(SymbolPolyfill.prototype, {
+	toString: d(function () { return 'Symbol (' + validateSymbol(this).__description__ + ')'; }),
+	valueOf: d(function () { return validateSymbol(this); })
+});
+defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toPrimitive, d('',
+	function () { return validateSymbol(this); }));
+defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toStringTag, d('c', 'Symbol'));
+
+// Proper implementaton of toPrimitive and toStringTag for returned symbol instances
+defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toStringTag,
+	d('c', SymbolPolyfill.prototype[SymbolPolyfill.toStringTag]));
+
+// Note: It's important to define `toPrimitive` as last one, as some implementations
+// implement `toPrimitive` natively without implementing `toStringTag` (or other specified symbols)
+// And that may invoke error in definition flow:
+// See: https://github.com/medikoo/es6-symbol/issues/13#issuecomment-164146149
+defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toPrimitive,
+	d('c', SymbolPolyfill.prototype[SymbolPolyfill.toPrimitive]));
+
+},{"./validate-symbol":54,"d":4}],54:[function(require,module,exports){
+'use strict';
+
+var isSymbol = require('./is-symbol');
+
+module.exports = function (value) {
+	if (!isSymbol(value)) throw new TypeError(value + " is not a symbol");
+	return value;
+};
+
+},{"./is-symbol":52}],55:[function(require,module,exports){
+'use strict';
+
+var d        = require('d')
+  , callable = require('es5-ext/object/valid-callable')
+
+  , apply = Function.prototype.apply, call = Function.prototype.call
+  , create = Object.create, defineProperty = Object.defineProperty
+  , defineProperties = Object.defineProperties
+  , hasOwnProperty = Object.prototype.hasOwnProperty
+  , descriptor = { configurable: true, enumerable: false, writable: true }
+
+  , on, once, off, emit, methods, descriptors, base;
+
+on = function (type, listener) {
+	var data;
+
+	callable(listener);
+
+	if (!hasOwnProperty.call(this, '__ee__')) {
+		data = descriptor.value = create(null);
+		defineProperty(this, '__ee__', descriptor);
+		descriptor.value = null;
+	} else {
+		data = this.__ee__;
+	}
+	if (!data[type]) data[type] = listener;
+	else if (typeof data[type] === 'object') data[type].push(listener);
+	else data[type] = [data[type], listener];
+
+	return this;
+};
+
+once = function (type, listener) {
+	var once, self;
+
+	callable(listener);
+	self = this;
+	on.call(this, type, once = function () {
+		off.call(self, type, once);
+		apply.call(listener, this, arguments);
+	});
+
+	once.__eeOnceListener__ = listener;
+	return this;
+};
+
+off = function (type, listener) {
+	var data, listeners, candidate, i;
+
+	callable(listener);
+
+	if (!hasOwnProperty.call(this, '__ee__')) return this;
+	data = this.__ee__;
+	if (!data[type]) return this;
+	listeners = data[type];
+
+	if (typeof listeners === 'object') {
+		for (i = 0; (candidate = listeners[i]); ++i) {
+			if ((candidate === listener) ||
+					(candidate.__eeOnceListener__ === listener)) {
+				if (listeners.length === 2) data[type] = listeners[i ? 0 : 1];
+				else listeners.splice(i, 1);
+			}
+		}
+	} else {
+		if ((listeners === listener) ||
+				(listeners.__eeOnceListener__ === listener)) {
+			delete data[type];
+		}
+	}
+
+	return this;
+};
+
+emit = function (type) {
+	var i, l, listener, listeners, args;
+
+	if (!hasOwnProperty.call(this, '__ee__')) return;
+	listeners = this.__ee__[type];
+	if (!listeners) return;
+
+	if (typeof listeners === 'object') {
+		l = arguments.length;
+		args = new Array(l - 1);
+		for (i = 1; i < l; ++i) args[i - 1] = arguments[i];
+
+		listeners = listeners.slice();
+		for (i = 0; (listener = listeners[i]); ++i) {
+			apply.call(listener, this, args);
+		}
+	} else {
+		switch (arguments.length) {
+		case 1:
+			call.call(listeners, this);
+			break;
+		case 2:
+			call.call(listeners, this, arguments[1]);
+			break;
+		case 3:
+			call.call(listeners, this, arguments[1], arguments[2]);
+			break;
+		default:
+			l = arguments.length;
+			args = new Array(l - 1);
+			for (i = 1; i < l; ++i) {
+				args[i - 1] = arguments[i];
+			}
+			apply.call(listeners, this, args);
+		}
+	}
+};
+
+methods = {
+	on: on,
+	once: once,
+	off: off,
+	emit: emit
+};
+
+descriptors = {
+	on: d(on),
+	once: d(once),
+	off: d(off),
+	emit: d(emit)
+};
+
+base = defineProperties({}, descriptors);
+
+module.exports = exports = function (o) {
+	return (o == null) ? create(base) : defineProperties(Object(o), descriptors);
+};
+exports.methods = methods;
+
+},{"d":4,"es5-ext/object/valid-callable":31}],56:[function(require,module,exports){
+/*! Hammer.JS - v2.0.6 - 2015-12-23
+ * http://hammerjs.github.io/
+ *
+ * Copyright (c) 2015 Jorik Tangelder;
+ * Licensed under the  license */
+(function(window, document, exportName, undefined) {
+  'use strict';
+
+var VENDOR_PREFIXES = ['', 'webkit', 'Moz', 'MS', 'ms', 'o'];
+var TEST_ELEMENT = document.createElement('div');
+
+var TYPE_FUNCTION = 'function';
+
+var round = Math.round;
+var abs = Math.abs;
+var now = Date.now;
+
+/**
+ * set a timeout with a given scope
+ * @param {Function} fn
+ * @param {Number} timeout
+ * @param {Object} context
+ * @returns {number}
+ */
+function setTimeoutContext(fn, timeout, context) {
+    return setTimeout(bindFn(fn, context), timeout);
+}
+
+/**
+ * if the argument is an array, we want to execute the fn on each entry
+ * if it aint an array we don't want to do a thing.
+ * this is used by all the methods that accept a single and array argument.
+ * @param {*|Array} arg
+ * @param {String} fn
+ * @param {Object} [context]
+ * @returns {Boolean}
+ */
+function invokeArrayArg(arg, fn, context) {
+    if (Array.isArray(arg)) {
+        each(arg, context[fn], context);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * walk objects and arrays
+ * @param {Object} obj
+ * @param {Function} iterator
+ * @param {Object} context
+ */
+function each(obj, iterator, context) {
+    var i;
+
+    if (!obj) {
+        return;
+    }
+
+    if (obj.forEach) {
+        obj.forEach(iterator, context);
+    } else if (obj.length !== undefined) {
+        i = 0;
+        while (i < obj.length) {
+            iterator.call(context, obj[i], i, obj);
+            i++;
+        }
+    } else {
+        for (i in obj) {
+            obj.hasOwnProperty(i) && iterator.call(context, obj[i], i, obj);
+        }
+    }
+}
+
+/**
+ * wrap a method with a deprecation warning and stack trace
+ * @param {Function} method
+ * @param {String} name
+ * @param {String} message
+ * @returns {Function} A new function wrapping the supplied method.
+ */
+function deprecate(method, name, message) {
+    var deprecationMessage = 'DEPRECATED METHOD: ' + name + '\n' + message + ' AT \n';
+    return function() {
+        var e = new Error('get-stack-trace');
+        var stack = e && e.stack ? e.stack.replace(/^[^\(]+?[\n$]/gm, '')
+            .replace(/^\s+at\s+/gm, '')
+            .replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@') : 'Unknown Stack Trace';
+
+        var log = window.console && (window.console.warn || window.console.log);
+        if (log) {
+            log.call(window.console, deprecationMessage, stack);
+        }
+        return method.apply(this, arguments);
+    };
+}
+
+/**
+ * extend object.
+ * means that properties in dest will be overwritten by the ones in src.
+ * @param {Object} target
+ * @param {...Object} objects_to_assign
+ * @returns {Object} target
+ */
+var assign;
+if (typeof Object.assign !== 'function') {
+    assign = function assign(target) {
+        if (target === undefined || target === null) {
+            throw new TypeError('Cannot convert undefined or null to object');
+        }
+
+        var output = Object(target);
+        for (var index = 1; index < arguments.length; index++) {
+            var source = arguments[index];
+            if (source !== undefined && source !== null) {
+                for (var nextKey in source) {
+                    if (source.hasOwnProperty(nextKey)) {
+                        output[nextKey] = source[nextKey];
+                    }
+                }
+            }
+        }
+        return output;
+    };
+} else {
+    assign = Object.assign;
+}
+
+/**
+ * extend object.
+ * means that properties in dest will be overwritten by the ones in src.
+ * @param {Object} dest
+ * @param {Object} src
+ * @param {Boolean=false} [merge]
+ * @returns {Object} dest
+ */
+var extend = deprecate(function extend(dest, src, merge) {
+    var keys = Object.keys(src);
+    var i = 0;
+    while (i < keys.length) {
+        if (!merge || (merge && dest[keys[i]] === undefined)) {
+            dest[keys[i]] = src[keys[i]];
+        }
+        i++;
+    }
+    return dest;
+}, 'extend', 'Use `assign`.');
+
+/**
+ * merge the values from src in the dest.
+ * means that properties that exist in dest will not be overwritten by src
+ * @param {Object} dest
+ * @param {Object} src
+ * @returns {Object} dest
+ */
+var merge = deprecate(function merge(dest, src) {
+    return extend(dest, src, true);
+}, 'merge', 'Use `assign`.');
+
+/**
+ * simple class inheritance
+ * @param {Function} child
+ * @param {Function} base
+ * @param {Object} [properties]
+ */
+function inherit(child, base, properties) {
+    var baseP = base.prototype,
+        childP;
+
+    childP = child.prototype = Object.create(baseP);
+    childP.constructor = child;
+    childP._super = baseP;
+
+    if (properties) {
+        assign(childP, properties);
+    }
+}
+
+/**
+ * simple function bind
+ * @param {Function} fn
+ * @param {Object} context
+ * @returns {Function}
+ */
+function bindFn(fn, context) {
+    return function boundFn() {
+        return fn.apply(context, arguments);
+    };
+}
+
+/**
+ * let a boolean value also be a function that must return a boolean
+ * this first item in args will be used as the context
+ * @param {Boolean|Function} val
+ * @param {Array} [args]
+ * @returns {Boolean}
+ */
+function boolOrFn(val, args) {
+    if (typeof val == TYPE_FUNCTION) {
+        return val.apply(args ? args[0] || undefined : undefined, args);
+    }
+    return val;
+}
+
+/**
+ * use the val2 when val1 is undefined
+ * @param {*} val1
+ * @param {*} val2
+ * @returns {*}
+ */
+function ifUndefined(val1, val2) {
+    return (val1 === undefined) ? val2 : val1;
+}
+
+/**
+ * addEventListener with multiple events at once
+ * @param {EventTarget} target
+ * @param {String} types
+ * @param {Function} handler
+ */
+function addEventListeners(target, types, handler) {
+    each(splitStr(types), function(type) {
+        target.addEventListener(type, handler, false);
+    });
+}
+
+/**
+ * removeEventListener with multiple events at once
+ * @param {EventTarget} target
+ * @param {String} types
+ * @param {Function} handler
+ */
+function removeEventListeners(target, types, handler) {
+    each(splitStr(types), function(type) {
+        target.removeEventListener(type, handler, false);
+    });
+}
+
+/**
+ * find if a node is in the given parent
+ * @method hasParent
+ * @param {HTMLElement} node
+ * @param {HTMLElement} parent
+ * @return {Boolean} found
+ */
+function hasParent(node, parent) {
+    while (node) {
+        if (node == parent) {
+            return true;
+        }
+        node = node.parentNode;
+    }
+    return false;
+}
+
+/**
+ * small indexOf wrapper
+ * @param {String} str
+ * @param {String} find
+ * @returns {Boolean} found
+ */
+function inStr(str, find) {
+    return str.indexOf(find) > -1;
+}
+
+/**
+ * split string on whitespace
+ * @param {String} str
+ * @returns {Array} words
+ */
+function splitStr(str) {
+    return str.trim().split(/\s+/g);
+}
+
+/**
+ * find if a array contains the object using indexOf or a simple polyFill
+ * @param {Array} src
+ * @param {String} find
+ * @param {String} [findByKey]
+ * @return {Boolean|Number} false when not found, or the index
+ */
+function inArray(src, find, findByKey) {
+    if (src.indexOf && !findByKey) {
+        return src.indexOf(find);
+    } else {
+        var i = 0;
+        while (i < src.length) {
+            if ((findByKey && src[i][findByKey] == find) || (!findByKey && src[i] === find)) {
+                return i;
+            }
+            i++;
+        }
+        return -1;
+    }
+}
+
+/**
+ * convert array-like objects to real arrays
+ * @param {Object} obj
+ * @returns {Array}
+ */
+function toArray(obj) {
+    return Array.prototype.slice.call(obj, 0);
+}
+
+/**
+ * unique array with objects based on a key (like 'id') or just by the array's value
+ * @param {Array} src [{id:1},{id:2},{id:1}]
+ * @param {String} [key]
+ * @param {Boolean} [sort=False]
+ * @returns {Array} [{id:1},{id:2}]
+ */
+function uniqueArray(src, key, sort) {
+    var results = [];
+    var values = [];
+    var i = 0;
+
+    while (i < src.length) {
+        var val = key ? src[i][key] : src[i];
+        if (inArray(values, val) < 0) {
+            results.push(src[i]);
+        }
+        values[i] = val;
+        i++;
+    }
+
+    if (sort) {
+        if (!key) {
+            results = results.sort();
+        } else {
+            results = results.sort(function sortUniqueArray(a, b) {
+                return a[key] > b[key];
+            });
+        }
+    }
+
+    return results;
+}
+
+/**
+ * get the prefixed property
+ * @param {Object} obj
+ * @param {String} property
+ * @returns {String|Undefined} prefixed
+ */
+function prefixed(obj, property) {
+    var prefix, prop;
+    var camelProp = property[0].toUpperCase() + property.slice(1);
+
+    var i = 0;
+    while (i < VENDOR_PREFIXES.length) {
+        prefix = VENDOR_PREFIXES[i];
+        prop = (prefix) ? prefix + camelProp : property;
+
+        if (prop in obj) {
+            return prop;
+        }
+        i++;
+    }
+    return undefined;
+}
+
+/**
+ * get a unique id
+ * @returns {number} uniqueId
+ */
+var _uniqueId = 1;
+function uniqueId() {
+    return _uniqueId++;
+}
+
+/**
+ * get the window object of an element
+ * @param {HTMLElement} element
+ * @returns {DocumentView|Window}
+ */
+function getWindowForElement(element) {
+    var doc = element.ownerDocument || element;
+    return (doc.defaultView || doc.parentWindow || window);
+}
+
+var MOBILE_REGEX = /mobile|tablet|ip(ad|hone|od)|android/i;
+
+var SUPPORT_TOUCH = ('ontouchstart' in window);
+var SUPPORT_POINTER_EVENTS = prefixed(window, 'PointerEvent') !== undefined;
+var SUPPORT_ONLY_TOUCH = SUPPORT_TOUCH && MOBILE_REGEX.test(navigator.userAgent);
+
+var INPUT_TYPE_TOUCH = 'touch';
+var INPUT_TYPE_PEN = 'pen';
+var INPUT_TYPE_MOUSE = 'mouse';
+var INPUT_TYPE_KINECT = 'kinect';
+
+var COMPUTE_INTERVAL = 25;
+
+var INPUT_START = 1;
+var INPUT_MOVE = 2;
+var INPUT_END = 4;
+var INPUT_CANCEL = 8;
+
+var DIRECTION_NONE = 1;
+var DIRECTION_LEFT = 2;
+var DIRECTION_RIGHT = 4;
+var DIRECTION_UP = 8;
+var DIRECTION_DOWN = 16;
+
+var DIRECTION_HORIZONTAL = DIRECTION_LEFT | DIRECTION_RIGHT;
+var DIRECTION_VERTICAL = DIRECTION_UP | DIRECTION_DOWN;
+var DIRECTION_ALL = DIRECTION_HORIZONTAL | DIRECTION_VERTICAL;
+
+var PROPS_XY = ['x', 'y'];
+var PROPS_CLIENT_XY = ['clientX', 'clientY'];
+
+/**
+ * create new input type manager
+ * @param {Manager} manager
+ * @param {Function} callback
+ * @returns {Input}
+ * @constructor
+ */
+function Input(manager, callback) {
+    var self = this;
+    this.manager = manager;
+    this.callback = callback;
+    this.element = manager.element;
+    this.target = manager.options.inputTarget;
+
+    // smaller wrapper around the handler, for the scope and the enabled state of the manager,
+    // so when disabled the input events are completely bypassed.
+    this.domHandler = function(ev) {
+        if (boolOrFn(manager.options.enable, [manager])) {
+            self.handler(ev);
+        }
+    };
+
+    this.init();
+
+}
+
+Input.prototype = {
+    /**
+     * should handle the inputEvent data and trigger the callback
+     * @virtual
+     */
+    handler: function() { },
+
+    /**
+     * bind the events
+     */
+    init: function() {
+        this.evEl && addEventListeners(this.element, this.evEl, this.domHandler);
+        this.evTarget && addEventListeners(this.target, this.evTarget, this.domHandler);
+        this.evWin && addEventListeners(getWindowForElement(this.element), this.evWin, this.domHandler);
+    },
+
+    /**
+     * unbind the events
+     */
+    destroy: function() {
+        this.evEl && removeEventListeners(this.element, this.evEl, this.domHandler);
+        this.evTarget && removeEventListeners(this.target, this.evTarget, this.domHandler);
+        this.evWin && removeEventListeners(getWindowForElement(this.element), this.evWin, this.domHandler);
+    }
+};
+
+/**
+ * create new input type manager
+ * called by the Manager constructor
+ * @param {Hammer} manager
+ * @returns {Input}
+ */
+function createInputInstance(manager) {
+    var Type;
+    var inputClass = manager.options.inputClass;
+
+    if (inputClass) {
+        Type = inputClass;
+    } else if (SUPPORT_POINTER_EVENTS) {
+        Type = PointerEventInput;
+    } else if (SUPPORT_ONLY_TOUCH) {
+        Type = TouchInput;
+    } else if (!SUPPORT_TOUCH) {
+        Type = MouseInput;
+    } else {
+        Type = TouchMouseInput;
+    }
+    return new (Type)(manager, inputHandler);
+}
+
+/**
+ * handle input events
+ * @param {Manager} manager
+ * @param {String} eventType
+ * @param {Object} input
+ */
+function inputHandler(manager, eventType, input) {
+    var pointersLen = input.pointers.length;
+    var changedPointersLen = input.changedPointers.length;
+    var isFirst = (eventType & INPUT_START && (pointersLen - changedPointersLen === 0));
+    var isFinal = (eventType & (INPUT_END | INPUT_CANCEL) && (pointersLen - changedPointersLen === 0));
+
+    input.isFirst = !!isFirst;
+    input.isFinal = !!isFinal;
+
+    if (isFirst) {
+        manager.session = {};
+    }
+
+    // source event is the normalized value of the domEvents
+    // like 'touchstart, mouseup, pointerdown'
+    input.eventType = eventType;
+
+    // compute scale, rotation etc
+    computeInputData(manager, input);
+
+    // emit secret event
+    manager.emit('hammer.input', input);
+
+    manager.recognize(input);
+    manager.session.prevInput = input;
+}
+
+/**
+ * extend the data with some usable properties like scale, rotate, velocity etc
+ * @param {Object} manager
+ * @param {Object} input
+ */
+function computeInputData(manager, input) {
+    var session = manager.session;
+    var pointers = input.pointers;
+    var pointersLength = pointers.length;
+
+    // store the first input to calculate the distance and direction
+    if (!session.firstInput) {
+        session.firstInput = simpleCloneInputData(input);
+    }
+
+    // to compute scale and rotation we need to store the multiple touches
+    if (pointersLength > 1 && !session.firstMultiple) {
+        session.firstMultiple = simpleCloneInputData(input);
+    } else if (pointersLength === 1) {
+        session.firstMultiple = false;
+    }
+
+    var firstInput = session.firstInput;
+    var firstMultiple = session.firstMultiple;
+    var offsetCenter = firstMultiple ? firstMultiple.center : firstInput.center;
+
+    var center = input.center = getCenter(pointers);
+    input.timeStamp = now();
+    input.deltaTime = input.timeStamp - firstInput.timeStamp;
+
+    input.angle = getAngle(offsetCenter, center);
+    input.distance = getDistance(offsetCenter, center);
+
+    computeDeltaXY(session, input);
+    input.offsetDirection = getDirection(input.deltaX, input.deltaY);
+
+    var overallVelocity = getVelocity(input.deltaTime, input.deltaX, input.deltaY);
+    input.overallVelocityX = overallVelocity.x;
+    input.overallVelocityY = overallVelocity.y;
+    input.overallVelocity = (abs(overallVelocity.x) > abs(overallVelocity.y)) ? overallVelocity.x : overallVelocity.y;
+
+    input.scale = firstMultiple ? getScale(firstMultiple.pointers, pointers) : 1;
+    input.rotation = firstMultiple ? getRotation(firstMultiple.pointers, pointers) : 0;
+
+    input.maxPointers = !session.prevInput ? input.pointers.length : ((input.pointers.length >
+        session.prevInput.maxPointers) ? input.pointers.length : session.prevInput.maxPointers);
+
+    computeIntervalInputData(session, input);
+
+    // find the correct target
+    var target = manager.element;
+    if (hasParent(input.srcEvent.target, target)) {
+        target = input.srcEvent.target;
+    }
+    input.target = target;
+}
+
+function computeDeltaXY(session, input) {
+    var center = input.center;
+    var offset = session.offsetDelta || {};
+    var prevDelta = session.prevDelta || {};
+    var prevInput = session.prevInput || {};
+
+    if (input.eventType === INPUT_START || prevInput.eventType === INPUT_END) {
+        prevDelta = session.prevDelta = {
+            x: prevInput.deltaX || 0,
+            y: prevInput.deltaY || 0
+        };
+
+        offset = session.offsetDelta = {
+            x: center.x,
+            y: center.y
+        };
+    }
+
+    input.deltaX = prevDelta.x + (center.x - offset.x);
+    input.deltaY = prevDelta.y + (center.y - offset.y);
+}
+
+/**
+ * velocity is calculated every x ms
+ * @param {Object} session
+ * @param {Object} input
+ */
+function computeIntervalInputData(session, input) {
+    var last = session.lastInterval || input,
+        deltaTime = input.timeStamp - last.timeStamp,
+        velocity, velocityX, velocityY, direction;
+
+    if (input.eventType != INPUT_CANCEL && (deltaTime > COMPUTE_INTERVAL || last.velocity === undefined)) {
+        var deltaX = input.deltaX - last.deltaX;
+        var deltaY = input.deltaY - last.deltaY;
+
+        var v = getVelocity(deltaTime, deltaX, deltaY);
+        velocityX = v.x;
+        velocityY = v.y;
+        velocity = (abs(v.x) > abs(v.y)) ? v.x : v.y;
+        direction = getDirection(deltaX, deltaY);
+
+        session.lastInterval = input;
+    } else {
+        // use latest velocity info if it doesn't overtake a minimum period
+        velocity = last.velocity;
+        velocityX = last.velocityX;
+        velocityY = last.velocityY;
+        direction = last.direction;
+    }
+
+    input.velocity = velocity;
+    input.velocityX = velocityX;
+    input.velocityY = velocityY;
+    input.direction = direction;
+}
+
+/**
+ * create a simple clone from the input used for storage of firstInput and firstMultiple
+ * @param {Object} input
+ * @returns {Object} clonedInputData
+ */
+function simpleCloneInputData(input) {
+    // make a simple copy of the pointers because we will get a reference if we don't
+    // we only need clientXY for the calculations
+    var pointers = [];
+    var i = 0;
+    while (i < input.pointers.length) {
+        pointers[i] = {
+            clientX: round(input.pointers[i].clientX),
+            clientY: round(input.pointers[i].clientY)
+        };
+        i++;
+    }
+
+    return {
+        timeStamp: now(),
+        pointers: pointers,
+        center: getCenter(pointers),
+        deltaX: input.deltaX,
+        deltaY: input.deltaY
+    };
+}
+
+/**
+ * get the center of all the pointers
+ * @param {Array} pointers
+ * @return {Object} center contains `x` and `y` properties
+ */
+function getCenter(pointers) {
+    var pointersLength = pointers.length;
+
+    // no need to loop when only one touch
+    if (pointersLength === 1) {
+        return {
+            x: round(pointers[0].clientX),
+            y: round(pointers[0].clientY)
+        };
+    }
+
+    var x = 0, y = 0, i = 0;
+    while (i < pointersLength) {
+        x += pointers[i].clientX;
+        y += pointers[i].clientY;
+        i++;
+    }
+
+    return {
+        x: round(x / pointersLength),
+        y: round(y / pointersLength)
+    };
+}
+
+/**
+ * calculate the velocity between two points. unit is in px per ms.
+ * @param {Number} deltaTime
+ * @param {Number} x
+ * @param {Number} y
+ * @return {Object} velocity `x` and `y`
+ */
+function getVelocity(deltaTime, x, y) {
+    return {
+        x: x / deltaTime || 0,
+        y: y / deltaTime || 0
+    };
+}
+
+/**
+ * get the direction between two points
+ * @param {Number} x
+ * @param {Number} y
+ * @return {Number} direction
+ */
+function getDirection(x, y) {
+    if (x === y) {
+        return DIRECTION_NONE;
+    }
+
+    if (abs(x) >= abs(y)) {
+        return x < 0 ? DIRECTION_LEFT : DIRECTION_RIGHT;
+    }
+    return y < 0 ? DIRECTION_UP : DIRECTION_DOWN;
+}
+
+/**
+ * calculate the absolute distance between two points
+ * @param {Object} p1 {x, y}
+ * @param {Object} p2 {x, y}
+ * @param {Array} [props] containing x and y keys
+ * @return {Number} distance
+ */
+function getDistance(p1, p2, props) {
+    if (!props) {
+        props = PROPS_XY;
+    }
+    var x = p2[props[0]] - p1[props[0]],
+        y = p2[props[1]] - p1[props[1]];
+
+    return Math.sqrt((x * x) + (y * y));
+}
+
+/**
+ * calculate the angle between two coordinates
+ * @param {Object} p1
+ * @param {Object} p2
+ * @param {Array} [props] containing x and y keys
+ * @return {Number} angle
+ */
+function getAngle(p1, p2, props) {
+    if (!props) {
+        props = PROPS_XY;
+    }
+    var x = p2[props[0]] - p1[props[0]],
+        y = p2[props[1]] - p1[props[1]];
+    return Math.atan2(y, x) * 180 / Math.PI;
+}
+
+/**
+ * calculate the rotation degrees between two pointersets
+ * @param {Array} start array of pointers
+ * @param {Array} end array of pointers
+ * @return {Number} rotation
+ */
+function getRotation(start, end) {
+    return getAngle(end[1], end[0], PROPS_CLIENT_XY) + getAngle(start[1], start[0], PROPS_CLIENT_XY);
+}
+
+/**
+ * calculate the scale factor between two pointersets
+ * no scale is 1, and goes down to 0 when pinched together, and bigger when pinched out
+ * @param {Array} start array of pointers
+ * @param {Array} end array of pointers
+ * @return {Number} scale
+ */
+function getScale(start, end) {
+    return getDistance(end[0], end[1], PROPS_CLIENT_XY) / getDistance(start[0], start[1], PROPS_CLIENT_XY);
+}
+
+var MOUSE_INPUT_MAP = {
+    mousedown: INPUT_START,
+    mousemove: INPUT_MOVE,
+    mouseup: INPUT_END
+};
+
+var MOUSE_ELEMENT_EVENTS = 'mousedown';
+var MOUSE_WINDOW_EVENTS = 'mousemove mouseup';
+
+/**
+ * Mouse events input
+ * @constructor
+ * @extends Input
+ */
+function MouseInput() {
+    this.evEl = MOUSE_ELEMENT_EVENTS;
+    this.evWin = MOUSE_WINDOW_EVENTS;
+
+    this.allow = true; // used by Input.TouchMouse to disable mouse events
+    this.pressed = false; // mousedown state
+
+    Input.apply(this, arguments);
+}
+
+inherit(MouseInput, Input, {
+    /**
+     * handle mouse events
+     * @param {Object} ev
+     */
+    handler: function MEhandler(ev) {
+        var eventType = MOUSE_INPUT_MAP[ev.type];
+
+        // on start we want to have the left mouse button down
+        if (eventType & INPUT_START && ev.button === 0) {
+            this.pressed = true;
+        }
+
+        if (eventType & INPUT_MOVE && ev.which !== 1) {
+            eventType = INPUT_END;
+        }
+
+        // mouse must be down, and mouse events are allowed (see the TouchMouse input)
+        if (!this.pressed || !this.allow) {
+            return;
+        }
+
+        if (eventType & INPUT_END) {
+            this.pressed = false;
+        }
+
+        this.callback(this.manager, eventType, {
+            pointers: [ev],
+            changedPointers: [ev],
+            pointerType: INPUT_TYPE_MOUSE,
+            srcEvent: ev
+        });
+    }
+});
+
+var POINTER_INPUT_MAP = {
+    pointerdown: INPUT_START,
+    pointermove: INPUT_MOVE,
+    pointerup: INPUT_END,
+    pointercancel: INPUT_CANCEL,
+    pointerout: INPUT_CANCEL
+};
+
+// in IE10 the pointer types is defined as an enum
+var IE10_POINTER_TYPE_ENUM = {
+    2: INPUT_TYPE_TOUCH,
+    3: INPUT_TYPE_PEN,
+    4: INPUT_TYPE_MOUSE,
+    5: INPUT_TYPE_KINECT // see https://twitter.com/jacobrossi/status/480596438489890816
+};
+
+var POINTER_ELEMENT_EVENTS = 'pointerdown';
+var POINTER_WINDOW_EVENTS = 'pointermove pointerup pointercancel';
+
+// IE10 has prefixed support, and case-sensitive
+if (window.MSPointerEvent && !window.PointerEvent) {
+    POINTER_ELEMENT_EVENTS = 'MSPointerDown';
+    POINTER_WINDOW_EVENTS = 'MSPointerMove MSPointerUp MSPointerCancel';
+}
+
+/**
+ * Pointer events input
+ * @constructor
+ * @extends Input
+ */
+function PointerEventInput() {
+    this.evEl = POINTER_ELEMENT_EVENTS;
+    this.evWin = POINTER_WINDOW_EVENTS;
+
+    Input.apply(this, arguments);
+
+    this.store = (this.manager.session.pointerEvents = []);
+}
+
+inherit(PointerEventInput, Input, {
+    /**
+     * handle mouse events
+     * @param {Object} ev
+     */
+    handler: function PEhandler(ev) {
+        var store = this.store;
+        var removePointer = false;
+
+        var eventTypeNormalized = ev.type.toLowerCase().replace('ms', '');
+        var eventType = POINTER_INPUT_MAP[eventTypeNormalized];
+        var pointerType = IE10_POINTER_TYPE_ENUM[ev.pointerType] || ev.pointerType;
+
+        var isTouch = (pointerType == INPUT_TYPE_TOUCH);
+
+        // get index of the event in the store
+        var storeIndex = inArray(store, ev.pointerId, 'pointerId');
+
+        // start and mouse must be down
+        if (eventType & INPUT_START && (ev.button === 0 || isTouch)) {
+            if (storeIndex < 0) {
+                store.push(ev);
+                storeIndex = store.length - 1;
+            }
+        } else if (eventType & (INPUT_END | INPUT_CANCEL)) {
+            removePointer = true;
+        }
+
+        // it not found, so the pointer hasn't been down (so it's probably a hover)
+        if (storeIndex < 0) {
+            return;
+        }
+
+        // update the event in the store
+        store[storeIndex] = ev;
+
+        this.callback(this.manager, eventType, {
+            pointers: store,
+            changedPointers: [ev],
+            pointerType: pointerType,
+            srcEvent: ev
+        });
+
+        if (removePointer) {
+            // remove from the store
+            store.splice(storeIndex, 1);
+        }
+    }
+});
+
+var SINGLE_TOUCH_INPUT_MAP = {
+    touchstart: INPUT_START,
+    touchmove: INPUT_MOVE,
+    touchend: INPUT_END,
+    touchcancel: INPUT_CANCEL
+};
+
+var SINGLE_TOUCH_TARGET_EVENTS = 'touchstart';
+var SINGLE_TOUCH_WINDOW_EVENTS = 'touchstart touchmove touchend touchcancel';
+
+/**
+ * Touch events input
+ * @constructor
+ * @extends Input
+ */
+function SingleTouchInput() {
+    this.evTarget = SINGLE_TOUCH_TARGET_EVENTS;
+    this.evWin = SINGLE_TOUCH_WINDOW_EVENTS;
+    this.started = false;
+
+    Input.apply(this, arguments);
+}
+
+inherit(SingleTouchInput, Input, {
+    handler: function TEhandler(ev) {
+        var type = SINGLE_TOUCH_INPUT_MAP[ev.type];
+
+        // should we handle the touch events?
+        if (type === INPUT_START) {
+            this.started = true;
+        }
+
+        if (!this.started) {
+            return;
+        }
+
+        var touches = normalizeSingleTouches.call(this, ev, type);
+
+        // when done, reset the started state
+        if (type & (INPUT_END | INPUT_CANCEL) && touches[0].length - touches[1].length === 0) {
+            this.started = false;
+        }
+
+        this.callback(this.manager, type, {
+            pointers: touches[0],
+            changedPointers: touches[1],
+            pointerType: INPUT_TYPE_TOUCH,
+            srcEvent: ev
+        });
+    }
+});
+
+/**
+ * @this {TouchInput}
+ * @param {Object} ev
+ * @param {Number} type flag
+ * @returns {undefined|Array} [all, changed]
+ */
+function normalizeSingleTouches(ev, type) {
+    var all = toArray(ev.touches);
+    var changed = toArray(ev.changedTouches);
+
+    if (type & (INPUT_END | INPUT_CANCEL)) {
+        all = uniqueArray(all.concat(changed), 'identifier', true);
+    }
+
+    return [all, changed];
+}
+
+var TOUCH_INPUT_MAP = {
+    touchstart: INPUT_START,
+    touchmove: INPUT_MOVE,
+    touchend: INPUT_END,
+    touchcancel: INPUT_CANCEL
+};
+
+var TOUCH_TARGET_EVENTS = 'touchstart touchmove touchend touchcancel';
+
+/**
+ * Multi-user touch events input
+ * @constructor
+ * @extends Input
+ */
+function TouchInput() {
+    this.evTarget = TOUCH_TARGET_EVENTS;
+    this.targetIds = {};
+
+    Input.apply(this, arguments);
+}
+
+inherit(TouchInput, Input, {
+    handler: function MTEhandler(ev) {
+        var type = TOUCH_INPUT_MAP[ev.type];
+        var touches = getTouches.call(this, ev, type);
+        if (!touches) {
+            return;
+        }
+
+        this.callback(this.manager, type, {
+            pointers: touches[0],
+            changedPointers: touches[1],
+            pointerType: INPUT_TYPE_TOUCH,
+            srcEvent: ev
+        });
+    }
+});
+
+/**
+ * @this {TouchInput}
+ * @param {Object} ev
+ * @param {Number} type flag
+ * @returns {undefined|Array} [all, changed]
+ */
+function getTouches(ev, type) {
+    var allTouches = toArray(ev.touches);
+    var targetIds = this.targetIds;
+
+    // when there is only one touch, the process can be simplified
+    if (type & (INPUT_START | INPUT_MOVE) && allTouches.length === 1) {
+        targetIds[allTouches[0].identifier] = true;
+        return [allTouches, allTouches];
+    }
+
+    var i,
+        targetTouches,
+        changedTouches = toArray(ev.changedTouches),
+        changedTargetTouches = [],
+        target = this.target;
+
+    // get target touches from touches
+    targetTouches = allTouches.filter(function(touch) {
+        return hasParent(touch.target, target);
+    });
+
+    // collect touches
+    if (type === INPUT_START) {
+        i = 0;
+        while (i < targetTouches.length) {
+            targetIds[targetTouches[i].identifier] = true;
+            i++;
+        }
+    }
+
+    // filter changed touches to only contain touches that exist in the collected target ids
+    i = 0;
+    while (i < changedTouches.length) {
+        if (targetIds[changedTouches[i].identifier]) {
+            changedTargetTouches.push(changedTouches[i]);
+        }
+
+        // cleanup removed touches
+        if (type & (INPUT_END | INPUT_CANCEL)) {
+            delete targetIds[changedTouches[i].identifier];
+        }
+        i++;
+    }
+
+    if (!changedTargetTouches.length) {
+        return;
+    }
+
+    return [
+        // merge targetTouches with changedTargetTouches so it contains ALL touches, including 'end' and 'cancel'
+        uniqueArray(targetTouches.concat(changedTargetTouches), 'identifier', true),
+        changedTargetTouches
+    ];
+}
+
+/**
+ * Combined touch and mouse input
+ *
+ * Touch has a higher priority then mouse, and while touching no mouse events are allowed.
+ * This because touch devices also emit mouse events while doing a touch.
+ *
+ * @constructor
+ * @extends Input
+ */
+function TouchMouseInput() {
+    Input.apply(this, arguments);
+
+    var handler = bindFn(this.handler, this);
+    this.touch = new TouchInput(this.manager, handler);
+    this.mouse = new MouseInput(this.manager, handler);
+}
+
+inherit(TouchMouseInput, Input, {
+    /**
+     * handle mouse and touch events
+     * @param {Hammer} manager
+     * @param {String} inputEvent
+     * @param {Object} inputData
+     */
+    handler: function TMEhandler(manager, inputEvent, inputData) {
+        var isTouch = (inputData.pointerType == INPUT_TYPE_TOUCH),
+            isMouse = (inputData.pointerType == INPUT_TYPE_MOUSE);
+
+        // when we're in a touch event, so  block all upcoming mouse events
+        // most mobile browser also emit mouseevents, right after touchstart
+        if (isTouch) {
+            this.mouse.allow = false;
+        } else if (isMouse && !this.mouse.allow) {
+            return;
+        }
+
+        // reset the allowMouse when we're done
+        if (inputEvent & (INPUT_END | INPUT_CANCEL)) {
+            this.mouse.allow = true;
+        }
+
+        this.callback(manager, inputEvent, inputData);
+    },
+
+    /**
+     * remove the event listeners
+     */
+    destroy: function destroy() {
+        this.touch.destroy();
+        this.mouse.destroy();
+    }
+});
+
+var PREFIXED_TOUCH_ACTION = prefixed(TEST_ELEMENT.style, 'touchAction');
+var NATIVE_TOUCH_ACTION = PREFIXED_TOUCH_ACTION !== undefined;
+
+// magical touchAction value
+var TOUCH_ACTION_COMPUTE = 'compute';
+var TOUCH_ACTION_AUTO = 'auto';
+var TOUCH_ACTION_MANIPULATION = 'manipulation'; // not implemented
+var TOUCH_ACTION_NONE = 'none';
+var TOUCH_ACTION_PAN_X = 'pan-x';
+var TOUCH_ACTION_PAN_Y = 'pan-y';
+
+/**
+ * Touch Action
+ * sets the touchAction property or uses the js alternative
+ * @param {Manager} manager
+ * @param {String} value
+ * @constructor
+ */
+function TouchAction(manager, value) {
+    this.manager = manager;
+    this.set(value);
+}
+
+TouchAction.prototype = {
+    /**
+     * set the touchAction value on the element or enable the polyfill
+     * @param {String} value
+     */
+    set: function(value) {
+        // find out the touch-action by the event handlers
+        if (value == TOUCH_ACTION_COMPUTE) {
+            value = this.compute();
+        }
+
+        if (NATIVE_TOUCH_ACTION && this.manager.element.style) {
+            this.manager.element.style[PREFIXED_TOUCH_ACTION] = value;
+        }
+        this.actions = value.toLowerCase().trim();
+    },
+
+    /**
+     * just re-set the touchAction value
+     */
+    update: function() {
+        this.set(this.manager.options.touchAction);
+    },
+
+    /**
+     * compute the value for the touchAction property based on the recognizer's settings
+     * @returns {String} value
+     */
+    compute: function() {
+        var actions = [];
+        each(this.manager.recognizers, function(recognizer) {
+            if (boolOrFn(recognizer.options.enable, [recognizer])) {
+                actions = actions.concat(recognizer.getTouchAction());
+            }
+        });
+        return cleanTouchActions(actions.join(' '));
+    },
+
+    /**
+     * this method is called on each input cycle and provides the preventing of the browser behavior
+     * @param {Object} input
+     */
+    preventDefaults: function(input) {
+        // not needed with native support for the touchAction property
+        if (NATIVE_TOUCH_ACTION) {
+            return;
+        }
+
+        var srcEvent = input.srcEvent;
+        var direction = input.offsetDirection;
+
+        // if the touch action did prevented once this session
+        if (this.manager.session.prevented) {
+            srcEvent.preventDefault();
+            return;
+        }
+
+        var actions = this.actions;
+        var hasNone = inStr(actions, TOUCH_ACTION_NONE);
+        var hasPanY = inStr(actions, TOUCH_ACTION_PAN_Y);
+        var hasPanX = inStr(actions, TOUCH_ACTION_PAN_X);
+
+        if (hasNone) {
+            //do not prevent defaults if this is a tap gesture
+
+            var isTapPointer = input.pointers.length === 1;
+            var isTapMovement = input.distance < 2;
+            var isTapTouchTime = input.deltaTime < 250;
+
+            if (isTapPointer && isTapMovement && isTapTouchTime) {
+                return;
+            }
+        }
+
+        if (hasPanX && hasPanY) {
+            // `pan-x pan-y` means browser handles all scrolling/panning, do not prevent
+            return;
+        }
+
+        if (hasNone ||
+            (hasPanY && direction & DIRECTION_HORIZONTAL) ||
+            (hasPanX && direction & DIRECTION_VERTICAL)) {
+            return this.preventSrc(srcEvent);
+        }
+    },
+
+    /**
+     * call preventDefault to prevent the browser's default behavior (scrolling in most cases)
+     * @param {Object} srcEvent
+     */
+    preventSrc: function(srcEvent) {
+        this.manager.session.prevented = true;
+        srcEvent.preventDefault();
+    }
+};
+
+/**
+ * when the touchActions are collected they are not a valid value, so we need to clean things up. *
+ * @param {String} actions
+ * @returns {*}
+ */
+function cleanTouchActions(actions) {
+    // none
+    if (inStr(actions, TOUCH_ACTION_NONE)) {
+        return TOUCH_ACTION_NONE;
+    }
+
+    var hasPanX = inStr(actions, TOUCH_ACTION_PAN_X);
+    var hasPanY = inStr(actions, TOUCH_ACTION_PAN_Y);
+
+    // if both pan-x and pan-y are set (different recognizers
+    // for different directions, e.g. horizontal pan but vertical swipe?)
+    // we need none (as otherwise with pan-x pan-y combined none of these
+    // recognizers will work, since the browser would handle all panning
+    if (hasPanX && hasPanY) {
+        return TOUCH_ACTION_NONE;
+    }
+
+    // pan-x OR pan-y
+    if (hasPanX || hasPanY) {
+        return hasPanX ? TOUCH_ACTION_PAN_X : TOUCH_ACTION_PAN_Y;
+    }
+
+    // manipulation
+    if (inStr(actions, TOUCH_ACTION_MANIPULATION)) {
+        return TOUCH_ACTION_MANIPULATION;
+    }
+
+    return TOUCH_ACTION_AUTO;
+}
+
+/**
+ * Recognizer flow explained; *
+ * All recognizers have the initial state of POSSIBLE when a input session starts.
+ * The definition of a input session is from the first input until the last input, with all it's movement in it. *
+ * Example session for mouse-input: mousedown -> mousemove -> mouseup
+ *
+ * On each recognizing cycle (see Manager.recognize) the .recognize() method is executed
+ * which determines with state it should be.
+ *
+ * If the recognizer has the state FAILED, CANCELLED or RECOGNIZED (equals ENDED), it is reset to
+ * POSSIBLE to give it another change on the next cycle.
+ *
+ *               Possible
+ *                  |
+ *            +-----+---------------+
+ *            |                     |
+ *      +-----+-----+               |
+ *      |           |               |
+ *   Failed      Cancelled          |
+ *                          +-------+------+
+ *                          |              |
+ *                      Recognized       Began
+ *                                         |
+ *                                      Changed
+ *                                         |
+ *                                  Ended/Recognized
+ */
+var STATE_POSSIBLE = 1;
+var STATE_BEGAN = 2;
+var STATE_CHANGED = 4;
+var STATE_ENDED = 8;
+var STATE_RECOGNIZED = STATE_ENDED;
+var STATE_CANCELLED = 16;
+var STATE_FAILED = 32;
+
+/**
+ * Recognizer
+ * Every recognizer needs to extend from this class.
+ * @constructor
+ * @param {Object} options
+ */
+function Recognizer(options) {
+    this.options = assign({}, this.defaults, options || {});
+
+    this.id = uniqueId();
+
+    this.manager = null;
+
+    // default is enable true
+    this.options.enable = ifUndefined(this.options.enable, true);
+
+    this.state = STATE_POSSIBLE;
+
+    this.simultaneous = {};
+    this.requireFail = [];
+}
+
+Recognizer.prototype = {
+    /**
+     * @virtual
+     * @type {Object}
+     */
+    defaults: {},
+
+    /**
+     * set options
+     * @param {Object} options
+     * @return {Recognizer}
+     */
+    set: function(options) {
+        assign(this.options, options);
+
+        // also update the touchAction, in case something changed about the directions/enabled state
+        this.manager && this.manager.touchAction.update();
+        return this;
+    },
+
+    /**
+     * recognize simultaneous with an other recognizer.
+     * @param {Recognizer} otherRecognizer
+     * @returns {Recognizer} this
+     */
+    recognizeWith: function(otherRecognizer) {
+        if (invokeArrayArg(otherRecognizer, 'recognizeWith', this)) {
+            return this;
+        }
+
+        var simultaneous = this.simultaneous;
+        otherRecognizer = getRecognizerByNameIfManager(otherRecognizer, this);
+        if (!simultaneous[otherRecognizer.id]) {
+            simultaneous[otherRecognizer.id] = otherRecognizer;
+            otherRecognizer.recognizeWith(this);
+        }
+        return this;
+    },
+
+    /**
+     * drop the simultaneous link. it doesnt remove the link on the other recognizer.
+     * @param {Recognizer} otherRecognizer
+     * @returns {Recognizer} this
+     */
+    dropRecognizeWith: function(otherRecognizer) {
+        if (invokeArrayArg(otherRecognizer, 'dropRecognizeWith', this)) {
+            return this;
+        }
+
+        otherRecognizer = getRecognizerByNameIfManager(otherRecognizer, this);
+        delete this.simultaneous[otherRecognizer.id];
+        return this;
+    },
+
+    /**
+     * recognizer can only run when an other is failing
+     * @param {Recognizer} otherRecognizer
+     * @returns {Recognizer} this
+     */
+    requireFailure: function(otherRecognizer) {
+        if (invokeArrayArg(otherRecognizer, 'requireFailure', this)) {
+            return this;
+        }
+
+        var requireFail = this.requireFail;
+        otherRecognizer = getRecognizerByNameIfManager(otherRecognizer, this);
+        if (inArray(requireFail, otherRecognizer) === -1) {
+            requireFail.push(otherRecognizer);
+            otherRecognizer.requireFailure(this);
+        }
+        return this;
+    },
+
+    /**
+     * drop the requireFailure link. it does not remove the link on the other recognizer.
+     * @param {Recognizer} otherRecognizer
+     * @returns {Recognizer} this
+     */
+    dropRequireFailure: function(otherRecognizer) {
+        if (invokeArrayArg(otherRecognizer, 'dropRequireFailure', this)) {
+            return this;
+        }
+
+        otherRecognizer = getRecognizerByNameIfManager(otherRecognizer, this);
+        var index = inArray(this.requireFail, otherRecognizer);
+        if (index > -1) {
+            this.requireFail.splice(index, 1);
+        }
+        return this;
+    },
+
+    /**
+     * has require failures boolean
+     * @returns {boolean}
+     */
+    hasRequireFailures: function() {
+        return this.requireFail.length > 0;
+    },
+
+    /**
+     * if the recognizer can recognize simultaneous with an other recognizer
+     * @param {Recognizer} otherRecognizer
+     * @returns {Boolean}
+     */
+    canRecognizeWith: function(otherRecognizer) {
+        return !!this.simultaneous[otherRecognizer.id];
+    },
+
+    /**
+     * You should use `tryEmit` instead of `emit` directly to check
+     * that all the needed recognizers has failed before emitting.
+     * @param {Object} input
+     */
+    emit: function(input) {
+        var self = this;
+        var state = this.state;
+
+        function emit(event) {
+            self.manager.emit(event, input);
+        }
+
+        // 'panstart' and 'panmove'
+        if (state < STATE_ENDED) {
+            emit(self.options.event + stateStr(state));
+        }
+
+        emit(self.options.event); // simple 'eventName' events
+
+        if (input.additionalEvent) { // additional event(panleft, panright, pinchin, pinchout...)
+            emit(input.additionalEvent);
+        }
+
+        // panend and pancancel
+        if (state >= STATE_ENDED) {
+            emit(self.options.event + stateStr(state));
+        }
+    },
+
+    /**
+     * Check that all the require failure recognizers has failed,
+     * if true, it emits a gesture event,
+     * otherwise, setup the state to FAILED.
+     * @param {Object} input
+     */
+    tryEmit: function(input) {
+        if (this.canEmit()) {
+            return this.emit(input);
+        }
+        // it's failing anyway
+        this.state = STATE_FAILED;
+    },
+
+    /**
+     * can we emit?
+     * @returns {boolean}
+     */
+    canEmit: function() {
+        var i = 0;
+        while (i < this.requireFail.length) {
+            if (!(this.requireFail[i].state & (STATE_FAILED | STATE_POSSIBLE))) {
+                return false;
+            }
+            i++;
+        }
+        return true;
+    },
+
+    /**
+     * update the recognizer
+     * @param {Object} inputData
+     */
+    recognize: function(inputData) {
+        // make a new copy of the inputData
+        // so we can change the inputData without messing up the other recognizers
+        var inputDataClone = assign({}, inputData);
+
+        // is is enabled and allow recognizing?
+        if (!boolOrFn(this.options.enable, [this, inputDataClone])) {
+            this.reset();
+            this.state = STATE_FAILED;
+            return;
+        }
+
+        // reset when we've reached the end
+        if (this.state & (STATE_RECOGNIZED | STATE_CANCELLED | STATE_FAILED)) {
+            this.state = STATE_POSSIBLE;
+        }
+
+        this.state = this.process(inputDataClone);
+
+        // the recognizer has recognized a gesture
+        // so trigger an event
+        if (this.state & (STATE_BEGAN | STATE_CHANGED | STATE_ENDED | STATE_CANCELLED)) {
+            this.tryEmit(inputDataClone);
+        }
+    },
+
+    /**
+     * return the state of the recognizer
+     * the actual recognizing happens in this method
+     * @virtual
+     * @param {Object} inputData
+     * @returns {Const} STATE
+     */
+    process: function(inputData) { }, // jshint ignore:line
+
+    /**
+     * return the preferred touch-action
+     * @virtual
+     * @returns {Array}
+     */
+    getTouchAction: function() { },
+
+    /**
+     * called when the gesture isn't allowed to recognize
+     * like when another is being recognized or it is disabled
+     * @virtual
+     */
+    reset: function() { }
+};
+
+/**
+ * get a usable string, used as event postfix
+ * @param {Const} state
+ * @returns {String} state
+ */
+function stateStr(state) {
+    if (state & STATE_CANCELLED) {
+        return 'cancel';
+    } else if (state & STATE_ENDED) {
+        return 'end';
+    } else if (state & STATE_CHANGED) {
+        return 'move';
+    } else if (state & STATE_BEGAN) {
+        return 'start';
+    }
+    return '';
+}
+
+/**
+ * direction cons to string
+ * @param {Const} direction
+ * @returns {String}
+ */
+function directionStr(direction) {
+    if (direction == DIRECTION_DOWN) {
+        return 'down';
+    } else if (direction == DIRECTION_UP) {
+        return 'up';
+    } else if (direction == DIRECTION_LEFT) {
+        return 'left';
+    } else if (direction == DIRECTION_RIGHT) {
+        return 'right';
+    }
+    return '';
+}
+
+/**
+ * get a recognizer by name if it is bound to a manager
+ * @param {Recognizer|String} otherRecognizer
+ * @param {Recognizer} recognizer
+ * @returns {Recognizer}
+ */
+function getRecognizerByNameIfManager(otherRecognizer, recognizer) {
+    var manager = recognizer.manager;
+    if (manager) {
+        return manager.get(otherRecognizer);
+    }
+    return otherRecognizer;
+}
+
+/**
+ * This recognizer is just used as a base for the simple attribute recognizers.
+ * @constructor
+ * @extends Recognizer
+ */
+function AttrRecognizer() {
+    Recognizer.apply(this, arguments);
+}
+
+inherit(AttrRecognizer, Recognizer, {
+    /**
+     * @namespace
+     * @memberof AttrRecognizer
+     */
+    defaults: {
+        /**
+         * @type {Number}
+         * @default 1
+         */
+        pointers: 1
+    },
+
+    /**
+     * Used to check if it the recognizer receives valid input, like input.distance > 10.
+     * @memberof AttrRecognizer
+     * @param {Object} input
+     * @returns {Boolean} recognized
+     */
+    attrTest: function(input) {
+        var optionPointers = this.options.pointers;
+        return optionPointers === 0 || input.pointers.length === optionPointers;
+    },
+
+    /**
+     * Process the input and return the state for the recognizer
+     * @memberof AttrRecognizer
+     * @param {Object} input
+     * @returns {*} State
+     */
+    process: function(input) {
+        var state = this.state;
+        var eventType = input.eventType;
+
+        var isRecognized = state & (STATE_BEGAN | STATE_CHANGED);
+        var isValid = this.attrTest(input);
+
+        // on cancel input and we've recognized before, return STATE_CANCELLED
+        if (isRecognized && (eventType & INPUT_CANCEL || !isValid)) {
+            return state | STATE_CANCELLED;
+        } else if (isRecognized || isValid) {
+            if (eventType & INPUT_END) {
+                return state | STATE_ENDED;
+            } else if (!(state & STATE_BEGAN)) {
+                return STATE_BEGAN;
+            }
+            return state | STATE_CHANGED;
+        }
+        return STATE_FAILED;
+    }
+});
+
+/**
+ * Pan
+ * Recognized when the pointer is down and moved in the allowed direction.
+ * @constructor
+ * @extends AttrRecognizer
+ */
+function PanRecognizer() {
+    AttrRecognizer.apply(this, arguments);
+
+    this.pX = null;
+    this.pY = null;
+}
+
+inherit(PanRecognizer, AttrRecognizer, {
+    /**
+     * @namespace
+     * @memberof PanRecognizer
+     */
+    defaults: {
+        event: 'pan',
+        threshold: 10,
+        pointers: 1,
+        direction: DIRECTION_ALL
+    },
+
+    getTouchAction: function() {
+        var direction = this.options.direction;
+        var actions = [];
+        if (direction & DIRECTION_HORIZONTAL) {
+            actions.push(TOUCH_ACTION_PAN_Y);
+        }
+        if (direction & DIRECTION_VERTICAL) {
+            actions.push(TOUCH_ACTION_PAN_X);
+        }
+        return actions;
+    },
+
+    directionTest: function(input) {
+        var options = this.options;
+        var hasMoved = true;
+        var distance = input.distance;
+        var direction = input.direction;
+        var x = input.deltaX;
+        var y = input.deltaY;
+
+        // lock to axis?
+        if (!(direction & options.direction)) {
+            if (options.direction & DIRECTION_HORIZONTAL) {
+                direction = (x === 0) ? DIRECTION_NONE : (x < 0) ? DIRECTION_LEFT : DIRECTION_RIGHT;
+                hasMoved = x != this.pX;
+                distance = Math.abs(input.deltaX);
+            } else {
+                direction = (y === 0) ? DIRECTION_NONE : (y < 0) ? DIRECTION_UP : DIRECTION_DOWN;
+                hasMoved = y != this.pY;
+                distance = Math.abs(input.deltaY);
+            }
+        }
+        input.direction = direction;
+        return hasMoved && distance > options.threshold && direction & options.direction;
+    },
+
+    attrTest: function(input) {
+        return AttrRecognizer.prototype.attrTest.call(this, input) &&
+            (this.state & STATE_BEGAN || (!(this.state & STATE_BEGAN) && this.directionTest(input)));
+    },
+
+    emit: function(input) {
+
+        this.pX = input.deltaX;
+        this.pY = input.deltaY;
+
+        var direction = directionStr(input.direction);
+
+        if (direction) {
+            input.additionalEvent = this.options.event + direction;
+        }
+        this._super.emit.call(this, input);
+    }
+});
+
+/**
+ * Pinch
+ * Recognized when two or more pointers are moving toward (zoom-in) or away from each other (zoom-out).
+ * @constructor
+ * @extends AttrRecognizer
+ */
+function PinchRecognizer() {
+    AttrRecognizer.apply(this, arguments);
+}
+
+inherit(PinchRecognizer, AttrRecognizer, {
+    /**
+     * @namespace
+     * @memberof PinchRecognizer
+     */
+    defaults: {
+        event: 'pinch',
+        threshold: 0,
+        pointers: 2
+    },
+
+    getTouchAction: function() {
+        return [TOUCH_ACTION_NONE];
+    },
+
+    attrTest: function(input) {
+        return this._super.attrTest.call(this, input) &&
+            (Math.abs(input.scale - 1) > this.options.threshold || this.state & STATE_BEGAN);
+    },
+
+    emit: function(input) {
+        if (input.scale !== 1) {
+            var inOut = input.scale < 1 ? 'in' : 'out';
+            input.additionalEvent = this.options.event + inOut;
+        }
+        this._super.emit.call(this, input);
+    }
+});
+
+/**
+ * Press
+ * Recognized when the pointer is down for x ms without any movement.
+ * @constructor
+ * @extends Recognizer
+ */
+function PressRecognizer() {
+    Recognizer.apply(this, arguments);
+
+    this._timer = null;
+    this._input = null;
+}
+
+inherit(PressRecognizer, Recognizer, {
+    /**
+     * @namespace
+     * @memberof PressRecognizer
+     */
+    defaults: {
+        event: 'press',
+        pointers: 1,
+        time: 251, // minimal time of the pointer to be pressed
+        threshold: 9 // a minimal movement is ok, but keep it low
+    },
+
+    getTouchAction: function() {
+        return [TOUCH_ACTION_AUTO];
+    },
+
+    process: function(input) {
+        var options = this.options;
+        var validPointers = input.pointers.length === options.pointers;
+        var validMovement = input.distance < options.threshold;
+        var validTime = input.deltaTime > options.time;
+
+        this._input = input;
+
+        // we only allow little movement
+        // and we've reached an end event, so a tap is possible
+        if (!validMovement || !validPointers || (input.eventType & (INPUT_END | INPUT_CANCEL) && !validTime)) {
+            this.reset();
+        } else if (input.eventType & INPUT_START) {
+            this.reset();
+            this._timer = setTimeoutContext(function() {
+                this.state = STATE_RECOGNIZED;
+                this.tryEmit();
+            }, options.time, this);
+        } else if (input.eventType & INPUT_END) {
+            return STATE_RECOGNIZED;
+        }
+        return STATE_FAILED;
+    },
+
+    reset: function() {
+        clearTimeout(this._timer);
+    },
+
+    emit: function(input) {
+        if (this.state !== STATE_RECOGNIZED) {
+            return;
+        }
+
+        if (input && (input.eventType & INPUT_END)) {
+            this.manager.emit(this.options.event + 'up', input);
+        } else {
+            this._input.timeStamp = now();
+            this.manager.emit(this.options.event, this._input);
+        }
+    }
+});
+
+/**
+ * Rotate
+ * Recognized when two or more pointer are moving in a circular motion.
+ * @constructor
+ * @extends AttrRecognizer
+ */
+function RotateRecognizer() {
+    AttrRecognizer.apply(this, arguments);
+}
+
+inherit(RotateRecognizer, AttrRecognizer, {
+    /**
+     * @namespace
+     * @memberof RotateRecognizer
+     */
+    defaults: {
+        event: 'rotate',
+        threshold: 0,
+        pointers: 2
+    },
+
+    getTouchAction: function() {
+        return [TOUCH_ACTION_NONE];
+    },
+
+    attrTest: function(input) {
+        return this._super.attrTest.call(this, input) &&
+            (Math.abs(input.rotation) > this.options.threshold || this.state & STATE_BEGAN);
+    }
+});
+
+/**
+ * Swipe
+ * Recognized when the pointer is moving fast (velocity), with enough distance in the allowed direction.
+ * @constructor
+ * @extends AttrRecognizer
+ */
+function SwipeRecognizer() {
+    AttrRecognizer.apply(this, arguments);
+}
+
+inherit(SwipeRecognizer, AttrRecognizer, {
+    /**
+     * @namespace
+     * @memberof SwipeRecognizer
+     */
+    defaults: {
+        event: 'swipe',
+        threshold: 10,
+        velocity: 0.3,
+        direction: DIRECTION_HORIZONTAL | DIRECTION_VERTICAL,
+        pointers: 1
+    },
+
+    getTouchAction: function() {
+        return PanRecognizer.prototype.getTouchAction.call(this);
+    },
+
+    attrTest: function(input) {
+        var direction = this.options.direction;
+        var velocity;
+
+        if (direction & (DIRECTION_HORIZONTAL | DIRECTION_VERTICAL)) {
+            velocity = input.overallVelocity;
+        } else if (direction & DIRECTION_HORIZONTAL) {
+            velocity = input.overallVelocityX;
+        } else if (direction & DIRECTION_VERTICAL) {
+            velocity = input.overallVelocityY;
+        }
+
+        return this._super.attrTest.call(this, input) &&
+            direction & input.offsetDirection &&
+            input.distance > this.options.threshold &&
+            input.maxPointers == this.options.pointers &&
+            abs(velocity) > this.options.velocity && input.eventType & INPUT_END;
+    },
+
+    emit: function(input) {
+        var direction = directionStr(input.offsetDirection);
+        if (direction) {
+            this.manager.emit(this.options.event + direction, input);
+        }
+
+        this.manager.emit(this.options.event, input);
+    }
+});
+
+/**
+ * A tap is ecognized when the pointer is doing a small tap/click. Multiple taps are recognized if they occur
+ * between the given interval and position. The delay option can be used to recognize multi-taps without firing
+ * a single tap.
+ *
+ * The eventData from the emitted event contains the property `tapCount`, which contains the amount of
+ * multi-taps being recognized.
+ * @constructor
+ * @extends Recognizer
+ */
+function TapRecognizer() {
+    Recognizer.apply(this, arguments);
+
+    // previous time and center,
+    // used for tap counting
+    this.pTime = false;
+    this.pCenter = false;
+
+    this._timer = null;
+    this._input = null;
+    this.count = 0;
+}
+
+inherit(TapRecognizer, Recognizer, {
+    /**
+     * @namespace
+     * @memberof PinchRecognizer
+     */
+    defaults: {
+        event: 'tap',
+        pointers: 1,
+        taps: 1,
+        interval: 300, // max time between the multi-tap taps
+        time: 250, // max time of the pointer to be down (like finger on the screen)
+        threshold: 9, // a minimal movement is ok, but keep it low
+        posThreshold: 10 // a multi-tap can be a bit off the initial position
+    },
+
+    getTouchAction: function() {
+        return [TOUCH_ACTION_MANIPULATION];
+    },
+
+    process: function(input) {
+        var options = this.options;
+
+        var validPointers = input.pointers.length === options.pointers;
+        var validMovement = input.distance < options.threshold;
+        var validTouchTime = input.deltaTime < options.time;
+
+        this.reset();
+
+        if ((input.eventType & INPUT_START) && (this.count === 0)) {
+            return this.failTimeout();
+        }
+
+        // we only allow little movement
+        // and we've reached an end event, so a tap is possible
+        if (validMovement && validTouchTime && validPointers) {
+            if (input.eventType != INPUT_END) {
+                return this.failTimeout();
+            }
+
+            var validInterval = this.pTime ? (input.timeStamp - this.pTime < options.interval) : true;
+            var validMultiTap = !this.pCenter || getDistance(this.pCenter, input.center) < options.posThreshold;
+
+            this.pTime = input.timeStamp;
+            this.pCenter = input.center;
+
+            if (!validMultiTap || !validInterval) {
+                this.count = 1;
+            } else {
+                this.count += 1;
+            }
+
+            this._input = input;
+
+            // if tap count matches we have recognized it,
+            // else it has began recognizing...
+            var tapCount = this.count % options.taps;
+            if (tapCount === 0) {
+                // no failing requirements, immediately trigger the tap event
+                // or wait as long as the multitap interval to trigger
+                if (!this.hasRequireFailures()) {
+                    return STATE_RECOGNIZED;
+                } else {
+                    this._timer = setTimeoutContext(function() {
+                        this.state = STATE_RECOGNIZED;
+                        this.tryEmit();
+                    }, options.interval, this);
+                    return STATE_BEGAN;
+                }
+            }
+        }
+        return STATE_FAILED;
+    },
+
+    failTimeout: function() {
+        this._timer = setTimeoutContext(function() {
+            this.state = STATE_FAILED;
+        }, this.options.interval, this);
+        return STATE_FAILED;
+    },
+
+    reset: function() {
+        clearTimeout(this._timer);
+    },
+
+    emit: function() {
+        if (this.state == STATE_RECOGNIZED) {
+            this._input.tapCount = this.count;
+            this.manager.emit(this.options.event, this._input);
+        }
+    }
+});
+
+/**
+ * Simple way to create a manager with a default set of recognizers.
+ * @param {HTMLElement} element
+ * @param {Object} [options]
+ * @constructor
+ */
+function Hammer(element, options) {
+    options = options || {};
+    options.recognizers = ifUndefined(options.recognizers, Hammer.defaults.preset);
+    return new Manager(element, options);
+}
+
+/**
+ * @const {string}
+ */
+Hammer.VERSION = '2.0.6';
+
+/**
+ * default settings
+ * @namespace
+ */
+Hammer.defaults = {
+    /**
+     * set if DOM events are being triggered.
+     * But this is slower and unused by simple implementations, so disabled by default.
+     * @type {Boolean}
+     * @default false
+     */
+    domEvents: false,
+
+    /**
+     * The value for the touchAction property/fallback.
+     * When set to `compute` it will magically set the correct value based on the added recognizers.
+     * @type {String}
+     * @default compute
+     */
+    touchAction: TOUCH_ACTION_COMPUTE,
+
+    /**
+     * @type {Boolean}
+     * @default true
+     */
+    enable: true,
+
+    /**
+     * EXPERIMENTAL FEATURE -- can be removed/changed
+     * Change the parent input target element.
+     * If Null, then it is being set the to main element.
+     * @type {Null|EventTarget}
+     * @default null
+     */
+    inputTarget: null,
+
+    /**
+     * force an input class
+     * @type {Null|Function}
+     * @default null
+     */
+    inputClass: null,
+
+    /**
+     * Default recognizer setup when calling `Hammer()`
+     * When creating a new Manager these will be skipped.
+     * @type {Array}
+     */
+    preset: [
+        // RecognizerClass, options, [recognizeWith, ...], [requireFailure, ...]
+        [RotateRecognizer, {enable: false}],
+        [PinchRecognizer, {enable: false}, ['rotate']],
+        [SwipeRecognizer, {direction: DIRECTION_HORIZONTAL}],
+        [PanRecognizer, {direction: DIRECTION_HORIZONTAL}, ['swipe']],
+        [TapRecognizer],
+        [TapRecognizer, {event: 'doubletap', taps: 2}, ['tap']],
+        [PressRecognizer]
+    ],
+
+    /**
+     * Some CSS properties can be used to improve the working of Hammer.
+     * Add them to this method and they will be set when creating a new Manager.
+     * @namespace
+     */
+    cssProps: {
+        /**
+         * Disables text selection to improve the dragging gesture. Mainly for desktop browsers.
+         * @type {String}
+         * @default 'none'
+         */
+        userSelect: 'none',
+
+        /**
+         * Disable the Windows Phone grippers when pressing an element.
+         * @type {String}
+         * @default 'none'
+         */
+        touchSelect: 'none',
+
+        /**
+         * Disables the default callout shown when you touch and hold a touch target.
+         * On iOS, when you touch and hold a touch target such as a link, Safari displays
+         * a callout containing information about the link. This property allows you to disable that callout.
+         * @type {String}
+         * @default 'none'
+         */
+        touchCallout: 'none',
+
+        /**
+         * Specifies whether zooming is enabled. Used by IE10>
+         * @type {String}
+         * @default 'none'
+         */
+        contentZooming: 'none',
+
+        /**
+         * Specifies that an entire element should be draggable instead of its contents. Mainly for desktop browsers.
+         * @type {String}
+         * @default 'none'
+         */
+        userDrag: 'none',
+
+        /**
+         * Overrides the highlight color shown when the user taps a link or a JavaScript
+         * clickable element in iOS. This property obeys the alpha value, if specified.
+         * @type {String}
+         * @default 'rgba(0,0,0,0)'
+         */
+        tapHighlightColor: 'rgba(0,0,0,0)'
+    }
+};
+
+var STOP = 1;
+var FORCED_STOP = 2;
+
+/**
+ * Manager
+ * @param {HTMLElement} element
+ * @param {Object} [options]
+ * @constructor
+ */
+function Manager(element, options) {
+    this.options = assign({}, Hammer.defaults, options || {});
+
+    this.options.inputTarget = this.options.inputTarget || element;
+
+    this.handlers = {};
+    this.session = {};
+    this.recognizers = [];
+
+    this.element = element;
+    this.input = createInputInstance(this);
+    this.touchAction = new TouchAction(this, this.options.touchAction);
+
+    toggleCssProps(this, true);
+
+    each(this.options.recognizers, function(item) {
+        var recognizer = this.add(new (item[0])(item[1]));
+        item[2] && recognizer.recognizeWith(item[2]);
+        item[3] && recognizer.requireFailure(item[3]);
+    }, this);
+}
+
+Manager.prototype = {
+    /**
+     * set options
+     * @param {Object} options
+     * @returns {Manager}
+     */
+    set: function(options) {
+        assign(this.options, options);
+
+        // Options that need a little more setup
+        if (options.touchAction) {
+            this.touchAction.update();
+        }
+        if (options.inputTarget) {
+            // Clean up existing event listeners and reinitialize
+            this.input.destroy();
+            this.input.target = options.inputTarget;
+            this.input.init();
+        }
+        return this;
+    },
+
+    /**
+     * stop recognizing for this session.
+     * This session will be discarded, when a new [input]start event is fired.
+     * When forced, the recognizer cycle is stopped immediately.
+     * @param {Boolean} [force]
+     */
+    stop: function(force) {
+        this.session.stopped = force ? FORCED_STOP : STOP;
+    },
+
+    /**
+     * run the recognizers!
+     * called by the inputHandler function on every movement of the pointers (touches)
+     * it walks through all the recognizers and tries to detect the gesture that is being made
+     * @param {Object} inputData
+     */
+    recognize: function(inputData) {
+        var session = this.session;
+        if (session.stopped) {
+            return;
+        }
+
+        // run the touch-action polyfill
+        this.touchAction.preventDefaults(inputData);
+
+        var recognizer;
+        var recognizers = this.recognizers;
+
+        // this holds the recognizer that is being recognized.
+        // so the recognizer's state needs to be BEGAN, CHANGED, ENDED or RECOGNIZED
+        // if no recognizer is detecting a thing, it is set to `null`
+        var curRecognizer = session.curRecognizer;
+
+        // reset when the last recognizer is recognized
+        // or when we're in a new session
+        if (!curRecognizer || (curRecognizer && curRecognizer.state & STATE_RECOGNIZED)) {
+            curRecognizer = session.curRecognizer = null;
+        }
+
+        var i = 0;
+        while (i < recognizers.length) {
+            recognizer = recognizers[i];
+
+            // find out if we are allowed try to recognize the input for this one.
+            // 1.   allow if the session is NOT forced stopped (see the .stop() method)
+            // 2.   allow if we still haven't recognized a gesture in this session, or the this recognizer is the one
+            //      that is being recognized.
+            // 3.   allow if the recognizer is allowed to run simultaneous with the current recognized recognizer.
+            //      this can be setup with the `recognizeWith()` method on the recognizer.
+            if (session.stopped !== FORCED_STOP && ( // 1
+                    !curRecognizer || recognizer == curRecognizer || // 2
+                    recognizer.canRecognizeWith(curRecognizer))) { // 3
+                recognizer.recognize(inputData);
+            } else {
+                recognizer.reset();
+            }
+
+            // if the recognizer has been recognizing the input as a valid gesture, we want to store this one as the
+            // current active recognizer. but only if we don't already have an active recognizer
+            if (!curRecognizer && recognizer.state & (STATE_BEGAN | STATE_CHANGED | STATE_ENDED)) {
+                curRecognizer = session.curRecognizer = recognizer;
+            }
+            i++;
+        }
+    },
+
+    /**
+     * get a recognizer by its event name.
+     * @param {Recognizer|String} recognizer
+     * @returns {Recognizer|Null}
+     */
+    get: function(recognizer) {
+        if (recognizer instanceof Recognizer) {
+            return recognizer;
+        }
+
+        var recognizers = this.recognizers;
+        for (var i = 0; i < recognizers.length; i++) {
+            if (recognizers[i].options.event == recognizer) {
+                return recognizers[i];
+            }
+        }
+        return null;
+    },
+
+    /**
+     * add a recognizer to the manager
+     * existing recognizers with the same event name will be removed
+     * @param {Recognizer} recognizer
+     * @returns {Recognizer|Manager}
+     */
+    add: function(recognizer) {
+        if (invokeArrayArg(recognizer, 'add', this)) {
+            return this;
+        }
+
+        // remove existing
+        var existing = this.get(recognizer.options.event);
+        if (existing) {
+            this.remove(existing);
+        }
+
+        this.recognizers.push(recognizer);
+        recognizer.manager = this;
+
+        this.touchAction.update();
+        return recognizer;
+    },
+
+    /**
+     * remove a recognizer by name or instance
+     * @param {Recognizer|String} recognizer
+     * @returns {Manager}
+     */
+    remove: function(recognizer) {
+        if (invokeArrayArg(recognizer, 'remove', this)) {
+            return this;
+        }
+
+        recognizer = this.get(recognizer);
+
+        // let's make sure this recognizer exists
+        if (recognizer) {
+            var recognizers = this.recognizers;
+            var index = inArray(recognizers, recognizer);
+
+            if (index !== -1) {
+                recognizers.splice(index, 1);
+                this.touchAction.update();
+            }
+        }
+
+        return this;
+    },
+
+    /**
+     * bind event
+     * @param {String} events
+     * @param {Function} handler
+     * @returns {EventEmitter} this
+     */
+    on: function(events, handler) {
+        var handlers = this.handlers;
+        each(splitStr(events), function(event) {
+            handlers[event] = handlers[event] || [];
+            handlers[event].push(handler);
+        });
+        return this;
+    },
+
+    /**
+     * unbind event, leave emit blank to remove all handlers
+     * @param {String} events
+     * @param {Function} [handler]
+     * @returns {EventEmitter} this
+     */
+    off: function(events, handler) {
+        var handlers = this.handlers;
+        each(splitStr(events), function(event) {
+            if (!handler) {
+                delete handlers[event];
+            } else {
+                handlers[event] && handlers[event].splice(inArray(handlers[event], handler), 1);
+            }
+        });
+        return this;
+    },
+
+    /**
+     * emit event to the listeners
+     * @param {String} event
+     * @param {Object} data
+     */
+    emit: function(event, data) {
+        // we also want to trigger dom events
+        if (this.options.domEvents) {
+            triggerDomEvent(event, data);
+        }
+
+        // no handlers, so skip it all
+        var handlers = this.handlers[event] && this.handlers[event].slice();
+        if (!handlers || !handlers.length) {
+            return;
+        }
+
+        data.type = event;
+        data.preventDefault = function() {
+            data.srcEvent.preventDefault();
+        };
+
+        var i = 0;
+        while (i < handlers.length) {
+            handlers[i](data);
+            i++;
+        }
+    },
+
+    /**
+     * destroy the manager and unbinds all events
+     * it doesn't unbind dom events, that is the user own responsibility
+     */
+    destroy: function() {
+        this.element && toggleCssProps(this, false);
+
+        this.handlers = {};
+        this.session = {};
+        this.input.destroy();
+        this.element = null;
+    }
+};
+
+/**
+ * add/remove the css properties as defined in manager.options.cssProps
+ * @param {Manager} manager
+ * @param {Boolean} add
+ */
+function toggleCssProps(manager, add) {
+    var element = manager.element;
+    if (!element.style) {
+        return;
+    }
+    each(manager.options.cssProps, function(value, name) {
+        element.style[prefixed(element.style, name)] = add ? value : '';
+    });
+}
+
+/**
+ * trigger dom event
+ * @param {String} event
+ * @param {Object} data
+ */
+function triggerDomEvent(event, data) {
+    var gestureEvent = document.createEvent('Event');
+    gestureEvent.initEvent(event, true, true);
+    gestureEvent.gesture = data;
+    data.target.dispatchEvent(gestureEvent);
+}
+
+assign(Hammer, {
+    INPUT_START: INPUT_START,
+    INPUT_MOVE: INPUT_MOVE,
+    INPUT_END: INPUT_END,
+    INPUT_CANCEL: INPUT_CANCEL,
+
+    STATE_POSSIBLE: STATE_POSSIBLE,
+    STATE_BEGAN: STATE_BEGAN,
+    STATE_CHANGED: STATE_CHANGED,
+    STATE_ENDED: STATE_ENDED,
+    STATE_RECOGNIZED: STATE_RECOGNIZED,
+    STATE_CANCELLED: STATE_CANCELLED,
+    STATE_FAILED: STATE_FAILED,
+
+    DIRECTION_NONE: DIRECTION_NONE,
+    DIRECTION_LEFT: DIRECTION_LEFT,
+    DIRECTION_RIGHT: DIRECTION_RIGHT,
+    DIRECTION_UP: DIRECTION_UP,
+    DIRECTION_DOWN: DIRECTION_DOWN,
+    DIRECTION_HORIZONTAL: DIRECTION_HORIZONTAL,
+    DIRECTION_VERTICAL: DIRECTION_VERTICAL,
+    DIRECTION_ALL: DIRECTION_ALL,
+
+    Manager: Manager,
+    Input: Input,
+    TouchAction: TouchAction,
+
+    TouchInput: TouchInput,
+    MouseInput: MouseInput,
+    PointerEventInput: PointerEventInput,
+    TouchMouseInput: TouchMouseInput,
+    SingleTouchInput: SingleTouchInput,
+
+    Recognizer: Recognizer,
+    AttrRecognizer: AttrRecognizer,
+    Tap: TapRecognizer,
+    Pan: PanRecognizer,
+    Swipe: SwipeRecognizer,
+    Pinch: PinchRecognizer,
+    Rotate: RotateRecognizer,
+    Press: PressRecognizer,
+
+    on: addEventListeners,
+    off: removeEventListeners,
+    each: each,
+    merge: merge,
+    extend: extend,
+    assign: assign,
+    inherit: inherit,
+    bindFn: bindFn,
+    prefixed: prefixed
+});
+
+// this prevents errors when Hammer is loaded in the presence of an AMD
+//  style loader but by script tag, not by the loader.
+var freeGlobal = (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : {})); // jshint ignore:line
+freeGlobal.Hammer = Hammer;
+
+if (typeof define === 'function' && define.amd) {
+    define(function() {
+        return Hammer;
+    });
+} else if (typeof module != 'undefined' && module.exports) {
+    module.exports = Hammer;
+} else {
+    window[exportName] = Hammer;
+}
+
+})(window, document, 'Hammer');
+
+},{}],57:[function(require,module,exports){
+/*
+ Leaflet, a JavaScript library for mobile-friendly interactive maps. http://leafletjs.com
+ (c) 2010-2013, Vladimir Agafonkin
+ (c) 2010-2011, CloudMade
+*/
+(function (window, document, undefined) {
+var oldL = window.L,
+    L = {};
+
+L.version = '0.7.7';
+
+// define Leaflet for Node module pattern loaders, including Browserify
+if (typeof module === 'object' && typeof module.exports === 'object') {
+	module.exports = L;
+
+// define Leaflet as an AMD module
+} else if (typeof define === 'function' && define.amd) {
+	define(L);
+}
+
+// define Leaflet as a global L variable, saving the original L to restore later if needed
+
+L.noConflict = function () {
+	window.L = oldL;
+	return this;
+};
+
+window.L = L;
+
+
+/*
+ * L.Util contains various utility functions used throughout Leaflet code.
+ */
+
+L.Util = {
+	extend: function (dest) { // (Object[, Object, ...]) ->
+		var sources = Array.prototype.slice.call(arguments, 1),
+		    i, j, len, src;
+
+		for (j = 0, len = sources.length; j < len; j++) {
+			src = sources[j] || {};
+			for (i in src) {
+				if (src.hasOwnProperty(i)) {
+					dest[i] = src[i];
+				}
+			}
+		}
+		return dest;
+	},
+
+	bind: function (fn, obj) { // (Function, Object) -> Function
+		var args = arguments.length > 2 ? Array.prototype.slice.call(arguments, 2) : null;
+		return function () {
+			return fn.apply(obj, args || arguments);
+		};
+	},
+
+	stamp: (function () {
+		var lastId = 0,
+		    key = '_leaflet_id';
+		return function (obj) {
+			obj[key] = obj[key] || ++lastId;
+			return obj[key];
+		};
+	}()),
+
+	invokeEach: function (obj, method, context) {
+		var i, args;
+
+		if (typeof obj === 'object') {
+			args = Array.prototype.slice.call(arguments, 3);
+
+			for (i in obj) {
+				method.apply(context, [i, obj[i]].concat(args));
+			}
+			return true;
+		}
+
+		return false;
+	},
+
+	limitExecByInterval: function (fn, time, context) {
+		var lock, execOnUnlock;
+
+		return function wrapperFn() {
+			var args = arguments;
+
+			if (lock) {
+				execOnUnlock = true;
+				return;
+			}
+
+			lock = true;
+
+			setTimeout(function () {
+				lock = false;
+
+				if (execOnUnlock) {
+					wrapperFn.apply(context, args);
+					execOnUnlock = false;
+				}
+			}, time);
+
+			fn.apply(context, args);
+		};
+	},
+
+	falseFn: function () {
+		return false;
+	},
+
+	formatNum: function (num, digits) {
+		var pow = Math.pow(10, digits || 5);
+		return Math.round(num * pow) / pow;
+	},
+
+	trim: function (str) {
+		return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
+	},
+
+	splitWords: function (str) {
+		return L.Util.trim(str).split(/\s+/);
+	},
+
+	setOptions: function (obj, options) {
+		obj.options = L.extend({}, obj.options, options);
+		return obj.options;
+	},
+
+	getParamString: function (obj, existingUrl, uppercase) {
+		var params = [];
+		for (var i in obj) {
+			params.push(encodeURIComponent(uppercase ? i.toUpperCase() : i) + '=' + encodeURIComponent(obj[i]));
+		}
+		return ((!existingUrl || existingUrl.indexOf('?') === -1) ? '?' : '&') + params.join('&');
+	},
+	template: function (str, data) {
+		return str.replace(/\{ *([\w_]+) *\}/g, function (str, key) {
+			var value = data[key];
+			if (value === undefined) {
+				throw new Error('No value provided for variable ' + str);
+			} else if (typeof value === 'function') {
+				value = value(data);
+			}
+			return value;
+		});
+	},
+
+	isArray: Array.isArray || function (obj) {
+		return (Object.prototype.toString.call(obj) === '[object Array]');
+	},
+
+	emptyImageUrl: 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
+};
+
+(function () {
+
+	// inspired by http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+
+	function getPrefixed(name) {
+		var i, fn,
+		    prefixes = ['webkit', 'moz', 'o', 'ms'];
+
+		for (i = 0; i < prefixes.length && !fn; i++) {
+			fn = window[prefixes[i] + name];
+		}
+
+		return fn;
+	}
+
+	var lastTime = 0;
+
+	function timeoutDefer(fn) {
+		var time = +new Date(),
+		    timeToCall = Math.max(0, 16 - (time - lastTime));
+
+		lastTime = time + timeToCall;
+		return window.setTimeout(fn, timeToCall);
+	}
+
+	var requestFn = window.requestAnimationFrame ||
+	        getPrefixed('RequestAnimationFrame') || timeoutDefer;
+
+	var cancelFn = window.cancelAnimationFrame ||
+	        getPrefixed('CancelAnimationFrame') ||
+	        getPrefixed('CancelRequestAnimationFrame') ||
+	        function (id) { window.clearTimeout(id); };
+
+
+	L.Util.requestAnimFrame = function (fn, context, immediate, element) {
+		fn = L.bind(fn, context);
+
+		if (immediate && requestFn === timeoutDefer) {
+			fn();
+		} else {
+			return requestFn.call(window, fn, element);
+		}
+	};
+
+	L.Util.cancelAnimFrame = function (id) {
+		if (id) {
+			cancelFn.call(window, id);
+		}
+	};
+
+}());
+
+// shortcuts for most used utility functions
+L.extend = L.Util.extend;
+L.bind = L.Util.bind;
+L.stamp = L.Util.stamp;
+L.setOptions = L.Util.setOptions;
+
+
+/*
+ * L.Class powers the OOP facilities of the library.
+ * Thanks to John Resig and Dean Edwards for inspiration!
+ */
+
+L.Class = function () {};
+
+L.Class.extend = function (props) {
+
+	// extended class with the new prototype
+	var NewClass = function () {
+
+		// call the constructor
+		if (this.initialize) {
+			this.initialize.apply(this, arguments);
+		}
+
+		// call all constructor hooks
+		if (this._initHooks) {
+			this.callInitHooks();
+		}
+	};
+
+	// instantiate class without calling constructor
+	var F = function () {};
+	F.prototype = this.prototype;
+
+	var proto = new F();
+	proto.constructor = NewClass;
+
+	NewClass.prototype = proto;
+
+	//inherit parent's statics
+	for (var i in this) {
+		if (this.hasOwnProperty(i) && i !== 'prototype') {
+			NewClass[i] = this[i];
+		}
+	}
+
+	// mix static properties into the class
+	if (props.statics) {
+		L.extend(NewClass, props.statics);
+		delete props.statics;
+	}
+
+	// mix includes into the prototype
+	if (props.includes) {
+		L.Util.extend.apply(null, [proto].concat(props.includes));
+		delete props.includes;
+	}
+
+	// merge options
+	if (props.options && proto.options) {
+		props.options = L.extend({}, proto.options, props.options);
+	}
+
+	// mix given properties into the prototype
+	L.extend(proto, props);
+
+	proto._initHooks = [];
+
+	var parent = this;
+	// jshint camelcase: false
+	NewClass.__super__ = parent.prototype;
+
+	// add method for calling all hooks
+	proto.callInitHooks = function () {
+
+		if (this._initHooksCalled) { return; }
+
+		if (parent.prototype.callInitHooks) {
+			parent.prototype.callInitHooks.call(this);
+		}
+
+		this._initHooksCalled = true;
+
+		for (var i = 0, len = proto._initHooks.length; i < len; i++) {
+			proto._initHooks[i].call(this);
+		}
+	};
+
+	return NewClass;
+};
+
+
+// method for adding properties to prototype
+L.Class.include = function (props) {
+	L.extend(this.prototype, props);
+};
+
+// merge new default options to the Class
+L.Class.mergeOptions = function (options) {
+	L.extend(this.prototype.options, options);
+};
+
+// add a constructor hook
+L.Class.addInitHook = function (fn) { // (Function) || (String, args...)
+	var args = Array.prototype.slice.call(arguments, 1);
+
+	var init = typeof fn === 'function' ? fn : function () {
+		this[fn].apply(this, args);
+	};
+
+	this.prototype._initHooks = this.prototype._initHooks || [];
+	this.prototype._initHooks.push(init);
+};
+
+
+/*
+ * L.Mixin.Events is used to add custom events functionality to Leaflet classes.
+ */
+
+var eventsKey = '_leaflet_events';
+
+L.Mixin = {};
+
+L.Mixin.Events = {
+
+	addEventListener: function (types, fn, context) { // (String, Function[, Object]) or (Object[, Object])
+
+		// types can be a map of types/handlers
+		if (L.Util.invokeEach(types, this.addEventListener, this, fn, context)) { return this; }
+
+		var events = this[eventsKey] = this[eventsKey] || {},
+		    contextId = context && context !== this && L.stamp(context),
+		    i, len, event, type, indexKey, indexLenKey, typeIndex;
+
+		// types can be a string of space-separated words
+		types = L.Util.splitWords(types);
+
+		for (i = 0, len = types.length; i < len; i++) {
+			event = {
+				action: fn,
+				context: context || this
+			};
+			type = types[i];
+
+			if (contextId) {
+				// store listeners of a particular context in a separate hash (if it has an id)
+				// gives a major performance boost when removing thousands of map layers
+
+				indexKey = type + '_idx';
+				indexLenKey = indexKey + '_len';
+
+				typeIndex = events[indexKey] = events[indexKey] || {};
+
+				if (!typeIndex[contextId]) {
+					typeIndex[contextId] = [];
+
+					// keep track of the number of keys in the index to quickly check if it's empty
+					events[indexLenKey] = (events[indexLenKey] || 0) + 1;
+				}
+
+				typeIndex[contextId].push(event);
+
+
+			} else {
+				events[type] = events[type] || [];
+				events[type].push(event);
+			}
+		}
+
+		return this;
+	},
+
+	hasEventListeners: function (type) { // (String) -> Boolean
+		var events = this[eventsKey];
+		return !!events && ((type in events && events[type].length > 0) ||
+		                    (type + '_idx' in events && events[type + '_idx_len'] > 0));
+	},
+
+	removeEventListener: function (types, fn, context) { // ([String, Function, Object]) or (Object[, Object])
+
+		if (!this[eventsKey]) {
+			return this;
+		}
+
+		if (!types) {
+			return this.clearAllEventListeners();
+		}
+
+		if (L.Util.invokeEach(types, this.removeEventListener, this, fn, context)) { return this; }
+
+		var events = this[eventsKey],
+		    contextId = context && context !== this && L.stamp(context),
+		    i, len, type, listeners, j, indexKey, indexLenKey, typeIndex, removed;
+
+		types = L.Util.splitWords(types);
+
+		for (i = 0, len = types.length; i < len; i++) {
+			type = types[i];
+			indexKey = type + '_idx';
+			indexLenKey = indexKey + '_len';
+
+			typeIndex = events[indexKey];
+
+			if (!fn) {
+				// clear all listeners for a type if function isn't specified
+				delete events[type];
+				delete events[indexKey];
+				delete events[indexLenKey];
+
+			} else {
+				listeners = contextId && typeIndex ? typeIndex[contextId] : events[type];
+
+				if (listeners) {
+					for (j = listeners.length - 1; j >= 0; j--) {
+						if ((listeners[j].action === fn) && (!context || (listeners[j].context === context))) {
+							removed = listeners.splice(j, 1);
+							// set the old action to a no-op, because it is possible
+							// that the listener is being iterated over as part of a dispatch
+							removed[0].action = L.Util.falseFn;
+						}
+					}
+
+					if (context && typeIndex && (listeners.length === 0)) {
+						delete typeIndex[contextId];
+						events[indexLenKey]--;
+					}
+				}
+			}
+		}
+
+		return this;
+	},
+
+	clearAllEventListeners: function () {
+		delete this[eventsKey];
+		return this;
+	},
+
+	fireEvent: function (type, data) { // (String[, Object])
+		if (!this.hasEventListeners(type)) {
+			return this;
+		}
+
+		var event = L.Util.extend({}, data, { type: type, target: this });
+
+		var events = this[eventsKey],
+		    listeners, i, len, typeIndex, contextId;
+
+		if (events[type]) {
+			// make sure adding/removing listeners inside other listeners won't cause infinite loop
+			listeners = events[type].slice();
+
+			for (i = 0, len = listeners.length; i < len; i++) {
+				listeners[i].action.call(listeners[i].context, event);
+			}
+		}
+
+		// fire event for the context-indexed listeners as well
+		typeIndex = events[type + '_idx'];
+
+		for (contextId in typeIndex) {
+			listeners = typeIndex[contextId].slice();
+
+			if (listeners) {
+				for (i = 0, len = listeners.length; i < len; i++) {
+					listeners[i].action.call(listeners[i].context, event);
+				}
+			}
+		}
+
+		return this;
+	},
+
+	addOneTimeEventListener: function (types, fn, context) {
+
+		if (L.Util.invokeEach(types, this.addOneTimeEventListener, this, fn, context)) { return this; }
+
+		var handler = L.bind(function () {
+			this
+			    .removeEventListener(types, fn, context)
+			    .removeEventListener(types, handler, context);
+		}, this);
+
+		return this
+		    .addEventListener(types, fn, context)
+		    .addEventListener(types, handler, context);
+	}
+};
+
+L.Mixin.Events.on = L.Mixin.Events.addEventListener;
+L.Mixin.Events.off = L.Mixin.Events.removeEventListener;
+L.Mixin.Events.once = L.Mixin.Events.addOneTimeEventListener;
+L.Mixin.Events.fire = L.Mixin.Events.fireEvent;
+
+
+/*
+ * L.Browser handles different browser and feature detections for internal Leaflet use.
+ */
+
+(function () {
+
+	var ie = 'ActiveXObject' in window,
+		ielt9 = ie && !document.addEventListener,
+
+	    // terrible browser detection to work around Safari / iOS / Android browser bugs
+	    ua = navigator.userAgent.toLowerCase(),
+	    webkit = ua.indexOf('webkit') !== -1,
+	    chrome = ua.indexOf('chrome') !== -1,
+	    phantomjs = ua.indexOf('phantom') !== -1,
+	    android = ua.indexOf('android') !== -1,
+	    android23 = ua.search('android [23]') !== -1,
+		gecko = ua.indexOf('gecko') !== -1,
+
+	    mobile = typeof orientation !== undefined + '',
+	    msPointer = !window.PointerEvent && window.MSPointerEvent,
+		pointer = (window.PointerEvent && window.navigator.pointerEnabled) ||
+				  msPointer,
+	    retina = ('devicePixelRatio' in window && window.devicePixelRatio > 1) ||
+	             ('matchMedia' in window && window.matchMedia('(min-resolution:144dpi)') &&
+	              window.matchMedia('(min-resolution:144dpi)').matches),
+
+	    doc = document.documentElement,
+	    ie3d = ie && ('transition' in doc.style),
+	    webkit3d = ('WebKitCSSMatrix' in window) && ('m11' in new window.WebKitCSSMatrix()) && !android23,
+	    gecko3d = 'MozPerspective' in doc.style,
+	    opera3d = 'OTransition' in doc.style,
+	    any3d = !window.L_DISABLE_3D && (ie3d || webkit3d || gecko3d || opera3d) && !phantomjs;
+
+	var touch = !window.L_NO_TOUCH && !phantomjs && (pointer || 'ontouchstart' in window ||
+		(window.DocumentTouch && document instanceof window.DocumentTouch));
+
+	L.Browser = {
+		ie: ie,
+		ielt9: ielt9,
+		webkit: webkit,
+		gecko: gecko && !webkit && !window.opera && !ie,
+
+		android: android,
+		android23: android23,
+
+		chrome: chrome,
+
+		ie3d: ie3d,
+		webkit3d: webkit3d,
+		gecko3d: gecko3d,
+		opera3d: opera3d,
+		any3d: any3d,
+
+		mobile: mobile,
+		mobileWebkit: mobile && webkit,
+		mobileWebkit3d: mobile && webkit3d,
+		mobileOpera: mobile && window.opera,
+
+		touch: touch,
+		msPointer: msPointer,
+		pointer: pointer,
+
+		retina: retina
+	};
+
+}());
+
+
+/*
+ * L.Point represents a point with x and y coordinates.
+ */
+
+L.Point = function (/*Number*/ x, /*Number*/ y, /*Boolean*/ round) {
+	this.x = (round ? Math.round(x) : x);
+	this.y = (round ? Math.round(y) : y);
+};
+
+L.Point.prototype = {
+
+	clone: function () {
+		return new L.Point(this.x, this.y);
+	},
+
+	// non-destructive, returns a new point
+	add: function (point) {
+		return this.clone()._add(L.point(point));
+	},
+
+	// destructive, used directly for performance in situations where it's safe to modify existing point
+	_add: function (point) {
+		this.x += point.x;
+		this.y += point.y;
+		return this;
+	},
+
+	subtract: function (point) {
+		return this.clone()._subtract(L.point(point));
+	},
+
+	_subtract: function (point) {
+		this.x -= point.x;
+		this.y -= point.y;
+		return this;
+	},
+
+	divideBy: function (num) {
+		return this.clone()._divideBy(num);
+	},
+
+	_divideBy: function (num) {
+		this.x /= num;
+		this.y /= num;
+		return this;
+	},
+
+	multiplyBy: function (num) {
+		return this.clone()._multiplyBy(num);
+	},
+
+	_multiplyBy: function (num) {
+		this.x *= num;
+		this.y *= num;
+		return this;
+	},
+
+	round: function () {
+		return this.clone()._round();
+	},
+
+	_round: function () {
+		this.x = Math.round(this.x);
+		this.y = Math.round(this.y);
+		return this;
+	},
+
+	floor: function () {
+		return this.clone()._floor();
+	},
+
+	_floor: function () {
+		this.x = Math.floor(this.x);
+		this.y = Math.floor(this.y);
+		return this;
+	},
+
+	distanceTo: function (point) {
+		point = L.point(point);
+
+		var x = point.x - this.x,
+		    y = point.y - this.y;
+
+		return Math.sqrt(x * x + y * y);
+	},
+
+	equals: function (point) {
+		point = L.point(point);
+
+		return point.x === this.x &&
+		       point.y === this.y;
+	},
+
+	contains: function (point) {
+		point = L.point(point);
+
+		return Math.abs(point.x) <= Math.abs(this.x) &&
+		       Math.abs(point.y) <= Math.abs(this.y);
+	},
+
+	toString: function () {
+		return 'Point(' +
+		        L.Util.formatNum(this.x) + ', ' +
+		        L.Util.formatNum(this.y) + ')';
+	}
+};
+
+L.point = function (x, y, round) {
+	if (x instanceof L.Point) {
+		return x;
+	}
+	if (L.Util.isArray(x)) {
+		return new L.Point(x[0], x[1]);
+	}
+	if (x === undefined || x === null) {
+		return x;
+	}
+	return new L.Point(x, y, round);
+};
+
+
+/*
+ * L.Bounds represents a rectangular area on the screen in pixel coordinates.
+ */
+
+L.Bounds = function (a, b) { //(Point, Point) or Point[]
+	if (!a) { return; }
+
+	var points = b ? [a, b] : a;
+
+	for (var i = 0, len = points.length; i < len; i++) {
+		this.extend(points[i]);
+	}
+};
+
+L.Bounds.prototype = {
+	// extend the bounds to contain the given point
+	extend: function (point) { // (Point)
+		point = L.point(point);
+
+		if (!this.min && !this.max) {
+			this.min = point.clone();
+			this.max = point.clone();
+		} else {
+			this.min.x = Math.min(point.x, this.min.x);
+			this.max.x = Math.max(point.x, this.max.x);
+			this.min.y = Math.min(point.y, this.min.y);
+			this.max.y = Math.max(point.y, this.max.y);
+		}
+		return this;
+	},
+
+	getCenter: function (round) { // (Boolean) -> Point
+		return new L.Point(
+		        (this.min.x + this.max.x) / 2,
+		        (this.min.y + this.max.y) / 2, round);
+	},
+
+	getBottomLeft: function () { // -> Point
+		return new L.Point(this.min.x, this.max.y);
+	},
+
+	getTopRight: function () { // -> Point
+		return new L.Point(this.max.x, this.min.y);
+	},
+
+	getSize: function () {
+		return this.max.subtract(this.min);
+	},
+
+	contains: function (obj) { // (Bounds) or (Point) -> Boolean
+		var min, max;
+
+		if (typeof obj[0] === 'number' || obj instanceof L.Point) {
+			obj = L.point(obj);
+		} else {
+			obj = L.bounds(obj);
+		}
+
+		if (obj instanceof L.Bounds) {
+			min = obj.min;
+			max = obj.max;
+		} else {
+			min = max = obj;
+		}
+
+		return (min.x >= this.min.x) &&
+		       (max.x <= this.max.x) &&
+		       (min.y >= this.min.y) &&
+		       (max.y <= this.max.y);
+	},
+
+	intersects: function (bounds) { // (Bounds) -> Boolean
+		bounds = L.bounds(bounds);
+
+		var min = this.min,
+		    max = this.max,
+		    min2 = bounds.min,
+		    max2 = bounds.max,
+		    xIntersects = (max2.x >= min.x) && (min2.x <= max.x),
+		    yIntersects = (max2.y >= min.y) && (min2.y <= max.y);
+
+		return xIntersects && yIntersects;
+	},
+
+	isValid: function () {
+		return !!(this.min && this.max);
+	}
+};
+
+L.bounds = function (a, b) { // (Bounds) or (Point, Point) or (Point[])
+	if (!a || a instanceof L.Bounds) {
+		return a;
+	}
+	return new L.Bounds(a, b);
+};
+
+
+/*
+ * L.Transformation is an utility class to perform simple point transformations through a 2d-matrix.
+ */
+
+L.Transformation = function (a, b, c, d) {
+	this._a = a;
+	this._b = b;
+	this._c = c;
+	this._d = d;
+};
+
+L.Transformation.prototype = {
+	transform: function (point, scale) { // (Point, Number) -> Point
+		return this._transform(point.clone(), scale);
+	},
+
+	// destructive transform (faster)
+	_transform: function (point, scale) {
+		scale = scale || 1;
+		point.x = scale * (this._a * point.x + this._b);
+		point.y = scale * (this._c * point.y + this._d);
+		return point;
+	},
+
+	untransform: function (point, scale) {
+		scale = scale || 1;
+		return new L.Point(
+		        (point.x / scale - this._b) / this._a,
+		        (point.y / scale - this._d) / this._c);
+	}
+};
+
+
+/*
+ * L.DomUtil contains various utility functions for working with DOM.
+ */
+
+L.DomUtil = {
+	get: function (id) {
+		return (typeof id === 'string' ? document.getElementById(id) : id);
+	},
+
+	getStyle: function (el, style) {
+
+		var value = el.style[style];
+
+		if (!value && el.currentStyle) {
+			value = el.currentStyle[style];
+		}
+
+		if ((!value || value === 'auto') && document.defaultView) {
+			var css = document.defaultView.getComputedStyle(el, null);
+			value = css ? css[style] : null;
+		}
+
+		return value === 'auto' ? null : value;
+	},
+
+	getViewportOffset: function (element) {
+
+		var top = 0,
+		    left = 0,
+		    el = element,
+		    docBody = document.body,
+		    docEl = document.documentElement,
+		    pos;
+
+		do {
+			top  += el.offsetTop  || 0;
+			left += el.offsetLeft || 0;
+
+			//add borders
+			top += parseInt(L.DomUtil.getStyle(el, 'borderTopWidth'), 10) || 0;
+			left += parseInt(L.DomUtil.getStyle(el, 'borderLeftWidth'), 10) || 0;
+
+			pos = L.DomUtil.getStyle(el, 'position');
+
+			if (el.offsetParent === docBody && pos === 'absolute') { break; }
+
+			if (pos === 'fixed') {
+				top  += docBody.scrollTop  || docEl.scrollTop  || 0;
+				left += docBody.scrollLeft || docEl.scrollLeft || 0;
+				break;
+			}
+
+			if (pos === 'relative' && !el.offsetLeft) {
+				var width = L.DomUtil.getStyle(el, 'width'),
+				    maxWidth = L.DomUtil.getStyle(el, 'max-width'),
+				    r = el.getBoundingClientRect();
+
+				if (width !== 'none' || maxWidth !== 'none') {
+					left += r.left + el.clientLeft;
+				}
+
+				//calculate full y offset since we're breaking out of the loop
+				top += r.top + (docBody.scrollTop  || docEl.scrollTop  || 0);
+
+				break;
+			}
+
+			el = el.offsetParent;
+
+		} while (el);
+
+		el = element;
+
+		do {
+			if (el === docBody) { break; }
+
+			top  -= el.scrollTop  || 0;
+			left -= el.scrollLeft || 0;
+
+			el = el.parentNode;
+		} while (el);
+
+		return new L.Point(left, top);
+	},
+
+	documentIsLtr: function () {
+		if (!L.DomUtil._docIsLtrCached) {
+			L.DomUtil._docIsLtrCached = true;
+			L.DomUtil._docIsLtr = L.DomUtil.getStyle(document.body, 'direction') === 'ltr';
+		}
+		return L.DomUtil._docIsLtr;
+	},
+
+	create: function (tagName, className, container) {
+
+		var el = document.createElement(tagName);
+		el.className = className;
+
+		if (container) {
+			container.appendChild(el);
+		}
+
+		return el;
+	},
+
+	hasClass: function (el, name) {
+		if (el.classList !== undefined) {
+			return el.classList.contains(name);
+		}
+		var className = L.DomUtil._getClass(el);
+		return className.length > 0 && new RegExp('(^|\\s)' + name + '(\\s|$)').test(className);
+	},
+
+	addClass: function (el, name) {
+		if (el.classList !== undefined) {
+			var classes = L.Util.splitWords(name);
+			for (var i = 0, len = classes.length; i < len; i++) {
+				el.classList.add(classes[i]);
+			}
+		} else if (!L.DomUtil.hasClass(el, name)) {
+			var className = L.DomUtil._getClass(el);
+			L.DomUtil._setClass(el, (className ? className + ' ' : '') + name);
+		}
+	},
+
+	removeClass: function (el, name) {
+		if (el.classList !== undefined) {
+			el.classList.remove(name);
+		} else {
+			L.DomUtil._setClass(el, L.Util.trim((' ' + L.DomUtil._getClass(el) + ' ').replace(' ' + name + ' ', ' ')));
+		}
+	},
+
+	_setClass: function (el, name) {
+		if (el.className.baseVal === undefined) {
+			el.className = name;
+		} else {
+			// in case of SVG element
+			el.className.baseVal = name;
+		}
+	},
+
+	_getClass: function (el) {
+		return el.className.baseVal === undefined ? el.className : el.className.baseVal;
+	},
+
+	setOpacity: function (el, value) {
+
+		if ('opacity' in el.style) {
+			el.style.opacity = value;
+
+		} else if ('filter' in el.style) {
+
+			var filter = false,
+			    filterName = 'DXImageTransform.Microsoft.Alpha';
+
+			// filters collection throws an error if we try to retrieve a filter that doesn't exist
+			try {
+				filter = el.filters.item(filterName);
+			} catch (e) {
+				// don't set opacity to 1 if we haven't already set an opacity,
+				// it isn't needed and breaks transparent pngs.
+				if (value === 1) { return; }
+			}
+
+			value = Math.round(value * 100);
+
+			if (filter) {
+				filter.Enabled = (value !== 100);
+				filter.Opacity = value;
+			} else {
+				el.style.filter += ' progid:' + filterName + '(opacity=' + value + ')';
+			}
+		}
+	},
+
+	testProp: function (props) {
+
+		var style = document.documentElement.style;
+
+		for (var i = 0; i < props.length; i++) {
+			if (props[i] in style) {
+				return props[i];
+			}
+		}
+		return false;
+	},
+
+	getTranslateString: function (point) {
+		// on WebKit browsers (Chrome/Safari/iOS Safari/Android) using translate3d instead of translate
+		// makes animation smoother as it ensures HW accel is used. Firefox 13 doesn't care
+		// (same speed either way), Opera 12 doesn't support translate3d
+
+		var is3d = L.Browser.webkit3d,
+		    open = 'translate' + (is3d ? '3d' : '') + '(',
+		    close = (is3d ? ',0' : '') + ')';
+
+		return open + point.x + 'px,' + point.y + 'px' + close;
+	},
+
+	getScaleString: function (scale, origin) {
+
+		var preTranslateStr = L.DomUtil.getTranslateString(origin.add(origin.multiplyBy(-1 * scale))),
+		    scaleStr = ' scale(' + scale + ') ';
+
+		return preTranslateStr + scaleStr;
+	},
+
+	setPosition: function (el, point, disable3D) { // (HTMLElement, Point[, Boolean])
+
+		// jshint camelcase: false
+		el._leaflet_pos = point;
+
+		if (!disable3D && L.Browser.any3d) {
+			el.style[L.DomUtil.TRANSFORM] =  L.DomUtil.getTranslateString(point);
+		} else {
+			el.style.left = point.x + 'px';
+			el.style.top = point.y + 'px';
+		}
+	},
+
+	getPosition: function (el) {
+		// this method is only used for elements previously positioned using setPosition,
+		// so it's safe to cache the position for performance
+
+		// jshint camelcase: false
+		return el._leaflet_pos;
+	}
+};
+
+
+// prefix style property names
+
+L.DomUtil.TRANSFORM = L.DomUtil.testProp(
+        ['transform', 'WebkitTransform', 'OTransform', 'MozTransform', 'msTransform']);
+
+// webkitTransition comes first because some browser versions that drop vendor prefix don't do
+// the same for the transitionend event, in particular the Android 4.1 stock browser
+
+L.DomUtil.TRANSITION = L.DomUtil.testProp(
+        ['webkitTransition', 'transition', 'OTransition', 'MozTransition', 'msTransition']);
+
+L.DomUtil.TRANSITION_END =
+        L.DomUtil.TRANSITION === 'webkitTransition' || L.DomUtil.TRANSITION === 'OTransition' ?
+        L.DomUtil.TRANSITION + 'End' : 'transitionend';
+
+(function () {
+    if ('onselectstart' in document) {
+        L.extend(L.DomUtil, {
+            disableTextSelection: function () {
+                L.DomEvent.on(window, 'selectstart', L.DomEvent.preventDefault);
+            },
+
+            enableTextSelection: function () {
+                L.DomEvent.off(window, 'selectstart', L.DomEvent.preventDefault);
+            }
+        });
+    } else {
+        var userSelectProperty = L.DomUtil.testProp(
+            ['userSelect', 'WebkitUserSelect', 'OUserSelect', 'MozUserSelect', 'msUserSelect']);
+
+        L.extend(L.DomUtil, {
+            disableTextSelection: function () {
+                if (userSelectProperty) {
+                    var style = document.documentElement.style;
+                    this._userSelect = style[userSelectProperty];
+                    style[userSelectProperty] = 'none';
+                }
+            },
+
+            enableTextSelection: function () {
+                if (userSelectProperty) {
+                    document.documentElement.style[userSelectProperty] = this._userSelect;
+                    delete this._userSelect;
+                }
+            }
+        });
+    }
+
+	L.extend(L.DomUtil, {
+		disableImageDrag: function () {
+			L.DomEvent.on(window, 'dragstart', L.DomEvent.preventDefault);
+		},
+
+		enableImageDrag: function () {
+			L.DomEvent.off(window, 'dragstart', L.DomEvent.preventDefault);
+		}
+	});
+})();
+
+
+/*
+ * L.LatLng represents a geographical point with latitude and longitude coordinates.
+ */
+
+L.LatLng = function (lat, lng, alt) { // (Number, Number, Number)
+	lat = parseFloat(lat);
+	lng = parseFloat(lng);
+
+	if (isNaN(lat) || isNaN(lng)) {
+		throw new Error('Invalid LatLng object: (' + lat + ', ' + lng + ')');
+	}
+
+	this.lat = lat;
+	this.lng = lng;
+
+	if (alt !== undefined) {
+		this.alt = parseFloat(alt);
+	}
+};
+
+L.extend(L.LatLng, {
+	DEG_TO_RAD: Math.PI / 180,
+	RAD_TO_DEG: 180 / Math.PI,
+	MAX_MARGIN: 1.0E-9 // max margin of error for the "equals" check
+});
+
+L.LatLng.prototype = {
+	equals: function (obj) { // (LatLng) -> Boolean
+		if (!obj) { return false; }
+
+		obj = L.latLng(obj);
+
+		var margin = Math.max(
+		        Math.abs(this.lat - obj.lat),
+		        Math.abs(this.lng - obj.lng));
+
+		return margin <= L.LatLng.MAX_MARGIN;
+	},
+
+	toString: function (precision) { // (Number) -> String
+		return 'LatLng(' +
+		        L.Util.formatNum(this.lat, precision) + ', ' +
+		        L.Util.formatNum(this.lng, precision) + ')';
+	},
+
+	// Haversine distance formula, see http://en.wikipedia.org/wiki/Haversine_formula
+	// TODO move to projection code, LatLng shouldn't know about Earth
+	distanceTo: function (other) { // (LatLng) -> Number
+		other = L.latLng(other);
+
+		var R = 6378137, // earth radius in meters
+		    d2r = L.LatLng.DEG_TO_RAD,
+		    dLat = (other.lat - this.lat) * d2r,
+		    dLon = (other.lng - this.lng) * d2r,
+		    lat1 = this.lat * d2r,
+		    lat2 = other.lat * d2r,
+		    sin1 = Math.sin(dLat / 2),
+		    sin2 = Math.sin(dLon / 2);
+
+		var a = sin1 * sin1 + sin2 * sin2 * Math.cos(lat1) * Math.cos(lat2);
+
+		return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+	},
+
+	wrap: function (a, b) { // (Number, Number) -> LatLng
+		var lng = this.lng;
+
+		a = a || -180;
+		b = b ||  180;
+
+		lng = (lng + b) % (b - a) + (lng < a || lng === b ? b : a);
+
+		return new L.LatLng(this.lat, lng);
+	}
+};
+
+L.latLng = function (a, b) { // (LatLng) or ([Number, Number]) or (Number, Number)
+	if (a instanceof L.LatLng) {
+		return a;
+	}
+	if (L.Util.isArray(a)) {
+		if (typeof a[0] === 'number' || typeof a[0] === 'string') {
+			return new L.LatLng(a[0], a[1], a[2]);
+		} else {
+			return null;
+		}
+	}
+	if (a === undefined || a === null) {
+		return a;
+	}
+	if (typeof a === 'object' && 'lat' in a) {
+		return new L.LatLng(a.lat, 'lng' in a ? a.lng : a.lon);
+	}
+	if (b === undefined) {
+		return null;
+	}
+	return new L.LatLng(a, b);
+};
+
+
+
+/*
+ * L.LatLngBounds represents a rectangular area on the map in geographical coordinates.
+ */
+
+L.LatLngBounds = function (southWest, northEast) { // (LatLng, LatLng) or (LatLng[])
+	if (!southWest) { return; }
+
+	var latlngs = northEast ? [southWest, northEast] : southWest;
+
+	for (var i = 0, len = latlngs.length; i < len; i++) {
+		this.extend(latlngs[i]);
+	}
+};
+
+L.LatLngBounds.prototype = {
+	// extend the bounds to contain the given point or bounds
+	extend: function (obj) { // (LatLng) or (LatLngBounds)
+		if (!obj) { return this; }
+
+		var latLng = L.latLng(obj);
+		if (latLng !== null) {
+			obj = latLng;
+		} else {
+			obj = L.latLngBounds(obj);
+		}
+
+		if (obj instanceof L.LatLng) {
+			if (!this._southWest && !this._northEast) {
+				this._southWest = new L.LatLng(obj.lat, obj.lng);
+				this._northEast = new L.LatLng(obj.lat, obj.lng);
+			} else {
+				this._southWest.lat = Math.min(obj.lat, this._southWest.lat);
+				this._southWest.lng = Math.min(obj.lng, this._southWest.lng);
+
+				this._northEast.lat = Math.max(obj.lat, this._northEast.lat);
+				this._northEast.lng = Math.max(obj.lng, this._northEast.lng);
+			}
+		} else if (obj instanceof L.LatLngBounds) {
+			this.extend(obj._southWest);
+			this.extend(obj._northEast);
+		}
+		return this;
+	},
+
+	// extend the bounds by a percentage
+	pad: function (bufferRatio) { // (Number) -> LatLngBounds
+		var sw = this._southWest,
+		    ne = this._northEast,
+		    heightBuffer = Math.abs(sw.lat - ne.lat) * bufferRatio,
+		    widthBuffer = Math.abs(sw.lng - ne.lng) * bufferRatio;
+
+		return new L.LatLngBounds(
+		        new L.LatLng(sw.lat - heightBuffer, sw.lng - widthBuffer),
+		        new L.LatLng(ne.lat + heightBuffer, ne.lng + widthBuffer));
+	},
+
+	getCenter: function () { // -> LatLng
+		return new L.LatLng(
+		        (this._southWest.lat + this._northEast.lat) / 2,
+		        (this._southWest.lng + this._northEast.lng) / 2);
+	},
+
+	getSouthWest: function () {
+		return this._southWest;
+	},
+
+	getNorthEast: function () {
+		return this._northEast;
+	},
+
+	getNorthWest: function () {
+		return new L.LatLng(this.getNorth(), this.getWest());
+	},
+
+	getSouthEast: function () {
+		return new L.LatLng(this.getSouth(), this.getEast());
+	},
+
+	getWest: function () {
+		return this._southWest.lng;
+	},
+
+	getSouth: function () {
+		return this._southWest.lat;
+	},
+
+	getEast: function () {
+		return this._northEast.lng;
+	},
+
+	getNorth: function () {
+		return this._northEast.lat;
+	},
+
+	contains: function (obj) { // (LatLngBounds) or (LatLng) -> Boolean
+		if (typeof obj[0] === 'number' || obj instanceof L.LatLng) {
+			obj = L.latLng(obj);
+		} else {
+			obj = L.latLngBounds(obj);
+		}
+
+		var sw = this._southWest,
+		    ne = this._northEast,
+		    sw2, ne2;
+
+		if (obj instanceof L.LatLngBounds) {
+			sw2 = obj.getSouthWest();
+			ne2 = obj.getNorthEast();
+		} else {
+			sw2 = ne2 = obj;
+		}
+
+		return (sw2.lat >= sw.lat) && (ne2.lat <= ne.lat) &&
+		       (sw2.lng >= sw.lng) && (ne2.lng <= ne.lng);
+	},
+
+	intersects: function (bounds) { // (LatLngBounds)
+		bounds = L.latLngBounds(bounds);
+
+		var sw = this._southWest,
+		    ne = this._northEast,
+		    sw2 = bounds.getSouthWest(),
+		    ne2 = bounds.getNorthEast(),
+
+		    latIntersects = (ne2.lat >= sw.lat) && (sw2.lat <= ne.lat),
+		    lngIntersects = (ne2.lng >= sw.lng) && (sw2.lng <= ne.lng);
+
+		return latIntersects && lngIntersects;
+	},
+
+	toBBoxString: function () {
+		return [this.getWest(), this.getSouth(), this.getEast(), this.getNorth()].join(',');
+	},
+
+	equals: function (bounds) { // (LatLngBounds)
+		if (!bounds) { return false; }
+
+		bounds = L.latLngBounds(bounds);
+
+		return this._southWest.equals(bounds.getSouthWest()) &&
+		       this._northEast.equals(bounds.getNorthEast());
+	},
+
+	isValid: function () {
+		return !!(this._southWest && this._northEast);
+	}
+};
+
+//TODO International date line?
+
+L.latLngBounds = function (a, b) { // (LatLngBounds) or (LatLng, LatLng)
+	if (!a || a instanceof L.LatLngBounds) {
+		return a;
+	}
+	return new L.LatLngBounds(a, b);
+};
+
+
+/*
+ * L.Projection contains various geographical projections used by CRS classes.
+ */
+
+L.Projection = {};
+
+
+/*
+ * Spherical Mercator is the most popular map projection, used by EPSG:3857 CRS used by default.
+ */
+
+L.Projection.SphericalMercator = {
+	MAX_LATITUDE: 85.0511287798,
+
+	project: function (latlng) { // (LatLng) -> Point
+		var d = L.LatLng.DEG_TO_RAD,
+		    max = this.MAX_LATITUDE,
+		    lat = Math.max(Math.min(max, latlng.lat), -max),
+		    x = latlng.lng * d,
+		    y = lat * d;
+
+		y = Math.log(Math.tan((Math.PI / 4) + (y / 2)));
+
+		return new L.Point(x, y);
+	},
+
+	unproject: function (point) { // (Point, Boolean) -> LatLng
+		var d = L.LatLng.RAD_TO_DEG,
+		    lng = point.x * d,
+		    lat = (2 * Math.atan(Math.exp(point.y)) - (Math.PI / 2)) * d;
+
+		return new L.LatLng(lat, lng);
+	}
+};
+
+
+/*
+ * Simple equirectangular (Plate Carree) projection, used by CRS like EPSG:4326 and Simple.
+ */
+
+L.Projection.LonLat = {
+	project: function (latlng) {
+		return new L.Point(latlng.lng, latlng.lat);
+	},
+
+	unproject: function (point) {
+		return new L.LatLng(point.y, point.x);
+	}
+};
+
+
+/*
+ * L.CRS is a base object for all defined CRS (Coordinate Reference Systems) in Leaflet.
+ */
+
+L.CRS = {
+	latLngToPoint: function (latlng, zoom) { // (LatLng, Number) -> Point
+		var projectedPoint = this.projection.project(latlng),
+		    scale = this.scale(zoom);
+
+		return this.transformation._transform(projectedPoint, scale);
+	},
+
+	pointToLatLng: function (point, zoom) { // (Point, Number[, Boolean]) -> LatLng
+		var scale = this.scale(zoom),
+		    untransformedPoint = this.transformation.untransform(point, scale);
+
+		return this.projection.unproject(untransformedPoint);
+	},
+
+	project: function (latlng) {
+		return this.projection.project(latlng);
+	},
+
+	scale: function (zoom) {
+		return 256 * Math.pow(2, zoom);
+	},
+
+	getSize: function (zoom) {
+		var s = this.scale(zoom);
+		return L.point(s, s);
+	}
+};
+
+
+/*
+ * A simple CRS that can be used for flat non-Earth maps like panoramas or game maps.
+ */
+
+L.CRS.Simple = L.extend({}, L.CRS, {
+	projection: L.Projection.LonLat,
+	transformation: new L.Transformation(1, 0, -1, 0),
+
+	scale: function (zoom) {
+		return Math.pow(2, zoom);
+	}
+});
+
+
+/*
+ * L.CRS.EPSG3857 (Spherical Mercator) is the most common CRS for web mapping
+ * and is used by Leaflet by default.
+ */
+
+L.CRS.EPSG3857 = L.extend({}, L.CRS, {
+	code: 'EPSG:3857',
+
+	projection: L.Projection.SphericalMercator,
+	transformation: new L.Transformation(0.5 / Math.PI, 0.5, -0.5 / Math.PI, 0.5),
+
+	project: function (latlng) { // (LatLng) -> Point
+		var projectedPoint = this.projection.project(latlng),
+		    earthRadius = 6378137;
+		return projectedPoint.multiplyBy(earthRadius);
+	}
+});
+
+L.CRS.EPSG900913 = L.extend({}, L.CRS.EPSG3857, {
+	code: 'EPSG:900913'
+});
+
+
+/*
+ * L.CRS.EPSG4326 is a CRS popular among advanced GIS specialists.
+ */
+
+L.CRS.EPSG4326 = L.extend({}, L.CRS, {
+	code: 'EPSG:4326',
+
+	projection: L.Projection.LonLat,
+	transformation: new L.Transformation(1 / 360, 0.5, -1 / 360, 0.5)
+});
+
+
+/*
+ * L.Map is the central class of the API - it is used to create a map.
+ */
+
+L.Map = L.Class.extend({
+
+	includes: L.Mixin.Events,
+
+	options: {
+		crs: L.CRS.EPSG3857,
+
+		/*
+		center: LatLng,
+		zoom: Number,
+		layers: Array,
+		*/
+
+		fadeAnimation: L.DomUtil.TRANSITION && !L.Browser.android23,
+		trackResize: true,
+		markerZoomAnimation: L.DomUtil.TRANSITION && L.Browser.any3d
+	},
+
+	initialize: function (id, options) { // (HTMLElement or String, Object)
+		options = L.setOptions(this, options);
+
+
+		this._initContainer(id);
+		this._initLayout();
+
+		// hack for https://github.com/Leaflet/Leaflet/issues/1980
+		this._onResize = L.bind(this._onResize, this);
+
+		this._initEvents();
+
+		if (options.maxBounds) {
+			this.setMaxBounds(options.maxBounds);
+		}
+
+		if (options.center && options.zoom !== undefined) {
+			this.setView(L.latLng(options.center), options.zoom, {reset: true});
+		}
+
+		this._handlers = [];
+
+		this._layers = {};
+		this._zoomBoundLayers = {};
+		this._tileLayersNum = 0;
+
+		this.callInitHooks();
+
+		this._addLayers(options.layers);
+	},
+
+
+	// public methods that modify map state
+
+	// replaced by animation-powered implementation in Map.PanAnimation.js
+	setView: function (center, zoom) {
+		zoom = zoom === undefined ? this.getZoom() : zoom;
+		this._resetView(L.latLng(center), this._limitZoom(zoom));
+		return this;
+	},
+
+	setZoom: function (zoom, options) {
+		if (!this._loaded) {
+			this._zoom = this._limitZoom(zoom);
+			return this;
+		}
+		return this.setView(this.getCenter(), zoom, {zoom: options});
+	},
+
+	zoomIn: function (delta, options) {
+		return this.setZoom(this._zoom + (delta || 1), options);
+	},
+
+	zoomOut: function (delta, options) {
+		return this.setZoom(this._zoom - (delta || 1), options);
+	},
+
+	setZoomAround: function (latlng, zoom, options) {
+		var scale = this.getZoomScale(zoom),
+		    viewHalf = this.getSize().divideBy(2),
+		    containerPoint = latlng instanceof L.Point ? latlng : this.latLngToContainerPoint(latlng),
+
+		    centerOffset = containerPoint.subtract(viewHalf).multiplyBy(1 - 1 / scale),
+		    newCenter = this.containerPointToLatLng(viewHalf.add(centerOffset));
+
+		return this.setView(newCenter, zoom, {zoom: options});
+	},
+
+	fitBounds: function (bounds, options) {
+
+		options = options || {};
+		bounds = bounds.getBounds ? bounds.getBounds() : L.latLngBounds(bounds);
+
+		var paddingTL = L.point(options.paddingTopLeft || options.padding || [0, 0]),
+		    paddingBR = L.point(options.paddingBottomRight || options.padding || [0, 0]),
+
+		    zoom = this.getBoundsZoom(bounds, false, paddingTL.add(paddingBR));
+
+		zoom = (options.maxZoom) ? Math.min(options.maxZoom, zoom) : zoom;
+
+		var paddingOffset = paddingBR.subtract(paddingTL).divideBy(2),
+
+		    swPoint = this.project(bounds.getSouthWest(), zoom),
+		    nePoint = this.project(bounds.getNorthEast(), zoom),
+		    center = this.unproject(swPoint.add(nePoint).divideBy(2).add(paddingOffset), zoom);
+
+		return this.setView(center, zoom, options);
+	},
+
+	fitWorld: function (options) {
+		return this.fitBounds([[-90, -180], [90, 180]], options);
+	},
+
+	panTo: function (center, options) { // (LatLng)
+		return this.setView(center, this._zoom, {pan: options});
+	},
+
+	panBy: function (offset) { // (Point)
+		// replaced with animated panBy in Map.PanAnimation.js
+		this.fire('movestart');
+
+		this._rawPanBy(L.point(offset));
+
+		this.fire('move');
+		return this.fire('moveend');
+	},
+
+	setMaxBounds: function (bounds) {
+		bounds = L.latLngBounds(bounds);
+
+		this.options.maxBounds = bounds;
+
+		if (!bounds) {
+			return this.off('moveend', this._panInsideMaxBounds, this);
+		}
+
+		if (this._loaded) {
+			this._panInsideMaxBounds();
+		}
+
+		return this.on('moveend', this._panInsideMaxBounds, this);
+	},
+
+	panInsideBounds: function (bounds, options) {
+		var center = this.getCenter(),
+			newCenter = this._limitCenter(center, this._zoom, bounds);
+
+		if (center.equals(newCenter)) { return this; }
+
+		return this.panTo(newCenter, options);
+	},
+
+	addLayer: function (layer) {
+		// TODO method is too big, refactor
+
+		var id = L.stamp(layer);
+
+		if (this._layers[id]) { return this; }
+
+		this._layers[id] = layer;
+
+		// TODO getMaxZoom, getMinZoom in ILayer (instead of options)
+		if (layer.options && (!isNaN(layer.options.maxZoom) || !isNaN(layer.options.minZoom))) {
+			this._zoomBoundLayers[id] = layer;
+			this._updateZoomLevels();
+		}
+
+		// TODO looks ugly, refactor!!!
+		if (this.options.zoomAnimation && L.TileLayer && (layer instanceof L.TileLayer)) {
+			this._tileLayersNum++;
+			this._tileLayersToLoad++;
+			layer.on('load', this._onTileLayerLoad, this);
+		}
+
+		if (this._loaded) {
+			this._layerAdd(layer);
+		}
+
+		return this;
+	},
+
+	removeLayer: function (layer) {
+		var id = L.stamp(layer);
+
+		if (!this._layers[id]) { return this; }
+
+		if (this._loaded) {
+			layer.onRemove(this);
+		}
+
+		delete this._layers[id];
+
+		if (this._loaded) {
+			this.fire('layerremove', {layer: layer});
+		}
+
+		if (this._zoomBoundLayers[id]) {
+			delete this._zoomBoundLayers[id];
+			this._updateZoomLevels();
+		}
+
+		// TODO looks ugly, refactor
+		if (this.options.zoomAnimation && L.TileLayer && (layer instanceof L.TileLayer)) {
+			this._tileLayersNum--;
+			this._tileLayersToLoad--;
+			layer.off('load', this._onTileLayerLoad, this);
+		}
+
+		return this;
+	},
+
+	hasLayer: function (layer) {
+		if (!layer) { return false; }
+
+		return (L.stamp(layer) in this._layers);
+	},
+
+	eachLayer: function (method, context) {
+		for (var i in this._layers) {
+			method.call(context, this._layers[i]);
+		}
+		return this;
+	},
+
+	invalidateSize: function (options) {
+		if (!this._loaded) { return this; }
+
+		options = L.extend({
+			animate: false,
+			pan: true
+		}, options === true ? {animate: true} : options);
+
+		var oldSize = this.getSize();
+		this._sizeChanged = true;
+		this._initialCenter = null;
+
+		var newSize = this.getSize(),
+		    oldCenter = oldSize.divideBy(2).round(),
+		    newCenter = newSize.divideBy(2).round(),
+		    offset = oldCenter.subtract(newCenter);
+
+		if (!offset.x && !offset.y) { return this; }
+
+		if (options.animate && options.pan) {
+			this.panBy(offset);
+
+		} else {
+			if (options.pan) {
+				this._rawPanBy(offset);
+			}
+
+			this.fire('move');
+
+			if (options.debounceMoveend) {
+				clearTimeout(this._sizeTimer);
+				this._sizeTimer = setTimeout(L.bind(this.fire, this, 'moveend'), 200);
+			} else {
+				this.fire('moveend');
+			}
+		}
+
+		return this.fire('resize', {
+			oldSize: oldSize,
+			newSize: newSize
+		});
+	},
+
+	// TODO handler.addTo
+	addHandler: function (name, HandlerClass) {
+		if (!HandlerClass) { return this; }
+
+		var handler = this[name] = new HandlerClass(this);
+
+		this._handlers.push(handler);
+
+		if (this.options[name]) {
+			handler.enable();
+		}
+
+		return this;
+	},
+
+	remove: function () {
+		if (this._loaded) {
+			this.fire('unload');
+		}
+
+		this._initEvents('off');
+
+		try {
+			// throws error in IE6-8
+			delete this._container._leaflet;
+		} catch (e) {
+			this._container._leaflet = undefined;
+		}
+
+		this._clearPanes();
+		if (this._clearControlPos) {
+			this._clearControlPos();
+		}
+
+		this._clearHandlers();
+
+		return this;
+	},
+
+
+	// public methods for getting map state
+
+	getCenter: function () { // (Boolean) -> LatLng
+		this._checkIfLoaded();
+
+		if (this._initialCenter && !this._moved()) {
+			return this._initialCenter;
+		}
+		return this.layerPointToLatLng(this._getCenterLayerPoint());
+	},
+
+	getZoom: function () {
+		return this._zoom;
+	},
+
+	getBounds: function () {
+		var bounds = this.getPixelBounds(),
+		    sw = this.unproject(bounds.getBottomLeft()),
+		    ne = this.unproject(bounds.getTopRight());
+
+		return new L.LatLngBounds(sw, ne);
+	},
+
+	getMinZoom: function () {
+		return this.options.minZoom === undefined ?
+			(this._layersMinZoom === undefined ? 0 : this._layersMinZoom) :
+			this.options.minZoom;
+	},
+
+	getMaxZoom: function () {
+		return this.options.maxZoom === undefined ?
+			(this._layersMaxZoom === undefined ? Infinity : this._layersMaxZoom) :
+			this.options.maxZoom;
+	},
+
+	getBoundsZoom: function (bounds, inside, padding) { // (LatLngBounds[, Boolean, Point]) -> Number
+		bounds = L.latLngBounds(bounds);
+
+		var zoom = this.getMinZoom() - (inside ? 1 : 0),
+		    maxZoom = this.getMaxZoom(),
+		    size = this.getSize(),
+
+		    nw = bounds.getNorthWest(),
+		    se = bounds.getSouthEast(),
+
+		    zoomNotFound = true,
+		    boundsSize;
+
+		padding = L.point(padding || [0, 0]);
+
+		do {
+			zoom++;
+			boundsSize = this.project(se, zoom).subtract(this.project(nw, zoom)).add(padding);
+			zoomNotFound = !inside ? size.contains(boundsSize) : boundsSize.x < size.x || boundsSize.y < size.y;
+
+		} while (zoomNotFound && zoom <= maxZoom);
+
+		if (zoomNotFound && inside) {
+			return null;
+		}
+
+		return inside ? zoom : zoom - 1;
+	},
+
+	getSize: function () {
+		if (!this._size || this._sizeChanged) {
+			this._size = new L.Point(
+				this._container.clientWidth,
+				this._container.clientHeight);
+
+			this._sizeChanged = false;
+		}
+		return this._size.clone();
+	},
+
+	getPixelBounds: function () {
+		var topLeftPoint = this._getTopLeftPoint();
+		return new L.Bounds(topLeftPoint, topLeftPoint.add(this.getSize()));
+	},
+
+	getPixelOrigin: function () {
+		this._checkIfLoaded();
+		return this._initialTopLeftPoint;
+	},
+
+	getPanes: function () {
+		return this._panes;
+	},
+
+	getContainer: function () {
+		return this._container;
+	},
+
+
+	// TODO replace with universal implementation after refactoring projections
+
+	getZoomScale: function (toZoom) {
+		var crs = this.options.crs;
+		return crs.scale(toZoom) / crs.scale(this._zoom);
+	},
+
+	getScaleZoom: function (scale) {
+		return this._zoom + (Math.log(scale) / Math.LN2);
+	},
+
+
+	// conversion methods
+
+	project: function (latlng, zoom) { // (LatLng[, Number]) -> Point
+		zoom = zoom === undefined ? this._zoom : zoom;
+		return this.options.crs.latLngToPoint(L.latLng(latlng), zoom);
+	},
+
+	unproject: function (point, zoom) { // (Point[, Number]) -> LatLng
+		zoom = zoom === undefined ? this._zoom : zoom;
+		return this.options.crs.pointToLatLng(L.point(point), zoom);
+	},
+
+	layerPointToLatLng: function (point) { // (Point)
+		var projectedPoint = L.point(point).add(this.getPixelOrigin());
+		return this.unproject(projectedPoint);
+	},
+
+	latLngToLayerPoint: function (latlng) { // (LatLng)
+		var projectedPoint = this.project(L.latLng(latlng))._round();
+		return projectedPoint._subtract(this.getPixelOrigin());
+	},
+
+	containerPointToLayerPoint: function (point) { // (Point)
+		return L.point(point).subtract(this._getMapPanePos());
+	},
+
+	layerPointToContainerPoint: function (point) { // (Point)
+		return L.point(point).add(this._getMapPanePos());
+	},
+
+	containerPointToLatLng: function (point) {
+		var layerPoint = this.containerPointToLayerPoint(L.point(point));
+		return this.layerPointToLatLng(layerPoint);
+	},
+
+	latLngToContainerPoint: function (latlng) {
+		return this.layerPointToContainerPoint(this.latLngToLayerPoint(L.latLng(latlng)));
+	},
+
+	mouseEventToContainerPoint: function (e) { // (MouseEvent)
+		return L.DomEvent.getMousePosition(e, this._container);
+	},
+
+	mouseEventToLayerPoint: function (e) { // (MouseEvent)
+		return this.containerPointToLayerPoint(this.mouseEventToContainerPoint(e));
+	},
+
+	mouseEventToLatLng: function (e) { // (MouseEvent)
+		return this.layerPointToLatLng(this.mouseEventToLayerPoint(e));
+	},
+
+
+	// map initialization methods
+
+	_initContainer: function (id) {
+		var container = this._container = L.DomUtil.get(id);
+
+		if (!container) {
+			throw new Error('Map container not found.');
+		} else if (container._leaflet) {
+			throw new Error('Map container is already initialized.');
+		}
+
+		container._leaflet = true;
+	},
+
+	_initLayout: function () {
+		var container = this._container;
+
+		L.DomUtil.addClass(container, 'leaflet-container' +
+			(L.Browser.touch ? ' leaflet-touch' : '') +
+			(L.Browser.retina ? ' leaflet-retina' : '') +
+			(L.Browser.ielt9 ? ' leaflet-oldie' : '') +
+			(this.options.fadeAnimation ? ' leaflet-fade-anim' : ''));
+
+		var position = L.DomUtil.getStyle(container, 'position');
+
+		if (position !== 'absolute' && position !== 'relative' && position !== 'fixed') {
+			container.style.position = 'relative';
+		}
+
+		this._initPanes();
+
+		if (this._initControlPos) {
+			this._initControlPos();
+		}
+	},
+
+	_initPanes: function () {
+		var panes = this._panes = {};
+
+		this._mapPane = panes.mapPane = this._createPane('leaflet-map-pane', this._container);
+
+		this._tilePane = panes.tilePane = this._createPane('leaflet-tile-pane', this._mapPane);
+		panes.objectsPane = this._createPane('leaflet-objects-pane', this._mapPane);
+		panes.shadowPane = this._createPane('leaflet-shadow-pane');
+		panes.overlayPane = this._createPane('leaflet-overlay-pane');
+		panes.markerPane = this._createPane('leaflet-marker-pane');
+		panes.popupPane = this._createPane('leaflet-popup-pane');
+
+		var zoomHide = ' leaflet-zoom-hide';
+
+		if (!this.options.markerZoomAnimation) {
+			L.DomUtil.addClass(panes.markerPane, zoomHide);
+			L.DomUtil.addClass(panes.shadowPane, zoomHide);
+			L.DomUtil.addClass(panes.popupPane, zoomHide);
+		}
+	},
+
+	_createPane: function (className, container) {
+		return L.DomUtil.create('div', className, container || this._panes.objectsPane);
+	},
+
+	_clearPanes: function () {
+		this._container.removeChild(this._mapPane);
+	},
+
+	_addLayers: function (layers) {
+		layers = layers ? (L.Util.isArray(layers) ? layers : [layers]) : [];
+
+		for (var i = 0, len = layers.length; i < len; i++) {
+			this.addLayer(layers[i]);
+		}
+	},
+
+
+	// private methods that modify map state
+
+	_resetView: function (center, zoom, preserveMapOffset, afterZoomAnim) {
+
+		var zoomChanged = (this._zoom !== zoom);
+
+		if (!afterZoomAnim) {
+			this.fire('movestart');
+
+			if (zoomChanged) {
+				this.fire('zoomstart');
+			}
+		}
+
+		this._zoom = zoom;
+		this._initialCenter = center;
+
+		this._initialTopLeftPoint = this._getNewTopLeftPoint(center);
+
+		if (!preserveMapOffset) {
+			L.DomUtil.setPosition(this._mapPane, new L.Point(0, 0));
+		} else {
+			this._initialTopLeftPoint._add(this._getMapPanePos());
+		}
+
+		this._tileLayersToLoad = this._tileLayersNum;
+
+		var loading = !this._loaded;
+		this._loaded = true;
+
+		this.fire('viewreset', {hard: !preserveMapOffset});
+
+		if (loading) {
+			this.fire('load');
+			this.eachLayer(this._layerAdd, this);
+		}
+
+		this.fire('move');
+
+		if (zoomChanged || afterZoomAnim) {
+			this.fire('zoomend');
+		}
+
+		this.fire('moveend', {hard: !preserveMapOffset});
+	},
+
+	_rawPanBy: function (offset) {
+		L.DomUtil.setPosition(this._mapPane, this._getMapPanePos().subtract(offset));
+	},
+
+	_getZoomSpan: function () {
+		return this.getMaxZoom() - this.getMinZoom();
+	},
+
+	_updateZoomLevels: function () {
+		var i,
+			minZoom = Infinity,
+			maxZoom = -Infinity,
+			oldZoomSpan = this._getZoomSpan();
+
+		for (i in this._zoomBoundLayers) {
+			var layer = this._zoomBoundLayers[i];
+			if (!isNaN(layer.options.minZoom)) {
+				minZoom = Math.min(minZoom, layer.options.minZoom);
+			}
+			if (!isNaN(layer.options.maxZoom)) {
+				maxZoom = Math.max(maxZoom, layer.options.maxZoom);
+			}
+		}
+
+		if (i === undefined) { // we have no tilelayers
+			this._layersMaxZoom = this._layersMinZoom = undefined;
+		} else {
+			this._layersMaxZoom = maxZoom;
+			this._layersMinZoom = minZoom;
+		}
+
+		if (oldZoomSpan !== this._getZoomSpan()) {
+			this.fire('zoomlevelschange');
+		}
+	},
+
+	_panInsideMaxBounds: function () {
+		this.panInsideBounds(this.options.maxBounds);
+	},
+
+	_checkIfLoaded: function () {
+		if (!this._loaded) {
+			throw new Error('Set map center and zoom first.');
+		}
+	},
+
+	// map events
+
+	_initEvents: function (onOff) {
+		if (!L.DomEvent) { return; }
+
+		onOff = onOff || 'on';
+
+		L.DomEvent[onOff](this._container, 'click', this._onMouseClick, this);
+
+		var events = ['dblclick', 'mousedown', 'mouseup', 'mouseenter',
+		              'mouseleave', 'mousemove', 'contextmenu'],
+		    i, len;
+
+		for (i = 0, len = events.length; i < len; i++) {
+			L.DomEvent[onOff](this._container, events[i], this._fireMouseEvent, this);
+		}
+
+		if (this.options.trackResize) {
+			L.DomEvent[onOff](window, 'resize', this._onResize, this);
+		}
+	},
+
+	_onResize: function () {
+		L.Util.cancelAnimFrame(this._resizeRequest);
+		this._resizeRequest = L.Util.requestAnimFrame(
+		        function () { this.invalidateSize({debounceMoveend: true}); }, this, false, this._container);
+	},
+
+	_onMouseClick: function (e) {
+		if (!this._loaded || (!e._simulated &&
+		        ((this.dragging && this.dragging.moved()) ||
+		         (this.boxZoom  && this.boxZoom.moved()))) ||
+		            L.DomEvent._skipped(e)) { return; }
+
+		this.fire('preclick');
+		this._fireMouseEvent(e);
+	},
+
+	_fireMouseEvent: function (e) {
+		if (!this._loaded || L.DomEvent._skipped(e)) { return; }
+
+		var type = e.type;
+
+		type = (type === 'mouseenter' ? 'mouseover' : (type === 'mouseleave' ? 'mouseout' : type));
+
+		if (!this.hasEventListeners(type)) { return; }
+
+		if (type === 'contextmenu') {
+			L.DomEvent.preventDefault(e);
+		}
+
+		var containerPoint = this.mouseEventToContainerPoint(e),
+		    layerPoint = this.containerPointToLayerPoint(containerPoint),
+		    latlng = this.layerPointToLatLng(layerPoint);
+
+		this.fire(type, {
+			latlng: latlng,
+			layerPoint: layerPoint,
+			containerPoint: containerPoint,
+			originalEvent: e
+		});
+	},
+
+	_onTileLayerLoad: function () {
+		this._tileLayersToLoad--;
+		if (this._tileLayersNum && !this._tileLayersToLoad) {
+			this.fire('tilelayersload');
+		}
+	},
+
+	_clearHandlers: function () {
+		for (var i = 0, len = this._handlers.length; i < len; i++) {
+			this._handlers[i].disable();
+		}
+	},
+
+	whenReady: function (callback, context) {
+		if (this._loaded) {
+			callback.call(context || this, this);
+		} else {
+			this.on('load', callback, context);
+		}
+		return this;
+	},
+
+	_layerAdd: function (layer) {
+		layer.onAdd(this);
+		this.fire('layeradd', {layer: layer});
+	},
+
+
+	// private methods for getting map state
+
+	_getMapPanePos: function () {
+		return L.DomUtil.getPosition(this._mapPane);
+	},
+
+	_moved: function () {
+		var pos = this._getMapPanePos();
+		return pos && !pos.equals([0, 0]);
+	},
+
+	_getTopLeftPoint: function () {
+		return this.getPixelOrigin().subtract(this._getMapPanePos());
+	},
+
+	_getNewTopLeftPoint: function (center, zoom) {
+		var viewHalf = this.getSize()._divideBy(2);
+		// TODO round on display, not calculation to increase precision?
+		return this.project(center, zoom)._subtract(viewHalf)._round();
+	},
+
+	_latLngToNewLayerPoint: function (latlng, newZoom, newCenter) {
+		var topLeft = this._getNewTopLeftPoint(newCenter, newZoom).add(this._getMapPanePos());
+		return this.project(latlng, newZoom)._subtract(topLeft);
+	},
+
+	// layer point of the current center
+	_getCenterLayerPoint: function () {
+		return this.containerPointToLayerPoint(this.getSize()._divideBy(2));
+	},
+
+	// offset of the specified place to the current center in pixels
+	_getCenterOffset: function (latlng) {
+		return this.latLngToLayerPoint(latlng).subtract(this._getCenterLayerPoint());
+	},
+
+	// adjust center for view to get inside bounds
+	_limitCenter: function (center, zoom, bounds) {
+
+		if (!bounds) { return center; }
+
+		var centerPoint = this.project(center, zoom),
+		    viewHalf = this.getSize().divideBy(2),
+		    viewBounds = new L.Bounds(centerPoint.subtract(viewHalf), centerPoint.add(viewHalf)),
+		    offset = this._getBoundsOffset(viewBounds, bounds, zoom);
+
+		return this.unproject(centerPoint.add(offset), zoom);
+	},
+
+	// adjust offset for view to get inside bounds
+	_limitOffset: function (offset, bounds) {
+		if (!bounds) { return offset; }
+
+		var viewBounds = this.getPixelBounds(),
+		    newBounds = new L.Bounds(viewBounds.min.add(offset), viewBounds.max.add(offset));
+
+		return offset.add(this._getBoundsOffset(newBounds, bounds));
+	},
+
+	// returns offset needed for pxBounds to get inside maxBounds at a specified zoom
+	_getBoundsOffset: function (pxBounds, maxBounds, zoom) {
+		var nwOffset = this.project(maxBounds.getNorthWest(), zoom).subtract(pxBounds.min),
+		    seOffset = this.project(maxBounds.getSouthEast(), zoom).subtract(pxBounds.max),
+
+		    dx = this._rebound(nwOffset.x, -seOffset.x),
+		    dy = this._rebound(nwOffset.y, -seOffset.y);
+
+		return new L.Point(dx, dy);
+	},
+
+	_rebound: function (left, right) {
+		return left + right > 0 ?
+			Math.round(left - right) / 2 :
+			Math.max(0, Math.ceil(left)) - Math.max(0, Math.floor(right));
+	},
+
+	_limitZoom: function (zoom) {
+		var min = this.getMinZoom(),
+		    max = this.getMaxZoom();
+
+		return Math.max(min, Math.min(max, zoom));
+	}
+});
+
+L.map = function (id, options) {
+	return new L.Map(id, options);
+};
+
+
+/*
+ * Mercator projection that takes into account that the Earth is not a perfect sphere.
+ * Less popular than spherical mercator; used by projections like EPSG:3395.
+ */
+
+L.Projection.Mercator = {
+	MAX_LATITUDE: 85.0840591556,
+
+	R_MINOR: 6356752.314245179,
+	R_MAJOR: 6378137,
+
+	project: function (latlng) { // (LatLng) -> Point
+		var d = L.LatLng.DEG_TO_RAD,
+		    max = this.MAX_LATITUDE,
+		    lat = Math.max(Math.min(max, latlng.lat), -max),
+		    r = this.R_MAJOR,
+		    r2 = this.R_MINOR,
+		    x = latlng.lng * d * r,
+		    y = lat * d,
+		    tmp = r2 / r,
+		    eccent = Math.sqrt(1.0 - tmp * tmp),
+		    con = eccent * Math.sin(y);
+
+		con = Math.pow((1 - con) / (1 + con), eccent * 0.5);
+
+		var ts = Math.tan(0.5 * ((Math.PI * 0.5) - y)) / con;
+		y = -r * Math.log(ts);
+
+		return new L.Point(x, y);
+	},
+
+	unproject: function (point) { // (Point, Boolean) -> LatLng
+		var d = L.LatLng.RAD_TO_DEG,
+		    r = this.R_MAJOR,
+		    r2 = this.R_MINOR,
+		    lng = point.x * d / r,
+		    tmp = r2 / r,
+		    eccent = Math.sqrt(1 - (tmp * tmp)),
+		    ts = Math.exp(- point.y / r),
+		    phi = (Math.PI / 2) - 2 * Math.atan(ts),
+		    numIter = 15,
+		    tol = 1e-7,
+		    i = numIter,
+		    dphi = 0.1,
+		    con;
+
+		while ((Math.abs(dphi) > tol) && (--i > 0)) {
+			con = eccent * Math.sin(phi);
+			dphi = (Math.PI / 2) - 2 * Math.atan(ts *
+			            Math.pow((1.0 - con) / (1.0 + con), 0.5 * eccent)) - phi;
+			phi += dphi;
+		}
+
+		return new L.LatLng(phi * d, lng);
+	}
+};
+
+
+
+L.CRS.EPSG3395 = L.extend({}, L.CRS, {
+	code: 'EPSG:3395',
+
+	projection: L.Projection.Mercator,
+
+	transformation: (function () {
+		var m = L.Projection.Mercator,
+		    r = m.R_MAJOR,
+		    scale = 0.5 / (Math.PI * r);
+
+		return new L.Transformation(scale, 0.5, -scale, 0.5);
+	}())
+});
+
+
+/*
+ * L.TileLayer is used for standard xyz-numbered tile layers.
+ */
+
+L.TileLayer = L.Class.extend({
+	includes: L.Mixin.Events,
+
+	options: {
+		minZoom: 0,
+		maxZoom: 18,
+		tileSize: 256,
+		subdomains: 'abc',
+		errorTileUrl: '',
+		attribution: '',
+		zoomOffset: 0,
+		opacity: 1,
+		/*
+		maxNativeZoom: null,
+		zIndex: null,
+		tms: false,
+		continuousWorld: false,
+		noWrap: false,
+		zoomReverse: false,
+		detectRetina: false,
+		reuseTiles: false,
+		bounds: false,
+		*/
+		unloadInvisibleTiles: L.Browser.mobile,
+		updateWhenIdle: L.Browser.mobile
+	},
+
+	initialize: function (url, options) {
+		options = L.setOptions(this, options);
+
+		// detecting retina displays, adjusting tileSize and zoom levels
+		if (options.detectRetina && L.Browser.retina && options.maxZoom > 0) {
+
+			options.tileSize = Math.floor(options.tileSize / 2);
+			options.zoomOffset++;
+
+			if (options.minZoom > 0) {
+				options.minZoom--;
+			}
+			this.options.maxZoom--;
+		}
+
+		if (options.bounds) {
+			options.bounds = L.latLngBounds(options.bounds);
+		}
+
+		this._url = url;
+
+		var subdomains = this.options.subdomains;
+
+		if (typeof subdomains === 'string') {
+			this.options.subdomains = subdomains.split('');
+		}
+	},
+
+	onAdd: function (map) {
+		this._map = map;
+		this._animated = map._zoomAnimated;
+
+		// create a container div for tiles
+		this._initContainer();
+
+		// set up events
+		map.on({
+			'viewreset': this._reset,
+			'moveend': this._update
+		}, this);
+
+		if (this._animated) {
+			map.on({
+				'zoomanim': this._animateZoom,
+				'zoomend': this._endZoomAnim
+			}, this);
+		}
+
+		if (!this.options.updateWhenIdle) {
+			this._limitedUpdate = L.Util.limitExecByInterval(this._update, 150, this);
+			map.on('move', this._limitedUpdate, this);
+		}
+
+		this._reset();
+		this._update();
+	},
+
+	addTo: function (map) {
+		map.addLayer(this);
+		return this;
+	},
+
+	onRemove: function (map) {
+		this._container.parentNode.removeChild(this._container);
+
+		map.off({
+			'viewreset': this._reset,
+			'moveend': this._update
+		}, this);
+
+		if (this._animated) {
+			map.off({
+				'zoomanim': this._animateZoom,
+				'zoomend': this._endZoomAnim
+			}, this);
+		}
+
+		if (!this.options.updateWhenIdle) {
+			map.off('move', this._limitedUpdate, this);
+		}
+
+		this._container = null;
+		this._map = null;
+	},
+
+	bringToFront: function () {
+		var pane = this._map._panes.tilePane;
+
+		if (this._container) {
+			pane.appendChild(this._container);
+			this._setAutoZIndex(pane, Math.max);
+		}
+
+		return this;
+	},
+
+	bringToBack: function () {
+		var pane = this._map._panes.tilePane;
+
+		if (this._container) {
+			pane.insertBefore(this._container, pane.firstChild);
+			this._setAutoZIndex(pane, Math.min);
+		}
+
+		return this;
+	},
+
+	getAttribution: function () {
+		return this.options.attribution;
+	},
+
+	getContainer: function () {
+		return this._container;
+	},
+
+	setOpacity: function (opacity) {
+		this.options.opacity = opacity;
+
+		if (this._map) {
+			this._updateOpacity();
+		}
+
+		return this;
+	},
+
+	setZIndex: function (zIndex) {
+		this.options.zIndex = zIndex;
+		this._updateZIndex();
+
+		return this;
+	},
+
+	setUrl: function (url, noRedraw) {
+		this._url = url;
+
+		if (!noRedraw) {
+			this.redraw();
+		}
+
+		return this;
+	},
+
+	redraw: function () {
+		if (this._map) {
+			this._reset({hard: true});
+			this._update();
+		}
+		return this;
+	},
+
+	_updateZIndex: function () {
+		if (this._container && this.options.zIndex !== undefined) {
+			this._container.style.zIndex = this.options.zIndex;
+		}
+	},
+
+	_setAutoZIndex: function (pane, compare) {
+
+		var layers = pane.children,
+		    edgeZIndex = -compare(Infinity, -Infinity), // -Infinity for max, Infinity for min
+		    zIndex, i, len;
+
+		for (i = 0, len = layers.length; i < len; i++) {
+
+			if (layers[i] !== this._container) {
+				zIndex = parseInt(layers[i].style.zIndex, 10);
+
+				if (!isNaN(zIndex)) {
+					edgeZIndex = compare(edgeZIndex, zIndex);
+				}
+			}
+		}
+
+		this.options.zIndex = this._container.style.zIndex =
+		        (isFinite(edgeZIndex) ? edgeZIndex : 0) + compare(1, -1);
+	},
+
+	_updateOpacity: function () {
+		var i,
+		    tiles = this._tiles;
+
+		if (L.Browser.ielt9) {
+			for (i in tiles) {
+				L.DomUtil.setOpacity(tiles[i], this.options.opacity);
+			}
+		} else {
+			L.DomUtil.setOpacity(this._container, this.options.opacity);
+		}
+	},
+
+	_initContainer: function () {
+		var tilePane = this._map._panes.tilePane;
+
+		if (!this._container) {
+			this._container = L.DomUtil.create('div', 'leaflet-layer');
+
+			this._updateZIndex();
+
+			if (this._animated) {
+				var className = 'leaflet-tile-container';
+
+				this._bgBuffer = L.DomUtil.create('div', className, this._container);
+				this._tileContainer = L.DomUtil.create('div', className, this._container);
+
+			} else {
+				this._tileContainer = this._container;
+			}
+
+			tilePane.appendChild(this._container);
+
+			if (this.options.opacity < 1) {
+				this._updateOpacity();
+			}
+		}
+	},
+
+	_reset: function (e) {
+		for (var key in this._tiles) {
+			this.fire('tileunload', {tile: this._tiles[key]});
+		}
+
+		this._tiles = {};
+		this._tilesToLoad = 0;
+
+		if (this.options.reuseTiles) {
+			this._unusedTiles = [];
+		}
+
+		this._tileContainer.innerHTML = '';
+
+		if (this._animated && e && e.hard) {
+			this._clearBgBuffer();
+		}
+
+		this._initContainer();
+	},
+
+	_getTileSize: function () {
+		var map = this._map,
+		    zoom = map.getZoom() + this.options.zoomOffset,
+		    zoomN = this.options.maxNativeZoom,
+		    tileSize = this.options.tileSize;
+
+		if (zoomN && zoom > zoomN) {
+			tileSize = Math.round(map.getZoomScale(zoom) / map.getZoomScale(zoomN) * tileSize);
+		}
+
+		return tileSize;
+	},
+
+	_update: function () {
+
+		if (!this._map) { return; }
+
+		var map = this._map,
+		    bounds = map.getPixelBounds(),
+		    zoom = map.getZoom(),
+		    tileSize = this._getTileSize();
+
+		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
+			return;
+		}
+
+		var tileBounds = L.bounds(
+		        bounds.min.divideBy(tileSize)._floor(),
+		        bounds.max.divideBy(tileSize)._floor());
+
+		this._addTilesFromCenterOut(tileBounds);
+
+		if (this.options.unloadInvisibleTiles || this.options.reuseTiles) {
+			this._removeOtherTiles(tileBounds);
+		}
+	},
+
+	_addTilesFromCenterOut: function (bounds) {
+		var queue = [],
+		    center = bounds.getCenter();
+
+		var j, i, point;
+
+		for (j = bounds.min.y; j <= bounds.max.y; j++) {
+			for (i = bounds.min.x; i <= bounds.max.x; i++) {
+				point = new L.Point(i, j);
+
+				if (this._tileShouldBeLoaded(point)) {
+					queue.push(point);
+				}
+			}
+		}
+
+		var tilesToLoad = queue.length;
+
+		if (tilesToLoad === 0) { return; }
+
+		// load tiles in order of their distance to center
+		queue.sort(function (a, b) {
+			return a.distanceTo(center) - b.distanceTo(center);
+		});
+
+		var fragment = document.createDocumentFragment();
+
+		// if its the first batch of tiles to load
+		if (!this._tilesToLoad) {
+			this.fire('loading');
+		}
+
+		this._tilesToLoad += tilesToLoad;
+
+		for (i = 0; i < tilesToLoad; i++) {
+			this._addTile(queue[i], fragment);
+		}
+
+		this._tileContainer.appendChild(fragment);
+	},
+
+	_tileShouldBeLoaded: function (tilePoint) {
+		if ((tilePoint.x + ':' + tilePoint.y) in this._tiles) {
+			return false; // already loaded
+		}
+
+		var options = this.options;
+
+		if (!options.continuousWorld) {
+			var limit = this._getWrapTileNum();
+
+			// don't load if exceeds world bounds
+			if ((options.noWrap && (tilePoint.x < 0 || tilePoint.x >= limit.x)) ||
+				tilePoint.y < 0 || tilePoint.y >= limit.y) { return false; }
+		}
+
+		if (options.bounds) {
+			var tileSize = this._getTileSize(),
+			    nwPoint = tilePoint.multiplyBy(tileSize),
+			    sePoint = nwPoint.add([tileSize, tileSize]),
+			    nw = this._map.unproject(nwPoint),
+			    se = this._map.unproject(sePoint);
+
+			// TODO temporary hack, will be removed after refactoring projections
+			// https://github.com/Leaflet/Leaflet/issues/1618
+			if (!options.continuousWorld && !options.noWrap) {
+				nw = nw.wrap();
+				se = se.wrap();
+			}
+
+			if (!options.bounds.intersects([nw, se])) { return false; }
+		}
+
+		return true;
+	},
+
+	_removeOtherTiles: function (bounds) {
+		var kArr, x, y, key;
+
+		for (key in this._tiles) {
+			kArr = key.split(':');
+			x = parseInt(kArr[0], 10);
+			y = parseInt(kArr[1], 10);
+
+			// remove tile if it's out of bounds
+			if (x < bounds.min.x || x > bounds.max.x || y < bounds.min.y || y > bounds.max.y) {
+				this._removeTile(key);
+			}
+		}
+	},
+
+	_removeTile: function (key) {
+		var tile = this._tiles[key];
+
+		this.fire('tileunload', {tile: tile, url: tile.src});
+
+		if (this.options.reuseTiles) {
+			L.DomUtil.removeClass(tile, 'leaflet-tile-loaded');
+			this._unusedTiles.push(tile);
+
+		} else if (tile.parentNode === this._tileContainer) {
+			this._tileContainer.removeChild(tile);
+		}
+
+		// for https://github.com/CloudMade/Leaflet/issues/137
+		if (!L.Browser.android) {
+			tile.onload = null;
+			tile.src = L.Util.emptyImageUrl;
+		}
+
+		delete this._tiles[key];
+	},
+
+	_addTile: function (tilePoint, container) {
+		var tilePos = this._getTilePos(tilePoint);
+
+		// get unused tile - or create a new tile
+		var tile = this._getTile();
+
+		/*
+		Chrome 20 layouts much faster with top/left (verify with timeline, frames)
+		Android 4 browser has display issues with top/left and requires transform instead
+		(other browsers don't currently care) - see debug/hacks/jitter.html for an example
+		*/
+		L.DomUtil.setPosition(tile, tilePos, L.Browser.chrome);
+
+		this._tiles[tilePoint.x + ':' + tilePoint.y] = tile;
+
+		this._loadTile(tile, tilePoint);
+
+		if (tile.parentNode !== this._tileContainer) {
+			container.appendChild(tile);
+		}
+	},
+
+	_getZoomForUrl: function () {
+
+		var options = this.options,
+		    zoom = this._map.getZoom();
+
+		if (options.zoomReverse) {
+			zoom = options.maxZoom - zoom;
+		}
+
+		zoom += options.zoomOffset;
+
+		return options.maxNativeZoom ? Math.min(zoom, options.maxNativeZoom) : zoom;
+	},
+
+	_getTilePos: function (tilePoint) {
+		var origin = this._map.getPixelOrigin(),
+		    tileSize = this._getTileSize();
+
+		return tilePoint.multiplyBy(tileSize).subtract(origin);
+	},
+
+	// image-specific code (override to implement e.g. Canvas or SVG tile layer)
+
+	getTileUrl: function (tilePoint) {
+		return L.Util.template(this._url, L.extend({
+			s: this._getSubdomain(tilePoint),
+			z: tilePoint.z,
+			x: tilePoint.x,
+			y: tilePoint.y
+		}, this.options));
+	},
+
+	_getWrapTileNum: function () {
+		var crs = this._map.options.crs,
+		    size = crs.getSize(this._map.getZoom());
+		return size.divideBy(this._getTileSize())._floor();
+	},
+
+	_adjustTilePoint: function (tilePoint) {
+
+		var limit = this._getWrapTileNum();
+
+		// wrap tile coordinates
+		if (!this.options.continuousWorld && !this.options.noWrap) {
+			tilePoint.x = ((tilePoint.x % limit.x) + limit.x) % limit.x;
+		}
+
+		if (this.options.tms) {
+			tilePoint.y = limit.y - tilePoint.y - 1;
+		}
+
+		tilePoint.z = this._getZoomForUrl();
+	},
+
+	_getSubdomain: function (tilePoint) {
+		var index = Math.abs(tilePoint.x + tilePoint.y) % this.options.subdomains.length;
+		return this.options.subdomains[index];
+	},
+
+	_getTile: function () {
+		if (this.options.reuseTiles && this._unusedTiles.length > 0) {
+			var tile = this._unusedTiles.pop();
+			this._resetTile(tile);
+			return tile;
+		}
+		return this._createTile();
+	},
+
+	// Override if data stored on a tile needs to be cleaned up before reuse
+	_resetTile: function (/*tile*/) {},
+
+	_createTile: function () {
+		var tile = L.DomUtil.create('img', 'leaflet-tile');
+		tile.style.width = tile.style.height = this._getTileSize() + 'px';
+		tile.galleryimg = 'no';
+
+		tile.onselectstart = tile.onmousemove = L.Util.falseFn;
+
+		if (L.Browser.ielt9 && this.options.opacity !== undefined) {
+			L.DomUtil.setOpacity(tile, this.options.opacity);
+		}
+		// without this hack, tiles disappear after zoom on Chrome for Android
+		// https://github.com/Leaflet/Leaflet/issues/2078
+		if (L.Browser.mobileWebkit3d) {
+			tile.style.WebkitBackfaceVisibility = 'hidden';
+		}
+		return tile;
+	},
+
+	_loadTile: function (tile, tilePoint) {
+		tile._layer  = this;
+		tile.onload  = this._tileOnLoad;
+		tile.onerror = this._tileOnError;
+
+		this._adjustTilePoint(tilePoint);
+		tile.src     = this.getTileUrl(tilePoint);
+
+		this.fire('tileloadstart', {
+			tile: tile,
+			url: tile.src
+		});
+	},
+
+	_tileLoaded: function () {
+		this._tilesToLoad--;
+
+		if (this._animated) {
+			L.DomUtil.addClass(this._tileContainer, 'leaflet-zoom-animated');
+		}
+
+		if (!this._tilesToLoad) {
+			this.fire('load');
+
+			if (this._animated) {
+				// clear scaled tiles after all new tiles are loaded (for performance)
+				clearTimeout(this._clearBgBufferTimer);
+				this._clearBgBufferTimer = setTimeout(L.bind(this._clearBgBuffer, this), 500);
+			}
+		}
+	},
+
+	_tileOnLoad: function () {
+		var layer = this._layer;
+
+		//Only if we are loading an actual image
+		if (this.src !== L.Util.emptyImageUrl) {
+			L.DomUtil.addClass(this, 'leaflet-tile-loaded');
+
+			layer.fire('tileload', {
+				tile: this,
+				url: this.src
+			});
+		}
+
+		layer._tileLoaded();
+	},
+
+	_tileOnError: function () {
+		var layer = this._layer;
+
+		layer.fire('tileerror', {
+			tile: this,
+			url: this.src
+		});
+
+		var newUrl = layer.options.errorTileUrl;
+		if (newUrl) {
+			this.src = newUrl;
+		}
+
+		layer._tileLoaded();
+	}
+});
+
+L.tileLayer = function (url, options) {
+	return new L.TileLayer(url, options);
+};
+
+
+/*
+ * L.TileLayer.WMS is used for putting WMS tile layers on the map.
+ */
+
+L.TileLayer.WMS = L.TileLayer.extend({
+
+	defaultWmsParams: {
+		service: 'WMS',
+		request: 'GetMap',
+		version: '1.1.1',
+		layers: '',
+		styles: '',
+		format: 'image/jpeg',
+		transparent: false
+	},
+
+	initialize: function (url, options) { // (String, Object)
+
+		this._url = url;
+
+		var wmsParams = L.extend({}, this.defaultWmsParams),
+		    tileSize = options.tileSize || this.options.tileSize;
+
+		if (options.detectRetina && L.Browser.retina) {
+			wmsParams.width = wmsParams.height = tileSize * 2;
+		} else {
+			wmsParams.width = wmsParams.height = tileSize;
+		}
+
+		for (var i in options) {
+			// all keys that are not TileLayer options go to WMS params
+			if (!this.options.hasOwnProperty(i) && i !== 'crs') {
+				wmsParams[i] = options[i];
+			}
+		}
+
+		this.wmsParams = wmsParams;
+
+		L.setOptions(this, options);
+	},
+
+	onAdd: function (map) {
+
+		this._crs = this.options.crs || map.options.crs;
+
+		this._wmsVersion = parseFloat(this.wmsParams.version);
+
+		var projectionKey = this._wmsVersion >= 1.3 ? 'crs' : 'srs';
+		this.wmsParams[projectionKey] = this._crs.code;
+
+		L.TileLayer.prototype.onAdd.call(this, map);
+	},
+
+	getTileUrl: function (tilePoint) { // (Point, Number) -> String
+
+		var map = this._map,
+		    tileSize = this.options.tileSize,
+
+		    nwPoint = tilePoint.multiplyBy(tileSize),
+		    sePoint = nwPoint.add([tileSize, tileSize]),
+
+		    nw = this._crs.project(map.unproject(nwPoint, tilePoint.z)),
+		    se = this._crs.project(map.unproject(sePoint, tilePoint.z)),
+		    bbox = this._wmsVersion >= 1.3 && this._crs === L.CRS.EPSG4326 ?
+		        [se.y, nw.x, nw.y, se.x].join(',') :
+		        [nw.x, se.y, se.x, nw.y].join(','),
+
+		    url = L.Util.template(this._url, {s: this._getSubdomain(tilePoint)});
+
+		return url + L.Util.getParamString(this.wmsParams, url, true) + '&BBOX=' + bbox;
+	},
+
+	setParams: function (params, noRedraw) {
+
+		L.extend(this.wmsParams, params);
+
+		if (!noRedraw) {
+			this.redraw();
+		}
+
+		return this;
+	}
+});
+
+L.tileLayer.wms = function (url, options) {
+	return new L.TileLayer.WMS(url, options);
+};
+
+
+/*
+ * L.TileLayer.Canvas is a class that you can use as a base for creating
+ * dynamically drawn Canvas-based tile layers.
+ */
+
+L.TileLayer.Canvas = L.TileLayer.extend({
+	options: {
+		async: false
+	},
+
+	initialize: function (options) {
+		L.setOptions(this, options);
+	},
+
+	redraw: function () {
+		if (this._map) {
+			this._reset({hard: true});
+			this._update();
+		}
+
+		for (var i in this._tiles) {
+			this._redrawTile(this._tiles[i]);
+		}
+		return this;
+	},
+
+	_redrawTile: function (tile) {
+		this.drawTile(tile, tile._tilePoint, this._map._zoom);
+	},
+
+	_createTile: function () {
+		var tile = L.DomUtil.create('canvas', 'leaflet-tile');
+		tile.width = tile.height = this.options.tileSize;
+		tile.onselectstart = tile.onmousemove = L.Util.falseFn;
+		return tile;
+	},
+
+	_loadTile: function (tile, tilePoint) {
+		tile._layer = this;
+		tile._tilePoint = tilePoint;
+
+		this._redrawTile(tile);
+
+		if (!this.options.async) {
+			this.tileDrawn(tile);
+		}
+	},
+
+	drawTile: function (/*tile, tilePoint*/) {
+		// override with rendering code
+	},
+
+	tileDrawn: function (tile) {
+		this._tileOnLoad.call(tile);
+	}
+});
+
+
+L.tileLayer.canvas = function (options) {
+	return new L.TileLayer.Canvas(options);
+};
+
+
+/*
+ * L.ImageOverlay is used to overlay images over the map (to specific geographical bounds).
+ */
+
+L.ImageOverlay = L.Class.extend({
+	includes: L.Mixin.Events,
+
+	options: {
+		opacity: 1
+	},
+
+	initialize: function (url, bounds, options) { // (String, LatLngBounds, Object)
+		this._url = url;
+		this._bounds = L.latLngBounds(bounds);
+
+		L.setOptions(this, options);
+	},
+
+	onAdd: function (map) {
+		this._map = map;
+
+		if (!this._image) {
+			this._initImage();
+		}
+
+		map._panes.overlayPane.appendChild(this._image);
+
+		map.on('viewreset', this._reset, this);
+
+		if (map.options.zoomAnimation && L.Browser.any3d) {
+			map.on('zoomanim', this._animateZoom, this);
+		}
+
+		this._reset();
+	},
+
+	onRemove: function (map) {
+		map.getPanes().overlayPane.removeChild(this._image);
+
+		map.off('viewreset', this._reset, this);
+
+		if (map.options.zoomAnimation) {
+			map.off('zoomanim', this._animateZoom, this);
+		}
+	},
+
+	addTo: function (map) {
+		map.addLayer(this);
+		return this;
+	},
+
+	setOpacity: function (opacity) {
+		this.options.opacity = opacity;
+		this._updateOpacity();
+		return this;
+	},
+
+	// TODO remove bringToFront/bringToBack duplication from TileLayer/Path
+	bringToFront: function () {
+		if (this._image) {
+			this._map._panes.overlayPane.appendChild(this._image);
+		}
+		return this;
+	},
+
+	bringToBack: function () {
+		var pane = this._map._panes.overlayPane;
+		if (this._image) {
+			pane.insertBefore(this._image, pane.firstChild);
+		}
+		return this;
+	},
+
+	setUrl: function (url) {
+		this._url = url;
+		this._image.src = this._url;
+	},
+
+	getAttribution: function () {
+		return this.options.attribution;
+	},
+
+	_initImage: function () {
+		this._image = L.DomUtil.create('img', 'leaflet-image-layer');
+
+		if (this._map.options.zoomAnimation && L.Browser.any3d) {
+			L.DomUtil.addClass(this._image, 'leaflet-zoom-animated');
+		} else {
+			L.DomUtil.addClass(this._image, 'leaflet-zoom-hide');
+		}
+
+		this._updateOpacity();
+
+		//TODO createImage util method to remove duplication
+		L.extend(this._image, {
+			galleryimg: 'no',
+			onselectstart: L.Util.falseFn,
+			onmousemove: L.Util.falseFn,
+			onload: L.bind(this._onImageLoad, this),
+			src: this._url
+		});
+	},
+
+	_animateZoom: function (e) {
+		var map = this._map,
+		    image = this._image,
+		    scale = map.getZoomScale(e.zoom),
+		    nw = this._bounds.getNorthWest(),
+		    se = this._bounds.getSouthEast(),
+
+		    topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center),
+		    size = map._latLngToNewLayerPoint(se, e.zoom, e.center)._subtract(topLeft),
+		    origin = topLeft._add(size._multiplyBy((1 / 2) * (1 - 1 / scale)));
+
+		image.style[L.DomUtil.TRANSFORM] =
+		        L.DomUtil.getTranslateString(origin) + ' scale(' + scale + ') ';
+	},
+
+	_reset: function () {
+		var image   = this._image,
+		    topLeft = this._map.latLngToLayerPoint(this._bounds.getNorthWest()),
+		    size = this._map.latLngToLayerPoint(this._bounds.getSouthEast())._subtract(topLeft);
+
+		L.DomUtil.setPosition(image, topLeft);
+
+		image.style.width  = size.x + 'px';
+		image.style.height = size.y + 'px';
+	},
+
+	_onImageLoad: function () {
+		this.fire('load');
+	},
+
+	_updateOpacity: function () {
+		L.DomUtil.setOpacity(this._image, this.options.opacity);
+	}
+});
+
+L.imageOverlay = function (url, bounds, options) {
+	return new L.ImageOverlay(url, bounds, options);
+};
+
+
+/*
+ * L.Icon is an image-based icon class that you can use with L.Marker for custom markers.
+ */
+
+L.Icon = L.Class.extend({
+	options: {
+		/*
+		iconUrl: (String) (required)
+		iconRetinaUrl: (String) (optional, used for retina devices if detected)
+		iconSize: (Point) (can be set through CSS)
+		iconAnchor: (Point) (centered by default, can be set in CSS with negative margins)
+		popupAnchor: (Point) (if not specified, popup opens in the anchor point)
+		shadowUrl: (String) (no shadow by default)
+		shadowRetinaUrl: (String) (optional, used for retina devices if detected)
+		shadowSize: (Point)
+		shadowAnchor: (Point)
+		*/
+		className: ''
+	},
+
+	initialize: function (options) {
+		L.setOptions(this, options);
+	},
+
+	createIcon: function (oldIcon) {
+		return this._createIcon('icon', oldIcon);
+	},
+
+	createShadow: function (oldIcon) {
+		return this._createIcon('shadow', oldIcon);
+	},
+
+	_createIcon: function (name, oldIcon) {
+		var src = this._getIconUrl(name);
+
+		if (!src) {
+			if (name === 'icon') {
+				throw new Error('iconUrl not set in Icon options (see the docs).');
+			}
+			return null;
+		}
+
+		var img;
+		if (!oldIcon || oldIcon.tagName !== 'IMG') {
+			img = this._createImg(src);
+		} else {
+			img = this._createImg(src, oldIcon);
+		}
+		this._setIconStyles(img, name);
+
+		return img;
+	},
+
+	_setIconStyles: function (img, name) {
+		var options = this.options,
+		    size = L.point(options[name + 'Size']),
+		    anchor;
+
+		if (name === 'shadow') {
+			anchor = L.point(options.shadowAnchor || options.iconAnchor);
+		} else {
+			anchor = L.point(options.iconAnchor);
+		}
+
+		if (!anchor && size) {
+			anchor = size.divideBy(2, true);
+		}
+
+		img.className = 'leaflet-marker-' + name + ' ' + options.className;
+
+		if (anchor) {
+			img.style.marginLeft = (-anchor.x) + 'px';
+			img.style.marginTop  = (-anchor.y) + 'px';
+		}
+
+		if (size) {
+			img.style.width  = size.x + 'px';
+			img.style.height = size.y + 'px';
+		}
+	},
+
+	_createImg: function (src, el) {
+		el = el || document.createElement('img');
+		el.src = src;
+		return el;
+	},
+
+	_getIconUrl: function (name) {
+		if (L.Browser.retina && this.options[name + 'RetinaUrl']) {
+			return this.options[name + 'RetinaUrl'];
+		}
+		return this.options[name + 'Url'];
+	}
+});
+
+L.icon = function (options) {
+	return new L.Icon(options);
+};
+
+
+/*
+ * L.Icon.Default is the blue marker icon used by default in Leaflet.
+ */
+
+L.Icon.Default = L.Icon.extend({
+
+	options: {
+		iconSize: [25, 41],
+		iconAnchor: [12, 41],
+		popupAnchor: [1, -34],
+
+		shadowSize: [41, 41]
+	},
+
+	_getIconUrl: function (name) {
+		var key = name + 'Url';
+
+		if (this.options[key]) {
+			return this.options[key];
+		}
+
+		if (L.Browser.retina && name === 'icon') {
+			name += '-2x';
+		}
+
+		var path = L.Icon.Default.imagePath;
+
+		if (!path) {
+			throw new Error('Couldn\'t autodetect L.Icon.Default.imagePath, set it manually.');
+		}
+
+		return path + '/marker-' + name + '.png';
+	}
+});
+
+L.Icon.Default.imagePath = (function () {
+	var scripts = document.getElementsByTagName('script'),
+	    leafletRe = /[\/^]leaflet[\-\._]?([\w\-\._]*)\.js\??/;
+
+	var i, len, src, matches, path;
+
+	for (i = 0, len = scripts.length; i < len; i++) {
+		src = scripts[i].src;
+		matches = src.match(leafletRe);
+
+		if (matches) {
+			path = src.split(leafletRe)[0];
+			return (path ? path + '/' : '') + 'images';
+		}
+	}
+}());
+
+
+/*
+ * L.Marker is used to display clickable/draggable icons on the map.
+ */
+
+L.Marker = L.Class.extend({
+
+	includes: L.Mixin.Events,
+
+	options: {
+		icon: new L.Icon.Default(),
+		title: '',
+		alt: '',
+		clickable: true,
+		draggable: false,
+		keyboard: true,
+		zIndexOffset: 0,
+		opacity: 1,
+		riseOnHover: false,
+		riseOffset: 250
+	},
+
+	initialize: function (latlng, options) {
+		L.setOptions(this, options);
+		this._latlng = L.latLng(latlng);
+	},
+
+	onAdd: function (map) {
+		this._map = map;
+
+		map.on('viewreset', this.update, this);
+
+		this._initIcon();
+		this.update();
+		this.fire('add');
+
+		if (map.options.zoomAnimation && map.options.markerZoomAnimation) {
+			map.on('zoomanim', this._animateZoom, this);
+		}
+	},
+
+	addTo: function (map) {
+		map.addLayer(this);
+		return this;
+	},
+
+	onRemove: function (map) {
+		if (this.dragging) {
+			this.dragging.disable();
+		}
+
+		this._removeIcon();
+		this._removeShadow();
+
+		this.fire('remove');
+
+		map.off({
+			'viewreset': this.update,
+			'zoomanim': this._animateZoom
+		}, this);
+
+		this._map = null;
+	},
+
+	getLatLng: function () {
+		return this._latlng;
+	},
+
+	setLatLng: function (latlng) {
+		this._latlng = L.latLng(latlng);
+
+		this.update();
+
+		return this.fire('move', { latlng: this._latlng });
+	},
+
+	setZIndexOffset: function (offset) {
+		this.options.zIndexOffset = offset;
+		this.update();
+
+		return this;
+	},
+
+	setIcon: function (icon) {
+
+		this.options.icon = icon;
+
+		if (this._map) {
+			this._initIcon();
+			this.update();
+		}
+
+		if (this._popup) {
+			this.bindPopup(this._popup);
+		}
+
+		return this;
+	},
+
+	update: function () {
+		if (this._icon) {
+			this._setPos(this._map.latLngToLayerPoint(this._latlng).round());
+		}
+		return this;
+	},
+
+	_initIcon: function () {
+		var options = this.options,
+		    map = this._map,
+		    animation = (map.options.zoomAnimation && map.options.markerZoomAnimation),
+		    classToAdd = animation ? 'leaflet-zoom-animated' : 'leaflet-zoom-hide';
+
+		var icon = options.icon.createIcon(this._icon),
+			addIcon = false;
+
+		// if we're not reusing the icon, remove the old one and init new one
+		if (icon !== this._icon) {
+			if (this._icon) {
+				this._removeIcon();
+			}
+			addIcon = true;
+
+			if (options.title) {
+				icon.title = options.title;
+			}
+
+			if (options.alt) {
+				icon.alt = options.alt;
+			}
+		}
+
+		L.DomUtil.addClass(icon, classToAdd);
+
+		if (options.keyboard) {
+			icon.tabIndex = '0';
+		}
+
+		this._icon = icon;
+
+		this._initInteraction();
+
+		if (options.riseOnHover) {
+			L.DomEvent
+				.on(icon, 'mouseover', this._bringToFront, this)
+				.on(icon, 'mouseout', this._resetZIndex, this);
+		}
+
+		var newShadow = options.icon.createShadow(this._shadow),
+			addShadow = false;
+
+		if (newShadow !== this._shadow) {
+			this._removeShadow();
+			addShadow = true;
+		}
+
+		if (newShadow) {
+			L.DomUtil.addClass(newShadow, classToAdd);
+		}
+		this._shadow = newShadow;
+
+
+		if (options.opacity < 1) {
+			this._updateOpacity();
+		}
+
+
+		var panes = this._map._panes;
+
+		if (addIcon) {
+			panes.markerPane.appendChild(this._icon);
+		}
+
+		if (newShadow && addShadow) {
+			panes.shadowPane.appendChild(this._shadow);
+		}
+	},
+
+	_removeIcon: function () {
+		if (this.options.riseOnHover) {
+			L.DomEvent
+			    .off(this._icon, 'mouseover', this._bringToFront)
+			    .off(this._icon, 'mouseout', this._resetZIndex);
+		}
+
+		this._map._panes.markerPane.removeChild(this._icon);
+
+		this._icon = null;
+	},
+
+	_removeShadow: function () {
+		if (this._shadow) {
+			this._map._panes.shadowPane.removeChild(this._shadow);
+		}
+		this._shadow = null;
+	},
+
+	_setPos: function (pos) {
+		L.DomUtil.setPosition(this._icon, pos);
+
+		if (this._shadow) {
+			L.DomUtil.setPosition(this._shadow, pos);
+		}
+
+		this._zIndex = pos.y + this.options.zIndexOffset;
+
+		this._resetZIndex();
+	},
+
+	_updateZIndex: function (offset) {
+		this._icon.style.zIndex = this._zIndex + offset;
+	},
+
+	_animateZoom: function (opt) {
+		var pos = this._map._latLngToNewLayerPoint(this._latlng, opt.zoom, opt.center).round();
+
+		this._setPos(pos);
+	},
+
+	_initInteraction: function () {
+
+		if (!this.options.clickable) { return; }
+
+		// TODO refactor into something shared with Map/Path/etc. to DRY it up
+
+		var icon = this._icon,
+		    events = ['dblclick', 'mousedown', 'mouseover', 'mouseout', 'contextmenu'];
+
+		L.DomUtil.addClass(icon, 'leaflet-clickable');
+		L.DomEvent.on(icon, 'click', this._onMouseClick, this);
+		L.DomEvent.on(icon, 'keypress', this._onKeyPress, this);
+
+		for (var i = 0; i < events.length; i++) {
+			L.DomEvent.on(icon, events[i], this._fireMouseEvent, this);
+		}
+
+		if (L.Handler.MarkerDrag) {
+			this.dragging = new L.Handler.MarkerDrag(this);
+
+			if (this.options.draggable) {
+				this.dragging.enable();
+			}
+		}
+	},
+
+	_onMouseClick: function (e) {
+		var wasDragged = this.dragging && this.dragging.moved();
+
+		if (this.hasEventListeners(e.type) || wasDragged) {
+			L.DomEvent.stopPropagation(e);
+		}
+
+		if (wasDragged) { return; }
+
+		if ((!this.dragging || !this.dragging._enabled) && this._map.dragging && this._map.dragging.moved()) { return; }
+
+		this.fire(e.type, {
+			originalEvent: e,
+			latlng: this._latlng
+		});
+	},
+
+	_onKeyPress: function (e) {
+		if (e.keyCode === 13) {
+			this.fire('click', {
+				originalEvent: e,
+				latlng: this._latlng
+			});
+		}
+	},
+
+	_fireMouseEvent: function (e) {
+
+		this.fire(e.type, {
+			originalEvent: e,
+			latlng: this._latlng
+		});
+
+		// TODO proper custom event propagation
+		// this line will always be called if marker is in a FeatureGroup
+		if (e.type === 'contextmenu' && this.hasEventListeners(e.type)) {
+			L.DomEvent.preventDefault(e);
+		}
+		if (e.type !== 'mousedown') {
+			L.DomEvent.stopPropagation(e);
+		} else {
+			L.DomEvent.preventDefault(e);
+		}
+	},
+
+	setOpacity: function (opacity) {
+		this.options.opacity = opacity;
+		if (this._map) {
+			this._updateOpacity();
+		}
+
+		return this;
+	},
+
+	_updateOpacity: function () {
+		L.DomUtil.setOpacity(this._icon, this.options.opacity);
+		if (this._shadow) {
+			L.DomUtil.setOpacity(this._shadow, this.options.opacity);
+		}
+	},
+
+	_bringToFront: function () {
+		this._updateZIndex(this.options.riseOffset);
+	},
+
+	_resetZIndex: function () {
+		this._updateZIndex(0);
+	}
+});
+
+L.marker = function (latlng, options) {
+	return new L.Marker(latlng, options);
+};
+
+
+/*
+ * L.DivIcon is a lightweight HTML-based icon class (as opposed to the image-based L.Icon)
+ * to use with L.Marker.
+ */
+
+L.DivIcon = L.Icon.extend({
+	options: {
+		iconSize: [12, 12], // also can be set through CSS
+		/*
+		iconAnchor: (Point)
+		popupAnchor: (Point)
+		html: (String)
+		bgPos: (Point)
+		*/
+		className: 'leaflet-div-icon',
+		html: false
+	},
+
+	createIcon: function (oldIcon) {
+		var div = (oldIcon && oldIcon.tagName === 'DIV') ? oldIcon : document.createElement('div'),
+		    options = this.options;
+
+		if (options.html !== false) {
+			div.innerHTML = options.html;
+		} else {
+			div.innerHTML = '';
+		}
+
+		if (options.bgPos) {
+			div.style.backgroundPosition =
+			        (-options.bgPos.x) + 'px ' + (-options.bgPos.y) + 'px';
+		}
+
+		this._setIconStyles(div, 'icon');
+		return div;
+	},
+
+	createShadow: function () {
+		return null;
+	}
+});
+
+L.divIcon = function (options) {
+	return new L.DivIcon(options);
+};
+
+
+/*
+ * L.Popup is used for displaying popups on the map.
+ */
+
+L.Map.mergeOptions({
+	closePopupOnClick: true
+});
+
+L.Popup = L.Class.extend({
+	includes: L.Mixin.Events,
+
+	options: {
+		minWidth: 50,
+		maxWidth: 300,
+		// maxHeight: null,
+		autoPan: true,
+		closeButton: true,
+		offset: [0, 7],
+		autoPanPadding: [5, 5],
+		// autoPanPaddingTopLeft: null,
+		// autoPanPaddingBottomRight: null,
+		keepInView: false,
+		className: '',
+		zoomAnimation: true
+	},
+
+	initialize: function (options, source) {
+		L.setOptions(this, options);
+
+		this._source = source;
+		this._animated = L.Browser.any3d && this.options.zoomAnimation;
+		this._isOpen = false;
+	},
+
+	onAdd: function (map) {
+		this._map = map;
+
+		if (!this._container) {
+			this._initLayout();
+		}
+
+		var animFade = map.options.fadeAnimation;
+
+		if (animFade) {
+			L.DomUtil.setOpacity(this._container, 0);
+		}
+		map._panes.popupPane.appendChild(this._container);
+
+		map.on(this._getEvents(), this);
+
+		this.update();
+
+		if (animFade) {
+			L.DomUtil.setOpacity(this._container, 1);
+		}
+
+		this.fire('open');
+
+		map.fire('popupopen', {popup: this});
+
+		if (this._source) {
+			this._source.fire('popupopen', {popup: this});
+		}
+	},
+
+	addTo: function (map) {
+		map.addLayer(this);
+		return this;
+	},
+
+	openOn: function (map) {
+		map.openPopup(this);
+		return this;
+	},
+
+	onRemove: function (map) {
+		map._panes.popupPane.removeChild(this._container);
+
+		L.Util.falseFn(this._container.offsetWidth); // force reflow
+
+		map.off(this._getEvents(), this);
+
+		if (map.options.fadeAnimation) {
+			L.DomUtil.setOpacity(this._container, 0);
+		}
+
+		this._map = null;
+
+		this.fire('close');
+
+		map.fire('popupclose', {popup: this});
+
+		if (this._source) {
+			this._source.fire('popupclose', {popup: this});
+		}
+	},
+
+	getLatLng: function () {
+		return this._latlng;
+	},
+
+	setLatLng: function (latlng) {
+		this._latlng = L.latLng(latlng);
+		if (this._map) {
+			this._updatePosition();
+			this._adjustPan();
+		}
+		return this;
+	},
+
+	getContent: function () {
+		return this._content;
+	},
+
+	setContent: function (content) {
+		this._content = content;
+		this.update();
+		return this;
+	},
+
+	update: function () {
+		if (!this._map) { return; }
+
+		this._container.style.visibility = 'hidden';
+
+		this._updateContent();
+		this._updateLayout();
+		this._updatePosition();
+
+		this._container.style.visibility = '';
+
+		this._adjustPan();
+	},
+
+	_getEvents: function () {
+		var events = {
+			viewreset: this._updatePosition
+		};
+
+		if (this._animated) {
+			events.zoomanim = this._zoomAnimation;
+		}
+		if ('closeOnClick' in this.options ? this.options.closeOnClick : this._map.options.closePopupOnClick) {
+			events.preclick = this._close;
+		}
+		if (this.options.keepInView) {
+			events.moveend = this._adjustPan;
+		}
+
+		return events;
+	},
+
+	_close: function () {
+		if (this._map) {
+			this._map.closePopup(this);
+		}
+	},
+
+	_initLayout: function () {
+		var prefix = 'leaflet-popup',
+			containerClass = prefix + ' ' + this.options.className + ' leaflet-zoom-' +
+			        (this._animated ? 'animated' : 'hide'),
+			container = this._container = L.DomUtil.create('div', containerClass),
+			closeButton;
+
+		if (this.options.closeButton) {
+			closeButton = this._closeButton =
+			        L.DomUtil.create('a', prefix + '-close-button', container);
+			closeButton.href = '#close';
+			closeButton.innerHTML = '&#215;';
+			L.DomEvent.disableClickPropagation(closeButton);
+
+			L.DomEvent.on(closeButton, 'click', this._onCloseButtonClick, this);
+		}
+
+		var wrapper = this._wrapper =
+		        L.DomUtil.create('div', prefix + '-content-wrapper', container);
+		L.DomEvent.disableClickPropagation(wrapper);
+
+		this._contentNode = L.DomUtil.create('div', prefix + '-content', wrapper);
+
+		L.DomEvent.disableScrollPropagation(this._contentNode);
+		L.DomEvent.on(wrapper, 'contextmenu', L.DomEvent.stopPropagation);
+
+		this._tipContainer = L.DomUtil.create('div', prefix + '-tip-container', container);
+		this._tip = L.DomUtil.create('div', prefix + '-tip', this._tipContainer);
+	},
+
+	_updateContent: function () {
+		if (!this._content) { return; }
+
+		if (typeof this._content === 'string') {
+			this._contentNode.innerHTML = this._content;
+		} else {
+			while (this._contentNode.hasChildNodes()) {
+				this._contentNode.removeChild(this._contentNode.firstChild);
+			}
+			this._contentNode.appendChild(this._content);
+		}
+		this.fire('contentupdate');
+	},
+
+	_updateLayout: function () {
+		var container = this._contentNode,
+		    style = container.style;
+
+		style.width = '';
+		style.whiteSpace = 'nowrap';
+
+		var width = container.offsetWidth;
+		width = Math.min(width, this.options.maxWidth);
+		width = Math.max(width, this.options.minWidth);
+
+		style.width = (width + 1) + 'px';
+		style.whiteSpace = '';
+
+		style.height = '';
+
+		var height = container.offsetHeight,
+		    maxHeight = this.options.maxHeight,
+		    scrolledClass = 'leaflet-popup-scrolled';
+
+		if (maxHeight && height > maxHeight) {
+			style.height = maxHeight + 'px';
+			L.DomUtil.addClass(container, scrolledClass);
+		} else {
+			L.DomUtil.removeClass(container, scrolledClass);
+		}
+
+		this._containerWidth = this._container.offsetWidth;
+	},
+
+	_updatePosition: function () {
+		if (!this._map) { return; }
+
+		var pos = this._map.latLngToLayerPoint(this._latlng),
+		    animated = this._animated,
+		    offset = L.point(this.options.offset);
+
+		if (animated) {
+			L.DomUtil.setPosition(this._container, pos);
+		}
+
+		this._containerBottom = -offset.y - (animated ? 0 : pos.y);
+		this._containerLeft = -Math.round(this._containerWidth / 2) + offset.x + (animated ? 0 : pos.x);
+
+		// bottom position the popup in case the height of the popup changes (images loading etc)
+		this._container.style.bottom = this._containerBottom + 'px';
+		this._container.style.left = this._containerLeft + 'px';
+	},
+
+	_zoomAnimation: function (opt) {
+		var pos = this._map._latLngToNewLayerPoint(this._latlng, opt.zoom, opt.center);
+
+		L.DomUtil.setPosition(this._container, pos);
+	},
+
+	_adjustPan: function () {
+		if (!this.options.autoPan) { return; }
+
+		var map = this._map,
+		    containerHeight = this._container.offsetHeight,
+		    containerWidth = this._containerWidth,
+
+		    layerPos = new L.Point(this._containerLeft, -containerHeight - this._containerBottom);
+
+		if (this._animated) {
+			layerPos._add(L.DomUtil.getPosition(this._container));
+		}
+
+		var containerPos = map.layerPointToContainerPoint(layerPos),
+		    padding = L.point(this.options.autoPanPadding),
+		    paddingTL = L.point(this.options.autoPanPaddingTopLeft || padding),
+		    paddingBR = L.point(this.options.autoPanPaddingBottomRight || padding),
+		    size = map.getSize(),
+		    dx = 0,
+		    dy = 0;
+
+		if (containerPos.x + containerWidth + paddingBR.x > size.x) { // right
+			dx = containerPos.x + containerWidth - size.x + paddingBR.x;
+		}
+		if (containerPos.x - dx - paddingTL.x < 0) { // left
+			dx = containerPos.x - paddingTL.x;
+		}
+		if (containerPos.y + containerHeight + paddingBR.y > size.y) { // bottom
+			dy = containerPos.y + containerHeight - size.y + paddingBR.y;
+		}
+		if (containerPos.y - dy - paddingTL.y < 0) { // top
+			dy = containerPos.y - paddingTL.y;
+		}
+
+		if (dx || dy) {
+			map
+			    .fire('autopanstart')
+			    .panBy([dx, dy]);
+		}
+	},
+
+	_onCloseButtonClick: function (e) {
+		this._close();
+		L.DomEvent.stop(e);
+	}
+});
+
+L.popup = function (options, source) {
+	return new L.Popup(options, source);
+};
+
+
+L.Map.include({
+	openPopup: function (popup, latlng, options) { // (Popup) or (String || HTMLElement, LatLng[, Object])
+		this.closePopup();
+
+		if (!(popup instanceof L.Popup)) {
+			var content = popup;
+
+			popup = new L.Popup(options)
+			    .setLatLng(latlng)
+			    .setContent(content);
+		}
+		popup._isOpen = true;
+
+		this._popup = popup;
+		return this.addLayer(popup);
+	},
+
+	closePopup: function (popup) {
+		if (!popup || popup === this._popup) {
+			popup = this._popup;
+			this._popup = null;
+		}
+		if (popup) {
+			this.removeLayer(popup);
+			popup._isOpen = false;
+		}
+		return this;
+	}
+});
+
+
+/*
+ * Popup extension to L.Marker, adding popup-related methods.
+ */
+
+L.Marker.include({
+	openPopup: function () {
+		if (this._popup && this._map && !this._map.hasLayer(this._popup)) {
+			this._popup.setLatLng(this._latlng);
+			this._map.openPopup(this._popup);
+		}
+
+		return this;
+	},
+
+	closePopup: function () {
+		if (this._popup) {
+			this._popup._close();
+		}
+		return this;
+	},
+
+	togglePopup: function () {
+		if (this._popup) {
+			if (this._popup._isOpen) {
+				this.closePopup();
+			} else {
+				this.openPopup();
+			}
+		}
+		return this;
+	},
+
+	bindPopup: function (content, options) {
+		var anchor = L.point(this.options.icon.options.popupAnchor || [0, 0]);
+
+		anchor = anchor.add(L.Popup.prototype.options.offset);
+
+		if (options && options.offset) {
+			anchor = anchor.add(options.offset);
+		}
+
+		options = L.extend({offset: anchor}, options);
+
+		if (!this._popupHandlersAdded) {
+			this
+			    .on('click', this.togglePopup, this)
+			    .on('remove', this.closePopup, this)
+			    .on('move', this._movePopup, this);
+			this._popupHandlersAdded = true;
+		}
+
+		if (content instanceof L.Popup) {
+			L.setOptions(content, options);
+			this._popup = content;
+			content._source = this;
+		} else {
+			this._popup = new L.Popup(options, this)
+				.setContent(content);
+		}
+
+		return this;
+	},
+
+	setPopupContent: function (content) {
+		if (this._popup) {
+			this._popup.setContent(content);
+		}
+		return this;
+	},
+
+	unbindPopup: function () {
+		if (this._popup) {
+			this._popup = null;
+			this
+			    .off('click', this.togglePopup, this)
+			    .off('remove', this.closePopup, this)
+			    .off('move', this._movePopup, this);
+			this._popupHandlersAdded = false;
+		}
+		return this;
+	},
+
+	getPopup: function () {
+		return this._popup;
+	},
+
+	_movePopup: function (e) {
+		this._popup.setLatLng(e.latlng);
+	}
+});
+
+
+/*
+ * L.LayerGroup is a class to combine several layers into one so that
+ * you can manipulate the group (e.g. add/remove it) as one layer.
+ */
+
+L.LayerGroup = L.Class.extend({
+	initialize: function (layers) {
+		this._layers = {};
+
+		var i, len;
+
+		if (layers) {
+			for (i = 0, len = layers.length; i < len; i++) {
+				this.addLayer(layers[i]);
+			}
+		}
+	},
+
+	addLayer: function (layer) {
+		var id = this.getLayerId(layer);
+
+		this._layers[id] = layer;
+
+		if (this._map) {
+			this._map.addLayer(layer);
+		}
+
+		return this;
+	},
+
+	removeLayer: function (layer) {
+		var id = layer in this._layers ? layer : this.getLayerId(layer);
+
+		if (this._map && this._layers[id]) {
+			this._map.removeLayer(this._layers[id]);
+		}
+
+		delete this._layers[id];
+
+		return this;
+	},
+
+	hasLayer: function (layer) {
+		if (!layer) { return false; }
+
+		return (layer in this._layers || this.getLayerId(layer) in this._layers);
+	},
+
+	clearLayers: function () {
+		this.eachLayer(this.removeLayer, this);
+		return this;
+	},
+
+	invoke: function (methodName) {
+		var args = Array.prototype.slice.call(arguments, 1),
+		    i, layer;
+
+		for (i in this._layers) {
+			layer = this._layers[i];
+
+			if (layer[methodName]) {
+				layer[methodName].apply(layer, args);
+			}
+		}
+
+		return this;
+	},
+
+	onAdd: function (map) {
+		this._map = map;
+		this.eachLayer(map.addLayer, map);
+	},
+
+	onRemove: function (map) {
+		this.eachLayer(map.removeLayer, map);
+		this._map = null;
+	},
+
+	addTo: function (map) {
+		map.addLayer(this);
+		return this;
+	},
+
+	eachLayer: function (method, context) {
+		for (var i in this._layers) {
+			method.call(context, this._layers[i]);
+		}
+		return this;
+	},
+
+	getLayer: function (id) {
+		return this._layers[id];
+	},
+
+	getLayers: function () {
+		var layers = [];
+
+		for (var i in this._layers) {
+			layers.push(this._layers[i]);
+		}
+		return layers;
+	},
+
+	setZIndex: function (zIndex) {
+		return this.invoke('setZIndex', zIndex);
+	},
+
+	getLayerId: function (layer) {
+		return L.stamp(layer);
+	}
+});
+
+L.layerGroup = function (layers) {
+	return new L.LayerGroup(layers);
+};
+
+
+/*
+ * L.FeatureGroup extends L.LayerGroup by introducing mouse events and additional methods
+ * shared between a group of interactive layers (like vectors or markers).
+ */
+
+L.FeatureGroup = L.LayerGroup.extend({
+	includes: L.Mixin.Events,
+
+	statics: {
+		EVENTS: 'click dblclick mouseover mouseout mousemove contextmenu popupopen popupclose'
+	},
+
+	addLayer: function (layer) {
+		if (this.hasLayer(layer)) {
+			return this;
+		}
+
+		if ('on' in layer) {
+			layer.on(L.FeatureGroup.EVENTS, this._propagateEvent, this);
+		}
+
+		L.LayerGroup.prototype.addLayer.call(this, layer);
+
+		if (this._popupContent && layer.bindPopup) {
+			layer.bindPopup(this._popupContent, this._popupOptions);
+		}
+
+		return this.fire('layeradd', {layer: layer});
+	},
+
+	removeLayer: function (layer) {
+		if (!this.hasLayer(layer)) {
+			return this;
+		}
+		if (layer in this._layers) {
+			layer = this._layers[layer];
+		}
+
+		if ('off' in layer) {
+			layer.off(L.FeatureGroup.EVENTS, this._propagateEvent, this);
+		}
+
+		L.LayerGroup.prototype.removeLayer.call(this, layer);
+
+		if (this._popupContent) {
+			this.invoke('unbindPopup');
+		}
+
+		return this.fire('layerremove', {layer: layer});
+	},
+
+	bindPopup: function (content, options) {
+		this._popupContent = content;
+		this._popupOptions = options;
+		return this.invoke('bindPopup', content, options);
+	},
+
+	openPopup: function (latlng) {
+		// open popup on the first layer
+		for (var id in this._layers) {
+			this._layers[id].openPopup(latlng);
+			break;
+		}
+		return this;
+	},
+
+	setStyle: function (style) {
+		return this.invoke('setStyle', style);
+	},
+
+	bringToFront: function () {
+		return this.invoke('bringToFront');
+	},
+
+	bringToBack: function () {
+		return this.invoke('bringToBack');
+	},
+
+	getBounds: function () {
+		var bounds = new L.LatLngBounds();
+
+		this.eachLayer(function (layer) {
+			bounds.extend(layer instanceof L.Marker ? layer.getLatLng() : layer.getBounds());
+		});
+
+		return bounds;
+	},
+
+	_propagateEvent: function (e) {
+		e = L.extend({
+			layer: e.target,
+			target: this
+		}, e);
+		this.fire(e.type, e);
+	}
+});
+
+L.featureGroup = function (layers) {
+	return new L.FeatureGroup(layers);
+};
+
+
+/*
+ * L.Path is a base class for rendering vector paths on a map. Inherited by Polyline, Circle, etc.
+ */
+
+L.Path = L.Class.extend({
+	includes: [L.Mixin.Events],
+
+	statics: {
+		// how much to extend the clip area around the map view
+		// (relative to its size, e.g. 0.5 is half the screen in each direction)
+		// set it so that SVG element doesn't exceed 1280px (vectors flicker on dragend if it is)
+		CLIP_PADDING: (function () {
+			var max = L.Browser.mobile ? 1280 : 2000,
+			    target = (max / Math.max(window.outerWidth, window.outerHeight) - 1) / 2;
+			return Math.max(0, Math.min(0.5, target));
+		})()
+	},
+
+	options: {
+		stroke: true,
+		color: '#0033ff',
+		dashArray: null,
+		lineCap: null,
+		lineJoin: null,
+		weight: 5,
+		opacity: 0.5,
+
+		fill: false,
+		fillColor: null, //same as color by default
+		fillOpacity: 0.2,
+
+		clickable: true
+	},
+
+	initialize: function (options) {
+		L.setOptions(this, options);
+	},
+
+	onAdd: function (map) {
+		this._map = map;
+
+		if (!this._container) {
+			this._initElements();
+			this._initEvents();
+		}
+
+		this.projectLatlngs();
+		this._updatePath();
+
+		if (this._container) {
+			this._map._pathRoot.appendChild(this._container);
+		}
+
+		this.fire('add');
+
+		map.on({
+			'viewreset': this.projectLatlngs,
+			'moveend': this._updatePath
+		}, this);
+	},
+
+	addTo: function (map) {
+		map.addLayer(this);
+		return this;
+	},
+
+	onRemove: function (map) {
+		map._pathRoot.removeChild(this._container);
+
+		// Need to fire remove event before we set _map to null as the event hooks might need the object
+		this.fire('remove');
+		this._map = null;
+
+		if (L.Browser.vml) {
+			this._container = null;
+			this._stroke = null;
+			this._fill = null;
+		}
+
+		map.off({
+			'viewreset': this.projectLatlngs,
+			'moveend': this._updatePath
+		}, this);
+	},
+
+	projectLatlngs: function () {
+		// do all projection stuff here
+	},
+
+	setStyle: function (style) {
+		L.setOptions(this, style);
+
+		if (this._container) {
+			this._updateStyle();
+		}
+
+		return this;
+	},
+
+	redraw: function () {
+		if (this._map) {
+			this.projectLatlngs();
+			this._updatePath();
+		}
+		return this;
+	}
+});
+
+L.Map.include({
+	_updatePathViewport: function () {
+		var p = L.Path.CLIP_PADDING,
+		    size = this.getSize(),
+		    panePos = L.DomUtil.getPosition(this._mapPane),
+		    min = panePos.multiplyBy(-1)._subtract(size.multiplyBy(p)._round()),
+		    max = min.add(size.multiplyBy(1 + p * 2)._round());
+
+		this._pathViewport = new L.Bounds(min, max);
+	}
+});
+
+
+/*
+ * Extends L.Path with SVG-specific rendering code.
+ */
+
+L.Path.SVG_NS = 'http://www.w3.org/2000/svg';
+
+L.Browser.svg = !!(document.createElementNS && document.createElementNS(L.Path.SVG_NS, 'svg').createSVGRect);
+
+L.Path = L.Path.extend({
+	statics: {
+		SVG: L.Browser.svg
+	},
+
+	bringToFront: function () {
+		var root = this._map._pathRoot,
+		    path = this._container;
+
+		if (path && root.lastChild !== path) {
+			root.appendChild(path);
+		}
+		return this;
+	},
+
+	bringToBack: function () {
+		var root = this._map._pathRoot,
+		    path = this._container,
+		    first = root.firstChild;
+
+		if (path && first !== path) {
+			root.insertBefore(path, first);
+		}
+		return this;
+	},
+
+	getPathString: function () {
+		// form path string here
+	},
+
+	_createElement: function (name) {
+		return document.createElementNS(L.Path.SVG_NS, name);
+	},
+
+	_initElements: function () {
+		this._map._initPathRoot();
+		this._initPath();
+		this._initStyle();
+	},
+
+	_initPath: function () {
+		this._container = this._createElement('g');
+
+		this._path = this._createElement('path');
+
+		if (this.options.className) {
+			L.DomUtil.addClass(this._path, this.options.className);
+		}
+
+		this._container.appendChild(this._path);
+	},
+
+	_initStyle: function () {
+		if (this.options.stroke) {
+			this._path.setAttribute('stroke-linejoin', 'round');
+			this._path.setAttribute('stroke-linecap', 'round');
+		}
+		if (this.options.fill) {
+			this._path.setAttribute('fill-rule', 'evenodd');
+		}
+		if (this.options.pointerEvents) {
+			this._path.setAttribute('pointer-events', this.options.pointerEvents);
+		}
+		if (!this.options.clickable && !this.options.pointerEvents) {
+			this._path.setAttribute('pointer-events', 'none');
+		}
+		this._updateStyle();
+	},
+
+	_updateStyle: function () {
+		if (this.options.stroke) {
+			this._path.setAttribute('stroke', this.options.color);
+			this._path.setAttribute('stroke-opacity', this.options.opacity);
+			this._path.setAttribute('stroke-width', this.options.weight);
+			if (this.options.dashArray) {
+				this._path.setAttribute('stroke-dasharray', this.options.dashArray);
+			} else {
+				this._path.removeAttribute('stroke-dasharray');
+			}
+			if (this.options.lineCap) {
+				this._path.setAttribute('stroke-linecap', this.options.lineCap);
+			}
+			if (this.options.lineJoin) {
+				this._path.setAttribute('stroke-linejoin', this.options.lineJoin);
+			}
+		} else {
+			this._path.setAttribute('stroke', 'none');
+		}
+		if (this.options.fill) {
+			this._path.setAttribute('fill', this.options.fillColor || this.options.color);
+			this._path.setAttribute('fill-opacity', this.options.fillOpacity);
+		} else {
+			this._path.setAttribute('fill', 'none');
+		}
+	},
+
+	_updatePath: function () {
+		var str = this.getPathString();
+		if (!str) {
+			// fix webkit empty string parsing bug
+			str = 'M0 0';
+		}
+		this._path.setAttribute('d', str);
+	},
+
+	// TODO remove duplication with L.Map
+	_initEvents: function () {
+		if (this.options.clickable) {
+			if (L.Browser.svg || !L.Browser.vml) {
+				L.DomUtil.addClass(this._path, 'leaflet-clickable');
+			}
+
+			L.DomEvent.on(this._container, 'click', this._onMouseClick, this);
+
+			var events = ['dblclick', 'mousedown', 'mouseover',
+			              'mouseout', 'mousemove', 'contextmenu'];
+			for (var i = 0; i < events.length; i++) {
+				L.DomEvent.on(this._container, events[i], this._fireMouseEvent, this);
+			}
+		}
+	},
+
+	_onMouseClick: function (e) {
+		if (this._map.dragging && this._map.dragging.moved()) { return; }
+
+		this._fireMouseEvent(e);
+	},
+
+	_fireMouseEvent: function (e) {
+		if (!this._map || !this.hasEventListeners(e.type)) { return; }
+
+		var map = this._map,
+		    containerPoint = map.mouseEventToContainerPoint(e),
+		    layerPoint = map.containerPointToLayerPoint(containerPoint),
+		    latlng = map.layerPointToLatLng(layerPoint);
+
+		this.fire(e.type, {
+			latlng: latlng,
+			layerPoint: layerPoint,
+			containerPoint: containerPoint,
+			originalEvent: e
+		});
+
+		if (e.type === 'contextmenu') {
+			L.DomEvent.preventDefault(e);
+		}
+		if (e.type !== 'mousemove') {
+			L.DomEvent.stopPropagation(e);
+		}
+	}
+});
+
+L.Map.include({
+	_initPathRoot: function () {
+		if (!this._pathRoot) {
+			this._pathRoot = L.Path.prototype._createElement('svg');
+			this._panes.overlayPane.appendChild(this._pathRoot);
+
+			if (this.options.zoomAnimation && L.Browser.any3d) {
+				L.DomUtil.addClass(this._pathRoot, 'leaflet-zoom-animated');
+
+				this.on({
+					'zoomanim': this._animatePathZoom,
+					'zoomend': this._endPathZoom
+				});
+			} else {
+				L.DomUtil.addClass(this._pathRoot, 'leaflet-zoom-hide');
+			}
+
+			this.on('moveend', this._updateSvgViewport);
+			this._updateSvgViewport();
+		}
+	},
+
+	_animatePathZoom: function (e) {
+		var scale = this.getZoomScale(e.zoom),
+		    offset = this._getCenterOffset(e.center)._multiplyBy(-scale)._add(this._pathViewport.min);
+
+		this._pathRoot.style[L.DomUtil.TRANSFORM] =
+		        L.DomUtil.getTranslateString(offset) + ' scale(' + scale + ') ';
+
+		this._pathZooming = true;
+	},
+
+	_endPathZoom: function () {
+		this._pathZooming = false;
+	},
+
+	_updateSvgViewport: function () {
+
+		if (this._pathZooming) {
+			// Do not update SVGs while a zoom animation is going on otherwise the animation will break.
+			// When the zoom animation ends we will be updated again anyway
+			// This fixes the case where you do a momentum move and zoom while the move is still ongoing.
+			return;
+		}
+
+		this._updatePathViewport();
+
+		var vp = this._pathViewport,
+		    min = vp.min,
+		    max = vp.max,
+		    width = max.x - min.x,
+		    height = max.y - min.y,
+		    root = this._pathRoot,
+		    pane = this._panes.overlayPane;
+
+		// Hack to make flicker on drag end on mobile webkit less irritating
+		if (L.Browser.mobileWebkit) {
+			pane.removeChild(root);
+		}
+
+		L.DomUtil.setPosition(root, min);
+		root.setAttribute('width', width);
+		root.setAttribute('height', height);
+		root.setAttribute('viewBox', [min.x, min.y, width, height].join(' '));
+
+		if (L.Browser.mobileWebkit) {
+			pane.appendChild(root);
+		}
+	}
+});
+
+
+/*
+ * Popup extension to L.Path (polylines, polygons, circles), adding popup-related methods.
+ */
+
+L.Path.include({
+
+	bindPopup: function (content, options) {
+
+		if (content instanceof L.Popup) {
+			this._popup = content;
+		} else {
+			if (!this._popup || options) {
+				this._popup = new L.Popup(options, this);
+			}
+			this._popup.setContent(content);
+		}
+
+		if (!this._popupHandlersAdded) {
+			this
+			    .on('click', this._openPopup, this)
+			    .on('remove', this.closePopup, this);
+
+			this._popupHandlersAdded = true;
+		}
+
+		return this;
+	},
+
+	unbindPopup: function () {
+		if (this._popup) {
+			this._popup = null;
+			this
+			    .off('click', this._openPopup)
+			    .off('remove', this.closePopup);
+
+			this._popupHandlersAdded = false;
+		}
+		return this;
+	},
+
+	openPopup: function (latlng) {
+
+		if (this._popup) {
+			// open the popup from one of the path's points if not specified
+			latlng = latlng || this._latlng ||
+			         this._latlngs[Math.floor(this._latlngs.length / 2)];
+
+			this._openPopup({latlng: latlng});
+		}
+
+		return this;
+	},
+
+	closePopup: function () {
+		if (this._popup) {
+			this._popup._close();
+		}
+		return this;
+	},
+
+	_openPopup: function (e) {
+		this._popup.setLatLng(e.latlng);
+		this._map.openPopup(this._popup);
+	}
+});
+
+
+/*
+ * Vector rendering for IE6-8 through VML.
+ * Thanks to Dmitry Baranovsky and his Raphael library for inspiration!
+ */
+
+L.Browser.vml = !L.Browser.svg && (function () {
+	try {
+		var div = document.createElement('div');
+		div.innerHTML = '<v:shape adj="1"/>';
+
+		var shape = div.firstChild;
+		shape.style.behavior = 'url(#default#VML)';
+
+		return shape && (typeof shape.adj === 'object');
+
+	} catch (e) {
+		return false;
+	}
+}());
+
+L.Path = L.Browser.svg || !L.Browser.vml ? L.Path : L.Path.extend({
+	statics: {
+		VML: true,
+		CLIP_PADDING: 0.02
+	},
+
+	_createElement: (function () {
+		try {
+			document.namespaces.add('lvml', 'urn:schemas-microsoft-com:vml');
+			return function (name) {
+				return document.createElement('<lvml:' + name + ' class="lvml">');
+			};
+		} catch (e) {
+			return function (name) {
+				return document.createElement(
+				        '<' + name + ' xmlns="urn:schemas-microsoft.com:vml" class="lvml">');
+			};
+		}
+	}()),
+
+	_initPath: function () {
+		var container = this._container = this._createElement('shape');
+
+		L.DomUtil.addClass(container, 'leaflet-vml-shape' +
+			(this.options.className ? ' ' + this.options.className : ''));
+
+		if (this.options.clickable) {
+			L.DomUtil.addClass(container, 'leaflet-clickable');
+		}
+
+		container.coordsize = '1 1';
+
+		this._path = this._createElement('path');
+		container.appendChild(this._path);
+
+		this._map._pathRoot.appendChild(container);
+	},
+
+	_initStyle: function () {
+		this._updateStyle();
+	},
+
+	_updateStyle: function () {
+		var stroke = this._stroke,
+		    fill = this._fill,
+		    options = this.options,
+		    container = this._container;
+
+		container.stroked = options.stroke;
+		container.filled = options.fill;
+
+		if (options.stroke) {
+			if (!stroke) {
+				stroke = this._stroke = this._createElement('stroke');
+				stroke.endcap = 'round';
+				container.appendChild(stroke);
+			}
+			stroke.weight = options.weight + 'px';
+			stroke.color = options.color;
+			stroke.opacity = options.opacity;
+
+			if (options.dashArray) {
+				stroke.dashStyle = L.Util.isArray(options.dashArray) ?
+				    options.dashArray.join(' ') :
+				    options.dashArray.replace(/( *, *)/g, ' ');
+			} else {
+				stroke.dashStyle = '';
+			}
+			if (options.lineCap) {
+				stroke.endcap = options.lineCap.replace('butt', 'flat');
+			}
+			if (options.lineJoin) {
+				stroke.joinstyle = options.lineJoin;
+			}
+
+		} else if (stroke) {
+			container.removeChild(stroke);
+			this._stroke = null;
+		}
+
+		if (options.fill) {
+			if (!fill) {
+				fill = this._fill = this._createElement('fill');
+				container.appendChild(fill);
+			}
+			fill.color = options.fillColor || options.color;
+			fill.opacity = options.fillOpacity;
+
+		} else if (fill) {
+			container.removeChild(fill);
+			this._fill = null;
+		}
+	},
+
+	_updatePath: function () {
+		var style = this._container.style;
+
+		style.display = 'none';
+		this._path.v = this.getPathString() + ' '; // the space fixes IE empty path string bug
+		style.display = '';
+	}
+});
+
+L.Map.include(L.Browser.svg || !L.Browser.vml ? {} : {
+	_initPathRoot: function () {
+		if (this._pathRoot) { return; }
+
+		var root = this._pathRoot = document.createElement('div');
+		root.className = 'leaflet-vml-container';
+		this._panes.overlayPane.appendChild(root);
+
+		this.on('moveend', this._updatePathViewport);
+		this._updatePathViewport();
+	}
+});
+
+
+/*
+ * Vector rendering for all browsers that support canvas.
+ */
+
+L.Browser.canvas = (function () {
+	return !!document.createElement('canvas').getContext;
+}());
+
+L.Path = (L.Path.SVG && !window.L_PREFER_CANVAS) || !L.Browser.canvas ? L.Path : L.Path.extend({
+	statics: {
+		//CLIP_PADDING: 0.02, // not sure if there's a need to set it to a small value
+		CANVAS: true,
+		SVG: false
+	},
+
+	redraw: function () {
+		if (this._map) {
+			this.projectLatlngs();
+			this._requestUpdate();
+		}
+		return this;
+	},
+
+	setStyle: function (style) {
+		L.setOptions(this, style);
+
+		if (this._map) {
+			this._updateStyle();
+			this._requestUpdate();
+		}
+		return this;
+	},
+
+	onRemove: function (map) {
+		map
+		    .off('viewreset', this.projectLatlngs, this)
+		    .off('moveend', this._updatePath, this);
+
+		if (this.options.clickable) {
+			this._map.off('click', this._onClick, this);
+			this._map.off('mousemove', this._onMouseMove, this);
+		}
+
+		this._requestUpdate();
+		
+		this.fire('remove');
+		this._map = null;
+	},
+
+	_requestUpdate: function () {
+		if (this._map && !L.Path._updateRequest) {
+			L.Path._updateRequest = L.Util.requestAnimFrame(this._fireMapMoveEnd, this._map);
+		}
+	},
+
+	_fireMapMoveEnd: function () {
+		L.Path._updateRequest = null;
+		this.fire('moveend');
+	},
+
+	_initElements: function () {
+		this._map._initPathRoot();
+		this._ctx = this._map._canvasCtx;
+	},
+
+	_updateStyle: function () {
+		var options = this.options;
+
+		if (options.stroke) {
+			this._ctx.lineWidth = options.weight;
+			this._ctx.strokeStyle = options.color;
+		}
+		if (options.fill) {
+			this._ctx.fillStyle = options.fillColor || options.color;
+		}
+
+		if (options.lineCap) {
+			this._ctx.lineCap = options.lineCap;
+		}
+		if (options.lineJoin) {
+			this._ctx.lineJoin = options.lineJoin;
+		}
+	},
+
+	_drawPath: function () {
+		var i, j, len, len2, point, drawMethod;
+
+		this._ctx.beginPath();
+
+		for (i = 0, len = this._parts.length; i < len; i++) {
+			for (j = 0, len2 = this._parts[i].length; j < len2; j++) {
+				point = this._parts[i][j];
+				drawMethod = (j === 0 ? 'move' : 'line') + 'To';
+
+				this._ctx[drawMethod](point.x, point.y);
+			}
+			// TODO refactor ugly hack
+			if (this instanceof L.Polygon) {
+				this._ctx.closePath();
+			}
+		}
+	},
+
+	_checkIfEmpty: function () {
+		return !this._parts.length;
+	},
+
+	_updatePath: function () {
+		if (this._checkIfEmpty()) { return; }
+
+		var ctx = this._ctx,
+		    options = this.options;
+
+		this._drawPath();
+		ctx.save();
+		this._updateStyle();
+
+		if (options.fill) {
+			ctx.globalAlpha = options.fillOpacity;
+			ctx.fill(options.fillRule || 'evenodd');
+		}
+
+		if (options.stroke) {
+			ctx.globalAlpha = options.opacity;
+			ctx.stroke();
+		}
+
+		ctx.restore();
+
+		// TODO optimization: 1 fill/stroke for all features with equal style instead of 1 for each feature
+	},
+
+	_initEvents: function () {
+		if (this.options.clickable) {
+			this._map.on('mousemove', this._onMouseMove, this);
+			this._map.on('click dblclick contextmenu', this._fireMouseEvent, this);
+		}
+	},
+
+	_fireMouseEvent: function (e) {
+		if (this._containsPoint(e.layerPoint)) {
+			this.fire(e.type, e);
+		}
+	},
+
+	_onMouseMove: function (e) {
+		if (!this._map || this._map._animatingZoom) { return; }
+
+		// TODO don't do on each move
+		if (this._containsPoint(e.layerPoint)) {
+			this._ctx.canvas.style.cursor = 'pointer';
+			this._mouseInside = true;
+			this.fire('mouseover', e);
+
+		} else if (this._mouseInside) {
+			this._ctx.canvas.style.cursor = '';
+			this._mouseInside = false;
+			this.fire('mouseout', e);
+		}
+	}
+});
+
+L.Map.include((L.Path.SVG && !window.L_PREFER_CANVAS) || !L.Browser.canvas ? {} : {
+	_initPathRoot: function () {
+		var root = this._pathRoot,
+		    ctx;
+
+		if (!root) {
+			root = this._pathRoot = document.createElement('canvas');
+			root.style.position = 'absolute';
+			ctx = this._canvasCtx = root.getContext('2d');
+
+			ctx.lineCap = 'round';
+			ctx.lineJoin = 'round';
+
+			this._panes.overlayPane.appendChild(root);
+
+			if (this.options.zoomAnimation) {
+				this._pathRoot.className = 'leaflet-zoom-animated';
+				this.on('zoomanim', this._animatePathZoom);
+				this.on('zoomend', this._endPathZoom);
+			}
+			this.on('moveend', this._updateCanvasViewport);
+			this._updateCanvasViewport();
+		}
+	},
+
+	_updateCanvasViewport: function () {
+		// don't redraw while zooming. See _updateSvgViewport for more details
+		if (this._pathZooming) { return; }
+		this._updatePathViewport();
+
+		var vp = this._pathViewport,
+		    min = vp.min,
+		    size = vp.max.subtract(min),
+		    root = this._pathRoot;
+
+		//TODO check if this works properly on mobile webkit
+		L.DomUtil.setPosition(root, min);
+		root.width = size.x;
+		root.height = size.y;
+		root.getContext('2d').translate(-min.x, -min.y);
+	}
+});
+
+
+/*
+ * L.LineUtil contains different utility functions for line segments
+ * and polylines (clipping, simplification, distances, etc.)
+ */
+
+/*jshint bitwise:false */ // allow bitwise operations for this file
+
+L.LineUtil = {
+
+	// Simplify polyline with vertex reduction and Douglas-Peucker simplification.
+	// Improves rendering performance dramatically by lessening the number of points to draw.
+
+	simplify: function (/*Point[]*/ points, /*Number*/ tolerance) {
+		if (!tolerance || !points.length) {
+			return points.slice();
+		}
+
+		var sqTolerance = tolerance * tolerance;
+
+		// stage 1: vertex reduction
+		points = this._reducePoints(points, sqTolerance);
+
+		// stage 2: Douglas-Peucker simplification
+		points = this._simplifyDP(points, sqTolerance);
+
+		return points;
+	},
+
+	// distance from a point to a segment between two points
+	pointToSegmentDistance:  function (/*Point*/ p, /*Point*/ p1, /*Point*/ p2) {
+		return Math.sqrt(this._sqClosestPointOnSegment(p, p1, p2, true));
+	},
+
+	closestPointOnSegment: function (/*Point*/ p, /*Point*/ p1, /*Point*/ p2) {
+		return this._sqClosestPointOnSegment(p, p1, p2);
+	},
+
+	// Douglas-Peucker simplification, see http://en.wikipedia.org/wiki/Douglas-Peucker_algorithm
+	_simplifyDP: function (points, sqTolerance) {
+
+		var len = points.length,
+		    ArrayConstructor = typeof Uint8Array !== undefined + '' ? Uint8Array : Array,
+		    markers = new ArrayConstructor(len);
+
+		markers[0] = markers[len - 1] = 1;
+
+		this._simplifyDPStep(points, markers, sqTolerance, 0, len - 1);
+
+		var i,
+		    newPoints = [];
+
+		for (i = 0; i < len; i++) {
+			if (markers[i]) {
+				newPoints.push(points[i]);
+			}
+		}
+
+		return newPoints;
+	},
+
+	_simplifyDPStep: function (points, markers, sqTolerance, first, last) {
+
+		var maxSqDist = 0,
+		    index, i, sqDist;
+
+		for (i = first + 1; i <= last - 1; i++) {
+			sqDist = this._sqClosestPointOnSegment(points[i], points[first], points[last], true);
+
+			if (sqDist > maxSqDist) {
+				index = i;
+				maxSqDist = sqDist;
+			}
+		}
+
+		if (maxSqDist > sqTolerance) {
+			markers[index] = 1;
+
+			this._simplifyDPStep(points, markers, sqTolerance, first, index);
+			this._simplifyDPStep(points, markers, sqTolerance, index, last);
+		}
+	},
+
+	// reduce points that are too close to each other to a single point
+	_reducePoints: function (points, sqTolerance) {
+		var reducedPoints = [points[0]];
+
+		for (var i = 1, prev = 0, len = points.length; i < len; i++) {
+			if (this._sqDist(points[i], points[prev]) > sqTolerance) {
+				reducedPoints.push(points[i]);
+				prev = i;
+			}
+		}
+		if (prev < len - 1) {
+			reducedPoints.push(points[len - 1]);
+		}
+		return reducedPoints;
+	},
+
+	// Cohen-Sutherland line clipping algorithm.
+	// Used to avoid rendering parts of a polyline that are not currently visible.
+
+	clipSegment: function (a, b, bounds, useLastCode) {
+		var codeA = useLastCode ? this._lastCode : this._getBitCode(a, bounds),
+		    codeB = this._getBitCode(b, bounds),
+
+		    codeOut, p, newCode;
+
+		// save 2nd code to avoid calculating it on the next segment
+		this._lastCode = codeB;
+
+		while (true) {
+			// if a,b is inside the clip window (trivial accept)
+			if (!(codeA | codeB)) {
+				return [a, b];
+			// if a,b is outside the clip window (trivial reject)
+			} else if (codeA & codeB) {
+				return false;
+			// other cases
+			} else {
+				codeOut = codeA || codeB;
+				p = this._getEdgeIntersection(a, b, codeOut, bounds);
+				newCode = this._getBitCode(p, bounds);
+
+				if (codeOut === codeA) {
+					a = p;
+					codeA = newCode;
+				} else {
+					b = p;
+					codeB = newCode;
+				}
+			}
+		}
+	},
+
+	_getEdgeIntersection: function (a, b, code, bounds) {
+		var dx = b.x - a.x,
+		    dy = b.y - a.y,
+		    min = bounds.min,
+		    max = bounds.max;
+
+		if (code & 8) { // top
+			return new L.Point(a.x + dx * (max.y - a.y) / dy, max.y);
+		} else if (code & 4) { // bottom
+			return new L.Point(a.x + dx * (min.y - a.y) / dy, min.y);
+		} else if (code & 2) { // right
+			return new L.Point(max.x, a.y + dy * (max.x - a.x) / dx);
+		} else if (code & 1) { // left
+			return new L.Point(min.x, a.y + dy * (min.x - a.x) / dx);
+		}
+	},
+
+	_getBitCode: function (/*Point*/ p, bounds) {
+		var code = 0;
+
+		if (p.x < bounds.min.x) { // left
+			code |= 1;
+		} else if (p.x > bounds.max.x) { // right
+			code |= 2;
+		}
+		if (p.y < bounds.min.y) { // bottom
+			code |= 4;
+		} else if (p.y > bounds.max.y) { // top
+			code |= 8;
+		}
+
+		return code;
+	},
+
+	// square distance (to avoid unnecessary Math.sqrt calls)
+	_sqDist: function (p1, p2) {
+		var dx = p2.x - p1.x,
+		    dy = p2.y - p1.y;
+		return dx * dx + dy * dy;
+	},
+
+	// return closest point on segment or distance to that point
+	_sqClosestPointOnSegment: function (p, p1, p2, sqDist) {
+		var x = p1.x,
+		    y = p1.y,
+		    dx = p2.x - x,
+		    dy = p2.y - y,
+		    dot = dx * dx + dy * dy,
+		    t;
+
+		if (dot > 0) {
+			t = ((p.x - x) * dx + (p.y - y) * dy) / dot;
+
+			if (t > 1) {
+				x = p2.x;
+				y = p2.y;
+			} else if (t > 0) {
+				x += dx * t;
+				y += dy * t;
+			}
+		}
+
+		dx = p.x - x;
+		dy = p.y - y;
+
+		return sqDist ? dx * dx + dy * dy : new L.Point(x, y);
+	}
+};
+
+
+/*
+ * L.Polyline is used to display polylines on a map.
+ */
+
+L.Polyline = L.Path.extend({
+	initialize: function (latlngs, options) {
+		L.Path.prototype.initialize.call(this, options);
+
+		this._latlngs = this._convertLatLngs(latlngs);
+	},
+
+	options: {
+		// how much to simplify the polyline on each zoom level
+		// more = better performance and smoother look, less = more accurate
+		smoothFactor: 1.0,
+		noClip: false
+	},
+
+	projectLatlngs: function () {
+		this._originalPoints = [];
+
+		for (var i = 0, len = this._latlngs.length; i < len; i++) {
+			this._originalPoints[i] = this._map.latLngToLayerPoint(this._latlngs[i]);
+		}
+	},
+
+	getPathString: function () {
+		for (var i = 0, len = this._parts.length, str = ''; i < len; i++) {
+			str += this._getPathPartStr(this._parts[i]);
+		}
+		return str;
+	},
+
+	getLatLngs: function () {
+		return this._latlngs;
+	},
+
+	setLatLngs: function (latlngs) {
+		this._latlngs = this._convertLatLngs(latlngs);
+		return this.redraw();
+	},
+
+	addLatLng: function (latlng) {
+		this._latlngs.push(L.latLng(latlng));
+		return this.redraw();
+	},
+
+	spliceLatLngs: function () { // (Number index, Number howMany)
+		var removed = [].splice.apply(this._latlngs, arguments);
+		this._convertLatLngs(this._latlngs, true);
+		this.redraw();
+		return removed;
+	},
+
+	closestLayerPoint: function (p) {
+		var minDistance = Infinity, parts = this._parts, p1, p2, minPoint = null;
+
+		for (var j = 0, jLen = parts.length; j < jLen; j++) {
+			var points = parts[j];
+			for (var i = 1, len = points.length; i < len; i++) {
+				p1 = points[i - 1];
+				p2 = points[i];
+				var sqDist = L.LineUtil._sqClosestPointOnSegment(p, p1, p2, true);
+				if (sqDist < minDistance) {
+					minDistance = sqDist;
+					minPoint = L.LineUtil._sqClosestPointOnSegment(p, p1, p2);
+				}
+			}
+		}
+		if (minPoint) {
+			minPoint.distance = Math.sqrt(minDistance);
+		}
+		return minPoint;
+	},
+
+	getBounds: function () {
+		return new L.LatLngBounds(this.getLatLngs());
+	},
+
+	_convertLatLngs: function (latlngs, overwrite) {
+		var i, len, target = overwrite ? latlngs : [];
+
+		for (i = 0, len = latlngs.length; i < len; i++) {
+			if (L.Util.isArray(latlngs[i]) && typeof latlngs[i][0] !== 'number') {
+				return;
+			}
+			target[i] = L.latLng(latlngs[i]);
+		}
+		return target;
+	},
+
+	_initEvents: function () {
+		L.Path.prototype._initEvents.call(this);
+	},
+
+	_getPathPartStr: function (points) {
+		var round = L.Path.VML;
+
+		for (var j = 0, len2 = points.length, str = '', p; j < len2; j++) {
+			p = points[j];
+			if (round) {
+				p._round();
+			}
+			str += (j ? 'L' : 'M') + p.x + ' ' + p.y;
+		}
+		return str;
+	},
+
+	_clipPoints: function () {
+		var points = this._originalPoints,
+		    len = points.length,
+		    i, k, segment;
+
+		if (this.options.noClip) {
+			this._parts = [points];
+			return;
+		}
+
+		this._parts = [];
+
+		var parts = this._parts,
+		    vp = this._map._pathViewport,
+		    lu = L.LineUtil;
+
+		for (i = 0, k = 0; i < len - 1; i++) {
+			segment = lu.clipSegment(points[i], points[i + 1], vp, i);
+			if (!segment) {
+				continue;
+			}
+
+			parts[k] = parts[k] || [];
+			parts[k].push(segment[0]);
+
+			// if segment goes out of screen, or it's the last one, it's the end of the line part
+			if ((segment[1] !== points[i + 1]) || (i === len - 2)) {
+				parts[k].push(segment[1]);
+				k++;
+			}
+		}
+	},
+
+	// simplify each clipped part of the polyline
+	_simplifyPoints: function () {
+		var parts = this._parts,
+		    lu = L.LineUtil;
+
+		for (var i = 0, len = parts.length; i < len; i++) {
+			parts[i] = lu.simplify(parts[i], this.options.smoothFactor);
+		}
+	},
+
+	_updatePath: function () {
+		if (!this._map) { return; }
+
+		this._clipPoints();
+		this._simplifyPoints();
+
+		L.Path.prototype._updatePath.call(this);
+	}
+});
+
+L.polyline = function (latlngs, options) {
+	return new L.Polyline(latlngs, options);
+};
+
+
+/*
+ * L.PolyUtil contains utility functions for polygons (clipping, etc.).
+ */
+
+/*jshint bitwise:false */ // allow bitwise operations here
+
+L.PolyUtil = {};
+
+/*
+ * Sutherland-Hodgeman polygon clipping algorithm.
+ * Used to avoid rendering parts of a polygon that are not currently visible.
+ */
+L.PolyUtil.clipPolygon = function (points, bounds) {
+	var clippedPoints,
+	    edges = [1, 4, 2, 8],
+	    i, j, k,
+	    a, b,
+	    len, edge, p,
+	    lu = L.LineUtil;
+
+	for (i = 0, len = points.length; i < len; i++) {
+		points[i]._code = lu._getBitCode(points[i], bounds);
+	}
+
+	// for each edge (left, bottom, right, top)
+	for (k = 0; k < 4; k++) {
+		edge = edges[k];
+		clippedPoints = [];
+
+		for (i = 0, len = points.length, j = len - 1; i < len; j = i++) {
+			a = points[i];
+			b = points[j];
+
+			// if a is inside the clip window
+			if (!(a._code & edge)) {
+				// if b is outside the clip window (a->b goes out of screen)
+				if (b._code & edge) {
+					p = lu._getEdgeIntersection(b, a, edge, bounds);
+					p._code = lu._getBitCode(p, bounds);
+					clippedPoints.push(p);
+				}
+				clippedPoints.push(a);
+
+			// else if b is inside the clip window (a->b enters the screen)
+			} else if (!(b._code & edge)) {
+				p = lu._getEdgeIntersection(b, a, edge, bounds);
+				p._code = lu._getBitCode(p, bounds);
+				clippedPoints.push(p);
+			}
+		}
+		points = clippedPoints;
+	}
+
+	return points;
+};
+
+
+/*
+ * L.Polygon is used to display polygons on a map.
+ */
+
+L.Polygon = L.Polyline.extend({
+	options: {
+		fill: true
+	},
+
+	initialize: function (latlngs, options) {
+		L.Polyline.prototype.initialize.call(this, latlngs, options);
+		this._initWithHoles(latlngs);
+	},
+
+	_initWithHoles: function (latlngs) {
+		var i, len, hole;
+		if (latlngs && L.Util.isArray(latlngs[0]) && (typeof latlngs[0][0] !== 'number')) {
+			this._latlngs = this._convertLatLngs(latlngs[0]);
+			this._holes = latlngs.slice(1);
+
+			for (i = 0, len = this._holes.length; i < len; i++) {
+				hole = this._holes[i] = this._convertLatLngs(this._holes[i]);
+				if (hole[0].equals(hole[hole.length - 1])) {
+					hole.pop();
+				}
+			}
+		}
+
+		// filter out last point if its equal to the first one
+		latlngs = this._latlngs;
+
+		if (latlngs.length >= 2 && latlngs[0].equals(latlngs[latlngs.length - 1])) {
+			latlngs.pop();
+		}
+	},
+
+	projectLatlngs: function () {
+		L.Polyline.prototype.projectLatlngs.call(this);
+
+		// project polygon holes points
+		// TODO move this logic to Polyline to get rid of duplication
+		this._holePoints = [];
+
+		if (!this._holes) { return; }
+
+		var i, j, len, len2;
+
+		for (i = 0, len = this._holes.length; i < len; i++) {
+			this._holePoints[i] = [];
+
+			for (j = 0, len2 = this._holes[i].length; j < len2; j++) {
+				this._holePoints[i][j] = this._map.latLngToLayerPoint(this._holes[i][j]);
+			}
+		}
+	},
+
+	setLatLngs: function (latlngs) {
+		if (latlngs && L.Util.isArray(latlngs[0]) && (typeof latlngs[0][0] !== 'number')) {
+			this._initWithHoles(latlngs);
+			return this.redraw();
+		} else {
+			return L.Polyline.prototype.setLatLngs.call(this, latlngs);
+		}
+	},
+
+	_clipPoints: function () {
+		var points = this._originalPoints,
+		    newParts = [];
+
+		this._parts = [points].concat(this._holePoints);
+
+		if (this.options.noClip) { return; }
+
+		for (var i = 0, len = this._parts.length; i < len; i++) {
+			var clipped = L.PolyUtil.clipPolygon(this._parts[i], this._map._pathViewport);
+			if (clipped.length) {
+				newParts.push(clipped);
+			}
+		}
+
+		this._parts = newParts;
+	},
+
+	_getPathPartStr: function (points) {
+		var str = L.Polyline.prototype._getPathPartStr.call(this, points);
+		return str + (L.Browser.svg ? 'z' : 'x');
+	}
+});
+
+L.polygon = function (latlngs, options) {
+	return new L.Polygon(latlngs, options);
+};
+
+
+/*
+ * Contains L.MultiPolyline and L.MultiPolygon layers.
+ */
+
+(function () {
+	function createMulti(Klass) {
+
+		return L.FeatureGroup.extend({
+
+			initialize: function (latlngs, options) {
+				this._layers = {};
+				this._options = options;
+				this.setLatLngs(latlngs);
+			},
+
+			setLatLngs: function (latlngs) {
+				var i = 0,
+				    len = latlngs.length;
+
+				this.eachLayer(function (layer) {
+					if (i < len) {
+						layer.setLatLngs(latlngs[i++]);
+					} else {
+						this.removeLayer(layer);
+					}
+				}, this);
+
+				while (i < len) {
+					this.addLayer(new Klass(latlngs[i++], this._options));
+				}
+
+				return this;
+			},
+
+			getLatLngs: function () {
+				var latlngs = [];
+
+				this.eachLayer(function (layer) {
+					latlngs.push(layer.getLatLngs());
+				});
+
+				return latlngs;
+			}
+		});
+	}
+
+	L.MultiPolyline = createMulti(L.Polyline);
+	L.MultiPolygon = createMulti(L.Polygon);
+
+	L.multiPolyline = function (latlngs, options) {
+		return new L.MultiPolyline(latlngs, options);
+	};
+
+	L.multiPolygon = function (latlngs, options) {
+		return new L.MultiPolygon(latlngs, options);
+	};
+}());
+
+
+/*
+ * L.Rectangle extends Polygon and creates a rectangle when passed a LatLngBounds object.
+ */
+
+L.Rectangle = L.Polygon.extend({
+	initialize: function (latLngBounds, options) {
+		L.Polygon.prototype.initialize.call(this, this._boundsToLatLngs(latLngBounds), options);
+	},
+
+	setBounds: function (latLngBounds) {
+		this.setLatLngs(this._boundsToLatLngs(latLngBounds));
+	},
+
+	_boundsToLatLngs: function (latLngBounds) {
+		latLngBounds = L.latLngBounds(latLngBounds);
+		return [
+			latLngBounds.getSouthWest(),
+			latLngBounds.getNorthWest(),
+			latLngBounds.getNorthEast(),
+			latLngBounds.getSouthEast()
+		];
+	}
+});
+
+L.rectangle = function (latLngBounds, options) {
+	return new L.Rectangle(latLngBounds, options);
+};
+
+
+/*
+ * L.Circle is a circle overlay (with a certain radius in meters).
+ */
+
+L.Circle = L.Path.extend({
+	initialize: function (latlng, radius, options) {
+		L.Path.prototype.initialize.call(this, options);
+
+		this._latlng = L.latLng(latlng);
+		this._mRadius = radius;
+	},
+
+	options: {
+		fill: true
+	},
+
+	setLatLng: function (latlng) {
+		this._latlng = L.latLng(latlng);
+		return this.redraw();
+	},
+
+	setRadius: function (radius) {
+		this._mRadius = radius;
+		return this.redraw();
+	},
+
+	projectLatlngs: function () {
+		var lngRadius = this._getLngRadius(),
+		    latlng = this._latlng,
+		    pointLeft = this._map.latLngToLayerPoint([latlng.lat, latlng.lng - lngRadius]);
+
+		this._point = this._map.latLngToLayerPoint(latlng);
+		this._radius = Math.max(this._point.x - pointLeft.x, 1);
+	},
+
+	getBounds: function () {
+		var lngRadius = this._getLngRadius(),
+		    latRadius = (this._mRadius / 40075017) * 360,
+		    latlng = this._latlng;
+
+		return new L.LatLngBounds(
+		        [latlng.lat - latRadius, latlng.lng - lngRadius],
+		        [latlng.lat + latRadius, latlng.lng + lngRadius]);
+	},
+
+	getLatLng: function () {
+		return this._latlng;
+	},
+
+	getPathString: function () {
+		var p = this._point,
+		    r = this._radius;
+
+		if (this._checkIfEmpty()) {
+			return '';
+		}
+
+		if (L.Browser.svg) {
+			return 'M' + p.x + ',' + (p.y - r) +
+			       'A' + r + ',' + r + ',0,1,1,' +
+			       (p.x - 0.1) + ',' + (p.y - r) + ' z';
+		} else {
+			p._round();
+			r = Math.round(r);
+			return 'AL ' + p.x + ',' + p.y + ' ' + r + ',' + r + ' 0,' + (65535 * 360);
+		}
+	},
+
+	getRadius: function () {
+		return this._mRadius;
+	},
+
+	// TODO Earth hardcoded, move into projection code!
+
+	_getLatRadius: function () {
+		return (this._mRadius / 40075017) * 360;
+	},
+
+	_getLngRadius: function () {
+		return this._getLatRadius() / Math.cos(L.LatLng.DEG_TO_RAD * this._latlng.lat);
+	},
+
+	_checkIfEmpty: function () {
+		if (!this._map) {
+			return false;
+		}
+		var vp = this._map._pathViewport,
+		    r = this._radius,
+		    p = this._point;
+
+		return p.x - r > vp.max.x || p.y - r > vp.max.y ||
+		       p.x + r < vp.min.x || p.y + r < vp.min.y;
+	}
+});
+
+L.circle = function (latlng, radius, options) {
+	return new L.Circle(latlng, radius, options);
+};
+
+
+/*
+ * L.CircleMarker is a circle overlay with a permanent pixel radius.
+ */
+
+L.CircleMarker = L.Circle.extend({
+	options: {
+		radius: 10,
+		weight: 2
+	},
+
+	initialize: function (latlng, options) {
+		L.Circle.prototype.initialize.call(this, latlng, null, options);
+		this._radius = this.options.radius;
+	},
+
+	projectLatlngs: function () {
+		this._point = this._map.latLngToLayerPoint(this._latlng);
+	},
+
+	_updateStyle : function () {
+		L.Circle.prototype._updateStyle.call(this);
+		this.setRadius(this.options.radius);
+	},
+
+	setLatLng: function (latlng) {
+		L.Circle.prototype.setLatLng.call(this, latlng);
+		if (this._popup && this._popup._isOpen) {
+			this._popup.setLatLng(latlng);
+		}
+		return this;
+	},
+
+	setRadius: function (radius) {
+		this.options.radius = this._radius = radius;
+		return this.redraw();
+	},
+
+	getRadius: function () {
+		return this._radius;
+	}
+});
+
+L.circleMarker = function (latlng, options) {
+	return new L.CircleMarker(latlng, options);
+};
+
+
+/*
+ * Extends L.Polyline to be able to manually detect clicks on Canvas-rendered polylines.
+ */
+
+L.Polyline.include(!L.Path.CANVAS ? {} : {
+	_containsPoint: function (p, closed) {
+		var i, j, k, len, len2, dist, part,
+		    w = this.options.weight / 2;
+
+		if (L.Browser.touch) {
+			w += 10; // polyline click tolerance on touch devices
+		}
+
+		for (i = 0, len = this._parts.length; i < len; i++) {
+			part = this._parts[i];
+			for (j = 0, len2 = part.length, k = len2 - 1; j < len2; k = j++) {
+				if (!closed && (j === 0)) {
+					continue;
+				}
+
+				dist = L.LineUtil.pointToSegmentDistance(p, part[k], part[j]);
+
+				if (dist <= w) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+});
+
+
+/*
+ * Extends L.Polygon to be able to manually detect clicks on Canvas-rendered polygons.
+ */
+
+L.Polygon.include(!L.Path.CANVAS ? {} : {
+	_containsPoint: function (p) {
+		var inside = false,
+		    part, p1, p2,
+		    i, j, k,
+		    len, len2;
+
+		// TODO optimization: check if within bounds first
+
+		if (L.Polyline.prototype._containsPoint.call(this, p, true)) {
+			// click on polygon border
+			return true;
+		}
+
+		// ray casting algorithm for detecting if point is in polygon
+
+		for (i = 0, len = this._parts.length; i < len; i++) {
+			part = this._parts[i];
+
+			for (j = 0, len2 = part.length, k = len2 - 1; j < len2; k = j++) {
+				p1 = part[j];
+				p2 = part[k];
+
+				if (((p1.y > p.y) !== (p2.y > p.y)) &&
+						(p.x < (p2.x - p1.x) * (p.y - p1.y) / (p2.y - p1.y) + p1.x)) {
+					inside = !inside;
+				}
+			}
+		}
+
+		return inside;
+	}
+});
+
+
+/*
+ * Extends L.Circle with Canvas-specific code.
+ */
+
+L.Circle.include(!L.Path.CANVAS ? {} : {
+	_drawPath: function () {
+		var p = this._point;
+		this._ctx.beginPath();
+		this._ctx.arc(p.x, p.y, this._radius, 0, Math.PI * 2, false);
+	},
+
+	_containsPoint: function (p) {
+		var center = this._point,
+		    w2 = this.options.stroke ? this.options.weight / 2 : 0;
+
+		return (p.distanceTo(center) <= this._radius + w2);
+	}
+});
+
+
+/*
+ * CircleMarker canvas specific drawing parts.
+ */
+
+L.CircleMarker.include(!L.Path.CANVAS ? {} : {
+	_updateStyle: function () {
+		L.Path.prototype._updateStyle.call(this);
+	}
+});
+
+
+/*
+ * L.GeoJSON turns any GeoJSON data into a Leaflet layer.
+ */
+
+L.GeoJSON = L.FeatureGroup.extend({
+
+	initialize: function (geojson, options) {
+		L.setOptions(this, options);
+
+		this._layers = {};
+
+		if (geojson) {
+			this.addData(geojson);
+		}
+	},
+
+	addData: function (geojson) {
+		var features = L.Util.isArray(geojson) ? geojson : geojson.features,
+		    i, len, feature;
+
+		if (features) {
+			for (i = 0, len = features.length; i < len; i++) {
+				// Only add this if geometry or geometries are set and not null
+				feature = features[i];
+				if (feature.geometries || feature.geometry || feature.features || feature.coordinates) {
+					this.addData(features[i]);
+				}
+			}
+			return this;
+		}
+
+		var options = this.options;
+
+		if (options.filter && !options.filter(geojson)) { return; }
+
+		var layer = L.GeoJSON.geometryToLayer(geojson, options.pointToLayer, options.coordsToLatLng, options);
+		layer.feature = L.GeoJSON.asFeature(geojson);
+
+		layer.defaultOptions = layer.options;
+		this.resetStyle(layer);
+
+		if (options.onEachFeature) {
+			options.onEachFeature(geojson, layer);
+		}
+
+		return this.addLayer(layer);
+	},
+
+	resetStyle: function (layer) {
+		var style = this.options.style;
+		if (style) {
+			// reset any custom styles
+			L.Util.extend(layer.options, layer.defaultOptions);
+
+			this._setLayerStyle(layer, style);
+		}
+	},
+
+	setStyle: function (style) {
+		this.eachLayer(function (layer) {
+			this._setLayerStyle(layer, style);
+		}, this);
+	},
+
+	_setLayerStyle: function (layer, style) {
+		if (typeof style === 'function') {
+			style = style(layer.feature);
+		}
+		if (layer.setStyle) {
+			layer.setStyle(style);
+		}
+	}
+});
+
+L.extend(L.GeoJSON, {
+	geometryToLayer: function (geojson, pointToLayer, coordsToLatLng, vectorOptions) {
+		var geometry = geojson.type === 'Feature' ? geojson.geometry : geojson,
+		    coords = geometry.coordinates,
+		    layers = [],
+		    latlng, latlngs, i, len;
+
+		coordsToLatLng = coordsToLatLng || this.coordsToLatLng;
+
+		switch (geometry.type) {
+		case 'Point':
+			latlng = coordsToLatLng(coords);
+			return pointToLayer ? pointToLayer(geojson, latlng) : new L.Marker(latlng);
+
+		case 'MultiPoint':
+			for (i = 0, len = coords.length; i < len; i++) {
+				latlng = coordsToLatLng(coords[i]);
+				layers.push(pointToLayer ? pointToLayer(geojson, latlng) : new L.Marker(latlng));
+			}
+			return new L.FeatureGroup(layers);
+
+		case 'LineString':
+			latlngs = this.coordsToLatLngs(coords, 0, coordsToLatLng);
+			return new L.Polyline(latlngs, vectorOptions);
+
+		case 'Polygon':
+			if (coords.length === 2 && !coords[1].length) {
+				throw new Error('Invalid GeoJSON object.');
+			}
+			latlngs = this.coordsToLatLngs(coords, 1, coordsToLatLng);
+			return new L.Polygon(latlngs, vectorOptions);
+
+		case 'MultiLineString':
+			latlngs = this.coordsToLatLngs(coords, 1, coordsToLatLng);
+			return new L.MultiPolyline(latlngs, vectorOptions);
+
+		case 'MultiPolygon':
+			latlngs = this.coordsToLatLngs(coords, 2, coordsToLatLng);
+			return new L.MultiPolygon(latlngs, vectorOptions);
+
+		case 'GeometryCollection':
+			for (i = 0, len = geometry.geometries.length; i < len; i++) {
+
+				layers.push(this.geometryToLayer({
+					geometry: geometry.geometries[i],
+					type: 'Feature',
+					properties: geojson.properties
+				}, pointToLayer, coordsToLatLng, vectorOptions));
+			}
+			return new L.FeatureGroup(layers);
+
+		default:
+			throw new Error('Invalid GeoJSON object.');
+		}
+	},
+
+	coordsToLatLng: function (coords) { // (Array[, Boolean]) -> LatLng
+		return new L.LatLng(coords[1], coords[0], coords[2]);
+	},
+
+	coordsToLatLngs: function (coords, levelsDeep, coordsToLatLng) { // (Array[, Number, Function]) -> Array
+		var latlng, i, len,
+		    latlngs = [];
+
+		for (i = 0, len = coords.length; i < len; i++) {
+			latlng = levelsDeep ?
+			        this.coordsToLatLngs(coords[i], levelsDeep - 1, coordsToLatLng) :
+			        (coordsToLatLng || this.coordsToLatLng)(coords[i]);
+
+			latlngs.push(latlng);
+		}
+
+		return latlngs;
+	},
+
+	latLngToCoords: function (latlng) {
+		var coords = [latlng.lng, latlng.lat];
+
+		if (latlng.alt !== undefined) {
+			coords.push(latlng.alt);
+		}
+		return coords;
+	},
+
+	latLngsToCoords: function (latLngs) {
+		var coords = [];
+
+		for (var i = 0, len = latLngs.length; i < len; i++) {
+			coords.push(L.GeoJSON.latLngToCoords(latLngs[i]));
+		}
+
+		return coords;
+	},
+
+	getFeature: function (layer, newGeometry) {
+		return layer.feature ? L.extend({}, layer.feature, {geometry: newGeometry}) : L.GeoJSON.asFeature(newGeometry);
+	},
+
+	asFeature: function (geoJSON) {
+		if (geoJSON.type === 'Feature') {
+			return geoJSON;
+		}
+
+		return {
+			type: 'Feature',
+			properties: {},
+			geometry: geoJSON
+		};
+	}
+});
+
+var PointToGeoJSON = {
+	toGeoJSON: function () {
+		return L.GeoJSON.getFeature(this, {
+			type: 'Point',
+			coordinates: L.GeoJSON.latLngToCoords(this.getLatLng())
+		});
+	}
+};
+
+L.Marker.include(PointToGeoJSON);
+L.Circle.include(PointToGeoJSON);
+L.CircleMarker.include(PointToGeoJSON);
+
+L.Polyline.include({
+	toGeoJSON: function () {
+		return L.GeoJSON.getFeature(this, {
+			type: 'LineString',
+			coordinates: L.GeoJSON.latLngsToCoords(this.getLatLngs())
+		});
+	}
+});
+
+L.Polygon.include({
+	toGeoJSON: function () {
+		var coords = [L.GeoJSON.latLngsToCoords(this.getLatLngs())],
+		    i, len, hole;
+
+		coords[0].push(coords[0][0]);
+
+		if (this._holes) {
+			for (i = 0, len = this._holes.length; i < len; i++) {
+				hole = L.GeoJSON.latLngsToCoords(this._holes[i]);
+				hole.push(hole[0]);
+				coords.push(hole);
+			}
+		}
+
+		return L.GeoJSON.getFeature(this, {
+			type: 'Polygon',
+			coordinates: coords
+		});
+	}
+});
+
+(function () {
+	function multiToGeoJSON(type) {
+		return function () {
+			var coords = [];
+
+			this.eachLayer(function (layer) {
+				coords.push(layer.toGeoJSON().geometry.coordinates);
+			});
+
+			return L.GeoJSON.getFeature(this, {
+				type: type,
+				coordinates: coords
+			});
+		};
+	}
+
+	L.MultiPolyline.include({toGeoJSON: multiToGeoJSON('MultiLineString')});
+	L.MultiPolygon.include({toGeoJSON: multiToGeoJSON('MultiPolygon')});
+
+	L.LayerGroup.include({
+		toGeoJSON: function () {
+
+			var geometry = this.feature && this.feature.geometry,
+				jsons = [],
+				json;
+
+			if (geometry && geometry.type === 'MultiPoint') {
+				return multiToGeoJSON('MultiPoint').call(this);
+			}
+
+			var isGeometryCollection = geometry && geometry.type === 'GeometryCollection';
+
+			this.eachLayer(function (layer) {
+				if (layer.toGeoJSON) {
+					json = layer.toGeoJSON();
+					jsons.push(isGeometryCollection ? json.geometry : L.GeoJSON.asFeature(json));
+				}
+			});
+
+			if (isGeometryCollection) {
+				return L.GeoJSON.getFeature(this, {
+					geometries: jsons,
+					type: 'GeometryCollection'
+				});
+			}
+
+			return {
+				type: 'FeatureCollection',
+				features: jsons
+			};
+		}
+	});
+}());
+
+L.geoJson = function (geojson, options) {
+	return new L.GeoJSON(geojson, options);
+};
+
+
+/*
+ * L.DomEvent contains functions for working with DOM events.
+ */
+
+L.DomEvent = {
+	/* inspired by John Resig, Dean Edwards and YUI addEvent implementations */
+	addListener: function (obj, type, fn, context) { // (HTMLElement, String, Function[, Object])
+
+		var id = L.stamp(fn),
+		    key = '_leaflet_' + type + id,
+		    handler, originalHandler, newType;
+
+		if (obj[key]) { return this; }
+
+		handler = function (e) {
+			return fn.call(context || obj, e || L.DomEvent._getEvent());
+		};
+
+		if (L.Browser.pointer && type.indexOf('touch') === 0) {
+			return this.addPointerListener(obj, type, handler, id);
+		}
+		if (L.Browser.touch && (type === 'dblclick') && this.addDoubleTapListener) {
+			this.addDoubleTapListener(obj, handler, id);
+		}
+
+		if ('addEventListener' in obj) {
+
+			if (type === 'mousewheel') {
+				obj.addEventListener('DOMMouseScroll', handler, false);
+				obj.addEventListener(type, handler, false);
+
+			} else if ((type === 'mouseenter') || (type === 'mouseleave')) {
+
+				originalHandler = handler;
+				newType = (type === 'mouseenter' ? 'mouseover' : 'mouseout');
+
+				handler = function (e) {
+					if (!L.DomEvent._checkMouse(obj, e)) { return; }
+					return originalHandler(e);
+				};
+
+				obj.addEventListener(newType, handler, false);
+
+			} else if (type === 'click' && L.Browser.android) {
+				originalHandler = handler;
+				handler = function (e) {
+					return L.DomEvent._filterClick(e, originalHandler);
+				};
+
+				obj.addEventListener(type, handler, false);
+			} else {
+				obj.addEventListener(type, handler, false);
+			}
+
+		} else if ('attachEvent' in obj) {
+			obj.attachEvent('on' + type, handler);
+		}
+
+		obj[key] = handler;
+
+		return this;
+	},
+
+	removeListener: function (obj, type, fn) {  // (HTMLElement, String, Function)
+
+		var id = L.stamp(fn),
+		    key = '_leaflet_' + type + id,
+		    handler = obj[key];
+
+		if (!handler) { return this; }
+
+		if (L.Browser.pointer && type.indexOf('touch') === 0) {
+			this.removePointerListener(obj, type, id);
+		} else if (L.Browser.touch && (type === 'dblclick') && this.removeDoubleTapListener) {
+			this.removeDoubleTapListener(obj, id);
+
+		} else if ('removeEventListener' in obj) {
+
+			if (type === 'mousewheel') {
+				obj.removeEventListener('DOMMouseScroll', handler, false);
+				obj.removeEventListener(type, handler, false);
+
+			} else if ((type === 'mouseenter') || (type === 'mouseleave')) {
+				obj.removeEventListener((type === 'mouseenter' ? 'mouseover' : 'mouseout'), handler, false);
+			} else {
+				obj.removeEventListener(type, handler, false);
+			}
+		} else if ('detachEvent' in obj) {
+			obj.detachEvent('on' + type, handler);
+		}
+
+		obj[key] = null;
+
+		return this;
+	},
+
+	stopPropagation: function (e) {
+
+		if (e.stopPropagation) {
+			e.stopPropagation();
+		} else {
+			e.cancelBubble = true;
+		}
+		L.DomEvent._skipped(e);
+
+		return this;
+	},
+
+	disableScrollPropagation: function (el) {
+		var stop = L.DomEvent.stopPropagation;
+
+		return L.DomEvent
+			.on(el, 'mousewheel', stop)
+			.on(el, 'MozMousePixelScroll', stop);
+	},
+
+	disableClickPropagation: function (el) {
+		var stop = L.DomEvent.stopPropagation;
+
+		for (var i = L.Draggable.START.length - 1; i >= 0; i--) {
+			L.DomEvent.on(el, L.Draggable.START[i], stop);
+		}
+
+		return L.DomEvent
+			.on(el, 'click', L.DomEvent._fakeStop)
+			.on(el, 'dblclick', stop);
+	},
+
+	preventDefault: function (e) {
+
+		if (e.preventDefault) {
+			e.preventDefault();
+		} else {
+			e.returnValue = false;
+		}
+		return this;
+	},
+
+	stop: function (e) {
+		return L.DomEvent
+			.preventDefault(e)
+			.stopPropagation(e);
+	},
+
+	getMousePosition: function (e, container) {
+		if (!container) {
+			return new L.Point(e.clientX, e.clientY);
+		}
+
+		var rect = container.getBoundingClientRect();
+
+		return new L.Point(
+			e.clientX - rect.left - container.clientLeft,
+			e.clientY - rect.top - container.clientTop);
+	},
+
+	getWheelDelta: function (e) {
+
+		var delta = 0;
+
+		if (e.wheelDelta) {
+			delta = e.wheelDelta / 120;
+		}
+		if (e.detail) {
+			delta = -e.detail / 3;
+		}
+		return delta;
+	},
+
+	_skipEvents: {},
+
+	_fakeStop: function (e) {
+		// fakes stopPropagation by setting a special event flag, checked/reset with L.DomEvent._skipped(e)
+		L.DomEvent._skipEvents[e.type] = true;
+	},
+
+	_skipped: function (e) {
+		var skipped = this._skipEvents[e.type];
+		// reset when checking, as it's only used in map container and propagates outside of the map
+		this._skipEvents[e.type] = false;
+		return skipped;
+	},
+
+	// check if element really left/entered the event target (for mouseenter/mouseleave)
+	_checkMouse: function (el, e) {
+
+		var related = e.relatedTarget;
+
+		if (!related) { return true; }
+
+		try {
+			while (related && (related !== el)) {
+				related = related.parentNode;
+			}
+		} catch (err) {
+			return false;
+		}
+		return (related !== el);
+	},
+
+	_getEvent: function () { // evil magic for IE
+		/*jshint noarg:false */
+		var e = window.event;
+		if (!e) {
+			var caller = arguments.callee.caller;
+			while (caller) {
+				e = caller['arguments'][0];
+				if (e && window.Event === e.constructor) {
+					break;
+				}
+				caller = caller.caller;
+			}
+		}
+		return e;
+	},
+
+	// this is a horrible workaround for a bug in Android where a single touch triggers two click events
+	_filterClick: function (e, handler) {
+		var timeStamp = (e.timeStamp || e.originalEvent.timeStamp),
+			elapsed = L.DomEvent._lastClick && (timeStamp - L.DomEvent._lastClick);
+
+		// are they closer together than 500ms yet more than 100ms?
+		// Android typically triggers them ~300ms apart while multiple listeners
+		// on the same event should be triggered far faster;
+		// or check if click is simulated on the element, and if it is, reject any non-simulated events
+
+		if ((elapsed && elapsed > 100 && elapsed < 500) || (e.target._simulatedClick && !e._simulated)) {
+			L.DomEvent.stop(e);
+			return;
+		}
+		L.DomEvent._lastClick = timeStamp;
+
+		return handler(e);
+	}
+};
+
+L.DomEvent.on = L.DomEvent.addListener;
+L.DomEvent.off = L.DomEvent.removeListener;
+
+
+/*
+ * L.Draggable allows you to add dragging capabilities to any element. Supports mobile devices too.
+ */
+
+L.Draggable = L.Class.extend({
+	includes: L.Mixin.Events,
+
+	statics: {
+		START: L.Browser.touch ? ['touchstart', 'mousedown'] : ['mousedown'],
+		END: {
+			mousedown: 'mouseup',
+			touchstart: 'touchend',
+			pointerdown: 'touchend',
+			MSPointerDown: 'touchend'
+		},
+		MOVE: {
+			mousedown: 'mousemove',
+			touchstart: 'touchmove',
+			pointerdown: 'touchmove',
+			MSPointerDown: 'touchmove'
+		}
+	},
+
+	initialize: function (element, dragStartTarget) {
+		this._element = element;
+		this._dragStartTarget = dragStartTarget || element;
+	},
+
+	enable: function () {
+		if (this._enabled) { return; }
+
+		for (var i = L.Draggable.START.length - 1; i >= 0; i--) {
+			L.DomEvent.on(this._dragStartTarget, L.Draggable.START[i], this._onDown, this);
+		}
+
+		this._enabled = true;
+	},
+
+	disable: function () {
+		if (!this._enabled) { return; }
+
+		for (var i = L.Draggable.START.length - 1; i >= 0; i--) {
+			L.DomEvent.off(this._dragStartTarget, L.Draggable.START[i], this._onDown, this);
+		}
+
+		this._enabled = false;
+		this._moved = false;
+	},
+
+	_onDown: function (e) {
+		this._moved = false;
+
+		if (e.shiftKey || ((e.which !== 1) && (e.button !== 1) && !e.touches)) { return; }
+
+		L.DomEvent.stopPropagation(e);
+
+		if (L.Draggable._disabled) { return; }
+
+		L.DomUtil.disableImageDrag();
+		L.DomUtil.disableTextSelection();
+
+		if (this._moving) { return; }
+
+		var first = e.touches ? e.touches[0] : e;
+
+		this._startPoint = new L.Point(first.clientX, first.clientY);
+		this._startPos = this._newPos = L.DomUtil.getPosition(this._element);
+
+		L.DomEvent
+		    .on(document, L.Draggable.MOVE[e.type], this._onMove, this)
+		    .on(document, L.Draggable.END[e.type], this._onUp, this);
+	},
+
+	_onMove: function (e) {
+		if (e.touches && e.touches.length > 1) {
+			this._moved = true;
+			return;
+		}
+
+		var first = (e.touches && e.touches.length === 1 ? e.touches[0] : e),
+		    newPoint = new L.Point(first.clientX, first.clientY),
+		    offset = newPoint.subtract(this._startPoint);
+
+		if (!offset.x && !offset.y) { return; }
+		if (L.Browser.touch && Math.abs(offset.x) + Math.abs(offset.y) < 3) { return; }
+
+		L.DomEvent.preventDefault(e);
+
+		if (!this._moved) {
+			this.fire('dragstart');
+
+			this._moved = true;
+			this._startPos = L.DomUtil.getPosition(this._element).subtract(offset);
+
+			L.DomUtil.addClass(document.body, 'leaflet-dragging');
+			this._lastTarget = e.target || e.srcElement;
+			L.DomUtil.addClass(this._lastTarget, 'leaflet-drag-target');
+		}
+
+		this._newPos = this._startPos.add(offset);
+		this._moving = true;
+
+		L.Util.cancelAnimFrame(this._animRequest);
+		this._animRequest = L.Util.requestAnimFrame(this._updatePosition, this, true, this._dragStartTarget);
+	},
+
+	_updatePosition: function () {
+		this.fire('predrag');
+		L.DomUtil.setPosition(this._element, this._newPos);
+		this.fire('drag');
+	},
+
+	_onUp: function () {
+		L.DomUtil.removeClass(document.body, 'leaflet-dragging');
+
+		if (this._lastTarget) {
+			L.DomUtil.removeClass(this._lastTarget, 'leaflet-drag-target');
+			this._lastTarget = null;
+		}
+
+		for (var i in L.Draggable.MOVE) {
+			L.DomEvent
+			    .off(document, L.Draggable.MOVE[i], this._onMove)
+			    .off(document, L.Draggable.END[i], this._onUp);
+		}
+
+		L.DomUtil.enableImageDrag();
+		L.DomUtil.enableTextSelection();
+
+		if (this._moved && this._moving) {
+			// ensure drag is not fired after dragend
+			L.Util.cancelAnimFrame(this._animRequest);
+
+			this.fire('dragend', {
+				distance: this._newPos.distanceTo(this._startPos)
+			});
+		}
+
+		this._moving = false;
+	}
+});
+
+
+/*
+	L.Handler is a base class for handler classes that are used internally to inject
+	interaction features like dragging to classes like Map and Marker.
+*/
+
+L.Handler = L.Class.extend({
+	initialize: function (map) {
+		this._map = map;
+	},
+
+	enable: function () {
+		if (this._enabled) { return; }
+
+		this._enabled = true;
+		this.addHooks();
+	},
+
+	disable: function () {
+		if (!this._enabled) { return; }
+
+		this._enabled = false;
+		this.removeHooks();
+	},
+
+	enabled: function () {
+		return !!this._enabled;
+	}
+});
+
+
+/*
+ * L.Handler.MapDrag is used to make the map draggable (with panning inertia), enabled by default.
+ */
+
+L.Map.mergeOptions({
+	dragging: true,
+
+	inertia: !L.Browser.android23,
+	inertiaDeceleration: 3400, // px/s^2
+	inertiaMaxSpeed: Infinity, // px/s
+	inertiaThreshold: L.Browser.touch ? 32 : 18, // ms
+	easeLinearity: 0.25,
+
+	// TODO refactor, move to CRS
+	worldCopyJump: false
+});
+
+L.Map.Drag = L.Handler.extend({
+	addHooks: function () {
+		if (!this._draggable) {
+			var map = this._map;
+
+			this._draggable = new L.Draggable(map._mapPane, map._container);
+
+			this._draggable.on({
+				'dragstart': this._onDragStart,
+				'drag': this._onDrag,
+				'dragend': this._onDragEnd
+			}, this);
+
+			if (map.options.worldCopyJump) {
+				this._draggable.on('predrag', this._onPreDrag, this);
+				map.on('viewreset', this._onViewReset, this);
+
+				map.whenReady(this._onViewReset, this);
+			}
+		}
+		this._draggable.enable();
+	},
+
+	removeHooks: function () {
+		this._draggable.disable();
+	},
+
+	moved: function () {
+		return this._draggable && this._draggable._moved;
+	},
+
+	_onDragStart: function () {
+		var map = this._map;
+
+		if (map._panAnim) {
+			map._panAnim.stop();
+		}
+
+		map
+		    .fire('movestart')
+		    .fire('dragstart');
+
+		if (map.options.inertia) {
+			this._positions = [];
+			this._times = [];
+		}
+	},
+
+	_onDrag: function () {
+		if (this._map.options.inertia) {
+			var time = this._lastTime = +new Date(),
+			    pos = this._lastPos = this._draggable._newPos;
+
+			this._positions.push(pos);
+			this._times.push(time);
+
+			if (time - this._times[0] > 200) {
+				this._positions.shift();
+				this._times.shift();
+			}
+		}
+
+		this._map
+		    .fire('move')
+		    .fire('drag');
+	},
+
+	_onViewReset: function () {
+		// TODO fix hardcoded Earth values
+		var pxCenter = this._map.getSize()._divideBy(2),
+		    pxWorldCenter = this._map.latLngToLayerPoint([0, 0]);
+
+		this._initialWorldOffset = pxWorldCenter.subtract(pxCenter).x;
+		this._worldWidth = this._map.project([0, 180]).x;
+	},
+
+	_onPreDrag: function () {
+		// TODO refactor to be able to adjust map pane position after zoom
+		var worldWidth = this._worldWidth,
+		    halfWidth = Math.round(worldWidth / 2),
+		    dx = this._initialWorldOffset,
+		    x = this._draggable._newPos.x,
+		    newX1 = (x - halfWidth + dx) % worldWidth + halfWidth - dx,
+		    newX2 = (x + halfWidth + dx) % worldWidth - halfWidth - dx,
+		    newX = Math.abs(newX1 + dx) < Math.abs(newX2 + dx) ? newX1 : newX2;
+
+		this._draggable._newPos.x = newX;
+	},
+
+	_onDragEnd: function (e) {
+		var map = this._map,
+		    options = map.options,
+		    delay = +new Date() - this._lastTime,
+
+		    noInertia = !options.inertia || delay > options.inertiaThreshold || !this._positions[0];
+
+		map.fire('dragend', e);
+
+		if (noInertia) {
+			map.fire('moveend');
+
+		} else {
+
+			var direction = this._lastPos.subtract(this._positions[0]),
+			    duration = (this._lastTime + delay - this._times[0]) / 1000,
+			    ease = options.easeLinearity,
+
+			    speedVector = direction.multiplyBy(ease / duration),
+			    speed = speedVector.distanceTo([0, 0]),
+
+			    limitedSpeed = Math.min(options.inertiaMaxSpeed, speed),
+			    limitedSpeedVector = speedVector.multiplyBy(limitedSpeed / speed),
+
+			    decelerationDuration = limitedSpeed / (options.inertiaDeceleration * ease),
+			    offset = limitedSpeedVector.multiplyBy(-decelerationDuration / 2).round();
+
+			if (!offset.x || !offset.y) {
+				map.fire('moveend');
+
+			} else {
+				offset = map._limitOffset(offset, map.options.maxBounds);
+
+				L.Util.requestAnimFrame(function () {
+					map.panBy(offset, {
+						duration: decelerationDuration,
+						easeLinearity: ease,
+						noMoveStart: true
+					});
+				});
+			}
+		}
+	}
+});
+
+L.Map.addInitHook('addHandler', 'dragging', L.Map.Drag);
+
+
+/*
+ * L.Handler.DoubleClickZoom is used to handle double-click zoom on the map, enabled by default.
+ */
+
+L.Map.mergeOptions({
+	doubleClickZoom: true
+});
+
+L.Map.DoubleClickZoom = L.Handler.extend({
+	addHooks: function () {
+		this._map.on('dblclick', this._onDoubleClick, this);
+	},
+
+	removeHooks: function () {
+		this._map.off('dblclick', this._onDoubleClick, this);
+	},
+
+	_onDoubleClick: function (e) {
+		var map = this._map,
+		    zoom = map.getZoom() + (e.originalEvent.shiftKey ? -1 : 1);
+
+		if (map.options.doubleClickZoom === 'center') {
+			map.setZoom(zoom);
+		} else {
+			map.setZoomAround(e.containerPoint, zoom);
+		}
+	}
+});
+
+L.Map.addInitHook('addHandler', 'doubleClickZoom', L.Map.DoubleClickZoom);
+
+
+/*
+ * L.Handler.ScrollWheelZoom is used by L.Map to enable mouse scroll wheel zoom on the map.
+ */
+
+L.Map.mergeOptions({
+	scrollWheelZoom: true
+});
+
+L.Map.ScrollWheelZoom = L.Handler.extend({
+	addHooks: function () {
+		L.DomEvent.on(this._map._container, 'mousewheel', this._onWheelScroll, this);
+		L.DomEvent.on(this._map._container, 'MozMousePixelScroll', L.DomEvent.preventDefault);
+		this._delta = 0;
+	},
+
+	removeHooks: function () {
+		L.DomEvent.off(this._map._container, 'mousewheel', this._onWheelScroll);
+		L.DomEvent.off(this._map._container, 'MozMousePixelScroll', L.DomEvent.preventDefault);
+	},
+
+	_onWheelScroll: function (e) {
+		var delta = L.DomEvent.getWheelDelta(e);
+
+		this._delta += delta;
+		this._lastMousePos = this._map.mouseEventToContainerPoint(e);
+
+		if (!this._startTime) {
+			this._startTime = +new Date();
+		}
+
+		var left = Math.max(40 - (+new Date() - this._startTime), 0);
+
+		clearTimeout(this._timer);
+		this._timer = setTimeout(L.bind(this._performZoom, this), left);
+
+		L.DomEvent.preventDefault(e);
+		L.DomEvent.stopPropagation(e);
+	},
+
+	_performZoom: function () {
+		var map = this._map,
+		    delta = this._delta,
+		    zoom = map.getZoom();
+
+		delta = delta > 0 ? Math.ceil(delta) : Math.floor(delta);
+		delta = Math.max(Math.min(delta, 4), -4);
+		delta = map._limitZoom(zoom + delta) - zoom;
+
+		this._delta = 0;
+		this._startTime = null;
+
+		if (!delta) { return; }
+
+		if (map.options.scrollWheelZoom === 'center') {
+			map.setZoom(zoom + delta);
+		} else {
+			map.setZoomAround(this._lastMousePos, zoom + delta);
+		}
+	}
+});
+
+L.Map.addInitHook('addHandler', 'scrollWheelZoom', L.Map.ScrollWheelZoom);
+
+
+/*
+ * Extends the event handling code with double tap support for mobile browsers.
+ */
+
+L.extend(L.DomEvent, {
+
+	_touchstart: L.Browser.msPointer ? 'MSPointerDown' : L.Browser.pointer ? 'pointerdown' : 'touchstart',
+	_touchend: L.Browser.msPointer ? 'MSPointerUp' : L.Browser.pointer ? 'pointerup' : 'touchend',
+
+	// inspired by Zepto touch code by Thomas Fuchs
+	addDoubleTapListener: function (obj, handler, id) {
+		var last,
+		    doubleTap = false,
+		    delay = 250,
+		    touch,
+		    pre = '_leaflet_',
+		    touchstart = this._touchstart,
+		    touchend = this._touchend,
+		    trackedTouches = [];
+
+		function onTouchStart(e) {
+			var count;
+
+			if (L.Browser.pointer) {
+				trackedTouches.push(e.pointerId);
+				count = trackedTouches.length;
+			} else {
+				count = e.touches.length;
+			}
+			if (count > 1) {
+				return;
+			}
+
+			var now = Date.now(),
+				delta = now - (last || now);
+
+			touch = e.touches ? e.touches[0] : e;
+			doubleTap = (delta > 0 && delta <= delay);
+			last = now;
+		}
+
+		function onTouchEnd(e) {
+			if (L.Browser.pointer) {
+				var idx = trackedTouches.indexOf(e.pointerId);
+				if (idx === -1) {
+					return;
+				}
+				trackedTouches.splice(idx, 1);
+			}
+
+			if (doubleTap) {
+				if (L.Browser.pointer) {
+					// work around .type being readonly with MSPointer* events
+					var newTouch = { },
+						prop;
+
+					// jshint forin:false
+					for (var i in touch) {
+						prop = touch[i];
+						if (typeof prop === 'function') {
+							newTouch[i] = prop.bind(touch);
+						} else {
+							newTouch[i] = prop;
+						}
+					}
+					touch = newTouch;
+				}
+				touch.type = 'dblclick';
+				handler(touch);
+				last = null;
+			}
+		}
+		obj[pre + touchstart + id] = onTouchStart;
+		obj[pre + touchend + id] = onTouchEnd;
+
+		// on pointer we need to listen on the document, otherwise a drag starting on the map and moving off screen
+		// will not come through to us, so we will lose track of how many touches are ongoing
+		var endElement = L.Browser.pointer ? document.documentElement : obj;
+
+		obj.addEventListener(touchstart, onTouchStart, false);
+		endElement.addEventListener(touchend, onTouchEnd, false);
+
+		if (L.Browser.pointer) {
+			endElement.addEventListener(L.DomEvent.POINTER_CANCEL, onTouchEnd, false);
+		}
+
+		return this;
+	},
+
+	removeDoubleTapListener: function (obj, id) {
+		var pre = '_leaflet_';
+
+		obj.removeEventListener(this._touchstart, obj[pre + this._touchstart + id], false);
+		(L.Browser.pointer ? document.documentElement : obj).removeEventListener(
+		        this._touchend, obj[pre + this._touchend + id], false);
+
+		if (L.Browser.pointer) {
+			document.documentElement.removeEventListener(L.DomEvent.POINTER_CANCEL, obj[pre + this._touchend + id],
+				false);
+		}
+
+		return this;
+	}
+});
+
+
+/*
+ * Extends L.DomEvent to provide touch support for Internet Explorer and Windows-based devices.
+ */
+
+L.extend(L.DomEvent, {
+
+	//static
+	POINTER_DOWN: L.Browser.msPointer ? 'MSPointerDown' : 'pointerdown',
+	POINTER_MOVE: L.Browser.msPointer ? 'MSPointerMove' : 'pointermove',
+	POINTER_UP: L.Browser.msPointer ? 'MSPointerUp' : 'pointerup',
+	POINTER_CANCEL: L.Browser.msPointer ? 'MSPointerCancel' : 'pointercancel',
+
+	_pointers: [],
+	_pointerDocumentListener: false,
+
+	// Provides a touch events wrapper for (ms)pointer events.
+	// Based on changes by veproza https://github.com/CloudMade/Leaflet/pull/1019
+	//ref http://www.w3.org/TR/pointerevents/ https://www.w3.org/Bugs/Public/show_bug.cgi?id=22890
+
+	addPointerListener: function (obj, type, handler, id) {
+
+		switch (type) {
+		case 'touchstart':
+			return this.addPointerListenerStart(obj, type, handler, id);
+		case 'touchend':
+			return this.addPointerListenerEnd(obj, type, handler, id);
+		case 'touchmove':
+			return this.addPointerListenerMove(obj, type, handler, id);
+		default:
+			throw 'Unknown touch event type';
+		}
+	},
+
+	addPointerListenerStart: function (obj, type, handler, id) {
+		var pre = '_leaflet_',
+		    pointers = this._pointers;
+
+		var cb = function (e) {
+			if (e.pointerType !== 'mouse' && e.pointerType !== e.MSPOINTER_TYPE_MOUSE) {
+				L.DomEvent.preventDefault(e);
+			}
+
+			var alreadyInArray = false;
+			for (var i = 0; i < pointers.length; i++) {
+				if (pointers[i].pointerId === e.pointerId) {
+					alreadyInArray = true;
+					break;
+				}
+			}
+			if (!alreadyInArray) {
+				pointers.push(e);
+			}
+
+			e.touches = pointers.slice();
+			e.changedTouches = [e];
+
+			handler(e);
+		};
+
+		obj[pre + 'touchstart' + id] = cb;
+		obj.addEventListener(this.POINTER_DOWN, cb, false);
+
+		// need to also listen for end events to keep the _pointers list accurate
+		// this needs to be on the body and never go away
+		if (!this._pointerDocumentListener) {
+			var internalCb = function (e) {
+				for (var i = 0; i < pointers.length; i++) {
+					if (pointers[i].pointerId === e.pointerId) {
+						pointers.splice(i, 1);
+						break;
+					}
+				}
+			};
+			//We listen on the documentElement as any drags that end by moving the touch off the screen get fired there
+			document.documentElement.addEventListener(this.POINTER_UP, internalCb, false);
+			document.documentElement.addEventListener(this.POINTER_CANCEL, internalCb, false);
+
+			this._pointerDocumentListener = true;
+		}
+
+		return this;
+	},
+
+	addPointerListenerMove: function (obj, type, handler, id) {
+		var pre = '_leaflet_',
+		    touches = this._pointers;
+
+		function cb(e) {
+
+			// don't fire touch moves when mouse isn't down
+			if ((e.pointerType === e.MSPOINTER_TYPE_MOUSE || e.pointerType === 'mouse') && e.buttons === 0) { return; }
+
+			for (var i = 0; i < touches.length; i++) {
+				if (touches[i].pointerId === e.pointerId) {
+					touches[i] = e;
+					break;
+				}
+			}
+
+			e.touches = touches.slice();
+			e.changedTouches = [e];
+
+			handler(e);
+		}
+
+		obj[pre + 'touchmove' + id] = cb;
+		obj.addEventListener(this.POINTER_MOVE, cb, false);
+
+		return this;
+	},
+
+	addPointerListenerEnd: function (obj, type, handler, id) {
+		var pre = '_leaflet_',
+		    touches = this._pointers;
+
+		var cb = function (e) {
+			for (var i = 0; i < touches.length; i++) {
+				if (touches[i].pointerId === e.pointerId) {
+					touches.splice(i, 1);
+					break;
+				}
+			}
+
+			e.touches = touches.slice();
+			e.changedTouches = [e];
+
+			handler(e);
+		};
+
+		obj[pre + 'touchend' + id] = cb;
+		obj.addEventListener(this.POINTER_UP, cb, false);
+		obj.addEventListener(this.POINTER_CANCEL, cb, false);
+
+		return this;
+	},
+
+	removePointerListener: function (obj, type, id) {
+		var pre = '_leaflet_',
+		    cb = obj[pre + type + id];
+
+		switch (type) {
+		case 'touchstart':
+			obj.removeEventListener(this.POINTER_DOWN, cb, false);
+			break;
+		case 'touchmove':
+			obj.removeEventListener(this.POINTER_MOVE, cb, false);
+			break;
+		case 'touchend':
+			obj.removeEventListener(this.POINTER_UP, cb, false);
+			obj.removeEventListener(this.POINTER_CANCEL, cb, false);
+			break;
+		}
+
+		return this;
+	}
+});
+
+
+/*
+ * L.Handler.TouchZoom is used by L.Map to add pinch zoom on supported mobile browsers.
+ */
+
+L.Map.mergeOptions({
+	touchZoom: L.Browser.touch && !L.Browser.android23,
+	bounceAtZoomLimits: true
+});
+
+L.Map.TouchZoom = L.Handler.extend({
+	addHooks: function () {
+		L.DomEvent.on(this._map._container, 'touchstart', this._onTouchStart, this);
+	},
+
+	removeHooks: function () {
+		L.DomEvent.off(this._map._container, 'touchstart', this._onTouchStart, this);
+	},
+
+	_onTouchStart: function (e) {
+		var map = this._map;
+
+		if (!e.touches || e.touches.length !== 2 || map._animatingZoom || this._zooming) { return; }
+
+		var p1 = map.mouseEventToLayerPoint(e.touches[0]),
+		    p2 = map.mouseEventToLayerPoint(e.touches[1]),
+		    viewCenter = map._getCenterLayerPoint();
+
+		this._startCenter = p1.add(p2)._divideBy(2);
+		this._startDist = p1.distanceTo(p2);
+
+		this._moved = false;
+		this._zooming = true;
+
+		this._centerOffset = viewCenter.subtract(this._startCenter);
+
+		if (map._panAnim) {
+			map._panAnim.stop();
+		}
+
+		L.DomEvent
+		    .on(document, 'touchmove', this._onTouchMove, this)
+		    .on(document, 'touchend', this._onTouchEnd, this);
+
+		L.DomEvent.preventDefault(e);
+	},
+
+	_onTouchMove: function (e) {
+		var map = this._map;
+
+		if (!e.touches || e.touches.length !== 2 || !this._zooming) { return; }
+
+		var p1 = map.mouseEventToLayerPoint(e.touches[0]),
+		    p2 = map.mouseEventToLayerPoint(e.touches[1]);
+
+		this._scale = p1.distanceTo(p2) / this._startDist;
+		this._delta = p1._add(p2)._divideBy(2)._subtract(this._startCenter);
+
+		if (this._scale === 1) { return; }
+
+		if (!map.options.bounceAtZoomLimits) {
+			if ((map.getZoom() === map.getMinZoom() && this._scale < 1) ||
+			    (map.getZoom() === map.getMaxZoom() && this._scale > 1)) { return; }
+		}
+
+		if (!this._moved) {
+			L.DomUtil.addClass(map._mapPane, 'leaflet-touching');
+
+			map
+			    .fire('movestart')
+			    .fire('zoomstart');
+
+			this._moved = true;
+		}
+
+		L.Util.cancelAnimFrame(this._animRequest);
+		this._animRequest = L.Util.requestAnimFrame(
+		        this._updateOnMove, this, true, this._map._container);
+
+		L.DomEvent.preventDefault(e);
+	},
+
+	_updateOnMove: function () {
+		var map = this._map,
+		    origin = this._getScaleOrigin(),
+		    center = map.layerPointToLatLng(origin),
+		    zoom = map.getScaleZoom(this._scale);
+
+		map._animateZoom(center, zoom, this._startCenter, this._scale, this._delta, false, true);
+	},
+
+	_onTouchEnd: function () {
+		if (!this._moved || !this._zooming) {
+			this._zooming = false;
+			return;
+		}
+
+		var map = this._map;
+
+		this._zooming = false;
+		L.DomUtil.removeClass(map._mapPane, 'leaflet-touching');
+		L.Util.cancelAnimFrame(this._animRequest);
+
+		L.DomEvent
+		    .off(document, 'touchmove', this._onTouchMove)
+		    .off(document, 'touchend', this._onTouchEnd);
+
+		var origin = this._getScaleOrigin(),
+		    center = map.layerPointToLatLng(origin),
+
+		    oldZoom = map.getZoom(),
+		    floatZoomDelta = map.getScaleZoom(this._scale) - oldZoom,
+		    roundZoomDelta = (floatZoomDelta > 0 ?
+		            Math.ceil(floatZoomDelta) : Math.floor(floatZoomDelta)),
+
+		    zoom = map._limitZoom(oldZoom + roundZoomDelta),
+		    scale = map.getZoomScale(zoom) / this._scale;
+
+		map._animateZoom(center, zoom, origin, scale);
+	},
+
+	_getScaleOrigin: function () {
+		var centerOffset = this._centerOffset.subtract(this._delta).divideBy(this._scale);
+		return this._startCenter.add(centerOffset);
+	}
+});
+
+L.Map.addInitHook('addHandler', 'touchZoom', L.Map.TouchZoom);
+
+
+/*
+ * L.Map.Tap is used to enable mobile hacks like quick taps and long hold.
+ */
+
+L.Map.mergeOptions({
+	tap: true,
+	tapTolerance: 15
+});
+
+L.Map.Tap = L.Handler.extend({
+	addHooks: function () {
+		L.DomEvent.on(this._map._container, 'touchstart', this._onDown, this);
+	},
+
+	removeHooks: function () {
+		L.DomEvent.off(this._map._container, 'touchstart', this._onDown, this);
+	},
+
+	_onDown: function (e) {
+		if (!e.touches) { return; }
+
+		L.DomEvent.preventDefault(e);
+
+		this._fireClick = true;
+
+		// don't simulate click or track longpress if more than 1 touch
+		if (e.touches.length > 1) {
+			this._fireClick = false;
+			clearTimeout(this._holdTimeout);
+			return;
+		}
+
+		var first = e.touches[0],
+		    el = first.target;
+
+		this._startPos = this._newPos = new L.Point(first.clientX, first.clientY);
+
+		// if touching a link, highlight it
+		if (el.tagName && el.tagName.toLowerCase() === 'a') {
+			L.DomUtil.addClass(el, 'leaflet-active');
+		}
+
+		// simulate long hold but setting a timeout
+		this._holdTimeout = setTimeout(L.bind(function () {
+			if (this._isTapValid()) {
+				this._fireClick = false;
+				this._onUp();
+				this._simulateEvent('contextmenu', first);
+			}
+		}, this), 1000);
+
+		L.DomEvent
+			.on(document, 'touchmove', this._onMove, this)
+			.on(document, 'touchend', this._onUp, this);
+	},
+
+	_onUp: function (e) {
+		clearTimeout(this._holdTimeout);
+
+		L.DomEvent
+			.off(document, 'touchmove', this._onMove, this)
+			.off(document, 'touchend', this._onUp, this);
+
+		if (this._fireClick && e && e.changedTouches) {
+
+			var first = e.changedTouches[0],
+			    el = first.target;
+
+			if (el && el.tagName && el.tagName.toLowerCase() === 'a') {
+				L.DomUtil.removeClass(el, 'leaflet-active');
+			}
+
+			// simulate click if the touch didn't move too much
+			if (this._isTapValid()) {
+				this._simulateEvent('click', first);
+			}
+		}
+	},
+
+	_isTapValid: function () {
+		return this._newPos.distanceTo(this._startPos) <= this._map.options.tapTolerance;
+	},
+
+	_onMove: function (e) {
+		var first = e.touches[0];
+		this._newPos = new L.Point(first.clientX, first.clientY);
+	},
+
+	_simulateEvent: function (type, e) {
+		var simulatedEvent = document.createEvent('MouseEvents');
+
+		simulatedEvent._simulated = true;
+		e.target._simulatedClick = true;
+
+		simulatedEvent.initMouseEvent(
+		        type, true, true, window, 1,
+		        e.screenX, e.screenY,
+		        e.clientX, e.clientY,
+		        false, false, false, false, 0, null);
+
+		e.target.dispatchEvent(simulatedEvent);
+	}
+});
+
+if (L.Browser.touch && !L.Browser.pointer) {
+	L.Map.addInitHook('addHandler', 'tap', L.Map.Tap);
+}
+
+
+/*
+ * L.Handler.ShiftDragZoom is used to add shift-drag zoom interaction to the map
+  * (zoom to a selected bounding box), enabled by default.
+ */
+
+L.Map.mergeOptions({
+	boxZoom: true
+});
+
+L.Map.BoxZoom = L.Handler.extend({
+	initialize: function (map) {
+		this._map = map;
+		this._container = map._container;
+		this._pane = map._panes.overlayPane;
+		this._moved = false;
+	},
+
+	addHooks: function () {
+		L.DomEvent.on(this._container, 'mousedown', this._onMouseDown, this);
+	},
+
+	removeHooks: function () {
+		L.DomEvent.off(this._container, 'mousedown', this._onMouseDown);
+		this._moved = false;
+	},
+
+	moved: function () {
+		return this._moved;
+	},
+
+	_onMouseDown: function (e) {
+		this._moved = false;
+
+		if (!e.shiftKey || ((e.which !== 1) && (e.button !== 1))) { return false; }
+
+		L.DomUtil.disableTextSelection();
+		L.DomUtil.disableImageDrag();
+
+		this._startLayerPoint = this._map.mouseEventToLayerPoint(e);
+
+		L.DomEvent
+		    .on(document, 'mousemove', this._onMouseMove, this)
+		    .on(document, 'mouseup', this._onMouseUp, this)
+		    .on(document, 'keydown', this._onKeyDown, this);
+	},
+
+	_onMouseMove: function (e) {
+		if (!this._moved) {
+			this._box = L.DomUtil.create('div', 'leaflet-zoom-box', this._pane);
+			L.DomUtil.setPosition(this._box, this._startLayerPoint);
+
+			//TODO refactor: move cursor to styles
+			this._container.style.cursor = 'crosshair';
+			this._map.fire('boxzoomstart');
+		}
+
+		var startPoint = this._startLayerPoint,
+		    box = this._box,
+
+		    layerPoint = this._map.mouseEventToLayerPoint(e),
+		    offset = layerPoint.subtract(startPoint),
+
+		    newPos = new L.Point(
+		        Math.min(layerPoint.x, startPoint.x),
+		        Math.min(layerPoint.y, startPoint.y));
+
+		L.DomUtil.setPosition(box, newPos);
+
+		this._moved = true;
+
+		// TODO refactor: remove hardcoded 4 pixels
+		box.style.width  = (Math.max(0, Math.abs(offset.x) - 4)) + 'px';
+		box.style.height = (Math.max(0, Math.abs(offset.y) - 4)) + 'px';
+	},
+
+	_finish: function () {
+		if (this._moved) {
+			this._pane.removeChild(this._box);
+			this._container.style.cursor = '';
+		}
+
+		L.DomUtil.enableTextSelection();
+		L.DomUtil.enableImageDrag();
+
+		L.DomEvent
+		    .off(document, 'mousemove', this._onMouseMove)
+		    .off(document, 'mouseup', this._onMouseUp)
+		    .off(document, 'keydown', this._onKeyDown);
+	},
+
+	_onMouseUp: function (e) {
+
+		this._finish();
+
+		var map = this._map,
+		    layerPoint = map.mouseEventToLayerPoint(e);
+
+		if (this._startLayerPoint.equals(layerPoint)) { return; }
+
+		var bounds = new L.LatLngBounds(
+		        map.layerPointToLatLng(this._startLayerPoint),
+		        map.layerPointToLatLng(layerPoint));
+
+		map.fitBounds(bounds);
+
+		map.fire('boxzoomend', {
+			boxZoomBounds: bounds
+		});
+	},
+
+	_onKeyDown: function (e) {
+		if (e.keyCode === 27) {
+			this._finish();
+		}
+	}
+});
+
+L.Map.addInitHook('addHandler', 'boxZoom', L.Map.BoxZoom);
+
+
+/*
+ * L.Map.Keyboard is handling keyboard interaction with the map, enabled by default.
+ */
+
+L.Map.mergeOptions({
+	keyboard: true,
+	keyboardPanOffset: 80,
+	keyboardZoomOffset: 1
+});
+
+L.Map.Keyboard = L.Handler.extend({
+
+	keyCodes: {
+		left:    [37],
+		right:   [39],
+		down:    [40],
+		up:      [38],
+		zoomIn:  [187, 107, 61, 171],
+		zoomOut: [189, 109, 173]
+	},
+
+	initialize: function (map) {
+		this._map = map;
+
+		this._setPanOffset(map.options.keyboardPanOffset);
+		this._setZoomOffset(map.options.keyboardZoomOffset);
+	},
+
+	addHooks: function () {
+		var container = this._map._container;
+
+		// make the container focusable by tabbing
+		if (container.tabIndex === -1) {
+			container.tabIndex = '0';
+		}
+
+		L.DomEvent
+		    .on(container, 'focus', this._onFocus, this)
+		    .on(container, 'blur', this._onBlur, this)
+		    .on(container, 'mousedown', this._onMouseDown, this);
+
+		this._map
+		    .on('focus', this._addHooks, this)
+		    .on('blur', this._removeHooks, this);
+	},
+
+	removeHooks: function () {
+		this._removeHooks();
+
+		var container = this._map._container;
+
+		L.DomEvent
+		    .off(container, 'focus', this._onFocus, this)
+		    .off(container, 'blur', this._onBlur, this)
+		    .off(container, 'mousedown', this._onMouseDown, this);
+
+		this._map
+		    .off('focus', this._addHooks, this)
+		    .off('blur', this._removeHooks, this);
+	},
+
+	_onMouseDown: function () {
+		if (this._focused) { return; }
+
+		var body = document.body,
+		    docEl = document.documentElement,
+		    top = body.scrollTop || docEl.scrollTop,
+		    left = body.scrollLeft || docEl.scrollLeft;
+
+		this._map._container.focus();
+
+		window.scrollTo(left, top);
+	},
+
+	_onFocus: function () {
+		this._focused = true;
+		this._map.fire('focus');
+	},
+
+	_onBlur: function () {
+		this._focused = false;
+		this._map.fire('blur');
+	},
+
+	_setPanOffset: function (pan) {
+		var keys = this._panKeys = {},
+		    codes = this.keyCodes,
+		    i, len;
+
+		for (i = 0, len = codes.left.length; i < len; i++) {
+			keys[codes.left[i]] = [-1 * pan, 0];
+		}
+		for (i = 0, len = codes.right.length; i < len; i++) {
+			keys[codes.right[i]] = [pan, 0];
+		}
+		for (i = 0, len = codes.down.length; i < len; i++) {
+			keys[codes.down[i]] = [0, pan];
+		}
+		for (i = 0, len = codes.up.length; i < len; i++) {
+			keys[codes.up[i]] = [0, -1 * pan];
+		}
+	},
+
+	_setZoomOffset: function (zoom) {
+		var keys = this._zoomKeys = {},
+		    codes = this.keyCodes,
+		    i, len;
+
+		for (i = 0, len = codes.zoomIn.length; i < len; i++) {
+			keys[codes.zoomIn[i]] = zoom;
+		}
+		for (i = 0, len = codes.zoomOut.length; i < len; i++) {
+			keys[codes.zoomOut[i]] = -zoom;
+		}
+	},
+
+	_addHooks: function () {
+		L.DomEvent.on(document, 'keydown', this._onKeyDown, this);
+	},
+
+	_removeHooks: function () {
+		L.DomEvent.off(document, 'keydown', this._onKeyDown, this);
+	},
+
+	_onKeyDown: function (e) {
+		var key = e.keyCode,
+		    map = this._map;
+
+		if (key in this._panKeys) {
+
+			if (map._panAnim && map._panAnim._inProgress) { return; }
+
+			map.panBy(this._panKeys[key]);
+
+			if (map.options.maxBounds) {
+				map.panInsideBounds(map.options.maxBounds);
+			}
+
+		} else if (key in this._zoomKeys) {
+			map.setZoom(map.getZoom() + this._zoomKeys[key]);
+
+		} else {
+			return;
+		}
+
+		L.DomEvent.stop(e);
+	}
+});
+
+L.Map.addInitHook('addHandler', 'keyboard', L.Map.Keyboard);
+
+
+/*
+ * L.Handler.MarkerDrag is used internally by L.Marker to make the markers draggable.
+ */
+
+L.Handler.MarkerDrag = L.Handler.extend({
+	initialize: function (marker) {
+		this._marker = marker;
+	},
+
+	addHooks: function () {
+		var icon = this._marker._icon;
+		if (!this._draggable) {
+			this._draggable = new L.Draggable(icon, icon);
+		}
+
+		this._draggable
+			.on('dragstart', this._onDragStart, this)
+			.on('drag', this._onDrag, this)
+			.on('dragend', this._onDragEnd, this);
+		this._draggable.enable();
+		L.DomUtil.addClass(this._marker._icon, 'leaflet-marker-draggable');
+	},
+
+	removeHooks: function () {
+		this._draggable
+			.off('dragstart', this._onDragStart, this)
+			.off('drag', this._onDrag, this)
+			.off('dragend', this._onDragEnd, this);
+
+		this._draggable.disable();
+		L.DomUtil.removeClass(this._marker._icon, 'leaflet-marker-draggable');
+	},
+
+	moved: function () {
+		return this._draggable && this._draggable._moved;
+	},
+
+	_onDragStart: function () {
+		this._marker
+		    .closePopup()
+		    .fire('movestart')
+		    .fire('dragstart');
+	},
+
+	_onDrag: function () {
+		var marker = this._marker,
+		    shadow = marker._shadow,
+		    iconPos = L.DomUtil.getPosition(marker._icon),
+		    latlng = marker._map.layerPointToLatLng(iconPos);
+
+		// update shadow position
+		if (shadow) {
+			L.DomUtil.setPosition(shadow, iconPos);
+		}
+
+		marker._latlng = latlng;
+
+		marker
+		    .fire('move', {latlng: latlng})
+		    .fire('drag');
+	},
+
+	_onDragEnd: function (e) {
+		this._marker
+		    .fire('moveend')
+		    .fire('dragend', e);
+	}
+});
+
+
+/*
+ * L.Control is a base class for implementing map controls. Handles positioning.
+ * All other controls extend from this class.
+ */
+
+L.Control = L.Class.extend({
+	options: {
+		position: 'topright'
+	},
+
+	initialize: function (options) {
+		L.setOptions(this, options);
+	},
+
+	getPosition: function () {
+		return this.options.position;
+	},
+
+	setPosition: function (position) {
+		var map = this._map;
+
+		if (map) {
+			map.removeControl(this);
+		}
+
+		this.options.position = position;
+
+		if (map) {
+			map.addControl(this);
+		}
+
+		return this;
+	},
+
+	getContainer: function () {
+		return this._container;
+	},
+
+	addTo: function (map) {
+		this._map = map;
+
+		var container = this._container = this.onAdd(map),
+		    pos = this.getPosition(),
+		    corner = map._controlCorners[pos];
+
+		L.DomUtil.addClass(container, 'leaflet-control');
+
+		if (pos.indexOf('bottom') !== -1) {
+			corner.insertBefore(container, corner.firstChild);
+		} else {
+			corner.appendChild(container);
+		}
+
+		return this;
+	},
+
+	removeFrom: function (map) {
+		var pos = this.getPosition(),
+		    corner = map._controlCorners[pos];
+
+		corner.removeChild(this._container);
+		this._map = null;
+
+		if (this.onRemove) {
+			this.onRemove(map);
+		}
+
+		return this;
+	},
+
+	_refocusOnMap: function () {
+		if (this._map) {
+			this._map.getContainer().focus();
+		}
+	}
+});
+
+L.control = function (options) {
+	return new L.Control(options);
+};
+
+
+// adds control-related methods to L.Map
+
+L.Map.include({
+	addControl: function (control) {
+		control.addTo(this);
+		return this;
+	},
+
+	removeControl: function (control) {
+		control.removeFrom(this);
+		return this;
+	},
+
+	_initControlPos: function () {
+		var corners = this._controlCorners = {},
+		    l = 'leaflet-',
+		    container = this._controlContainer =
+		            L.DomUtil.create('div', l + 'control-container', this._container);
+
+		function createCorner(vSide, hSide) {
+			var className = l + vSide + ' ' + l + hSide;
+
+			corners[vSide + hSide] = L.DomUtil.create('div', className, container);
+		}
+
+		createCorner('top', 'left');
+		createCorner('top', 'right');
+		createCorner('bottom', 'left');
+		createCorner('bottom', 'right');
+	},
+
+	_clearControlPos: function () {
+		this._container.removeChild(this._controlContainer);
+	}
+});
+
+
+/*
+ * L.Control.Zoom is used for the default zoom buttons on the map.
+ */
+
+L.Control.Zoom = L.Control.extend({
+	options: {
+		position: 'topleft',
+		zoomInText: '+',
+		zoomInTitle: 'Zoom in',
+		zoomOutText: '-',
+		zoomOutTitle: 'Zoom out'
+	},
+
+	onAdd: function (map) {
+		var zoomName = 'leaflet-control-zoom',
+		    container = L.DomUtil.create('div', zoomName + ' leaflet-bar');
+
+		this._map = map;
+
+		this._zoomInButton  = this._createButton(
+		        this.options.zoomInText, this.options.zoomInTitle,
+		        zoomName + '-in',  container, this._zoomIn,  this);
+		this._zoomOutButton = this._createButton(
+		        this.options.zoomOutText, this.options.zoomOutTitle,
+		        zoomName + '-out', container, this._zoomOut, this);
+
+		this._updateDisabled();
+		map.on('zoomend zoomlevelschange', this._updateDisabled, this);
+
+		return container;
+	},
+
+	onRemove: function (map) {
+		map.off('zoomend zoomlevelschange', this._updateDisabled, this);
+	},
+
+	_zoomIn: function (e) {
+		this._map.zoomIn(e.shiftKey ? 3 : 1);
+	},
+
+	_zoomOut: function (e) {
+		this._map.zoomOut(e.shiftKey ? 3 : 1);
+	},
+
+	_createButton: function (html, title, className, container, fn, context) {
+		var link = L.DomUtil.create('a', className, container);
+		link.innerHTML = html;
+		link.href = '#';
+		link.title = title;
+
+		var stop = L.DomEvent.stopPropagation;
+
+		L.DomEvent
+		    .on(link, 'click', stop)
+		    .on(link, 'mousedown', stop)
+		    .on(link, 'dblclick', stop)
+		    .on(link, 'click', L.DomEvent.preventDefault)
+		    .on(link, 'click', fn, context)
+		    .on(link, 'click', this._refocusOnMap, context);
+
+		return link;
+	},
+
+	_updateDisabled: function () {
+		var map = this._map,
+			className = 'leaflet-disabled';
+
+		L.DomUtil.removeClass(this._zoomInButton, className);
+		L.DomUtil.removeClass(this._zoomOutButton, className);
+
+		if (map._zoom === map.getMinZoom()) {
+			L.DomUtil.addClass(this._zoomOutButton, className);
+		}
+		if (map._zoom === map.getMaxZoom()) {
+			L.DomUtil.addClass(this._zoomInButton, className);
+		}
+	}
+});
+
+L.Map.mergeOptions({
+	zoomControl: true
+});
+
+L.Map.addInitHook(function () {
+	if (this.options.zoomControl) {
+		this.zoomControl = new L.Control.Zoom();
+		this.addControl(this.zoomControl);
+	}
+});
+
+L.control.zoom = function (options) {
+	return new L.Control.Zoom(options);
+};
+
+
+
+/*
+ * L.Control.Attribution is used for displaying attribution on the map (added by default).
+ */
+
+L.Control.Attribution = L.Control.extend({
+	options: {
+		position: 'bottomright',
+		prefix: '<a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>'
+	},
+
+	initialize: function (options) {
+		L.setOptions(this, options);
+
+		this._attributions = {};
+	},
+
+	onAdd: function (map) {
+		this._container = L.DomUtil.create('div', 'leaflet-control-attribution');
+		L.DomEvent.disableClickPropagation(this._container);
+
+		for (var i in map._layers) {
+			if (map._layers[i].getAttribution) {
+				this.addAttribution(map._layers[i].getAttribution());
+			}
+		}
+		
+		map
+		    .on('layeradd', this._onLayerAdd, this)
+		    .on('layerremove', this._onLayerRemove, this);
+
+		this._update();
+
+		return this._container;
+	},
+
+	onRemove: function (map) {
+		map
+		    .off('layeradd', this._onLayerAdd)
+		    .off('layerremove', this._onLayerRemove);
+
+	},
+
+	setPrefix: function (prefix) {
+		this.options.prefix = prefix;
+		this._update();
+		return this;
+	},
+
+	addAttribution: function (text) {
+		if (!text) { return; }
+
+		if (!this._attributions[text]) {
+			this._attributions[text] = 0;
+		}
+		this._attributions[text]++;
+
+		this._update();
+
+		return this;
+	},
+
+	removeAttribution: function (text) {
+		if (!text) { return; }
+
+		if (this._attributions[text]) {
+			this._attributions[text]--;
+			this._update();
+		}
+
+		return this;
+	},
+
+	_update: function () {
+		if (!this._map) { return; }
+
+		var attribs = [];
+
+		for (var i in this._attributions) {
+			if (this._attributions[i]) {
+				attribs.push(i);
+			}
+		}
+
+		var prefixAndAttribs = [];
+
+		if (this.options.prefix) {
+			prefixAndAttribs.push(this.options.prefix);
+		}
+		if (attribs.length) {
+			prefixAndAttribs.push(attribs.join(', '));
+		}
+
+		this._container.innerHTML = prefixAndAttribs.join(' | ');
+	},
+
+	_onLayerAdd: function (e) {
+		if (e.layer.getAttribution) {
+			this.addAttribution(e.layer.getAttribution());
+		}
+	},
+
+	_onLayerRemove: function (e) {
+		if (e.layer.getAttribution) {
+			this.removeAttribution(e.layer.getAttribution());
+		}
+	}
+});
+
+L.Map.mergeOptions({
+	attributionControl: true
+});
+
+L.Map.addInitHook(function () {
+	if (this.options.attributionControl) {
+		this.attributionControl = (new L.Control.Attribution()).addTo(this);
+	}
+});
+
+L.control.attribution = function (options) {
+	return new L.Control.Attribution(options);
+};
+
+
+/*
+ * L.Control.Scale is used for displaying metric/imperial scale on the map.
+ */
+
+L.Control.Scale = L.Control.extend({
+	options: {
+		position: 'bottomleft',
+		maxWidth: 100,
+		metric: true,
+		imperial: true,
+		updateWhenIdle: false
+	},
+
+	onAdd: function (map) {
+		this._map = map;
+
+		var className = 'leaflet-control-scale',
+		    container = L.DomUtil.create('div', className),
+		    options = this.options;
+
+		this._addScales(options, className, container);
+
+		map.on(options.updateWhenIdle ? 'moveend' : 'move', this._update, this);
+		map.whenReady(this._update, this);
+
+		return container;
+	},
+
+	onRemove: function (map) {
+		map.off(this.options.updateWhenIdle ? 'moveend' : 'move', this._update, this);
+	},
+
+	_addScales: function (options, className, container) {
+		if (options.metric) {
+			this._mScale = L.DomUtil.create('div', className + '-line', container);
+		}
+		if (options.imperial) {
+			this._iScale = L.DomUtil.create('div', className + '-line', container);
+		}
+	},
+
+	_update: function () {
+		var bounds = this._map.getBounds(),
+		    centerLat = bounds.getCenter().lat,
+		    halfWorldMeters = 6378137 * Math.PI * Math.cos(centerLat * Math.PI / 180),
+		    dist = halfWorldMeters * (bounds.getNorthEast().lng - bounds.getSouthWest().lng) / 180,
+
+		    size = this._map.getSize(),
+		    options = this.options,
+		    maxMeters = 0;
+
+		if (size.x > 0) {
+			maxMeters = dist * (options.maxWidth / size.x);
+		}
+
+		this._updateScales(options, maxMeters);
+	},
+
+	_updateScales: function (options, maxMeters) {
+		if (options.metric && maxMeters) {
+			this._updateMetric(maxMeters);
+		}
+
+		if (options.imperial && maxMeters) {
+			this._updateImperial(maxMeters);
+		}
+	},
+
+	_updateMetric: function (maxMeters) {
+		var meters = this._getRoundNum(maxMeters);
+
+		this._mScale.style.width = this._getScaleWidth(meters / maxMeters) + 'px';
+		this._mScale.innerHTML = meters < 1000 ? meters + ' m' : (meters / 1000) + ' km';
+	},
+
+	_updateImperial: function (maxMeters) {
+		var maxFeet = maxMeters * 3.2808399,
+		    scale = this._iScale,
+		    maxMiles, miles, feet;
+
+		if (maxFeet > 5280) {
+			maxMiles = maxFeet / 5280;
+			miles = this._getRoundNum(maxMiles);
+
+			scale.style.width = this._getScaleWidth(miles / maxMiles) + 'px';
+			scale.innerHTML = miles + ' mi';
+
+		} else {
+			feet = this._getRoundNum(maxFeet);
+
+			scale.style.width = this._getScaleWidth(feet / maxFeet) + 'px';
+			scale.innerHTML = feet + ' ft';
+		}
+	},
+
+	_getScaleWidth: function (ratio) {
+		return Math.round(this.options.maxWidth * ratio) - 10;
+	},
+
+	_getRoundNum: function (num) {
+		var pow10 = Math.pow(10, (Math.floor(num) + '').length - 1),
+		    d = num / pow10;
+
+		d = d >= 10 ? 10 : d >= 5 ? 5 : d >= 3 ? 3 : d >= 2 ? 2 : 1;
+
+		return pow10 * d;
+	}
+});
+
+L.control.scale = function (options) {
+	return new L.Control.Scale(options);
+};
+
+
+/*
+ * L.Control.Layers is a control to allow users to switch between different layers on the map.
+ */
+
+L.Control.Layers = L.Control.extend({
+	options: {
+		collapsed: true,
+		position: 'topright',
+		autoZIndex: true
+	},
+
+	initialize: function (baseLayers, overlays, options) {
+		L.setOptions(this, options);
+
+		this._layers = {};
+		this._lastZIndex = 0;
+		this._handlingClick = false;
+
+		for (var i in baseLayers) {
+			this._addLayer(baseLayers[i], i);
+		}
+
+		for (i in overlays) {
+			this._addLayer(overlays[i], i, true);
+		}
+	},
+
+	onAdd: function (map) {
+		this._initLayout();
+		this._update();
+
+		map
+		    .on('layeradd', this._onLayerChange, this)
+		    .on('layerremove', this._onLayerChange, this);
+
+		return this._container;
+	},
+
+	onRemove: function (map) {
+		map
+		    .off('layeradd', this._onLayerChange, this)
+		    .off('layerremove', this._onLayerChange, this);
+	},
+
+	addBaseLayer: function (layer, name) {
+		this._addLayer(layer, name);
+		this._update();
+		return this;
+	},
+
+	addOverlay: function (layer, name) {
+		this._addLayer(layer, name, true);
+		this._update();
+		return this;
+	},
+
+	removeLayer: function (layer) {
+		var id = L.stamp(layer);
+		delete this._layers[id];
+		this._update();
+		return this;
+	},
+
+	_initLayout: function () {
+		var className = 'leaflet-control-layers',
+		    container = this._container = L.DomUtil.create('div', className);
+
+		//Makes this work on IE10 Touch devices by stopping it from firing a mouseout event when the touch is released
+		container.setAttribute('aria-haspopup', true);
+
+		if (!L.Browser.touch) {
+			L.DomEvent
+				.disableClickPropagation(container)
+				.disableScrollPropagation(container);
+		} else {
+			L.DomEvent.on(container, 'click', L.DomEvent.stopPropagation);
+		}
+
+		var form = this._form = L.DomUtil.create('form', className + '-list');
+
+		if (this.options.collapsed) {
+			if (!L.Browser.android) {
+				L.DomEvent
+				    .on(container, 'mouseover', this._expand, this)
+				    .on(container, 'mouseout', this._collapse, this);
+			}
+			var link = this._layersLink = L.DomUtil.create('a', className + '-toggle', container);
+			link.href = '#';
+			link.title = 'Layers';
+
+			if (L.Browser.touch) {
+				L.DomEvent
+				    .on(link, 'click', L.DomEvent.stop)
+				    .on(link, 'click', this._expand, this);
+			}
+			else {
+				L.DomEvent.on(link, 'focus', this._expand, this);
+			}
+			//Work around for Firefox android issue https://github.com/Leaflet/Leaflet/issues/2033
+			L.DomEvent.on(form, 'click', function () {
+				setTimeout(L.bind(this._onInputClick, this), 0);
+			}, this);
+
+			this._map.on('click', this._collapse, this);
+			// TODO keyboard accessibility
+		} else {
+			this._expand();
+		}
+
+		this._baseLayersList = L.DomUtil.create('div', className + '-base', form);
+		this._separator = L.DomUtil.create('div', className + '-separator', form);
+		this._overlaysList = L.DomUtil.create('div', className + '-overlays', form);
+
+		container.appendChild(form);
+	},
+
+	_addLayer: function (layer, name, overlay) {
+		var id = L.stamp(layer);
+
+		this._layers[id] = {
+			layer: layer,
+			name: name,
+			overlay: overlay
+		};
+
+		if (this.options.autoZIndex && layer.setZIndex) {
+			this._lastZIndex++;
+			layer.setZIndex(this._lastZIndex);
+		}
+	},
+
+	_update: function () {
+		if (!this._container) {
+			return;
+		}
+
+		this._baseLayersList.innerHTML = '';
+		this._overlaysList.innerHTML = '';
+
+		var baseLayersPresent = false,
+		    overlaysPresent = false,
+		    i, obj;
+
+		for (i in this._layers) {
+			obj = this._layers[i];
+			this._addItem(obj);
+			overlaysPresent = overlaysPresent || obj.overlay;
+			baseLayersPresent = baseLayersPresent || !obj.overlay;
+		}
+
+		this._separator.style.display = overlaysPresent && baseLayersPresent ? '' : 'none';
+	},
+
+	_onLayerChange: function (e) {
+		var obj = this._layers[L.stamp(e.layer)];
+
+		if (!obj) { return; }
+
+		if (!this._handlingClick) {
+			this._update();
+		}
+
+		var type = obj.overlay ?
+			(e.type === 'layeradd' ? 'overlayadd' : 'overlayremove') :
+			(e.type === 'layeradd' ? 'baselayerchange' : null);
+
+		if (type) {
+			this._map.fire(type, obj);
+		}
+	},
+
+	// IE7 bugs out if you create a radio dynamically, so you have to do it this hacky way (see http://bit.ly/PqYLBe)
+	_createRadioElement: function (name, checked) {
+
+		var radioHtml = '<input type="radio" class="leaflet-control-layers-selector" name="' + name + '"';
+		if (checked) {
+			radioHtml += ' checked="checked"';
+		}
+		radioHtml += '/>';
+
+		var radioFragment = document.createElement('div');
+		radioFragment.innerHTML = radioHtml;
+
+		return radioFragment.firstChild;
+	},
+
+	_addItem: function (obj) {
+		var label = document.createElement('label'),
+		    input,
+		    checked = this._map.hasLayer(obj.layer);
+
+		if (obj.overlay) {
+			input = document.createElement('input');
+			input.type = 'checkbox';
+			input.className = 'leaflet-control-layers-selector';
+			input.defaultChecked = checked;
+		} else {
+			input = this._createRadioElement('leaflet-base-layers', checked);
+		}
+
+		input.layerId = L.stamp(obj.layer);
+
+		L.DomEvent.on(input, 'click', this._onInputClick, this);
+
+		var name = document.createElement('span');
+		name.innerHTML = ' ' + obj.name;
+
+		label.appendChild(input);
+		label.appendChild(name);
+
+		var container = obj.overlay ? this._overlaysList : this._baseLayersList;
+		container.appendChild(label);
+
+		return label;
+	},
+
+	_onInputClick: function () {
+		var i, input, obj,
+		    inputs = this._form.getElementsByTagName('input'),
+		    inputsLen = inputs.length;
+
+		this._handlingClick = true;
+
+		for (i = 0; i < inputsLen; i++) {
+			input = inputs[i];
+			obj = this._layers[input.layerId];
+
+			if (input.checked && !this._map.hasLayer(obj.layer)) {
+				this._map.addLayer(obj.layer);
+
+			} else if (!input.checked && this._map.hasLayer(obj.layer)) {
+				this._map.removeLayer(obj.layer);
+			}
+		}
+
+		this._handlingClick = false;
+
+		this._refocusOnMap();
+	},
+
+	_expand: function () {
+		L.DomUtil.addClass(this._container, 'leaflet-control-layers-expanded');
+	},
+
+	_collapse: function () {
+		this._container.className = this._container.className.replace(' leaflet-control-layers-expanded', '');
+	}
+});
+
+L.control.layers = function (baseLayers, overlays, options) {
+	return new L.Control.Layers(baseLayers, overlays, options);
+};
+
+
+/*
+ * L.PosAnimation is used by Leaflet internally for pan animations.
+ */
+
+L.PosAnimation = L.Class.extend({
+	includes: L.Mixin.Events,
+
+	run: function (el, newPos, duration, easeLinearity) { // (HTMLElement, Point[, Number, Number])
+		this.stop();
+
+		this._el = el;
+		this._inProgress = true;
+		this._newPos = newPos;
+
+		this.fire('start');
+
+		el.style[L.DomUtil.TRANSITION] = 'all ' + (duration || 0.25) +
+		        's cubic-bezier(0,0,' + (easeLinearity || 0.5) + ',1)';
+
+		L.DomEvent.on(el, L.DomUtil.TRANSITION_END, this._onTransitionEnd, this);
+		L.DomUtil.setPosition(el, newPos);
+
+		// toggle reflow, Chrome flickers for some reason if you don't do this
+		L.Util.falseFn(el.offsetWidth);
+
+		// there's no native way to track value updates of transitioned properties, so we imitate this
+		this._stepTimer = setInterval(L.bind(this._onStep, this), 50);
+	},
+
+	stop: function () {
+		if (!this._inProgress) { return; }
+
+		// if we just removed the transition property, the element would jump to its final position,
+		// so we need to make it stay at the current position
+
+		L.DomUtil.setPosition(this._el, this._getPos());
+		this._onTransitionEnd();
+		L.Util.falseFn(this._el.offsetWidth); // force reflow in case we are about to start a new animation
+	},
+
+	_onStep: function () {
+		var stepPos = this._getPos();
+		if (!stepPos) {
+			this._onTransitionEnd();
+			return;
+		}
+		// jshint camelcase: false
+		// make L.DomUtil.getPosition return intermediate position value during animation
+		this._el._leaflet_pos = stepPos;
+
+		this.fire('step');
+	},
+
+	// you can't easily get intermediate values of properties animated with CSS3 Transitions,
+	// we need to parse computed style (in case of transform it returns matrix string)
+
+	_transformRe: /([-+]?(?:\d*\.)?\d+)\D*, ([-+]?(?:\d*\.)?\d+)\D*\)/,
+
+	_getPos: function () {
+		var left, top, matches,
+		    el = this._el,
+		    style = window.getComputedStyle(el);
+
+		if (L.Browser.any3d) {
+			matches = style[L.DomUtil.TRANSFORM].match(this._transformRe);
+			if (!matches) { return; }
+			left = parseFloat(matches[1]);
+			top  = parseFloat(matches[2]);
+		} else {
+			left = parseFloat(style.left);
+			top  = parseFloat(style.top);
+		}
+
+		return new L.Point(left, top, true);
+	},
+
+	_onTransitionEnd: function () {
+		L.DomEvent.off(this._el, L.DomUtil.TRANSITION_END, this._onTransitionEnd, this);
+
+		if (!this._inProgress) { return; }
+		this._inProgress = false;
+
+		this._el.style[L.DomUtil.TRANSITION] = '';
+
+		// jshint camelcase: false
+		// make sure L.DomUtil.getPosition returns the final position value after animation
+		this._el._leaflet_pos = this._newPos;
+
+		clearInterval(this._stepTimer);
+
+		this.fire('step').fire('end');
+	}
+
+});
+
+
+/*
+ * Extends L.Map to handle panning animations.
+ */
+
+L.Map.include({
+
+	setView: function (center, zoom, options) {
+
+		zoom = zoom === undefined ? this._zoom : this._limitZoom(zoom);
+		center = this._limitCenter(L.latLng(center), zoom, this.options.maxBounds);
+		options = options || {};
+
+		if (this._panAnim) {
+			this._panAnim.stop();
+		}
+
+		if (this._loaded && !options.reset && options !== true) {
+
+			if (options.animate !== undefined) {
+				options.zoom = L.extend({animate: options.animate}, options.zoom);
+				options.pan = L.extend({animate: options.animate}, options.pan);
+			}
+
+			// try animating pan or zoom
+			var animated = (this._zoom !== zoom) ?
+				this._tryAnimatedZoom && this._tryAnimatedZoom(center, zoom, options.zoom) :
+				this._tryAnimatedPan(center, options.pan);
+
+			if (animated) {
+				// prevent resize handler call, the view will refresh after animation anyway
+				clearTimeout(this._sizeTimer);
+				return this;
+			}
+		}
+
+		// animation didn't start, just reset the map view
+		this._resetView(center, zoom);
+
+		return this;
+	},
+
+	panBy: function (offset, options) {
+		offset = L.point(offset).round();
+		options = options || {};
+
+		if (!offset.x && !offset.y) {
+			return this;
+		}
+
+		if (!this._panAnim) {
+			this._panAnim = new L.PosAnimation();
+
+			this._panAnim.on({
+				'step': this._onPanTransitionStep,
+				'end': this._onPanTransitionEnd
+			}, this);
+		}
+
+		// don't fire movestart if animating inertia
+		if (!options.noMoveStart) {
+			this.fire('movestart');
+		}
+
+		// animate pan unless animate: false specified
+		if (options.animate !== false) {
+			L.DomUtil.addClass(this._mapPane, 'leaflet-pan-anim');
+
+			var newPos = this._getMapPanePos().subtract(offset);
+			this._panAnim.run(this._mapPane, newPos, options.duration || 0.25, options.easeLinearity);
+		} else {
+			this._rawPanBy(offset);
+			this.fire('move').fire('moveend');
+		}
+
+		return this;
+	},
+
+	_onPanTransitionStep: function () {
+		this.fire('move');
+	},
+
+	_onPanTransitionEnd: function () {
+		L.DomUtil.removeClass(this._mapPane, 'leaflet-pan-anim');
+		this.fire('moveend');
+	},
+
+	_tryAnimatedPan: function (center, options) {
+		// difference between the new and current centers in pixels
+		var offset = this._getCenterOffset(center)._floor();
+
+		// don't animate too far unless animate: true specified in options
+		if ((options && options.animate) !== true && !this.getSize().contains(offset)) { return false; }
+
+		this.panBy(offset, options);
+
+		return true;
+	}
+});
+
+
+/*
+ * L.PosAnimation fallback implementation that powers Leaflet pan animations
+ * in browsers that don't support CSS3 Transitions.
+ */
+
+L.PosAnimation = L.DomUtil.TRANSITION ? L.PosAnimation : L.PosAnimation.extend({
+
+	run: function (el, newPos, duration, easeLinearity) { // (HTMLElement, Point[, Number, Number])
+		this.stop();
+
+		this._el = el;
+		this._inProgress = true;
+		this._duration = duration || 0.25;
+		this._easeOutPower = 1 / Math.max(easeLinearity || 0.5, 0.2);
+
+		this._startPos = L.DomUtil.getPosition(el);
+		this._offset = newPos.subtract(this._startPos);
+		this._startTime = +new Date();
+
+		this.fire('start');
+
+		this._animate();
+	},
+
+	stop: function () {
+		if (!this._inProgress) { return; }
+
+		this._step();
+		this._complete();
+	},
+
+	_animate: function () {
+		// animation loop
+		this._animId = L.Util.requestAnimFrame(this._animate, this);
+		this._step();
+	},
+
+	_step: function () {
+		var elapsed = (+new Date()) - this._startTime,
+		    duration = this._duration * 1000;
+
+		if (elapsed < duration) {
+			this._runFrame(this._easeOut(elapsed / duration));
+		} else {
+			this._runFrame(1);
+			this._complete();
+		}
+	},
+
+	_runFrame: function (progress) {
+		var pos = this._startPos.add(this._offset.multiplyBy(progress));
+		L.DomUtil.setPosition(this._el, pos);
+
+		this.fire('step');
+	},
+
+	_complete: function () {
+		L.Util.cancelAnimFrame(this._animId);
+
+		this._inProgress = false;
+		this.fire('end');
+	},
+
+	_easeOut: function (t) {
+		return 1 - Math.pow(1 - t, this._easeOutPower);
+	}
+});
+
+
+/*
+ * Extends L.Map to handle zoom animations.
+ */
+
+L.Map.mergeOptions({
+	zoomAnimation: true,
+	zoomAnimationThreshold: 4
+});
+
+if (L.DomUtil.TRANSITION) {
+
+	L.Map.addInitHook(function () {
+		// don't animate on browsers without hardware-accelerated transitions or old Android/Opera
+		this._zoomAnimated = this.options.zoomAnimation && L.DomUtil.TRANSITION &&
+				L.Browser.any3d && !L.Browser.android23 && !L.Browser.mobileOpera;
+
+		// zoom transitions run with the same duration for all layers, so if one of transitionend events
+		// happens after starting zoom animation (propagating to the map pane), we know that it ended globally
+		if (this._zoomAnimated) {
+			L.DomEvent.on(this._mapPane, L.DomUtil.TRANSITION_END, this._catchTransitionEnd, this);
+		}
+	});
+}
+
+L.Map.include(!L.DomUtil.TRANSITION ? {} : {
+
+	_catchTransitionEnd: function (e) {
+		if (this._animatingZoom && e.propertyName.indexOf('transform') >= 0) {
+			this._onZoomTransitionEnd();
+		}
+	},
+
+	_nothingToAnimate: function () {
+		return !this._container.getElementsByClassName('leaflet-zoom-animated').length;
+	},
+
+	_tryAnimatedZoom: function (center, zoom, options) {
+
+		if (this._animatingZoom) { return true; }
+
+		options = options || {};
+
+		// don't animate if disabled, not supported or zoom difference is too large
+		if (!this._zoomAnimated || options.animate === false || this._nothingToAnimate() ||
+		        Math.abs(zoom - this._zoom) > this.options.zoomAnimationThreshold) { return false; }
+
+		// offset is the pixel coords of the zoom origin relative to the current center
+		var scale = this.getZoomScale(zoom),
+		    offset = this._getCenterOffset(center)._divideBy(1 - 1 / scale),
+			origin = this._getCenterLayerPoint()._add(offset);
+
+		// don't animate if the zoom origin isn't within one screen from the current center, unless forced
+		if (options.animate !== true && !this.getSize().contains(offset)) { return false; }
+
+		this
+		    .fire('movestart')
+		    .fire('zoomstart');
+
+		this._animateZoom(center, zoom, origin, scale, null, true);
+
+		return true;
+	},
+
+	_animateZoom: function (center, zoom, origin, scale, delta, backwards, forTouchZoom) {
+
+		if (!forTouchZoom) {
+			this._animatingZoom = true;
+		}
+
+		// put transform transition on all layers with leaflet-zoom-animated class
+		L.DomUtil.addClass(this._mapPane, 'leaflet-zoom-anim');
+
+		// remember what center/zoom to set after animation
+		this._animateToCenter = center;
+		this._animateToZoom = zoom;
+
+		// disable any dragging during animation
+		if (L.Draggable) {
+			L.Draggable._disabled = true;
+		}
+
+		L.Util.requestAnimFrame(function () {
+			this.fire('zoomanim', {
+				center: center,
+				zoom: zoom,
+				origin: origin,
+				scale: scale,
+				delta: delta,
+				backwards: backwards
+			});
+			// horrible hack to work around a Chrome bug https://github.com/Leaflet/Leaflet/issues/3689
+			setTimeout(L.bind(this._onZoomTransitionEnd, this), 250);
+		}, this);
+	},
+
+	_onZoomTransitionEnd: function () {
+		if (!this._animatingZoom) { return; }
+
+		this._animatingZoom = false;
+
+		L.DomUtil.removeClass(this._mapPane, 'leaflet-zoom-anim');
+
+		L.Util.requestAnimFrame(function () {
+			this._resetView(this._animateToCenter, this._animateToZoom, true, true);
+
+			if (L.Draggable) {
+				L.Draggable._disabled = false;
+			}
+		}, this);
+	}
+});
+
+
+/*
+	Zoom animation logic for L.TileLayer.
+*/
+
+L.TileLayer.include({
+	_animateZoom: function (e) {
+		if (!this._animating) {
+			this._animating = true;
+			this._prepareBgBuffer();
+		}
+
+		var bg = this._bgBuffer,
+		    transform = L.DomUtil.TRANSFORM,
+		    initialTransform = e.delta ? L.DomUtil.getTranslateString(e.delta) : bg.style[transform],
+		    scaleStr = L.DomUtil.getScaleString(e.scale, e.origin);
+
+		bg.style[transform] = e.backwards ?
+				scaleStr + ' ' + initialTransform :
+				initialTransform + ' ' + scaleStr;
+	},
+
+	_endZoomAnim: function () {
+		var front = this._tileContainer,
+		    bg = this._bgBuffer;
+
+		front.style.visibility = '';
+		front.parentNode.appendChild(front); // Bring to fore
+
+		// force reflow
+		L.Util.falseFn(bg.offsetWidth);
+
+		var zoom = this._map.getZoom();
+		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
+			this._clearBgBuffer();
+		}
+
+		this._animating = false;
+	},
+
+	_clearBgBuffer: function () {
+		var map = this._map;
+
+		if (map && !map._animatingZoom && !map.touchZoom._zooming) {
+			this._bgBuffer.innerHTML = '';
+			this._bgBuffer.style[L.DomUtil.TRANSFORM] = '';
+		}
+	},
+
+	_prepareBgBuffer: function () {
+
+		var front = this._tileContainer,
+		    bg = this._bgBuffer;
+
+		// if foreground layer doesn't have many tiles but bg layer does,
+		// keep the existing bg layer and just zoom it some more
+
+		var bgLoaded = this._getLoadedTilesPercentage(bg),
+		    frontLoaded = this._getLoadedTilesPercentage(front);
+
+		if (bg && bgLoaded > 0.5 && frontLoaded < 0.5) {
+
+			front.style.visibility = 'hidden';
+			this._stopLoadingImages(front);
+			return;
+		}
+
+		// prepare the buffer to become the front tile pane
+		bg.style.visibility = 'hidden';
+		bg.style[L.DomUtil.TRANSFORM] = '';
+
+		// switch out the current layer to be the new bg layer (and vice-versa)
+		this._tileContainer = bg;
+		bg = this._bgBuffer = front;
+
+		this._stopLoadingImages(bg);
+
+		//prevent bg buffer from clearing right after zoom
+		clearTimeout(this._clearBgBufferTimer);
+	},
+
+	_getLoadedTilesPercentage: function (container) {
+		var tiles = container.getElementsByTagName('img'),
+		    i, len, count = 0;
+
+		for (i = 0, len = tiles.length; i < len; i++) {
+			if (tiles[i].complete) {
+				count++;
+			}
+		}
+		return count / len;
+	},
+
+	// stops loading all tiles in the background layer
+	_stopLoadingImages: function (container) {
+		var tiles = Array.prototype.slice.call(container.getElementsByTagName('img')),
+		    i, len, tile;
+
+		for (i = 0, len = tiles.length; i < len; i++) {
+			tile = tiles[i];
+
+			if (!tile.complete) {
+				tile.onload = L.Util.falseFn;
+				tile.onerror = L.Util.falseFn;
+				tile.src = L.Util.emptyImageUrl;
+
+				tile.parentNode.removeChild(tile);
+			}
+		}
+	}
+});
+
+
+/*
+ * Provides L.Map with convenient shortcuts for using browser geolocation features.
+ */
+
+L.Map.include({
+	_defaultLocateOptions: {
+		watch: false,
+		setView: false,
+		maxZoom: Infinity,
+		timeout: 10000,
+		maximumAge: 0,
+		enableHighAccuracy: false
+	},
+
+	locate: function (/*Object*/ options) {
+
+		options = this._locateOptions = L.extend(this._defaultLocateOptions, options);
+
+		if (!navigator.geolocation) {
+			this._handleGeolocationError({
+				code: 0,
+				message: 'Geolocation not supported.'
+			});
+			return this;
+		}
+
+		var onResponse = L.bind(this._handleGeolocationResponse, this),
+			onError = L.bind(this._handleGeolocationError, this);
+
+		if (options.watch) {
+			this._locationWatchId =
+			        navigator.geolocation.watchPosition(onResponse, onError, options);
+		} else {
+			navigator.geolocation.getCurrentPosition(onResponse, onError, options);
+		}
+		return this;
+	},
+
+	stopLocate: function () {
+		if (navigator.geolocation) {
+			navigator.geolocation.clearWatch(this._locationWatchId);
+		}
+		if (this._locateOptions) {
+			this._locateOptions.setView = false;
+		}
+		return this;
+	},
+
+	_handleGeolocationError: function (error) {
+		var c = error.code,
+		    message = error.message ||
+		            (c === 1 ? 'permission denied' :
+		            (c === 2 ? 'position unavailable' : 'timeout'));
+
+		if (this._locateOptions.setView && !this._loaded) {
+			this.fitWorld();
+		}
+
+		this.fire('locationerror', {
+			code: c,
+			message: 'Geolocation error: ' + message + '.'
+		});
+	},
+
+	_handleGeolocationResponse: function (pos) {
+		var lat = pos.coords.latitude,
+		    lng = pos.coords.longitude,
+		    latlng = new L.LatLng(lat, lng),
+
+		    latAccuracy = 180 * pos.coords.accuracy / 40075017,
+		    lngAccuracy = latAccuracy / Math.cos(L.LatLng.DEG_TO_RAD * lat),
+
+		    bounds = L.latLngBounds(
+		            [lat - latAccuracy, lng - lngAccuracy],
+		            [lat + latAccuracy, lng + lngAccuracy]),
+
+		    options = this._locateOptions;
+
+		if (options.setView) {
+			var zoom = Math.min(this.getBoundsZoom(bounds), options.maxZoom);
+			this.setView(latlng, zoom);
+		}
+
+		var data = {
+			latlng: latlng,
+			bounds: bounds,
+			timestamp: pos.timestamp
+		};
+
+		for (var i in pos.coords) {
+			if (typeof pos.coords[i] === 'number') {
+				data[i] = pos.coords[i];
+			}
+		}
+
+		this.fire('locationfound', data);
+	}
+});
+
+
+}(window, document));
+},{}],58:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+(function () {
+  try {
+    cachedSetTimeout = setTimeout;
+  } catch (e) {
+    cachedSetTimeout = function () {
+      throw new Error('setTimeout is not defined');
+    }
+  }
+  try {
+    cachedClearTimeout = clearTimeout;
+  } catch (e) {
+    cachedClearTimeout = function () {
+      throw new Error('clearTimeout is not defined');
+    }
+  }
+} ())
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = cachedSetTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    cachedClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        cachedSetTimeout(drainQueue, 0);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},{}],59:[function(require,module,exports){
+var util_1 = require('./util');
+var math = require('./math');
+var geo_1 = require('./geo');
+function findCircle(network, station) {
+    if (station.platforms.length < 3)
+        return [];
+    // TODO: if n=3, leave as it is; if n=4, metro has priority
+    var stationPlatforms = station.platforms.map(function (platformNum) { return network.platforms[platformNum]; });
+    if (stationPlatforms.length === 3) {
+        for (var _i = 0, _a = station.platforms; _i < _a.length; _i++) {
+            var i = _a[_i];
+            if (network.transfers.filter(function (t) { return t.has(i); }).length !== 2)
+                return [];
+        }
+        return stationPlatforms;
+    }
+    if (stationPlatforms.length === 4) {
+        var gPls = network.platforms, gTrs = network.transfers;
+        var toTuple = function (i) { return ({ platform: gPls[i], degree: gTrs.filter(function (t) { return t.has(i); }).length }); };
+        var psAndDegs = station.platforms.map(toTuple).sort(function (a, b) { return a.degree - b.degree; });
+        var degs = psAndDegs.map(function (i) { return i.degree; });
+        var ps = psAndDegs.map(function (i) { return i.platform; });
+        if (util_1.arrayEquals(degs, [2, 2, 3, 3])) {
+            return ps;
+        }
+        if (util_1.arrayEquals(degs, [1, 2, 2, 3])) {
+            return ps.slice(1);
+        }
+    }
+    return [];
+}
+exports.findCircle = findCircle;
+var distanceBetween = function (a, b) { return L.LatLng.prototype.distanceTo.call(a, b); };
+function shortestRoute(network, p1, p2) {
+    var walkingSpeed = 1.4, walkingWithObstacles = 1, maxTrainSpeed = 20, trainAcceleration = 0.7, metroStopTime = 25, eLineStopTime = 40, 
+    // includes escalators
+    metroWaitingTime = 240, eLineWaitingTime = 360;
+    var objects = network.platforms;
+    // time to travel from station to the p1 location
+    var currentTime = [], fromPlatformToDest = [];
+    for (var _i = 0; _i < objects.length; _i++) {
+        var o = objects[_i];
+        var hasE = o.spans.map(function (i) { return network.spans[i].routes[0]; })
+            .map(function (i) { return network.routes[i].line; })
+            .some(function (l) { return l.startsWith('E'); });
+        var distance = distanceBetween(p1, o.location), time = distance / walkingWithObstacles;
+        currentTime.push(time + (hasE ? eLineWaitingTime : metroWaitingTime));
+        distance = distanceBetween(o.location, p2);
+        time = distance / walkingWithObstacles;
+        fromPlatformToDest.push(time);
+    }
+    // pick the closest one so far
+    var currentIndex = objects.indexOf(geo_1.findClosestObject(p1, objects));
+    var objectSet = new Set(objects.map(function (o, i) { return i; })), prev = objects.map(function (i) { return null; });
+    // time on foot between locations
+    while (objectSet.size > 0) {
+        var minDist = Infinity;
+        objectSet.forEach(function (i) {
+            if (currentTime[i] < minDist) {
+                currentIndex = i;
+                minDist = currentTime[i];
+            }
+        });
+        var currentNode = objects[currentIndex];
+        objectSet.delete(currentIndex);
+        //console.log('current:', currentIndex, currentNode.name);
+        // getting his previous
+        var prevIndex = prev[currentIndex];
+        var previous = objects[prevIndex];
+        var prevSpan = network.spans.find(function (s) { return s.isOf(currentIndex, prevIndex); });
+        var neighborIndices = [], timeToNeighbors = [];
+        for (var _a = 0, _b = currentNode.spans; _a < _b.length; _a++) {
+            var i = _b[_a];
+            var s = network.spans[i];
+            var neighborIndex = currentIndex === s.source ? s.target : s.source;
+            if (!objectSet.has(neighborIndex))
+                continue;
+            neighborIndices.push(neighborIndex);
+            var neighbor = objects[neighborIndex];
+            var distance = distanceBetween(currentNode.location, neighbor.location);
+            var lineChangePenalty = 0;
+            if (prevSpan && network.routes[prevSpan.routes[0]] !== network.routes[s.routes[0]]) {
+            }
+            // TODO: lower priority for E-lines
+            var callTime = network.routes[s.routes[0]].line.startsWith('E') ? eLineStopTime : metroStopTime;
+            var travelTime = math.timeToTravel(distance, maxTrainSpeed, trainAcceleration);
+            timeToNeighbors.push(travelTime + callTime + lineChangePenalty);
+        }
+        // TODO: if transferring to an E-line, wait more
+        // TODO: penalty for changing lines (cross-platform)
+        for (var _c = 0, _d = network.stations[currentNode.station].platforms; _c < _d.length; _c++) {
+            var neighborIndex = _d[_c];
+            if (!objectSet.has(neighborIndex))
+                continue;
+            neighborIndices.push(neighborIndex);
+            var neighbor = objects[neighborIndex];
+            var hasE = neighbor.spans
+                .map(function (i) { return network.spans[i].routes[0]; })
+                .map(function (i) { return network.routes[i].line; })
+                .some(function (l) { return l.startsWith('E'); });
+            var distance = distanceBetween(currentNode.location, neighbor.location) / 2;
+            timeToNeighbors.push(distance / walkingWithObstacles + (hasE ? eLineWaitingTime : metroWaitingTime));
+        }
+        for (var i = 0, nNeighbors = neighborIndices.length; i < nNeighbors; ++i) {
+            var neighborIndex = neighborIndices[i], alt_1 = currentTime[currentIndex] + timeToNeighbors[i];
+            if (alt_1 < currentTime[neighborIndex]) {
+                currentTime[neighborIndex] = alt_1;
+                prev[neighborIndex] = currentIndex;
+            }
+        }
+        var alt = currentTime[currentIndex] + fromPlatformToDest[currentIndex];
+    }
+    // find the shortest time & the exit station
+    var shortestTime = Infinity;
+    for (var i = 0; i < currentTime.length; ++i) {
+        var alt = currentTime[i] + fromPlatformToDest[i];
+        if (alt < shortestTime) {
+            shortestTime = alt;
+            currentIndex = i;
+        }
+    }
+    // if walking on foot is faster, then why take the underground?
+    var onFoot = distanceBetween(p1, p2) / walkingWithObstacles;
+    if (onFoot < shortestTime) {
+        return { time: { walkTo: onFoot } };
+    }
+    var path = [], platformPath = [currentIndex];
+    // remove later
+    for (var prevIndex_1 = prev[currentIndex]; prevIndex_1 !== null; prevIndex_1 = prev[currentIndex]) {
+        var currentNode = objects[currentIndex];
+        //console.log('current', currentNode.name);
+        //const prevIndex = prev[currentIndex];
+        if (prevIndex_1 === null)
+            break;
+        //console.log('prev', objects[prevIndex].name);
+        var p = '';
+        for (var _e = 0, _f = currentNode.spans; _e < _f.length; _e++) {
+            var i = _f[_e];
+            if (network.spans[i].isOf(currentIndex, prevIndex_1)) {
+                p = 'p-' + i;
+                break;
+            }
+        }
+        if (p === '') {
+            for (var i = 0, len = network.transfers.length; i < len; ++i) {
+                if (network.transfers[i].isOf(currentIndex, prevIndex_1)) {
+                    p = 't-' + i;
+                    break;
+                }
+            }
+        }
+        if (p === '') {
+            var _g = shortestTransfer(network, prevIndex_1, currentIndex), transfers = _g.transfers, midPlatforms = _g.midPlatforms;
+            path.push.apply(path, transfers.reverse().map(function (i) { return 't-' + i; }));
+            platformPath.push.apply(platformPath, midPlatforms);
+        }
+        else {
+            path.push(p);
+        }
+        platformPath.push(prevIndex_1);
+        currentIndex = prevIndex_1;
+    }
+    platformPath.reverse();
+    path.reverse();
+    var walkFrom = fromPlatformToDest[platformPath[platformPath.length - 1]];
+    var walkTo = currentTime[platformPath[0]];
+    return {
+        platforms: platformPath,
+        edges: path,
+        time: {
+            walkTo: walkTo,
+            metro: shortestTime - walkFrom - walkTo,
+            walkFrom: walkFrom,
+            total: shortestTime
+        }
+    };
+}
+exports.shortestRoute = shortestRoute;
+function shortestTransfer(network, p1i, p2i) {
+    var p1 = network.platforms[p1i], p2 = network.platforms[p2i];
+    if (p1.station !== p2.station) {
+        throw new Error("platforms (" + p1.name + " & " + p2.name + " must be on the same station");
+    }
+    var station = network.stations[p1.station];
+    var platforms = station.platforms;
+    var platformSet = new Set(platforms);
+    var dist = [], prev = [];
+    for (var _i = 0; _i < platforms.length; _i++) {
+        var i = platforms[_i];
+        dist[i] = Infinity;
+        prev[i] = null;
+    }
+    dist[p1i] = 0;
+    var currentIndex = p1i;
+    while (platformSet.size > 0) {
+        var minDist = Infinity;
+        platformSet.forEach(function (i) {
+            if (dist[i] < minDist) {
+                currentIndex = i;
+                minDist = dist[i];
+            }
+        });
+        platformSet.delete(currentIndex);
+        var platform = network.platforms[currentIndex];
+        var neighborIndices = [];
+        for (var _a = 0, _b = network.transfers; _a < _b.length; _a++) {
+            var t = _b[_a];
+            if (t.source === currentIndex)
+                neighborIndices.push(t.target);
+            else if (t.target === currentIndex)
+                neighborIndices.push(t.source);
+        }
+        for (var _c = 0; _c < neighborIndices.length; _c++) {
+            var neighborIndex = neighborIndices[_c];
+            if (!platformSet.has(neighborIndex))
+                continue;
+            var distance = distanceBetween(platform.location, network.platforms[neighborIndex].location), alt = dist[currentIndex] + distance;
+            if (alt < dist[neighborIndex]) {
+                dist[neighborIndex] = alt;
+                prev[neighborIndex] = currentIndex;
+            }
+        }
+    }
+    var transfers = [];
+    var midPlatforms = [];
+    currentIndex = p2i;
+    for (;;) {
+        var prevIndex = prev[currentIndex];
+        if (prevIndex === null)
+            break;
+        var transferIndex = network.transfers.findIndex(function (t) { return t.isOf(currentIndex, prevIndex); });
+        transfers.push(transferIndex);
+        currentIndex = prevIndex;
+        midPlatforms.push(currentIndex);
+    }
+    midPlatforms.pop();
+    return {
+        transfers: transfers.reverse(),
+        midPlatforms: midPlatforms.reverse()
+    };
+}
+
+},{"./geo":60,"./math":63,"./util":81}],60:[function(require,module,exports){
+/// <reference path="../typings/tsd.d.ts" />
+var L = require('leaflet');
+var util_1 = require('./util');
+;
+function findClosestObject(point, objects) {
+    if (objects.length < 1) {
+        throw new Error('an objects array must contain at least 1 object');
+    }
+    var closest = objects[0];
+    var closestDistance = point.distanceTo(closest['location'] || closest);
+    for (var i = 1, len = objects.length; i < len; ++i) {
+        var obj = objects[i];
+        var tempDist = point.distanceTo(obj['location'] || obj);
+        if (tempDist < closestDistance) {
+            closest = objects[i];
+            closestDistance = tempDist;
+        }
+    }
+    return closest;
+}
+exports.findClosestObject = findClosestObject;
+/** object must contain the 'location' field */
+function findObjectsWithinRadius(point, objects, radius, sortArray) {
+    if (sortArray === void 0) { sortArray = false; }
+    var arr = objects
+        .map(function (item) { return ({ object: item, distance: point.distanceTo(item.location) }); })
+        .filter(function (o) { return o.distance <= radius; });
+    return (sortArray ? arr.sort(function (a, b) { return a.distance - b.distance; }) : arr).map(function (o) { return o.object; });
+}
+exports.findObjectsWithinRadius = findObjectsWithinRadius;
+function getCenter(points) {
+    var y = 0, x = 0;
+    for (var _i = 0; _i < points.length; _i++) {
+        var _a = points[_i], lat = _a.lat, lng = _a.lng;
+        y += lat;
+        x += lng;
+    }
+    return new L.LatLng(y / points.length, x / points.length);
+}
+exports.getCenter = getCenter;
+//@time
+function calculateGeoMean(points, fitnessFunc, minStep, onClimb) {
+    if (minStep === void 0) { minStep = 0.00001; }
+    var point = getCenter(points);
+    var fitness = fitnessFunc(point);
+    util_1.callMeMaybe(onClimb, point);
+    for (var step = 10; step > minStep; step *= 0.61803398875) {
+        for (var max = step, lat = -max; lat <= max; lat += step) {
+            for (var lng = -max; lng <= max; lng += step) {
+                var pt = new L.LatLng(point.lat + lat, point.lng + lng);
+                var total = fitnessFunc(pt);
+                if (total < fitness) {
+                    point = pt;
+                    fitness = total;
+                    util_1.callMeMaybe(onClimb, point);
+                }
+            }
+        }
+    }
+    return point;
+}
+exports.calculateGeoMean = calculateGeoMean;
+
+},{"./util":81,"leaflet":57}],61:[function(require,module,exports){
+function verify(network, hints) {
+    function checkExistence(val) {
+        if (network.platforms.find(function (el) { return el.name === val; }) === undefined) {
+            throw new Error("platform " + val + " doesn't exist");
+        }
+    }
+    function checkPlatformHintObject(obj) {
+        for (var _i = 0, _a = Object.keys(obj); _i < _a.length; _i++) {
+            var line = _a[_i];
+            var val = obj[line];
+            if (typeof val === 'string') {
+                checkExistence(val);
+            }
+            else {
+                val.forEach(checkExistence);
+            }
+        }
+    }
+    return new Promise(function (resolve, reject) {
+        var crossPlatform = hints.crossPlatform;
+        Object.keys(crossPlatform).forEach(function (platformName) {
+            if (network.platforms.find(function (el) { return el.name === platformName; }) === undefined) {
+                reject("platform " + platformName + " doesn't exist");
+            }
+            var obj = crossPlatform[platformName];
+            if ('forEach' in obj) {
+                obj.forEach(checkPlatformHintObject);
+            }
+            else {
+                checkPlatformHintObject(obj);
+            }
+        });
+        resolve(hints);
+    });
+}
+exports.verify = verify;
+/**
+ * null: doesn't contain
+ * -1: is an object
+ * >=0: is an array
+ */
+function hintContainsLine(network, dirHints, platform) {
+    var spans = platform.spans.map(function (i) { return network.spans[i]; });
+    var routes = [];
+    spans.forEach(function (span) { return span.routes.forEach(function (i) { return routes.push(network.routes[i]); }); });
+    var lines = routes.map(function (r) { return r.line; });
+    var platformHints = dirHints[platform.name];
+    if (platformHints) {
+        if ('forEach' in platformHints) {
+            for (var idx = 0, len = platformHints['length']; idx < len; ++idx) {
+                if (Object.keys(platformHints[idx]).some(function (key) { return lines.indexOf(key) > -1; })) {
+                    return idx;
+                }
+            }
+        }
+        else if (Object.keys(platformHints).some(function (key) { return lines.indexOf(key) > -1; })) {
+            return -1;
+        }
+    }
+    return null;
+}
+exports.hintContainsLine = hintContainsLine;
+
+},{}],62:[function(require,module,exports){
+var res_1 = require('./res');
+exports.userLanguage = navigator.language.slice(0, 2).toLowerCase();
+var dictionary = new Map();
+var regexDict = new RegExp(Object.keys(dictionary).join('|'), 'ig');
+function updateDictionary(url) {
+    return res_1.getJSON(url).then(function (dict) {
+        var keys = Object.keys(dict);
+        for (var _i = 0; _i < keys.length; _i++) {
+            var key = keys[_i];
+            var translations = dict[key];
+            dictionary.set(key.toLowerCase(), exports.userLanguage in translations ? translations[exports.userLanguage] : key);
+        }
+        regexDict = new RegExp(keys.join('|'), 'ig');
+    });
+}
+exports.updateDictionary = updateDictionary;
+function translate(text) {
+    var translation = dictionary.get(text.toLowerCase());
+    if (translation === undefined)
+        return text;
+    if (text.toUpperCase() === text)
+        return translation.toUpperCase();
+    return translation;
+    // const ucBitmap = text.split('').map(c => c !== c.toLowerCase());
+    // return translation.split('').map((c, i) => ucBitmap[i] ? c.toUpperCase() : c).join('');
+}
+exports.translate = translate;
+function tr(strings) {
+    var values = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        values[_i - 1] = arguments[_i];
+    }
+    return strings.map(function (s) { return s.replace(regexDict, translate); })
+        .map(function (s, i) { return s + (values[i] || ''); })
+        .join('');
+}
+exports.tr = tr;
+function inflect(value, str) {
+    return value === 0 ? '' : "" + value + (value > 1 && exports.userLanguage === 'en' ? str + 's' : str);
+}
+function formatTime(time) {
+    if (time < 60) {
+        return Math.round(time) + ' seconds';
+    }
+    if (time < 3570) {
+        var mins_1 = Math.round(time / 60);
+        return inflect(mins_1, 'min');
+    }
+    var hours = Math.floor(time / 3600);
+    var mins = Math.floor((time - hours * 3600) / 60);
+    return (hours > 0 ? hours + (_a = ["%hour%"], _a.raw = ["%hour%"], tr(_a)) : '') + " " + inflect(mins, 'min');
+    var _a;
+}
+exports.formatTime = formatTime;
+
+},{"./res":68}],63:[function(require,module,exports){
+/// <reference path="../typings/tsd.d.ts" />
+var L = require('leaflet');
+function dot(v1, v2) {
+    return v1.x * v2.x + v1.y * v2.y;
+}
+exports.dot = dot;
+function angle(v1, v2) {
+    return dot(v1, v2) / v1.distanceTo(v2);
+}
+exports.angle = angle;
+function getCenter(pts) {
+    return pts.reduce(function (prev, cur) { return prev.add(cur); }).divideBy(pts.length);
+}
+exports.getCenter = getCenter;
+function getCircumcenter(positions) {
+    if (positions.length !== 3) {
+        throw new Error('must have 3 vertices');
+    }
+    var first = positions[0];
+    var b = positions[1].subtract(first);
+    var c = positions[2].subtract(first);
+    var bb = dot(b, b);
+    var cc = dot(c, c);
+    return new L.Point((c.y * bb - b.y * cc), (b.x * cc - c.x * bb))
+        .divideBy(2.0 * (b.x * c.y - b.y * c.x))
+        .add(first);
+}
+exports.getCircumcenter = getCircumcenter;
+function polarToCartesian(center, radius, angle) {
+    return new L.Point(center.x + radius * Math.cos(angle), center.y + radius * Math.sin(angle));
+}
+exports.polarToCartesian = polarToCartesian;
+function vectorToGradCoordinates(vector) {
+    var x = Math.abs(vector.x), y = Math.abs(vector.y);
+    return vector.divideBy(x < y ? y : x);
+}
+exports.vectorToGradCoordinates = vectorToGradCoordinates;
+/**
+ *
+ * @param distance
+ * @param maxSpeed - m/s
+ * @param acceleration - m/s²
+ */
+function timeToTravel(distance, maxSpeed, acceleration) {
+    var distanceToAccelerate = maxSpeed * maxSpeed / acceleration;
+    return distanceToAccelerate < distance
+        ? maxSpeed / acceleration * 2 + (distance - distanceToAccelerate) / maxSpeed
+        : Math.sqrt(distance / acceleration) * 2;
+}
+exports.timeToTravel = timeToTravel;
+
+},{"leaflet":57}],64:[function(require,module,exports){
+/// <reference path="../typings/tsd.d.ts" />
+var Mediator = (function () {
+    function Mediator() {
+        this.eventListeners = new Map();
+    }
+    Mediator.prototype.addListener = function (type, listener) {
+        for (var _i = 0, _a = type.split(/\s+/); _i < _a.length; _i++) {
+            var t = _a[_i];
+            var listenerArr = this.eventListeners.get(t);
+            if (listenerArr === undefined) {
+                this.eventListeners.set(t, [listener]);
+            }
+            else {
+                listenerArr.push(listener);
+            }
+        }
+    };
+    Mediator.prototype.removeListener = function (type, listener) {
+        var listenerArr = this.eventListeners.get(type);
+        if (listenerArr === undefined)
+            return;
+        var pos = listenerArr.indexOf(listener);
+        if (pos < 0)
+            return;
+        listenerArr.splice(pos, 1);
+    };
+    Mediator.prototype.receiveEvent = function (event) {
+        console.log('event as seen from the dispatcher', event);
+        for (var _i = 0, _a = this.eventListeners.get(event.type); _i < _a.length; _i++) {
+            var handler = _a[_i];
+            handler(event);
+        }
+        return false;
+    };
+    Mediator.prototype.addListenersFromObject = function (listenerObj) {
+        for (var _i = 0, _a = Object.keys(listenerObj); _i < _a.length; _i++) {
+            var key = _a[_i];
+            this.eventListeners.set(key, [listenerObj[key]]);
+        }
+    };
+    return Mediator;
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = Mediator;
+
+},{}],65:[function(require,module,exports){
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+/// <reference path="../typings/tsd.d.ts" />;
+var L = require('leaflet');
+var nw = require('./network');
+var hints = require('./hints');
+var ui = require('./ui');
+var svg = require('./svg');
+var util = require('./util');
+var res = require('./res');
+var math_1 = require('./math');
+var algorithm_1 = require('./algorithm');
+var tilelayers_1 = require('./tilelayers');
+var i18n_1 = require('./i18n');
+var mediator_1 = require('./mediator');
+var MetroMap = (function (_super) {
+    __extends(MetroMap, _super);
+    function MetroMap(config) {
+        var _this = this;
+        _super.call(this);
+        this.whiskers = new Map();
+        this.platformsOnSVG = new Map();
+        var networkPromise = res.getContent(config.url['graph'])
+            .then(function (json) { return _this.network = new nw.Network(json); });
+        var lineRulesPromise = res.getLineRules()
+            .then(function (lineRules) { return _this.lineRules = lineRules; });
+        var hintsPromise = Promise.all([res.getJSON(config.url['hints']), networkPromise])
+            .then(function (results) { return hints.verify(results[1], results[0]); })
+            .catch(console.error)
+            .then(function (json) { return _this.hints = json; });
+        var contextMenu = new ui.ContextMenu(config.url['contextMenu']);
+        var faq = new ui.FAQ(config.url['data']);
+        var tileLoadPromise = new Promise(function (resolve) { return tilelayers_1.mapbox.once('load', function (e) { return resolve(); }); });
+        this.config = config;
+        var mapOptions = Object.assign({}, config);
+        if (L.version[0] === '1') {
+            mapOptions['wheelPxPerZoomLevel'] = 75;
+            mapOptions['inertiaMaxSpeed'] = 1500;
+            mapOptions['fadeAnimation'] = false;
+        }
+        this.map = new L.Map(config.containerId, mapOptions)
+            .addControl(new L.Control.Scale({ imperial: false }))
+            .addLayer(tilelayers_1.mapbox);
+        var mapPaneStyle = this.map.getPanes().mapPane.style;
+        mapPaneStyle.visibility = 'hidden';
+        ui.addLayerSwitcher(this.map, [tilelayers_1.mapbox, tilelayers_1.mapnik, tilelayers_1.osmFrance, tilelayers_1.cartoDBNoLabels, tilelayers_1.wikimapia]);
+        this.addMapListeners();
+        this.addKeyboardListeners();
+        networkPromise.then(function (network) {
+            var bounds = new L.LatLngBounds(_this.network.platforms.map(function (p) { return p.location; }));
+            _this.overlay = new ui.MapOverlay(bounds).addTo(_this.map);
+            var defs = _this.overlay.defs;
+            svg.Filters.appendAll(defs);
+            if (defs.textContent.length === 0) {
+                alert((_a = ["Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience."], _a.raw = ["Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience."], i18n_1.tr(_a)));
+            }
+            return Promise.all([lineRulesPromise, hintsPromise]);
+            var _a;
+        }).then(function (results) {
+            _this.redrawNetwork();
+            _this.overlay.onZoomChange = function (e) { return _this.redrawNetwork(); };
+            // TODO: fix the kludge making the grey area disappear
+            _this.map.invalidateSize(false);
+            new ui.RoutePlanner(_this);
+            new ui.DistanceMeasure(_this);
+            //this.routeWorker.postMessage(this.network);
+            //ui.drawZones(this);
+            _this.resetMapView();
+            return contextMenu.whenAvailable;
+        }).then(function () {
+            contextMenu.addTo(_this);
+            _this.contextMenu = contextMenu;
+            if (!L.Browser.mobile) {
+                new ui.MapEditor(_this.config.detailedZoom).addTo(_this);
+            }
+            return faq.whenAvailable;
+        }).then(function () {
+            faq.addTo(_this);
+            return tileLoadPromise;
+        }).then(function () {
+            util.fixFontRendering();
+            mapPaneStyle.visibility = '';
+            // const img = util.File.svgToImg(document.getElementById('overlay') as any, true);
+            // util.File.svgToCanvas(document.getElementById('overlay') as any)
+            //     .then(canvas => util.File.downloadText('svg.txt', canvas.toDataURL('image/png')));
+            // util.File.downloadText('img.txt', img.src);
+        });
+    }
+    //private routeWorker = new Worker('js/routeworker.js');
+    MetroMap.prototype.getMap = function () { return this.map; };
+    MetroMap.prototype.getNetwork = function () { return this.network; };
+    MetroMap.prototype.addMapListeners = function () {
+        var _this = this;
+        _super.prototype.addListenersFromObject.call(this, {
+            'measuredistance': function (e) {
+                _this.contextMenu.removeItem('measuredistance');
+                _this.contextMenu.insertItem({ event: 'deletemeasurements', text: 'Clear measurements' });
+            },
+            'deletemeasurements': function (e) {
+                _this.contextMenu.removeItem('deletemeasurements');
+                _this.contextMenu.insertItem({ event: 'measuredistance', text: 'Measure distance' });
+            },
+            'platformrename': function (e) {
+                var circle = e.relatedTarget;
+                var platform = util.platformByCircle(circle, _this.network);
+                _this.plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));
+                ui.platformRenameDialog(_this.network, platform);
+            },
+            'platformmove': function (e) {
+                _this.plate.disabled = true;
+            },
+            'platformmoveend': function (e) {
+                var circle = e.relatedTarget;
+                var platform = util.platformByCircle(circle, _this.network);
+                _this.plate.disabled = false;
+                _this.plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));
+            },
+            'platformadd': function (e) {
+                //this.contextMenu.items.delete('platformadd');
+                var coor = util.mouseToLatLng(_this.map, e);
+                var pos = _this.overlay.latLngToSvgPoint(coor);
+                var stationCircles = document.getElementById('station-circles'), dummyCircles = document.getElementById('dummy-circles');
+                var circle = svg.makeCircle(pos, +stationCircles.firstElementChild.getAttribute('r')), dummy = svg.makeCircle(pos, +dummyCircles.firstElementChild.getAttribute('r'));
+                var id = _this.network.platforms.length;
+                circle.id = 'p-' + id;
+                dummy.id = 'd-' + id;
+                stationCircles.appendChild(circle);
+                dummyCircles.appendChild(dummy);
+                var platform = {
+                    name: (_a = ["New station"], _a.raw = ["New station"], i18n_1.tr(_a)),
+                    altNames: {},
+                    station: null,
+                    spans: [],
+                    elevation: 0,
+                    location: coor
+                };
+                _this.network.platforms.push(platform);
+                _this.platformToModel(platform, [circle, dummy]);
+                var _a;
+            },
+            'platformdelete': function (e) {
+            },
+            'editmapstart': function (e) {
+                if (_this.map.getZoom() < _this.config.detailedZoom) {
+                    // const plusButton = this.map.zoomControl.getContainer().firstChild;
+                    // util.triggerMouseEvent(plusButton, 'mousedown');
+                    // util.triggerMouseEvent(plusButton, 'click');
+                    _this.map.setZoom(_this.config.detailedZoom);
+                }
+                _this.contextMenu.insertItem({ text: 'New station', event: 'platformadd' });
+                var predicate = function (target) { return target.parentElement.id === 'dummy-circles'; };
+                _this.contextMenu.insertItem({ text: 'Rename station', predicate: predicate, event: 'platformrename' });
+                _this.contextMenu.insertItem({ text: 'Delete station', predicate: predicate, event: 'platformdelete' });
+            },
+            'editmapend': function (e) {
+                _this.contextMenu.removeItem('platformadd');
+                _this.contextMenu.removeItem('platformrename');
+                _this.contextMenu.removeItem('platformdelete');
+            },
+            'showheatmap': function (e) {
+                //this.showHeatMap();
+            }
+        });
+    };
+    MetroMap.prototype.addKeyboardListeners = function () {
+        var _this = this;
+        addEventListener('keydown', function (e) {
+            if (e.altKey) {
+                switch (e.keyCode) {
+                    case 82: return _this.resetNetwork(); // r
+                    default: return;
+                }
+            }
+            switch (e.keyCode) {
+                case 27: return _this.receiveEvent(new Event('clearroute')); // esc
+                default: return;
+            }
+        });
+    };
+    MetroMap.prototype.resetMapView = function () {
+        //const fitness = (points, pt) => points.reduce((prev, cur) => this.bounds., 0);
+        //const center = geo.calculateGeoMean(this.network.platforms.map(p => p.location), fitness, 0.1);
+        this.map.setView(this.config.center, this.config.zoom, {
+            pan: { animate: false },
+            zoom: { animate: false }
+        });
+    };
+    MetroMap.prototype.resetNetwork = function () {
+        var _this = this;
+        res.getContent(this.config.url['graph']).then(function (json) {
+            _this.network = new nw.Network(json);
+            _this.redrawNetwork();
+        });
+    };
+    MetroMap.prototype.resetOverlayStructure = function () {
+        var origin = this.overlay.origin;
+        util.removeAllChildren(origin);
+        var groupIds = [
+            'paths-outer',
+            'paths-inner',
+            'transfers-outer',
+            'station-circles',
+            'transfers-inner',
+            'dummy-circles'
+        ];
+        for (var _i = 0; _i < groupIds.length; _i++) {
+            var groupId = groupIds[_i];
+            var g = svg.createSVGElement('g');
+            g.id = groupId;
+            // if (groupId.startsWith('transfers-')) {
+            //     g.setAttribute('fill', 'none');
+            // }
+            origin.appendChild(g);
+        }
+        this.plate = new ui.TextPlate();
+        origin.insertBefore(this.plate.element, document.getElementById('dummy-circles'));
+    };
+    MetroMap.prototype.addBindings = function () {
+        var nPlatforms = this.network.platforms.length;
+        for (var i = 0; i < nPlatforms; ++i) {
+            var circle = document.getElementById('p-' + i);
+            var dummyCircle = document.getElementById('d-' + i);
+            this.platformToModel(i, [circle, dummyCircle]);
+        }
+    };
+    MetroMap.prototype.redrawNetwork = function () {
+        var _this = this;
+        console.time('pre');
+        this.resetOverlayStructure();
+        this.updatePlatformsPositionOnOverlay();
+        console.timeEnd('pre');
+        console.time('preparation');
+        var detailedZoom = this.config.detailedZoom;
+        var zoom = this.map.getZoom(), coef = zoom > 9 ? zoom : zoom > 8 ? 9.5 : 9, 
+        //lineWidth = 2 ** (zoom / 4 - 1.75);
+        lineWidth = (coef - 7) * 0.5, lightLineWidth = lineWidth * 0.75, circleRadius = coef < detailedZoom ? lineWidth * 1.25 : lineWidth, circleBorder = coef < detailedZoom ? circleRadius * 0.4 : circleRadius * 0.6, dummyCircleRadius = circleRadius * 2, transferWidth = lineWidth * 0.9, transferBorder = circleBorder * 1.25;
+        var strokeWidths = {
+            'station-circles': circleBorder,
+            'dummy-circles': 0,
+            'transfers-outer': transferWidth + transferBorder / 2,
+            'transfers-inner': transferWidth - transferBorder / 2,
+            'paths-outer': lineWidth,
+            'paths-inner': lineWidth / 2
+        };
+        var fullCircleRadius = circleRadius + circleBorder / 2;
+        var docFrags = new Map();
+        for (var _i = 0, _a = Object.keys(strokeWidths); _i < _a.length; _i++) {
+            var id = _a[_i];
+            docFrags.set(id, document.createDocumentFragment());
+            document.getElementById(id).style.strokeWidth = strokeWidths[id] + 'px';
+        }
+        this.lineRules.get('light-rail-path').strokeWidth = lightLineWidth + 'px';
+        // 11 - 11, 12 - 11.5, 13 - 12, 14 - 12.5
+        var fontSize = Math.max((zoom + 10) * 0.5, 11);
+        this.plate.element.firstChild.firstChild.style.fontSize = fontSize + 'px';
+        var stationCircumpoints = new Map();
+        console.timeEnd('preparation');
+        // station circles
+        console.time('circle preparation');
+        var stationCirclesFrag = docFrags.get('station-circles');
+        var dummyCirclesFrag = docFrags.get('dummy-circles');
+        for (var _b = 0, _c = this.network.stations; _b < _c.length; _b++) {
+            var station = _c[_b];
+            var circumpoints = [];
+            var stationMeanColor;
+            // if (zoom < 12) {
+            //     stationMeanColor = util.Color.mean(this.linesToColors(this.passingLinesStation(station)));
+            // }
+            for (var _d = 0, _e = station.platforms; _d < _e.length; _d++) {
+                var platformIndex = _e[_d];
+                var platform = this.network.platforms[platformIndex];
+                var posOnSVG = this.platformsOnSVG.get(platformIndex);
+                //const posOnSVG = this.overlay.latLngToSvgPoint(platform.location);
+                if (zoom > 9) {
+                    var ci = svg.makeCircle(posOnSVG, circleRadius);
+                    ci.id = 'p-' + platformIndex;
+                    if (zoom >= detailedZoom) {
+                        this.colorizePlatformCircle(ci, this.network.passingLines(platform));
+                    }
+                    // else {
+                    //     ci.style.stroke = stationMeanColor;
+                    // }
+                    var dummyCircle = svg.makeCircle(posOnSVG, dummyCircleRadius);
+                    dummyCircle.id = 'd-' + platformIndex;
+                    stationCirclesFrag.appendChild(ci);
+                    dummyCirclesFrag.appendChild(dummyCircle);
+                }
+                this.whiskers.set(platformIndex, this.makeWhiskers(platformIndex));
+            }
+            var circular = algorithm_1.findCircle(this.network, station);
+            if (circular.length > 0) {
+                for (var _f = 0, _g = station.platforms; _f < _g.length; _f++) {
+                    var platformIndex = _g[_f];
+                    var platform = this.network.platforms[platformIndex];
+                    if (circular.indexOf(platform) > -1) {
+                        circumpoints.push(this.platformsOnSVG.get(platformIndex));
+                    }
+                }
+                stationCircumpoints.set(station, circular);
+            }
+        }
+        console.timeEnd('circle preparation');
+        console.time('transfer preparation');
+        // transfers
+        if (zoom >= detailedZoom) {
+            var transfersOuterFrag = docFrags.get('transfers-outer');
+            var transfersInnerFrag = docFrags.get('transfers-inner');
+            var defs = this.overlay.defs;
+            var nwTransfers = this.network.transfers, nTransfers = nwTransfers.length;
+            for (var transferIndex = 0; transferIndex < nTransfers; ++transferIndex) {
+                var transfer = nwTransfers[transferIndex];
+                var pl1 = this.network.platforms[transfer.source], pl2 = this.network.platforms[transfer.target];
+                var pos1 = this.platformsOnSVG.get(transfer.source), pos2 = this.platformsOnSVG.get(transfer.target);
+                var scp = stationCircumpoints.get(this.network.stations[pl1.station]);
+                var paths = scp !== undefined && scp.indexOf(pl1) > -1 && scp.indexOf(pl2) > -1
+                    ? this.makeTransferArc(transfer, scp)
+                    : svg.makeTransferLine(pos1, pos2);
+                paths[0].id = 'ot-' + transferIndex;
+                paths[1].id = 'it-' + transferIndex;
+                var gradientColors = [pl1, pl2].map(function (p) { return _this.getPlatformColor(p); });
+                // const colors = [transfer.source, transfer.target].map(i => getComputedStyle(stationCirclesFrag.childNodes[i] as Element, null).stroke);
+                // console.log(colors);
+                var circlePortion = fullCircleRadius / pos1.distanceTo(pos2);
+                var gradientVector = pos2.subtract(pos1);
+                var gradient = document.getElementById('g-' + transferIndex);
+                if (gradient === null) {
+                    gradient = svg.Gradients.makeLinear(gradientVector, gradientColors, circlePortion);
+                    gradient.id = 'g-' + transferIndex;
+                    defs.appendChild(gradient);
+                }
+                else {
+                    svg.Gradients.setDirection(gradient, gradientVector);
+                    svg.Gradients.setOffset(gradient, circlePortion);
+                }
+                paths[0].style.stroke = "url(#" + gradient.id + ")";
+                transfersOuterFrag.appendChild(paths[0]);
+                transfersInnerFrag.appendChild(paths[1]);
+                this.transferToModel(transfer, paths);
+            }
+        }
+        console.timeEnd('transfer preparation');
+        console.time('span preparation');
+        // paths
+        var pathsOuterFrag = docFrags.get('paths-outer');
+        var pathsInnerFrag = docFrags.get('paths-inner');
+        for (var i = 0, numSpans = this.network.spans.length; i < numSpans; ++i) {
+            var _h = this.makePath(i), outer = _h[0], inner = _h[1];
+            pathsOuterFrag.appendChild(outer);
+            if (inner) {
+                pathsInnerFrag.appendChild(inner);
+            }
+        }
+        console.timeEnd('span preparation');
+        console.time('appending');
+        docFrags.forEach(function (val, key) { return document.getElementById(key).appendChild(val); });
+        this.addStationListeners();
+        this.addBindings();
+        console.timeEnd('appending');
+    };
+    MetroMap.prototype.updatePlatformsPositionOnOverlay = function (zoom) {
+        if (zoom === void 0) { zoom = this.map.getZoom(); }
+        var nwPlatforms = this.network.platforms;
+        var detailed = zoom < this.config.detailedZoom;
+        for (var _i = 0, _a = this.network.stations; _i < _a.length; _i++) {
+            var station = _a[_i];
+            var center = detailed ? this.overlay.latLngToSvgPoint(this.network.getStationCenter(station)) : undefined;
+            for (var _b = 0, _c = station.platforms; _b < _c.length; _b++) {
+                var platformIndex = _c[_b];
+                var pos = center || this.overlay.latLngToSvgPoint(nwPlatforms[platformIndex].location);
+                this.platformsOnSVG.set(platformIndex, pos);
+            }
+        }
+    };
+    MetroMap.prototype.getPlatformColor = function (platform) {
+        return util.Color.mean(this.linesToColors(this.network.passingLines(platform)));
+    };
+    MetroMap.prototype.linesToColors = function (lines) {
+        var rgbs = [];
+        for (var vals = lines.values(), it = vals.next(); !it.done; it = vals.next()) {
+            var line = it.value;
+            rgbs.push(this.lineRules.get(line[0] === 'M' ? it.value : line[0]).stroke);
+        }
+        return rgbs;
+    };
+    MetroMap.prototype.colorizePlatformCircle = function (ci, lines) {
+        if (lines.size === 0)
+            return;
+        if (lines.size === 1) {
+            var line = lines.values().next().value;
+            ci.classList.add(line[0] === 'M' ? line : line[0]);
+            return;
+        }
+        ci.style.stroke = util.Color.mean(this.linesToColors(lines));
+    };
+    MetroMap.prototype.makeWhiskers = function (platformIndex) {
+        var platform = this.network.platforms[platformIndex];
+        var posOnSVG = this.platformsOnSVG.get(platformIndex);
+        var wh = new Map();
+        if (platform.spans.length === 1) {
+            return wh.set(platform.spans[0], posOnSVG);
+        }
+        if (platform.spans.length > 2) {
+            // 0 - prev, 1 - next
+            var points = [[], []];
+            var spanIds = [[], []];
+            var dirHints = this.hints.crossPlatform;
+            var idx = hints.hintContainsLine(this.network, dirHints, platform);
+            if (platform.name in dirHints && idx !== null) {
+                // array or object
+                var platformHint = idx > -1 ? dirHints[platform.name][idx] : dirHints[platform.name];
+                var nextPlatformNames = [];
+                for (var _i = 0, _a = Object.keys(platformHint); _i < _a.length; _i++) {
+                    var key = _a[_i];
+                    var val = platformHint[key];
+                    if (typeof val === 'string') {
+                        nextPlatformNames.push(val);
+                    }
+                    else {
+                        nextPlatformNames.push.apply(nextPlatformNames, val);
+                    }
+                }
+                for (var _b = 0, _c = platform.spans; _b < _c.length; _b++) {
+                    var spanIndex = _c[_b];
+                    var span = this.network.spans[spanIndex];
+                    var neighborIndex = span.source === platformIndex ? span.target : span.source;
+                    var neighbor = this.network.platforms[neighborIndex];
+                    var neighborPos = this.platformsOnSVG.get(neighborIndex);
+                    var dirIdx = nextPlatformNames.indexOf(neighbor.name) > -1 ? 1 : 0;
+                    points[dirIdx].push(neighborPos);
+                    spanIds[dirIdx].push(spanIndex);
+                }
+            }
+            var midPts_1 = points.map(function (pts) { return posOnSVG
+                .add(pts.length === 1 ? pts[0] : pts.length === 0 ? posOnSVG : math_1.getCenter(pts))
+                .divideBy(2); });
+            var lens_1 = midPts_1.map(function (midPt) { return posOnSVG.distanceTo(midPt); });
+            var mm_1 = midPts_1[1]
+                .subtract(midPts_1[0])
+                .multiplyBy(lens_1[0] / (lens_1[0] + lens_1[1]))
+                .add(midPts_1[0]);
+            var offset_1 = posOnSVG.subtract(mm_1);
+            var mpd_1 = midPts_1.map(function (v) { return util.roundPoint(v.add(offset_1), 1000); });
+            spanIds[0].forEach(function (i) { return wh.set(i, mpd_1[0]); });
+            spanIds[1].forEach(function (i) { return wh.set(i, mpd_1[1]); });
+            return wh;
+        }
+        // TODO: refactor this stuff, unify 2-span & >2-span platforms
+        if (this.network.passingLines(platform).size === 2) {
+            return wh.set(platform.spans[0], posOnSVG).set(platform.spans[1], posOnSVG);
+        }
+        // const firstSpan = this.network.spans[platform.spans[0]];
+        // if (firstSpan.source === platformIndex) {
+        //     platform.spans.reverse();
+        // }
+        // previous node should come first
+        var midPts = [posOnSVG, posOnSVG], lens = [0, 0];
+        for (var i = 0; i < 2; ++i) {
+            var span = this.network.spans[platform.spans[i]];
+            var neighborOnSVG = this.platformsOnSVG.get(span.other(platformIndex));
+            lens[i] = posOnSVG.distanceTo(neighborOnSVG);
+            midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
+        }
+        var mm = midPts[1]
+            .subtract(midPts[0])
+            .multiplyBy(lens[0] / (lens[0] + lens[1]))
+            .add(midPts[0]);
+        var offset = posOnSVG.subtract(mm);
+        var mpd = midPts.map(function (v) { return util.roundPoint(v.add(offset), 1000); });
+        return wh.set(platform.spans[0], mpd[0]).set(platform.spans[1], mpd[1]);
+    };
+    MetroMap.prototype.makeTransferArc = function (transfer, cluster) {
+        var _this = this;
+        var nwPlatforms = this.network.platforms;
+        var pl1 = nwPlatforms[transfer.source], pl2 = nwPlatforms[transfer.target];
+        var pos1 = this.platformsOnSVG.get(transfer.source), pos2 = this.platformsOnSVG.get(transfer.target);
+        var makeArc = function (thirdIndex) { return svg.makeTransferArc(pos1, pos2, _this.platformsOnSVG.get(thirdIndex)); };
+        if (cluster.length === 3) {
+            var third = cluster.find(function (p) { return p !== pl1 && p !== pl2; });
+            return makeArc(nwPlatforms.indexOf(third));
+        }
+        else if (pl1 === cluster[2] && pl2 === cluster[3] || pl1 === cluster[3] && pl2 === cluster[2]) {
+            return svg.makeTransferLine(pos1, pos2);
+        }
+        //const s = transfer.source;
+        //const pl1neighbors = this.network.transfers.filter(t => t.source === s || t.target === s);
+        //const pl1deg = pl1neighbors.length;
+        var rarr = [];
+        for (var _i = 0, _a = this.network.transfers; _i < _a.length; _i++) {
+            var t = _a[_i];
+            if (t === transfer)
+                continue;
+            if (transfer.has(t.source)) {
+                rarr.push(t.target);
+            }
+            else if (transfer.has(t.target)) {
+                rarr.push(t.source);
+            }
+        }
+        var thirdIndex;
+        if (rarr.length === 2) {
+            if (rarr[0] !== rarr[1])
+                throw Error("FFFFUC");
+            thirdIndex = rarr[0];
+        }
+        else if (rarr.length === 3) {
+            thirdIndex = rarr[0] === rarr[1] ? rarr[2] : rarr[0] === rarr[2] ? rarr[1] : rarr[0];
+        }
+        else {
+            throw new Error("111FUUFF");
+        }
+        return makeArc(thirdIndex);
+    };
+    MetroMap.prototype.makePath = function (spanIndex) {
+        var _this = this;
+        var span = this.network.spans[spanIndex];
+        var srcN = span.source, trgN = span.target;
+        var routes = span.routes.map(function (n) { return _this.network.routes[n]; });
+        var _a = routes[0].line.match(/([MEL])(\d{0,2})/), lineId = _a[0], lineType = _a[1], lineNum = _a[2];
+        var controlPoints = [
+            this.platformsOnSVG.get(srcN),
+            this.whiskers.get(srcN).get(spanIndex),
+            this.whiskers.get(trgN).get(spanIndex),
+            this.platformsOnSVG.get(trgN)
+        ];
+        var bezier = svg.makeCubicBezier(controlPoints);
+        bezier.id = 'op-' + spanIndex;
+        if (lineType === 'E') {
+            bezier.classList.add('E');
+            var inner = bezier.cloneNode(true);
+            inner.id = 'ip-' + spanIndex;
+            return [bezier, inner];
+        }
+        if (lineId) {
+            bezier.classList.add(lineId);
+        }
+        bezier.classList.add(lineType);
+        return [bezier];
+    };
+    MetroMap.prototype.addStationListeners = function () {
+        var _this = this;
+        var onMouseOut = function (e) {
+            _this.plate.hide();
+            svg.Scale.unscaleAll();
+        };
+        var dummyCircles = document.getElementById('dummy-circles');
+        dummyCircles.addEventListener('mouseover', function (e) {
+            var dummy = e.target;
+            var platform = _this.network.platforms[+dummy.id.slice(2)];
+            var station = _this.network.stations[platform.station];
+            var names = _this.map.getZoom() < _this.config.detailedZoom && station.platforms.length > 1 ?
+                _this.network.getStationNames(station) :
+                util.getPlatformNames(platform);
+            _this.highlightStation(station, names);
+        });
+        dummyCircles.addEventListener('mouseout', onMouseOut);
+        var onTransferOver = function (e) {
+            var el = e.target;
+            var transfer = _this.network.transfers[+el.id.slice(3)];
+            var source = _this.network.platforms[transfer.source];
+            var station = _this.network.stations[source.station];
+            var names = util.getPlatformNamesZipped([source, _this.network.platforms[transfer.target]]);
+            _this.highlightStation(station, names);
+        };
+        var transfersOuter = document.getElementById('transfers-outer'), transfersInner = document.getElementById('transfers-inner');
+        transfersOuter.addEventListener('mouseover', onTransferOver);
+        transfersInner.addEventListener('mouseover', onTransferOver);
+        transfersOuter.addEventListener('mouseout', onMouseOut);
+        transfersInner.addEventListener('mouseout', onMouseOut);
+    };
+    MetroMap.prototype.highlightStation = function (station, names) {
+        var scaleFactor = 1.25, nwPlatforms = this.network.platforms, stationPlatforms = station.platforms;
+        var circle, platform;
+        if (stationPlatforms.length === 1) {
+            circle = util.circleByIndex(stationPlatforms[0]);
+            svg.Scale.scaleCircle(circle, scaleFactor, true);
+            platform = nwPlatforms[stationPlatforms[0]];
+        }
+        else {
+            var transfers = this.map.getZoom() < this.config.detailedZoom ? undefined : this.network.transfers;
+            svg.Scale.scaleStation(nwPlatforms, station, scaleFactor, transfers);
+            var idx2lat = function (i) { return nwPlatforms[i].location.lat; };
+            var topmostIndex = stationPlatforms.reduce(function (prev, cur) { return idx2lat(prev) < idx2lat(cur) ? cur : prev; });
+            circle = util.circleByIndex(topmostIndex);
+            platform = nwPlatforms[topmostIndex];
+        }
+        this.plate.show(svg.circleOffset(circle), names);
+    };
+    MetroMap.prototype.platformToModel = function (platform, circles) {
+        var _this = this;
+        var _a = typeof platform === 'number'
+            ? [platform, this.network.platforms[platform]]
+            : [this.network.platforms.indexOf(platform), platform], idx = _a[0], obj = _a[1];
+        var cached = obj.location;
+        Object.defineProperty(obj, 'location', {
+            get: function () { return obj['_location']; },
+            set: function (location) {
+                obj['_location'] = location;
+                var locForPos = _this.map.getZoom() < _this.config.detailedZoom
+                    ? _this.network.getStationCenter(_this.network.stations[obj.station])
+                    : location;
+                var pos = _this.overlay.latLngToSvgPoint(locForPos);
+                // const nw = this.bounds.getNorthWest();
+                // const pos = this.map.latLngToContainerPoint(locForPos).subtract(this.map.latLngToContainerPoint(nw));
+                for (var _i = 0; _i < circles.length; _i++) {
+                    var c = circles[_i];
+                    c.setAttribute('cx', pos.x.toString());
+                    c.setAttribute('cy', pos.y.toString());
+                }
+                _this.whiskers.set(idx, _this.makeWhiskers(idx));
+                _this.platformsOnSVG.set(idx, pos);
+                var spansToChange = new Set(obj.spans);
+                for (var _a = 0, _b = obj.spans; _a < _b.length; _a++) {
+                    var spanIndex = _b[_a];
+                    var span = _this.network.spans[spanIndex];
+                    var srcN = span.source, trgN = span.target;
+                    var neighborIndex = idx === srcN ? trgN : srcN;
+                    _this.whiskers.set(neighborIndex, _this.makeWhiskers(neighborIndex));
+                    _this.network.platforms[neighborIndex].spans.forEach(function (si) { return spansToChange.add(si); });
+                }
+                spansToChange.forEach(function (spanIndex) {
+                    var span = _this.network.spans[spanIndex];
+                    var srcN = span.source, trgN = span.target;
+                    var controlPoints = [_this.platformsOnSVG.get(srcN), _this.whiskers.get(srcN).get(spanIndex), _this.whiskers.get(trgN).get(spanIndex), _this.platformsOnSVG.get(trgN)];
+                    svg.setBezierPath(document.getElementById("op-" + spanIndex), controlPoints);
+                    var inner = document.getElementById("ip-" + spanIndex);
+                    if (inner)
+                        svg.setBezierPath(inner, controlPoints);
+                });
+                var oo = 0;
+                for (var _c = 0, _d = _this.network.transfers; _c < _d.length; _c++) {
+                    var tr_1 = _d[_c];
+                    if (tr_1.source === idx) {
+                        tr_1.source = idx;
+                        ++oo;
+                    }
+                    else if (tr_1.target === idx) {
+                        tr_1.target = idx;
+                        ++oo;
+                    }
+                }
+                console.log(oo);
+            }
+        });
+        obj['_location'] = cached;
+    };
+    MetroMap.prototype.transferToModel = function (transfer, elements) {
+        var _this = this;
+        var cached = [transfer.source, transfer.target];
+        var transferIndex = this.network.transfers.indexOf(transfer);
+        var tagName = elements[0].tagName;
+        ['source', 'target'].forEach(function (prop, pi) {
+            Object.defineProperty(transfer, prop, {
+                get: function () { return transfer['_' + prop]; },
+                set: function (platformIndex) {
+                    transfer['_' + prop] = platformIndex;
+                    var circle = document.getElementById('p-' + platformIndex), circleBorderWidth = parseFloat(getComputedStyle(circle).strokeWidth), circleTotalRadius = +circle.getAttribute('r') / 2 + circleBorderWidth;
+                    var pos = _this.platformsOnSVG.get(platformIndex);
+                    if (tagName === 'line') {
+                        var n = pi + 1;
+                        var otherPos = _this.platformsOnSVG.get(transfer.other(platformIndex));
+                        for (var _i = 0; _i < elements.length; _i++) {
+                            var el = elements[_i];
+                            el.setAttribute('x' + n, pos.x.toString());
+                            el.setAttribute('y' + n, pos.y.toString());
+                        }
+                        var gradient = document.getElementById("g-" + transferIndex);
+                        var dir = prop === 'source' ? otherPos.subtract(pos) : pos.subtract(otherPos);
+                        svg.Gradients.setDirection(gradient, dir);
+                        var circlePortion = circleTotalRadius / pos.distanceTo(otherPos);
+                        svg.Gradients.setOffset(gradient, circlePortion);
+                    }
+                    else if (tagName === 'path') {
+                        var transfers = [];
+                        var transferIndices = [];
+                        for (var i = 0, len = _this.network.transfers.length; i < len; ++i) {
+                            var t = _this.network.transfers[i];
+                            if (transfer.isAdjacent(t)) {
+                                transfers.push(t);
+                                transferIndices.push(i);
+                                if (transfers.length === 3)
+                                    break;
+                            }
+                        }
+                        var circular = new Set();
+                        for (var _a = 0; _a < transfers.length; _a++) {
+                            var tr_2 = transfers[_a];
+                            circular.add(tr_2.source).add(tr_2.target);
+                        }
+                        var circumpoints = Array.from(circular).map(function (i) { return _this.platformsOnSVG.get(i); });
+                        circular.forEach(function (i) { return circumpoints.push(_this.platformsOnSVG.get(i)); });
+                        var outerArcs = transferIndices.map(function (i) { return document.getElementById('ot-' + i); });
+                        var innerArcs = transferIndices.map(function (i) { return document.getElementById('it-' + i); });
+                        for (var i = 0; i < 3; ++i) {
+                            var tr_3 = transfers[i], outer = outerArcs[i], inner = innerArcs[i];
+                            var pos1 = _this.platformsOnSVG.get(tr_3.source), pos2 = _this.platformsOnSVG.get(tr_3.target);
+                            var thirdPos = circumpoints.find(function (pos) { return pos !== pos1 && pos !== pos2; });
+                            svg.setCircularPath(outer, pos1, pos2, thirdPos);
+                            inner.setAttribute('d', outer.getAttribute('d'));
+                            var gradient = document.getElementById("g-" + transferIndices[i]);
+                            svg.Gradients.setDirection(gradient, pos2.subtract(pos1));
+                            var circlePortion = circleTotalRadius / pos1.distanceTo(pos2);
+                            svg.Gradients.setOffset(gradient, circlePortion);
+                        }
+                    }
+                    else {
+                        throw new TypeError('wrong element type for transfer');
+                    }
+                }
+            });
+            transfer['_' + prop] = cached[pi];
+        });
+    };
+    return MetroMap;
+})(mediator_1.default);
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = MetroMap;
+
+},{"./algorithm":59,"./hints":61,"./i18n":62,"./math":63,"./mediator":64,"./network":66,"./res":68,"./svg":69,"./tilelayers":70,"./ui":71,"./util":81,"leaflet":57}],66:[function(require,module,exports){
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var geo_1 = require('./geo');
+var util_1 = require('./util');
+var Platform = (function () {
+    function Platform(name, location, altNames, elevation) {
+        if (altNames === void 0) { altNames = {}; }
+        this.spans = [];
+        this.name = name;
+        this.altNames = altNames;
+        this.location = location;
+        this.elevation = elevation;
+    }
+    return Platform;
+})();
+exports.Platform = Platform;
+;
+var Station = (function () {
+    function Station(platforms) {
+        this.platforms = platforms;
+    }
+    return Station;
+})();
+exports.Station = Station;
+;
+var Edge = (function () {
+    function Edge(source, target) {
+        if (source === target) {
+            throw new Error("source is the same as target: " + source);
+        }
+        this.source = source;
+        this.target = target;
+    }
+    Edge.prototype.isOf = function (v1, v2) {
+        return this.source === v1 && this.target === v2 || this.source === v2 && this.target === v1;
+    };
+    Edge.prototype.has = function (vertex) {
+        return this.source === vertex || this.target === vertex;
+    };
+    Edge.prototype.other = function (vertex) {
+        return this.source === vertex ? this.target : this.target === vertex ? this.source : null;
+    };
+    Edge.prototype.isAdjacent = function (edge) {
+        return this.has(edge.source) || this.has(edge.target);
+    };
+    return Edge;
+})();
+var Transfer = (function (_super) {
+    __extends(Transfer, _super);
+    function Transfer() {
+        _super.apply(this, arguments);
+    }
+    return Transfer;
+})(Edge);
+exports.Transfer = Transfer;
+var Span = (function (_super) {
+    __extends(Span, _super);
+    function Span(source, target, routes) {
+        _super.call(this, source, target);
+        this.routes = routes;
+    }
+    return Span;
+})(Edge);
+exports.Span = Span;
+var Network = (function () {
+    function Network(json) {
+        var newGraph = JSON.parse(json);
+        this.platforms = newGraph.platforms.map(function (p) { return new Platform(p.name, p.location, p.altNames, p.elevation); });
+        this.stations = [];
+        this.lines = newGraph.lines;
+        this.transfers = newGraph.transfers.map(function (s) { return new Transfer(s.source, s.target); });
+        this.spans = newGraph.spans.map(function (s) { return new Span(s.source, s.target, s.routes); });
+        this.routes = newGraph.routes;
+        for (var i = 0, len = this.spans.length; i < len; ++i) {
+            var span = this.spans[i];
+            this.platforms[span.source].spans.push(i);
+            this.platforms[span.target].spans.push(i);
+        }
+        console.time('restore');
+        var transferSet = new Set(this.transfers);
+        var platformsCopy = this.platforms.slice();
+        while (transferSet.size > 0) {
+            var firstTransfer = transferSet.values().next().value;
+            var pls = new Set().add(firstTransfer.source).add(firstTransfer.target);
+            transferSet.delete(firstTransfer);
+            for (var it = pls.values(), p = it.next().value; p !== undefined; p = it.next().value) {
+                var forDeletion = new Set();
+                for (var tit = transferSet.values(), t = tit.next().value; t !== undefined; t = tit.next().value) {
+                    if (t.source === p) {
+                        pls.add(t.target);
+                        forDeletion.add(t);
+                    }
+                    else if (t.target === p) {
+                        pls.add(t.source);
+                        forDeletion.add(t);
+                    }
+                }
+                forDeletion.forEach(function (t) { return transferSet.delete(t); });
+                platformsCopy[p] = undefined;
+            }
+            var plarr = Array.from(pls);
+            this.stations.push(new Station(plarr));
+            //this.stations.push({ name: first.name, altNames: first.altNames, platforms: plarr });
+            for (var _i = 0; _i < plarr.length; _i++) {
+                var p = plarr[_i];
+                this.platforms[p].station = this.stations.length - 1;
+            }
+        }
+        for (var i = 0; i < platformsCopy.length; ++i) {
+            var pl = platformsCopy[i];
+            if (pl === undefined)
+                continue;
+            this.stations.push(new Station([i]));
+            //this.stations.push({ name: pl.name, altNames: pl.altNames, platforms: [i] });
+            this.platforms[i]['station'] = this.stations.length - 1;
+        }
+        console.timeEnd('restore');
+        // const chains: number[][] = [];
+        // for (let i = 0; i < this.routes.length; ++i) {
+        //     const route = this.routes[i];
+        //     const [start, end]: number[] = route as any;
+        //     route['start'] = route['end'] = undefined;
+        //     const starts = this.spans.filter(s => s.source === i),
+        //         ends = this.spans.filter(s => s.target === i);
+        //     for (let span of starts) {
+        //         if (span.target === end) {
+        //             if (span.routes !== undefined) {
+        //                 span.routes.push(i);
+        //             } else {
+        //                 span['routes'] = [i];
+        //             }
+        //             break; //!!!!!!
+        //         }
+        //         let newSpan = span;
+        //         while (true) {
+        //             newSpan = this.spans.filter(s => s.source === newSpan.target);
+        //         }
+        //     }
+        //     const foo: Span[][] = adjSpans.map(el => []);
+        //     for (let s of adjSpans) {
+        //         if (s.source === start && s.target === end || s.source === end && s.target === start) {
+        //             s['routes'] = i;
+        //             continue;
+        //         }
+        //         while (true) {
+        //             if (s.source === )
+        //         }
+        //     }
+        //}
+    }
+    Network.prototype.toJSON = function () {
+        var platforms = JSON.parse(JSON.stringify(this.platforms));
+        var spans = JSON.parse(JSON.stringify(this.spans));
+        var routes = JSON.parse(JSON.stringify(this.routes));
+        for (var _i = 0; _i < platforms.length; _i++) {
+            var platform = platforms[_i];
+            platform['spans'] = platform['station'] = undefined;
+        }
+        // const map = {}; // routeNum -> platforms
+        // for (let span of spans) {
+        //     for (let route of span.routes) {
+        //         const obj = map[route] || {};
+        //         obj[span.source] = !obj[span.source];
+        //         obj[span.target] = !obj[span.target];
+        //         map[route] = obj;
+        //     }
+        //     span.routes = undefined;
+        // }
+        // for (let ri of Object.keys(map)) {
+        //     const route = routes[ri];
+        //     const obj = map[ri];
+        //     const arr = Object.keys(obj).filter(pl => obj[pl]);
+        //     routes[ri]['start'] = arr[0];
+        //     routes[ri]['end'] = arr[1];
+        // }
+        return JSON.stringify({
+            platforms: platforms,
+            transfers: this.transfers,
+            lines: this.lines,
+            spans: spans,
+            routes: routes
+        }, function (k, v) { return k.startsWith('_') ? undefined : v; });
+    };
+    Network.prototype.passingLines = function (platform) {
+        var lines = new Set();
+        for (var _i = 0, _a = platform.spans; _i < _a.length; _i++) {
+            var spanIndex = _a[_i];
+            for (var _b = 0, _c = this.spans[spanIndex].routes; _b < _c.length; _b++) {
+                var routeIndex = _c[_b];
+                lines.add(this.routes[routeIndex].line);
+            }
+        }
+        return lines;
+    };
+    Network.prototype.passingLinesStation = function (station) {
+        var lines = new Set();
+        for (var _i = 0, _a = station.platforms; _i < _a.length; _i++) {
+            var platformIndex = _a[_i];
+            for (var _b = 0, _c = this.platforms[platformIndex].spans; _b < _c.length; _b++) {
+                var spanIndex = _c[_b];
+                for (var _d = 0, _e = this.spans[spanIndex].routes; _d < _e.length; _d++) {
+                    var routeIndex = _e[_d];
+                    lines.add(this.routes[routeIndex].line);
+                }
+            }
+        }
+        return lines;
+    };
+    Network.prototype.getStationCenter = function (station) {
+        var _this = this;
+        return geo_1.getCenter(station.platforms.map(function (i) { return _this.platforms[i].location; }));
+    };
+    Network.prototype.getStationNames = function (station) {
+        var _this = this;
+        return util_1.getPlatformNamesZipped(station.platforms.map(function (i) { return _this.platforms[i]; }));
+    };
+    return Network;
+})();
+exports.Network = Network;
+;
+
+},{"./geo":60,"./util":81}],67:[function(require,module,exports){
+/// <reference path="../typings/tsd.d.ts" />
+function default_1() {
+    if (!('Promise' in window) || !('then' in Promise.prototype) || !('catch' in Promise.prototype)) {
+        console.log('promises not present, using a polyfill');
+        require('es6-promise').polyfill();
+    }
+    if (!('Set' in window) || !('add' in Set.prototype) || !('has' in Set.prototype)) {
+        console.log('set not present, using a polyfill');
+        require('es6-set/implement');
+    }
+    if (!('classList' in HTMLElement.prototype)) {
+        console.log('classlist not present, using a polyfill');
+        require('classlist-polyfill');
+    }
+    if (!Array.prototype.find) {
+        Array.prototype.find = function (predicate) {
+            if (this == null) {
+                throw new TypeError('Array.prototype.find called on null or undefined');
+            }
+            if (typeof predicate !== 'function') {
+                throw new TypeError('predicate must be a function');
+            }
+            var list = Object(this);
+            var length = list.length >>> 0;
+            var thisArg = arguments[1];
+            var value;
+            for (var i = 0; i < length; i++) {
+                value = list[i];
+                if (predicate.call(thisArg, value, i, list)) {
+                    return value;
+                }
+            }
+            return undefined;
+        };
+    }
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = default_1;
+
+},{"classlist-polyfill":2,"es6-promise":44,"es6-set/implement":45}],68:[function(require,module,exports){
+exports.getJSON = function (url) { return fetch(url).then(function (data) { return data.json(); }); };
+exports.getContent = function (url) { return fetch(url).then(function (data) { return data.text(); }); };
+exports.getConfig = function () { return fetch('res/mapconfig.json').then(function (data) { return data.json(); }); };
+function getStyleRulesAsText() {
+    var styles = document.styleSheets;
+    var text = '';
+    for (var i = 0, len = styles.length; i < len; ++i) {
+        var sheet = styles[i];
+        console.log(sheet.cssText);
+        var rules = sheet.cssRules;
+        // cross-origin style sheets don't have rules
+        if (!rules) {
+            console.log(sheet);
+            continue;
+        }
+        for (var i_1 = 0; i_1 < rules.length; ++i_1) {
+            text += rules[i_1].cssText;
+        }
+    }
+    console.log('css text ready');
+    return text;
+}
+exports.getStyleRulesAsText = getStyleRulesAsText;
+exports.getLineRules = function () { return new Promise(function (resolve) {
+    var link = document.querySelector("[href$=\"css/scheme.css\"]");
+    var sheet = link.sheet;
+    if (sheet && sheet.cssRules) {
+        resolve(sheet);
+    }
+    else {
+        link.onload = function (e) { return resolve(sheet); };
+    }
+}).then(function (styleSheet) {
+    var lineRules = new Map();
+    for (var _i = 0, _a = styleSheet.cssRules; _i < _a.length; _i++) {
+        var rule = _a[_i];
+        if (!(rule instanceof CSSStyleRule))
+            continue;
+        var tokens = rule.selectorText.match(/^.(M\d+|L|E)$/);
+        if (tokens && tokens[1]) {
+            lineRules.set(tokens[1], rule.style);
+        }
+        else if (rule.selectorText === '#paths-outer > .L') {
+            lineRules.set('light-rail-path', rule.style);
+        }
+    }
+    console.log(lineRules);
+    return lineRules;
+}); };
+
+},{}],69:[function(require,module,exports){
+/// <reference path="../typings/tsd.d.ts" />
+var L = require('leaflet');
+var math = require('./math');
+function createSVGElement(tagName) {
+    return document.createElementNS('http://www.w3.org/2000/svg', tagName);
+}
+exports.createSVGElement = createSVGElement;
+function makeCircle(position, radius) {
+    var circle = createSVGElement('circle');
+    circle.setAttribute('r', radius.toString());
+    circle.setAttribute('cy', position.y.toString());
+    circle.setAttribute('cx', position.x.toString());
+    return circle;
+}
+exports.makeCircle = makeCircle;
+function makeLine(start, end) {
+    var line = createSVGElement('line');
+    line.setAttribute('x1', start.x.toString());
+    line.setAttribute('y1', start.y.toString());
+    line.setAttribute('x2', end.x.toString());
+    line.setAttribute('y2', end.y.toString());
+    return line;
+}
+exports.makeLine = makeLine;
+function makeArc(start, end, third) {
+    var path = createSVGElement('path');
+    setCircularPath(path, start, end, third);
+    return path;
+}
+exports.makeArc = makeArc;
+function getBezierPathPoints(path) {
+    var points = [], re = /\D([\d\.]+).*?,.*?([\d\.]+)/g, d = path.getAttribute('d');
+    var m;
+    while ((m = re.exec(d)) !== null) {
+        points.push(new L.Point(Number(m[1]), Number(m[2])));
+    }
+    return points;
+}
+exports.getBezierPathPoints = getBezierPathPoints;
+function setBezierPath(el, controlPoints) {
+    if (controlPoints.length !== 4) {
+        throw new Error('there should be 4 points');
+    }
+    var path = createSVGElement('path');
+    var s = ['M'].concat(controlPoints.map(function (pt) { return (pt.x + "," + pt.y); }));
+    s.splice(2, 0, 'C');
+    el.setAttribute('d', s.join(' '));
+}
+exports.setBezierPath = setBezierPath;
+function getCircularPath(path) {
+    var points = [], re = /\D([\d\.]+)/g, d = path.getAttribute('d');
+    var m;
+    while ((m = re.exec(d)) !== null) {
+        points.push(Number(m[1]));
+    }
+    return points;
+}
+exports.getCircularPath = getCircularPath;
+function setCircularPath(el, start, end, third) {
+    var center = math.getCircumcenter([start, end, third]);
+    var startAngle = Math.atan2(start.y - center.y, start.x - center.x), endAngle = Math.atan2(end.y - center.y, end.x - center.x);
+    //const thirdAngle = Math.atan2(third.y - center.y, third.x - center.x);
+    var diff = endAngle - startAngle;
+    var large = diff <= Math.PI || diff > -Math.PI ? 0 : 1;
+    var u = start.subtract(center), v = end.subtract(center);
+    var sweep = u.x * v.y - v.x * u.y < 0 ? 0 : 1;
+    var dot = math.dot(third.subtract(start), third.subtract(end));
+    if (dot < 0) {
+        sweep = 1 - sweep;
+        large = 1 - large;
+    }
+    var radius = center.distanceTo(start);
+    var d = [
+        'M', start.x, start.y,
+        'A', radius, radius, 0, large, sweep, end.x, end.y
+    ].join(' ');
+    el.setAttribute('d', d);
+}
+exports.setCircularPath = setCircularPath;
+function makeCubicBezier(controlPoints) {
+    var path = createSVGElement('path');
+    setBezierPath(path, controlPoints);
+    return path;
+}
+exports.makeCubicBezier = makeCubicBezier;
+function makeTransferRing(center, radius) {
+    var outer = makeCircle(center, radius);
+    var inner = outer.cloneNode(true);
+    return [outer, inner];
+}
+exports.makeTransferRing = makeTransferRing;
+function makeTransferArc(start, end, third) {
+    var outer = makeArc(start, end, third);
+    var inner = outer.cloneNode(true);
+    return [outer, inner];
+}
+exports.makeTransferArc = makeTransferArc;
+function makeTransferLine(start, end) {
+    // gradient disappearing fix (maybe use rectangle?)
+    var tg = end.clone();
+    if (start.x === end.x) {
+        tg.x += 0.01;
+    }
+    else if (start.y === end.y) {
+        tg.y += 0.01;
+    }
+    return [makeLine(start, tg), makeLine(start, tg)];
+}
+exports.makeTransferLine = makeTransferLine;
+function circleOffset(circle) {
+    var c = new L.Point(+circle.getAttribute('cx'), +circle.getAttribute('cy')), iR = ~~circle.getAttribute('r'), offset = new L.Point(0 + iR, 4 + iR);
+    return c.subtract(offset);
+}
+exports.circleOffset = circleOffset;
+var Scale;
+(function (Scale) {
+    function scaleCircle(circle, scaleFactor, asAttribute) {
+        if (asAttribute === void 0) { asAttribute = false; }
+        if (!asAttribute) {
+            circle.style.transform = "scale(" + scaleFactor + ")";
+            return;
+        }
+        initialCircles.add(circle);
+        // const t = scaleFactor - 1,
+        //     tx = -circle.getAttribute('cx') * t,
+        //     ty = -circle.getAttribute('cy') * t;
+        //circle.setAttribute('transform', `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${tx}, ${ty})`);
+        var oldR = circle.getAttribute('r');
+        circle.setAttribute('data-r', oldR);
+        circle.setAttribute('r', (+oldR * scaleFactor).toString());
+    }
+    Scale.scaleCircle = scaleCircle;
+    var initialCircles = new Set();
+    var initialTransfers = new Set();
+    function scaleStation(nwPlatforms, station, scaleFactor, nwTransfers) {
+        var transferOuterStrokeWidth = parseFloat(document.getElementById('transfers-outer').style.strokeWidth), transferInnerStrokeWidth = parseFloat(document.getElementById('transfers-inner').style.strokeWidth);
+        for (var _i = 0, _a = station.platforms; _i < _a.length; _i++) {
+            var p = _a[_i];
+            var circle = document.getElementById('p-' + p);
+            scaleCircle(circle, scaleFactor, true);
+            if (nwTransfers === undefined || station.platforms.length < 2)
+                continue;
+            for (var i = 0; i < nwTransfers.length; ++i) {
+                var tr = nwTransfers[i];
+                if (tr.source === p || tr.target === p) {
+                    var outer = document.getElementById('ot-' + i);
+                    var inner = document.getElementById('it-' + i);
+                    initialTransfers.add(outer);
+                    initialTransfers.add(inner);
+                    outer.style.strokeWidth = transferOuterStrokeWidth * scaleFactor + 'px';
+                    inner.style.strokeWidth = transferInnerStrokeWidth * scaleFactor + 'px';
+                }
+            }
+        }
+    }
+    Scale.scaleStation = scaleStation;
+    function unscaleAll() {
+        initialCircles.forEach(function (circle) { return circle.setAttribute('r', circle.getAttribute('data-r')); });
+        //initialCircles.forEach(circle => circle.removeAttribute('transform'));
+        initialTransfers.forEach(function (tr) { return tr.style.strokeWidth = null; });
+        initialTransfers.clear();
+        initialCircles.clear();
+    }
+    Scale.unscaleAll = unscaleAll;
+})(Scale = exports.Scale || (exports.Scale = {}));
+var Filters;
+(function (Filters) {
+    function makeDrop() {
+        var filter = createSVGElement('filter');
+        filter.id = 'shadow';
+        filter.setAttribute('width', '200%');
+        filter.setAttribute('height', '200%');
+        filter.innerHTML = "\n            <feOffset result=\"offOut\" in=\"SourceAlpha\" dx=\"0\" dy=\"4\" />\n            <feColorMatrix result=\"matrixOut\" in=\"offOut\" type=\"matrix\" values=\n                \"0 0 0 0   0\n                0 0 0 0   0\n                0 0 0 0   0\n                0 0 0 0.5 0\"/>\n            <feGaussianBlur result=\"blurOut\" in=\"matrixOut\" stdDeviation=\"2\" />\n\n            <feBlend in=\"SourceGraphic\" in2=\"blurOut\" mode=\"normal\" />\n        ";
+        return filter;
+    }
+    Filters.makeDrop = makeDrop;
+    function makeGlow() {
+        var filter = createSVGElement('filter');
+        filter.id = 'black-glow';
+        filter.innerHTML = "<feColorMatrix type=\"matrix\" values=\n                \"0 0 0 0   0\n                0 0 0 0   0\n                0 0 0 0   0\n                0 0 0 0.3 0\"/>\n            <feGaussianBlur stdDeviation=\"2.5\" result=\"coloredBlur\"/>\n            <feMerge>\n                <feMergeNode in=\"coloredBlur\"/>\n                <feMergeNode in=\"SourceGraphic\"/>\n            </feMerge>";
+        return filter;
+    }
+    Filters.makeGlow = makeGlow;
+    function makeOpacity() {
+        var filter = createSVGElement('filter');
+        filter.id = 'opacity';
+        filter.innerHTML = "<feComponentTransfer>\n            <feFuncA type=\"table\" tableValues=\"0 0.5\">\n        </feComponentTransfer>";
+        return filter;
+    }
+    Filters.makeOpacity = makeOpacity;
+    function makeGray() {
+        var filter = createSVGElement('filter');
+        filter.id = 'gray';
+        filter.innerHTML = "<feColorMatrix type=\"matrix\"\n               values=\"0.2126 0.7152 0.0722 0 0\n                       0.2126 0.7152 0.0722 0 0\n                       0.2126 0.7152 0.0722 0 0\n                       0 0 0 1 0\"/>";
+        return filter;
+    }
+    Filters.makeGray = makeGray;
+    function appendAll(defs) {
+        defs.appendChild(makeDrop());
+        defs.appendChild(makeGlow());
+        defs.appendChild(makeOpacity());
+        defs.appendChild(makeGray());
+    }
+    Filters.appendAll = appendAll;
+    function applyDrop(path) {
+        // fixing disappearing lines
+        var box = path.getBoundingClientRect();
+        var strokeWidth = parseFloat(getComputedStyle(path).strokeWidth) * 2;
+        if (box.height >= strokeWidth && box.width >= strokeWidth) {
+            path.style.filter = 'url(#black-glow)';
+        }
+    }
+    Filters.applyDrop = applyDrop;
+})(Filters = exports.Filters || (exports.Filters = {}));
+var Gradients;
+(function (Gradients) {
+    //let defs; 
+    function makeUndirectedLinear(colors) {
+        var gradient = createSVGElement('linearGradient');
+        if ('innerHTML' in gradient) {
+            gradient['innerHTML'] = "<stop style=\"stop-color:" + colors[0] + "\" /><stop style=\"stop-color:" + colors[1] + "\" />";
+            return gradient;
+        }
+        else {
+            var from = createSVGElement('stop');
+            from.style.stopColor = colors[0];
+            var to = createSVGElement('stop');
+            to.style.stopColor = colors[1];
+            gradient.appendChild(from);
+            gradient.appendChild(to);
+        }
+        return gradient;
+    }
+    Gradients.makeUndirectedLinear = makeUndirectedLinear;
+    function makeLinear(vector, colors, offset) {
+        if (offset === void 0) { offset = 0; }
+        var gradient = makeUndirectedLinear(colors);
+        setOffset(gradient, offset);
+        setDirection(gradient, vector);
+        return gradient;
+    }
+    Gradients.makeLinear = makeLinear;
+    function setDirection(gradient, vector) {
+        var coors = math.vectorToGradCoordinates(vector);
+        gradient.setAttribute('x1', (1 - coors.x) * 50 + '%');
+        gradient.setAttribute('y1', (1 - coors.y) * 50 + '%');
+        gradient.setAttribute('x2', (1 + coors.x) * 50 + '%');
+        gradient.setAttribute('y2', (1 + coors.y) * 50 + '%');
+    }
+    Gradients.setDirection = setDirection;
+    function setOffset(gradient, offset) {
+        gradient.firstChild.setAttribute('offset', offset.toString());
+        gradient.lastChild.setAttribute('offset', (1 - offset).toString());
+    }
+    Gradients.setOffset = setOffset;
+})(Gradients = exports.Gradients || (exports.Gradients = {}));
+var Animation;
+(function (Animation) {
+    var animationsAllowed = true;
+    var currentAnimation = null;
+    function terminateAnimations() {
+        if (currentAnimation === null) {
+            return Promise.resolve(true);
+        }
+        animationsAllowed = false;
+        return currentAnimation;
+    }
+    Animation.terminateAnimations = terminateAnimations;
+    function animateRoute(network, platforms, edges, speed) {
+        if (speed === void 0) { speed = 1; }
+        var pulsate = L.Browser.webkit && !L.Browser.mobile;
+        currentAnimation = terminateAnimations().then(function (current) { return new Promise(function (resolve, reject) { return (function animateSpan(i) {
+            if (!animationsAllowed) {
+                return resolve(false);
+            }
+            var circle = document.getElementById('p-' + platforms[i]);
+            circle.style.opacity = null;
+            if (pulsate) {
+                pulsateCircle(circle, i < edges.length ? 1.5 : 3, 200);
+            }
+            if (i === edges.length) {
+                return resolve(true);
+            }
+            var outerOld = document.getElementById('o' + edges[i]);
+            if (outerOld === null) {
+                return animateSpan(i + 1);
+            }
+            var innerOld = document.getElementById('i' + edges[i]);
+            var outer = outerOld.cloneNode(true);
+            var inner = innerOld === null ? null : innerOld.cloneNode(true);
+            document.getElementById('paths-outer').appendChild(outer);
+            if (inner) {
+                document.getElementById('paths-inner').appendChild(inner);
+            }
+            var length;
+            if (outer instanceof SVGPathElement) {
+                length = outer.getTotalLength();
+            }
+            else {
+                var from = new L.Point(+outer.getAttribute('x1'), +outer.getAttribute('y1')), to = new L.Point(+outer.getAttribute('x2'), +outer.getAttribute('y2'));
+                length = from.distanceTo(to);
+            }
+            var idParts = edges[i].split('-');
+            var edge = network[idParts[0] === 'p' ? 'spans' : 'transfers'][+idParts[1]];
+            var initialOffset = edge.source === platforms[i] ? length : -length;
+            var duration = length / speed;
+            Filters.applyDrop(outer);
+            for (var _i = 0, _a = (inner === null ? [outer] : [outer, inner]); _i < _a.length; _i++) {
+                var path = _a[_i];
+                var pathStyle = path.style;
+                pathStyle.transition = null;
+                pathStyle.opacity = null;
+                pathStyle.strokeDasharray = length + ' ' + length;
+                pathStyle.strokeDashoffset = initialOffset.toString();
+                path.getBoundingClientRect();
+                pathStyle.transition = "stroke-dashoffset " + duration + "ms linear";
+                pathStyle.strokeDashoffset = '0';
+            }
+            outer.addEventListener('transitionend', function (e) {
+                outerOld.style.opacity = null;
+                if (outer.id.charAt(1) !== 't') {
+                    Filters.applyDrop(outerOld);
+                }
+                outer.parentNode.removeChild(outer);
+                if (inner) {
+                    innerOld.style.opacity = null;
+                    inner.parentNode.removeChild(inner);
+                }
+                animateSpan(i + 1);
+            });
+            //console.log(outer);
+        })(0); }).then(function (finished) {
+            currentAnimation = null;
+            animationsAllowed = true;
+            return finished;
+        }); });
+        return currentAnimation;
+    }
+    Animation.animateRoute = animateRoute;
+    function pulsateCircle(circle, scaleFactor, duration) {
+        circle.getBoundingClientRect();
+        circle.style.transition = "transform " + duration / 2 + "ms linear";
+        Scale.scaleCircle(circle, scaleFactor);
+        circle.addEventListener('transitionend', function foo(e) {
+            this.removeEventListener('transitionend', foo);
+            this.style.transform = 'scale(1)';
+            this.addEventListener('transitionend', function bar(e) {
+                this.removeEventListener('transitionend', bar);
+                this.style.transition = null;
+                this.style.transform = null;
+            });
+        });
+    }
+    Animation.pulsateCircle = pulsateCircle;
+})(Animation = exports.Animation || (exports.Animation = {}));
+
+},{"./math":63,"leaflet":57}],70:[function(require,module,exports){
+/// <reference path="../typings/tsd.d.ts" />
+var L = require('leaflet');
+exports.mapbox = new L.TileLayer('https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png', {
+    //id: 'inker.mlo91c41',
+    detectRetina: false,
+    //reuseTiles: true,
+    bounds: null,
+    attribution: "Map data &copy; <a href=\"https://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://mapbox.com\">Mapbox</a>"
+});
+exports.mapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+});
+exports.osmFrance = L.tileLayer('http://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+    attribution: '&copy; Openstreetmap France | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+});
+exports.openMapSurfer = new L.TileLayer('https://openmapsurfer.uni-hd.de/tiles/roads/x={x}&y={y}&z={z}', {
+    detectRetina: true,
+    //reuseTiles: true,
+    attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="https://server.ts.openstreetmap.org/copyright">OpenStreetMap</a>'
+});
+exports.hyddaBase = L.tileLayer('https://{s}.tile.openstreetmap.se/hydda/base/{z}/{x}/{y}.png', {
+    detectRetina: true,
+    attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://server.ts.openstreetmap.org/copyright">OpenStreetMap</a>'
+});
+exports.esriGrey = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+    detectRetina: true,
+});
+exports.cartoDB = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+});
+exports.cartoDBNoLabels = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+});
+exports.wikimapia = L.tileLayer('http://i{hash}.wikimapia.org/?x={x}&y={y}&zoom={z}', {
+    hash: function (data) { return data.x % 4 + (data.y % 4) * 4; }
+});
+
+},{"leaflet":57}],71:[function(require,module,exports){
+var alertify = require('alertifyjs');
+var mapeditor_1 = require('./ui/mapeditor');
+exports.MapEditor = mapeditor_1.default;
+var faq_1 = require('./ui/faq');
+exports.FAQ = faq_1.default;
+var textplate_1 = require('./ui/textplate');
+exports.TextPlate = textplate_1.default;
+var routeplanner_1 = require('./ui/routeplanner');
+exports.RoutePlanner = routeplanner_1.default;
+var contextmenu_1 = require('./ui/contextmenu');
+exports.ContextMenu = contextmenu_1.default;
+var distancemeasure_1 = require('./ui/distancemeasure');
+exports.DistanceMeasure = distancemeasure_1.default;
+var mapoverlay_1 = require('./ui/mapoverlay');
+exports.MapOverlay = mapoverlay_1.default;
+var Icons = require('./ui/icons');
+exports.Icons = Icons;
+var L = require('leaflet');
+var geo_1 = require('./geo');
+var i18n_1 = require('./i18n');
+function platformRenameDialog(network, platform) {
+    var ru = platform.name, _a = platform.altNames, fi = _a.fi, en = _a.en;
+    var names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru];
+    var nameString = names.join('|');
+    alertify.prompt((_b = ["New name"], _b.raw = ["New name"], i18n_1.tr(_b)), nameString, function (okev, val) {
+        var newNames = val.split('|');
+        platform.name = newNames[0], platform.altNames['fi'] = newNames[1], platform.altNames['en'] = newNames[2];
+        if (val === nameString) {
+            return alertify.warning((_a = ["Name was not changed"], _a.raw = ["Name was not changed"], i18n_1.tr(_a)));
+        }
+        var oldNamesStr = names.slice(1).join(', '), newNamesStr = newNames.slice(1).join(', ');
+        alertify.success((_b = ["", " (", ") renamed to ", " (", ")"], _b.raw = ["", " (", ") renamed to ", " (", ")"], i18n_1.tr(_b, ru, oldNamesStr, newNames[0], newNamesStr)));
+        var station = network.stations[platform.station];
+        if (station.platforms.length < 2)
+            return;
+        alertify.confirm((_c = ["Rename the entire station?"], _c.raw = ["Rename the entire station?"], i18n_1.tr(_c)), function () {
+            for (var _i = 0, _a = station.platforms; _i < _a.length; _i++) {
+                var i = _a[_i];
+                var p = network.platforms[i];
+                p.name = newNames[0], p.altNames['fi'] = newNames[1], p.altNames['en'] = newNames[2];
+            }
+            alertify.success((_b = ["The entire station was renamed to ", ""], _b.raw = ["The entire station was renamed to ", ""], i18n_1.tr(_b, val)));
+            var _b;
+        });
+        var _a, _b, _c;
+    }, function () { return alertify.warning((_a = ["Name change cancelled"], _a.raw = ["Name change cancelled"], i18n_1.tr(_a))); var _a; });
+    var _b;
+}
+exports.platformRenameDialog = platformRenameDialog;
+function addLayerSwitcher(map, layers) {
+    var currentLayerIndex = 0;
+    console.log(layers.length);
+    addEventListener('keydown', function (e) {
+        if (!e.ctrlKey || e.keyCode !== 76)
+            return;
+        e.preventDefault();
+        map.removeLayer(layers[currentLayerIndex]);
+        if (++currentLayerIndex === layers.length)
+            currentLayerIndex = 0;
+        map.addLayer(layers[currentLayerIndex]);
+        map.invalidateSize(false);
+    });
+}
+exports.addLayerSwitcher = addLayerSwitcher;
+function drawZones(metroMap) {
+    var network = metroMap.getNetwork();
+    var map = metroMap.getMap();
+    var metroPoints = network.platforms.filter(function (p) { return network.routes[network.spans[p.spans[0]].routes[0]].line.startsWith('M'); }).map(function (p) { return p.location; });
+    var fitnessFunc = function (pt) { return metroPoints.reduce(function (prev, cur) { return prev + pt.distanceTo(cur); }, 0); };
+    var poly = L.polyline([], { color: 'red' });
+    var metroMean = geo_1.calculateGeoMean(metroPoints, fitnessFunc, 1, function (cur) { return poly.addLatLng(cur); });
+    map.addLayer(poly);
+    for (var i = 5000; i < 20000; i += 5000) {
+        L.circle(metroMean, i - 250, { weight: 1 }).addTo(map);
+        L.circle(metroMean, i + 250, { weight: 1 }).addTo(map);
+    }
+    var ePoints = network.platforms.filter(function (p) { return network.routes[network.spans[p.spans[0]].routes[0]].line.startsWith('E'); }).map(function (p) { return p.location; });
+    var eMean = network.platforms.find(function (p) { return p.name === 'Glavnyj voxal' && network.routes[network.spans[p.spans[0]].routes[0]].line.startsWith('E'); }).location;
+    L.circle(eMean, 30000).addTo(map);
+    L.circle(eMean, 45000).addTo(map);
+}
+exports.drawZones = drawZones;
+function cacheIcons(map, markers) {
+    for (var _i = 0; _i < markers.length; _i++) {
+        var marker = markers[_i];
+        map.addLayer(marker).removeLayer(marker);
+    }
+}
+exports.cacheIcons = cacheIcons;
+
+},{"./geo":60,"./i18n":62,"./ui/contextmenu":72,"./ui/distancemeasure":73,"./ui/faq":74,"./ui/icons":75,"./ui/mapeditor":76,"./ui/mapoverlay":77,"./ui/routeplanner":78,"./ui/textplate":79,"alertifyjs":1,"leaflet":57}],72:[function(require,module,exports){
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+/// <reference path="../../typings/tsd.d.ts" />
+var L = require('leaflet');
+var widget_1 = require('./widget');
+var util = require('../util');
+var res_1 = require('../res');
+var i18n_1 = require('../i18n');
+var ContextMenu = (function (_super) {
+    __extends(ContextMenu, _super);
+    function ContextMenu(url) {
+        var _this = this;
+        _super.call(this);
+        this._whenAvailable = res_1.getJSON(url).then(function (json) {
+            console.log('adding context menu');
+            _this.items = json;
+            //this._extraItems = new Map();
+            _this.container = document.createElement('div');
+            _this.container.id = 'contextmenu';
+            _this.container.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+                e.target.click();
+            });
+            console.log('context menu ready');
+        });
+    }
+    ContextMenu.prototype.addTo = function (metroMap) {
+        var _this = this;
+        this.metroMap = metroMap;
+        var map = metroMap.getMap();
+        if (map === undefined) {
+            throw new Error('cannot add map editor to metro map: leaflet map is missing');
+        }
+        var mapPane = map.getPanes().mapPane, mapContainer = map.getContainer(), listener = function (e) { return _this.handler(e); }, cancelListener = function (e) { return _this.hide(); };
+        this._whenAvailable.then(function (menu) {
+            mapPane.addEventListener('contextmenu', listener, false);
+            //objectsPane.addEventListener('contextmenu', listener, true); // 'true' prevents propagation
+            mapContainer.addEventListener('mousedown', cancelListener);
+            mapContainer.addEventListener('touchstart', cancelListener);
+            if (!L.Browser.mobile) {
+                map.on('movestart', cancelListener);
+            }
+            document.body.appendChild(_this.container);
+        });
+    };
+    ContextMenu.prototype.handler = function (event) {
+        var _this = this;
+        event.preventDefault();
+        console.log('target', event.target, event.target['parentNode']);
+        util.removeAllChildren(this.container);
+        for (var _i = 0, _a = this.items; _i < _a.length; _i++) {
+            var item = _a[_i];
+            if (item.predicate !== undefined && !item.predicate(event.target)) {
+                console.log(item.predicate(event.target));
+                continue;
+            }
+            var cell = document.createElement('div');
+            if (item.disabled) {
+                cell.setAttribute('disabled', '');
+            }
+            else {
+                cell.setAttribute('data-event', item.event);
+            }
+            cell.textContent = i18n_1.translate(item.text);
+            this.container.appendChild(cell);
+        }
+        // defined here so that the marker gets set here (TODO: fix later)
+        this.container.onclick = function (e) {
+            console.log(e);
+            var cell = e.target;
+            var eventType = cell.getAttribute('data-event');
+            if (eventType) {
+                _this.hide();
+                var me = new MouseEvent(eventType, { clientX: clientX, clientY: clientY, relatedTarget: event.target });
+                _this.metroMap.receiveEvent(me);
+            }
+        };
+        var _b = this.container.getBoundingClientRect(), width = _b.width, height = _b.height, _c = document.documentElement, clientWidth = _c.clientWidth, clientHeight = _c.clientHeight, clientX = event.clientX, clientY = event.clientY, tx = clientX + width > clientWidth ? clientWidth - width : clientX, ty = clientY + height > clientHeight ? clientY - height : clientY;
+        this.container.style.transform = "translate(" + tx + "px, " + ty + "px)";
+        this.show();
+    };
+    ContextMenu.prototype.insertItem = function (item, index) {
+        if (index === undefined || index < 0) {
+            this.items.push(item);
+        }
+        else {
+            this.items.splice(index, 0, item);
+        }
+    };
+    ContextMenu.prototype.removeItem = function (event, all) {
+        if (all === void 0) { all = false; }
+        if (all) {
+            this.items = this.items.filter(function (item) { return item.event !== event; });
+            return;
+        }
+        var index = this.items.findIndex(function (item) { return item.event === event; });
+        if (index === undefined || index < 0)
+            return;
+        this.items.splice(index, 1);
+    };
+    ContextMenu.prototype.show = function () {
+        this.container.style.visibility = null;
+        if (L.Browser.mobile) {
+            this.metroMap.getMap().dragging.disable();
+        }
+    };
+    ContextMenu.prototype.hide = function () {
+        this.container.style.visibility = 'hidden';
+        if (L.Browser.mobile) {
+            this.metroMap.getMap().dragging.enable();
+        }
+    };
+    return ContextMenu;
+})(widget_1.DeferredWidget);
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = ContextMenu;
+
+},{"../i18n":62,"../res":68,"../util":81,"./widget":80,"leaflet":57}],73:[function(require,module,exports){
+/// <reference path="../../typings/tsd.d.ts" />
+var L = require('leaflet');
+var util = require('../util');
+var ui_1 = require('../ui');
+var DistanceMeasure = (function () {
+    function DistanceMeasure(metroMap) {
+        var _this = this;
+        this.polyline = new L.Polyline([], { color: 'red' });
+        this.markers = new L.FeatureGroup().on('layeradd layerremove', function (e) { return util.fixFontRendering(); });
+        this.dashedLine = new L.Polyline([], { color: 'red', opacity: 0.5, dashArray: '0,9' });
+        this.makeMarker = function (e) {
+            if (e.originalEvent.button !== 0)
+                return;
+            var map = _this.metroMap.getMap();
+            var marker = new L.Marker(e.latlng, { draggable: true })
+                .setIcon(ui_1.Icons.Circle)
+                .bindPopup('')
+                .on('mouseover', function (e) { return _this.removeDashedLine(); })
+                .on('mouseout', function (e) { return _this.addDashedLine(); })
+                .on('drag', function (e) { return _this.updateDistances(); })
+                .on('click', _this.onCircleClick.bind(_this));
+            // const el = { lang: { ru: 'Udaliť izmerenia', en: 'Delete measurements' } };
+            //this.metroMap.contextMenu.extraItems.set(circle, new Map().set('deletemeasurements', el));
+            _this.markers.addLayer(marker);
+            _this.updateDistances();
+        };
+        this.resetDashedLine = function (e) {
+            _this.dashedLine.getLatLngs()[1] = e.latlng;
+            _this.dashedLine.redraw();
+        };
+        this.metroMap = metroMap;
+        var map = metroMap.getMap();
+        var measureListener = function (e) { return _this.measureDistance(util.mouseToLatLng(map, e)); };
+        metroMap.addListener('measuredistance', measureListener);
+        metroMap.addListener('deletemeasurements', function (e) { return _this.deleteMeasurements(); });
+    }
+    DistanceMeasure.prototype.updateDistances = function () {
+        var latlngs = this.polyline.getLatLngs(), markers = this.markers.getLayers(), nMarkers = markers.length;
+        latlngs[0] = markers[0].setPopupContent('0').getLatLng();
+        for (var i = 1, distance = 0; i < nMarkers; ++i) {
+            var currentLatLng = markers[i].getLatLng();
+            latlngs[i] = currentLatLng;
+            distance += markers[i - 1].getLatLng().distanceTo(currentLatLng);
+            var d = Math.round(distance);
+            var str = d < 1000 ? d + ' m' : (d < 10000 ? d / 1000 : Math.round(d / 10) / 100) + ' km';
+            markers[i].setPopupContent(str);
+        }
+        if (latlngs.length > nMarkers) {
+            latlngs.length = nMarkers;
+        }
+        this.dashedLine.getLatLngs()[0] = latlngs[latlngs.length - 1];
+        this.polyline.redraw();
+        if (nMarkers > 1) {
+            markers[nMarkers - 1].openPopup();
+        }
+    };
+    DistanceMeasure.prototype.addDashedLine = function () {
+        this.metroMap.getMap()
+            .addLayer(this.dashedLine)
+            .on('mousemove', this.resetDashedLine);
+    };
+    DistanceMeasure.prototype.removeDashedLine = function () {
+        this.metroMap.getMap()
+            .off('mousemove', this.resetDashedLine)
+            .removeLayer(this.dashedLine);
+    };
+    DistanceMeasure.prototype.onCircleClick = function (e) {
+        if (e.originalEvent.button !== 0)
+            return;
+        this.markers.removeLayer(e.target);
+        if (this.markers.getLayers().length === 0) {
+            this.metroMap.receiveEvent(new MouseEvent('deletemeasurements'));
+            return;
+        }
+        this.updateDistances();
+        if (!this.metroMap.getMap().hasLayer(this.dashedLine)) {
+            this.addDashedLine();
+        }
+    };
+    DistanceMeasure.prototype.measureDistance = function (initialCoordinate) {
+        var _this = this;
+        this.dashedLine.addLatLng(initialCoordinate).addLatLng(initialCoordinate);
+        this.metroMap.getMap()
+            .addLayer(this.polyline.setLatLngs([]))
+            .addLayer(this.markers)
+            .addLayer(this.dashedLine.setLatLngs([]))
+            .on('click', this.makeMarker)
+            .on('mousemove', this.resetDashedLine)
+            .fire('click', { latlng: initialCoordinate, originalEvent: { button: 0 } });
+        util.onceEscapePress(function (e) { return _this.metroMap.receiveEvent(new MouseEvent('deletemeasurements')); });
+    };
+    DistanceMeasure.prototype.deleteMeasurements = function () {
+        this.metroMap.getMap()
+            .removeLayer(this.polyline)
+            .removeLayer(this.markers.clearLayers())
+            .removeLayer(this.dashedLine)
+            .off('mousemove', this.resetDashedLine)
+            .off('click', this.makeMarker);
+    };
+    return DistanceMeasure;
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = DistanceMeasure;
+
+},{"../ui":71,"../util":81,"leaflet":57}],74:[function(require,module,exports){
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+/// <reference path="../../typings/tsd.d.ts" />
+var Hammer = require('hammerjs');
+var widget_1 = require('./widget');
+var util_1 = require('../util');
+var FAQ = (function (_super) {
+    __extends(FAQ, _super);
+    function FAQ(faqDataUrl) {
+        var _this = this;
+        _super.call(this);
+        var promise = fetch(faqDataUrl).then(function (data) { return data.json(); });
+        var btn = document.createElement('button');
+        btn.id = 'faq-button';
+        btn.textContent = 'FAQ';
+        btn.classList.add('leaflet-control');
+        btn.addEventListener('click', function (e) { return _this.showFAQ(); });
+        this.button = btn;
+        this.card = document.createElement('div');
+        this.card.id = 'faq-card';
+        if (L.Browser.mobile) {
+            new Hammer(this.card).on('swipeleft swiperight', function (e) { return _this.hideFAQ(); });
+        }
+        var urlRe = /\[\[(.+?)\|(.*?)\]\]/g;
+        var replacement = '<a href=\"$1\" target=\"_blank\">$2</a>';
+        var qa2html = function (qa) { return ("<div><span class=\"question\">" + qa.q + "</span><span class=\"answer\">" + qa.a + "</span></div>"); };
+        this._whenAvailable = promise.then(function (data) {
+            _this.card.innerHTML += data.faq.map(qa2html).join('').replace(urlRe, replacement);
+        });
+    }
+    FAQ.prototype.addTo = function (metroMap) {
+        var _this = this;
+        this.map = metroMap.getMap();
+        this._whenAvailable.then(function (faq) {
+            document.querySelector('.leaflet-right.leaflet-top').appendChild(_this.button);
+            document.body.appendChild(_this.card);
+        });
+    };
+    FAQ.prototype.showFAQ = function () {
+        var _this = this;
+        var cardStyle = this.card.style;
+        cardStyle.display = 'inline';
+        cardStyle.transform = 'scale(0.1)';
+        cardStyle.opacity = '0';
+        this.card.getBoundingClientRect();
+        cardStyle.transform = null;
+        cardStyle.opacity = null;
+        this.button.disabled = true;
+        if (!L.Browser.mobile) {
+            this.map.getContainer().classList.add('dimmed');
+            this.map.once('mousedown', function (e) { return _this.hideFAQ(); });
+            util_1.once(window, 'keydown', function (e) {
+                if (e.keyCode !== 27)
+                    return;
+                _this.map.fireEvent('mousedown');
+            });
+        }
+    };
+    FAQ.prototype.hideFAQ = function () {
+        var _this = this;
+        console.log('hiding');
+        this.card.getBoundingClientRect();
+        this.card.style.transform = 'scale(0.1)';
+        this.card.style.opacity = '0';
+        if (!L.Browser.mobile) {
+            this.map.getContainer().classList.remove('dimmed');
+        }
+        util_1.once(this.card, 'transitionend', function (e) { return _this.card.style.display = null; });
+        this.button.disabled = false;
+    };
+    return FAQ;
+})(widget_1.DeferredWidget);
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = FAQ;
+
+},{"../util":81,"./widget":80,"hammerjs":56}],75:[function(require,module,exports){
+var svg = require('../svg');
+var util_1 = require('../util');
+exports.Start = L.icon({
+    iconUrl: 'http://map.project-osrm.org/images/marker-start-icon-2x.png',
+    iconSize: [20, 56],
+    iconAnchor: [10, 28],
+});
+exports.End = L.icon({
+    iconUrl: 'http://map.project-osrm.org/images/marker-end-icon-2x.png',
+    iconSize: [20, 56],
+    iconAnchor: [10, 28],
+});
+exports.Red = L.icon({
+    iconUrl: 'http://harrywood.co.uk/maps/examples/leaflet/marker-icon-red.png',
+    //iconRetinaUrl: 'my-icon@2x.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowUrl: 'http://cdn.leafletjs.com/leaflet/v0.7.7/images/marker-shadow.png',
+    shadowRetinaUrl: 'marker-shadow-@2x.png',
+    shadowSize: [41, 41],
+    shadowAnchor: [12, 41]
+});
+exports.Circle = (function () {
+    var root = svg.createSVGElement('svg');
+    root.setAttribute('width', '100');
+    root.setAttribute('height', '100');
+    var ci = svg.makeCircle(new L.Point(50, 50), 40);
+    ci.style.stroke = 'red';
+    ci.style.strokeWidth = '20px';
+    ci.style.fill = 'white';
+    root.appendChild(ci);
+    var r = 5;
+    return L.icon({
+        iconUrl: util_1.File.svgToData(root),
+        iconSize: [r * 2, r * 2],
+        iconAnchor: [r, r],
+        popupAnchor: [0, -r]
+    });
+})();
+
+},{"../svg":69,"../util":81}],76:[function(require,module,exports){
+var i18n_1 = require('../i18n');
+var util = require('../util');
+var MapEditor = (function () {
+    function MapEditor(minZoom) {
+        var _this = this;
+        var btn = document.createElement('button');
+        btn.id = 'edit-map-button';
+        btn.textContent = 'Edit Map';
+        btn.classList.add('leaflet-control');
+        btn.onclick = function (e) { return _this.editMapClick(); };
+        this.button = btn;
+    }
+    Object.defineProperty(MapEditor.prototype, "editMode", {
+        get: function () { return this._editMode; },
+        set: function (val) {
+            var _this = this;
+            if (val) {
+                this.button.textContent = (_a = ["Save map"], _a.raw = ["Save map"], i18n_1.tr(_a));
+                this.button.onclick = function (e) { return _this.saveMapClick(); };
+                var dummyCircles = document.getElementById('dummy-circles');
+                dummyCircles.onmousedown = dummyCircles.onclick = null;
+                this.metroMap.receiveEvent(new Event("editmapstart"));
+            }
+            else {
+                this.button.textContent = (_b = ["Edit map"], _b.raw = ["Edit map"], i18n_1.tr(_b));
+                this.button.onclick = function (e) { return _this.editMapClick(); };
+                this.metroMap.receiveEvent(new Event("editmapend"));
+            }
+            this._editMode = val;
+            var _a, _b;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    MapEditor.prototype.addTo = function (metroMap) {
+        var _this = this;
+        var map = metroMap.getMap();
+        if (map === undefined || metroMap.getNetwork() === undefined) {
+            throw new Error('cannot add map editor to metro map: map or network is missing');
+        }
+        this.metroMap = metroMap;
+        document.querySelector('.leaflet-right.leaflet-top').appendChild(this.button);
+        this.editMode = false;
+        map.on('zoomend', function (e) {
+            if (_this.editMode) {
+                _this.addMapListeners();
+            }
+        });
+    };
+    MapEditor.prototype.editMapClick = function () {
+        this.editMode = true;
+        this.addMapListeners();
+    };
+    MapEditor.prototype.saveMapClick = function () {
+        util.File.downloadText('graph.json', this.metroMap.getNetwork().toJSON());
+        this.editMode = false;
+    };
+    MapEditor.prototype.addMapListeners = function () {
+        var _this = this;
+        console.log('adding');
+        // change station name (change -> model (platform))
+        // drag station to new location (drag -> model (platform, spans) -> paths, )
+        // create new station (create -> model)
+        // drag line over the station to bind them
+        var map = this.metroMap.getMap();
+        var network = this.metroMap.getNetwork();
+        var dummyCircles = document.getElementById('dummy-circles');
+        dummyCircles.onmousedown = function (de) {
+            if (de.button === 0) {
+                var platform = util.platformByCircle(de.target, network);
+                //const initialLocation = platform.location; // TODO: Ctrl+Z
+                map.dragging.disable();
+                map.on('mousemove', function (le) {
+                    platform.location = le.latlng;
+                    _this.metroMap.receiveEvent(new MouseEvent('platformmove'));
+                }).once('mouseup', function (le) {
+                    map.off('mousemove').dragging.enable();
+                    var circle = le.originalEvent.target;
+                    var moveEndEvent = new MouseEvent('platformmoveend', { relatedTarget: circle });
+                    _this.metroMap.receiveEvent(moveEndEvent);
+                });
+            }
+            else if (de.button === 1) {
+            }
+        };
+    };
+    return MapEditor;
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = MapEditor;
+
+},{"../i18n":62,"../util":81}],77:[function(require,module,exports){
+/// <reference path="../../typings/tsd.d.ts" />
+var L = require('leaflet');
+var util = require('../util');
+var svg_1 = require('../svg');
+var MapOverlay = (function () {
+    function MapOverlay(bounds, margin) {
+        if (margin === void 0) { margin = new L.Point(100, 100); }
+        this.margin = margin.round();
+        this._overlayContainer = svg_1.createSVGElement('svg');
+        this._overlayContainer.id = 'overlay';
+        this._defs = svg_1.createSVGElement('defs');
+        this._overlayContainer.appendChild(this._defs);
+        this._origin = svg_1.createSVGElement('g');
+        this._origin.id = 'origin';
+        this._overlayContainer.appendChild(this._origin);
+        this._bounds = bounds;
+    }
+    Object.defineProperty(MapOverlay.prototype, "origin", {
+        get: function () { return this._origin; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(MapOverlay.prototype, "defs", {
+        get: function () { return this._defs; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(MapOverlay.prototype, "bounds", {
+        set: function (bounds) {
+            this._bounds = bounds;
+            this.updateOverlayPositioning();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    MapOverlay.prototype.addTo = function (map) {
+        this.onAdd(map);
+        return this;
+    };
+    MapOverlay.prototype.onAdd = function (map) {
+        this.map = map;
+        this.minZoom = map.getMinZoom();
+        this.maxZoom = map.getMaxZoom();
+        this.updateOverlayPositioning();
+        var _a = map.getPanes(), objectsPane = _a.objectsPane, markerPane = _a.markerPane, mapPane = _a.mapPane;
+        (L.version[0] === '1' ? mapPane : objectsPane).insertBefore(this._overlayContainer, markerPane);
+        this.addMapMovementListeners();
+    };
+    MapOverlay.prototype.onRemove = function (map) {
+        this.map = this.minZoom = this.maxZoom = undefined;
+        var _a = map.getPanes(), objectsPane = _a.objectsPane, markerPane = _a.markerPane, mapPane = _a.mapPane;
+        (L.version[0] === '1' ? mapPane : objectsPane).removeChild(this._overlayContainer);
+        this.map.clearAllEventListeners(); // fix later
+    };
+    MapOverlay.prototype.addMapMovementListeners = function () {
+        var _this = this;
+        var _a = this.map.getPanes(), mapPane = _a.mapPane, tilePane = _a.tilePane, overlayPane = _a.overlayPane;
+        var _b = this._overlayContainer, style = _b.style, classList = _b.classList;
+        var fixFontDelayed = function (parent, time) {
+            if (time === void 0) { time = 250; }
+            return setTimeout(function () { return util.fixFontRendering(parent); }, time);
+        };
+        var scaleFactor = 1, mousePos;
+        this.map.on('zoomstart', function (e) {
+            classList.add('leaflet-zoom-animated');
+            console.log('zoomstart', e);
+            _this.map.dragging.disable();
+            //fromZoom = e.target['_zoom'];
+            if (scaleFactor !== 1) {
+                //mousePos = e.target['scrollWheelZoom']['_lastMousePos'];
+                console.log('mousepos:', mousePos);
+                util.scaleOverlay(_this._overlayContainer, scaleFactor, mousePos);
+            }
+            scaleFactor = 1;
+        }).on('zoomanim', function (e) {
+            // const toZoom: number = e['zoom'];
+            // scaleFactor = 2 ** (toZoom - fromZoom);
+            // util.scaleOverlay(this.overlay, scaleFactor, mousePos);
+        }).on('zoomend', function (e) {
+            scaleFactor = 1;
+            console.log('zoomend', e);
+            //console.log(this.map.project(this.network.platforms[69].location, this.map.getZoom()).divideBy(2 ** this.map.getZoom()));
+            style.transformOrigin = null;
+            classList.remove('leaflet-zoom-animated');
+            _this.updateOverlayPositioning();
+            _this.onZoomChange(e);
+            _this.map.dragging.enable();
+        }).on('moveend', function (e) {
+            util.fixFontRendering();
+            if (L.version[0] === '1') {
+                fixFontDelayed(tilePane.firstElementChild);
+            }
+            else if (overlayPane.hasChildNodes()) {
+                fixFontDelayed(overlayPane, 0);
+            }
+            // the secret of correct positioning is the movend transform check for corrent transform
+            style.transform = null;
+        }).on('layeradd layerremove', function () { return util.fixFontRendering(); });
+        var changeScaleFactor = function (isZoomIn) {
+            var oldZoom = _this.map.getZoom();
+            scaleFactor = isZoomIn ?
+                Math.min(scaleFactor * 2, Math.pow(2, (_this.maxZoom - oldZoom))) :
+                Math.max(scaleFactor / 2, Math.pow(2, (_this.minZoom - oldZoom)));
+        };
+        var onWheel = function (e) {
+            mousePos = L.DomEvent.getMousePosition(e);
+            //scaleFactor *= e.deltaY < 0 ? 2 : 0.5;
+            changeScaleFactor(e.deltaY < 0);
+            //this.map.setZoomAround(util.mouseToLatLng(this.map, e), e.deltaY < 0 ? zoom + 1 : zoom - 1);
+        };
+        mapPane.addEventListener('wheel', onWheel);
+        // controls are not a part of the map pane, so a special listener is for them
+        document.querySelector('.leaflet-control-container').addEventListener('wheel', onWheel);
+        // +/- button click
+        var zoomContainer = this.map.zoomControl.getContainer();
+        zoomContainer.addEventListener('mousedown', function (e) {
+            mousePos = new L.Point(innerWidth / 2, innerHeight / 2).round();
+            changeScaleFactor(e.target === zoomContainer.firstChild);
+        }, true);
+        // double click zoom
+        this.map.on('dblclick', function (e) {
+            var o = e.originalEvent;
+            mousePos = L.DomEvent.getMousePosition(o);
+            changeScaleFactor(!o.shiftKey);
+        });
+        // keyboard zoom
+        document.addEventListener('keydown', function (e) {
+            mousePos = new L.Point(innerWidth / 2, innerHeight / 2);
+            var i = [189, 109, 54, 173, 187, 107, 61, 171].indexOf(e.keyCode);
+            if (i !== -1) {
+                changeScaleFactor(i > 3);
+            }
+        });
+    };
+    MapOverlay.prototype.updateOverlayPositioning = function () {
+        var nw = this._bounds.getNorthWest(), se = this._bounds.getSouthEast();
+        this.topLeft = this.map.project(nw).round();
+        var pixelBounds = new L.Bounds(this.map.latLngToLayerPoint(nw), this.map.latLngToLayerPoint(se));
+        var style = this._overlayContainer.style;
+        var topLeft = pixelBounds.min.subtract(this.margin);
+        style.left = topLeft.x + 'px';
+        style.top = topLeft.y + 'px';
+        //TODO: test which one is faster
+        // transform may not work with svg elements
+        //origin.setAttribute('x', margin.x + 'px');
+        //origin.setAttribute('y', margin.y + 'px');
+        this._origin.setAttribute('transform', "translate(" + this.margin.x + ", " + this.margin.y + ")");
+        //origin.style.transform = `translate(${margin.x}px, ${margin.y}px)`;
+        //origin.style.left = margin.x + 'px';
+        //origin.style.top = margin.y + 'px';
+        var overlaySize = pixelBounds.getSize().add(this.margin).add(this.margin);
+        style.width = overlaySize.x + 'px';
+        style.height = overlaySize.y + 'px';
+    };
+    MapOverlay.prototype.latLngToSvgPoint = function (location) {
+        return this.map
+            .project(location)
+            .round()
+            .subtract(this.topLeft);
+    };
+    return MapOverlay;
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = MapOverlay;
+
+},{"../svg":69,"../util":81,"leaflet":57}],78:[function(require,module,exports){
+/// <reference path="../../typings/tsd.d.ts" />
+var alertify = require('alertifyjs');
+var L = require('leaflet');
+var util = require('../util');
+var svg_1 = require('../svg');
+var algorithm_1 = require('../algorithm');
+var ui_1 = require('../ui');
+var i18n_1 = require('../i18n');
+var RoutePlanner = (function () {
+    function RoutePlanner(metroMap) {
+        var _this = this;
+        this.metroMap = metroMap;
+        var map = metroMap.getMap();
+        var center = map.getCenter();
+        this.fromMarker = new L.Marker(center, { draggable: true, icon: ui_1.Icons.Start });
+        this.toMarker = new L.Marker(center, { draggable: true, icon: ui_1.Icons.End });
+        ui_1.cacheIcons(metroMap.getMap(), [this.fromMarker, this.toMarker]);
+        this.addMarkerListeners();
+        metroMap.addListener('routefrom routeto', this.handleFromTo.bind(this));
+        metroMap.addListener('clearroute', function (e) { return _this.clearRoute(); });
+        map.on('zoomstart', function (e) { return svg_1.Animation.terminateAnimations(); });
+    }
+    RoutePlanner.prototype.handleFromTo = function (e) {
+        var map = this.metroMap.getMap();
+        var coors = util.mouseToLatLng(map, e);
+        var marker = e.type === 'routefrom' ? this.fromMarker : this.toMarker;
+        marker.setLatLng(coors);
+        if (!map.hasLayer(marker)) {
+            map.addLayer(marker);
+        }
+        var otherMarker = marker === this.fromMarker ? this.toMarker : this.fromMarker;
+        if (map.hasLayer(otherMarker)) {
+            // fixing font rendering here boosts the performance
+            util.fixFontRendering();
+            this.visualizeRouteBetween(this.fromMarker.getLatLng(), this.toMarker.getLatLng());
+        }
+    };
+    RoutePlanner.prototype.addMarkerListeners = function () {
+        var _this = this;
+        for (var _i = 0, _a = [this.fromMarker, this.toMarker]; _i < _a.length; _i++) {
+            var marker = _a[_i];
+            marker.on('drag', function (e) { return _this.visualizeShortestRoute(false); }).on('dragend', function (e) {
+                util.fixFontRendering();
+                _this.visualizeShortestRoute();
+            });
+        }
+    };
+    RoutePlanner.prototype.visualizeShortestRoute = function (animate) {
+        if (animate === void 0) { animate = true; }
+        var map = this.metroMap.getMap();
+        if (!map.hasLayer(this.fromMarker) || !map.hasLayer(this.toMarker))
+            return;
+        this.visualizeRouteBetween(this.fromMarker.getLatLng(), this.toMarker.getLatLng(), animate);
+    };
+    RoutePlanner.prototype.visualizeRouteBetween = function (from, to, animate) {
+        if (animate === void 0) { animate = true; }
+        util.resetStyle();
+        alertify.dismissAll();
+        this.visualizeRoute(algorithm_1.shortestRoute(this.metroMap.getNetwork(), from, to), animate);
+    };
+    RoutePlanner.prototype.visualizeRoute = function (obj, animate) {
+        var _this = this;
+        if (animate === void 0) { animate = true; }
+        var platforms = obj.platforms, edges = obj.edges, time = obj.time;
+        var walkTo = i18n_1.formatTime(time.walkTo);
+        if (edges === undefined) {
+            return alertify.success((_a = ["", " on foot!"], _a.raw = ["", " on foot!"], i18n_1.tr(_a, walkTo)));
+        }
+        var selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
+        svg_1.Animation.terminateAnimations().then(function () {
+            for (var _i = 0, _a = document.querySelectorAll(selector); _i < _a.length; _i++) {
+                var style = _a[_i].style;
+                //style['-webkit-filter'] = 'grayscale(1)';
+                style.filter = null;
+                style.opacity = '0.25';
+            }
+            if (animate) {
+                return svg_1.Animation.animateRoute(_this.metroMap.getNetwork(), platforms, edges, 1);
+            }
+            for (var _b = 0; _b < edges.length; _b++) {
+                var edgeIdTail = edges[_b];
+                var outer = document.getElementById('o' + edgeIdTail);
+                if (outer === null)
+                    continue;
+                outer.style.opacity = null;
+                var inner = document.getElementById('i' + edgeIdTail);
+                if (inner !== null) {
+                    inner.style.opacity = null;
+                }
+                if (outer.id.charAt(1) !== 't') {
+                    svg_1.Filters.applyDrop(outer);
+                }
+            }
+            for (var _c = 0; _c < platforms.length; _c++) {
+                var platformNum = platforms[_c];
+                document.getElementById('p-' + platformNum).style.opacity = null;
+            }
+        }).then(function (finished) {
+            // finished is undefined if not animated, false if animation is still running or true if otherwise
+            if (!finished)
+                return;
+            alertify.message((_a = ["TIME:<br>", " on foot<br>", " by metro<br>", " on foot<br>TOTAL: ", ""], _a.raw = ["TIME:<br>", " on foot<br>", " by metro<br>", " on foot<br>TOTAL: ", ""], i18n_1.tr(_a, walkTo, i18n_1.formatTime(time.metro), i18n_1.formatTime(time.walkFrom), i18n_1.formatTime(time.total))), 10);
+            var _a;
+        });
+        var _a;
+    };
+    RoutePlanner.prototype.clearRoute = function () {
+        var map = this.metroMap.getMap();
+        var terminate = svg_1.Animation.terminateAnimations();
+        map.removeLayer(this.fromMarker).removeLayer(this.toMarker);
+        this.fromMarker.off('drag').off('dragend');
+        this.toMarker.off('drag').off('dragend');
+        alertify.dismissAll();
+        terminate.then(util.resetStyle);
+    };
+    return RoutePlanner;
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = RoutePlanner;
+
+},{"../algorithm":59,"../i18n":62,"../svg":69,"../ui":71,"../util":81,"alertifyjs":1,"leaflet":57}],79:[function(require,module,exports){
+/// <reference path="../../typings/tsd.d.ts" />
+var svg = require('../svg');
+var TextPlate = (function () {
+    function TextPlate() {
+        this._disabled = false;
+        this._editable = false;
+        var div = document.createElement('div');
+        div.classList.add('plate-box');
+        var foreign = svg.createSVGElement('foreignObject');
+        foreign.setAttribute('x', '0');
+        foreign.setAttribute('y', '0');
+        foreign.setAttribute('width', '100%');
+        foreign.setAttribute('height', '100%');
+        foreign.appendChild(div);
+        var g = svg.createSVGElement('g');
+        g.id = 'station-plate';
+        g.style.display = 'none';
+        g.appendChild(foreign);
+        this._element = g;
+    }
+    Object.defineProperty(TextPlate.prototype, "element", {
+        get: function () {
+            return this._element;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextPlate.prototype, "disabled", {
+        get: function () {
+            return this._disabled;
+        },
+        set: function (val) {
+            val ? this.hide() : getSelection().removeAllRanges();
+            this._disabled = val;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextPlate.prototype, "editable", {
+        get: function () {
+            return this._editable;
+        },
+        set: function (val) {
+            var strVal = val ? 'true' : null;
+            var text = this._element.childNodes[1].children[1];
+            var textlings = text.children;
+            for (var i = 0; i < textlings.length; ++i) {
+                textlings[i].contentEditable = strVal;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TextPlate.prototype.show = function (bottomRight, names) {
+        if (this.disabled || this._element.style.display !== 'none')
+            return;
+        var foreign = this._element.firstChild;
+        var div = foreign.firstChild;
+        div.innerHTML = names.join('<br>');
+        this._element.setAttribute('transform', "translate(" + bottomRight.x + ", " + bottomRight.y + ")");
+        this._element.style.display = null;
+        var _a = div.getBoundingClientRect(), width = _a.width, height = _a.height;
+        foreign.setAttribute('transform', "translate(" + -width + ", " + -height + ")");
+        console.log(foreign.getBoundingClientRect());
+        console.log(div.getBoundingClientRect());
+    };
+    TextPlate.prototype.hide = function () {
+        this._element.style.display = 'none';
+    };
+    return TextPlate;
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = TextPlate;
+
+},{"../svg":69}],80:[function(require,module,exports){
+var DeferredWidget = (function () {
+    function DeferredWidget() {
+    }
+    Object.defineProperty(DeferredWidget.prototype, "whenAvailable", {
+        get: function () { return this._whenAvailable; },
+        enumerable: true,
+        configurable: true
+    });
+    DeferredWidget.prototype.addTo = function (metroMap) { };
+    return DeferredWidget;
+})();
+exports.DeferredWidget = DeferredWidget;
+
+},{}],81:[function(require,module,exports){
+/// <reference path="../typings/tsd.d.ts" />
+var L = require('leaflet');
+var i18n = require('./i18n');
+var res_1 = require('./res');
+function arrayEquals(a, b) {
+    var n = a.length;
+    if (n !== b.length)
+        return false;
+    for (var i = 0; i < n; ++i) {
+        if (a[i] !== b[i])
+            return false;
+    }
+    return true;
+}
+exports.arrayEquals = arrayEquals;
+function uniquify(arr) {
+    return Array.from(new Set(arr));
+}
+exports.uniquify = uniquify;
+function formatInteger(integer) {
+    var s = integer.toString();
+    console.log(s);
+    var start = s.length % 3;
+    var arr = start > 0 ? [s.slice(0, start)] : [];
+    for (var i = s.length % 3; i < s.length; i += 3) {
+        arr.push(s.substr(i, 3));
+    }
+    console.log(arr);
+    return arr.join("'");
+}
+exports.formatInteger = formatInteger;
+function roundPoint(point, precision) {
+    return point.multiplyBy(precision)._round()._divideBy(precision);
+}
+exports.roundPoint = roundPoint;
+function mouseToLatLng(map, event) {
+    var rect = map.getContainer().getBoundingClientRect();
+    var containerPoint = new L.Point(event.clientX - rect.left, event.clientY - rect.top);
+    return map.containerPointToLatLng(containerPoint);
+}
+exports.mouseToLatLng = mouseToLatLng;
+function callMeMaybe(func) {
+    var params = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        params[_i - 1] = arguments[_i];
+    }
+    return func ? func.apply(void 0, params) : undefined;
+}
+exports.callMeMaybe = callMeMaybe;
+function once(el, eventType, listener) {
+    el.addEventListener(eventType, function handler(e) {
+        el.removeEventListener(eventType, handler);
+        listener(e);
+    });
+}
+exports.once = once;
+function onceEscapePress(handler) {
+    var keydownListener = function (e) {
+        if (e.keyCode !== 27)
+            return;
+        removeListener();
+        handler(e);
+    };
+    var backbuttonListener = function (e) {
+        removeListener();
+        handler(e);
+    };
+    function removeListener() {
+        removeEventListener('keydown', keydownListener);
+        removeEventListener('backbutton', backbuttonListener);
+    }
+    addEventListener('keydown', keydownListener);
+    addEventListener('backbutton', backbuttonListener);
+    // once(window, 'keydown', (e: KeyboardEvent) => {
+    //     if (e.keyCode === 27) handler(e);
+    // });
+}
+exports.onceEscapePress = onceEscapePress;
+function resetStyle() {
+    var selector = ['paths-inner', 'paths-outer', 'transfers-inner', 'transfers-outer', 'station-circles']
+        .map(function (i) { return ("#" + i + " > *"); }).join(', ');
+    var els = document.querySelectorAll(selector);
+    for (var i = 0; i < els.length; ++i) {
+        var el = els[i];
+        el.style.opacity = null;
+        if (el.id[1] !== 't') {
+            el.style.filter = null;
+        }
+    }
+}
+exports.resetStyle = resetStyle;
+function triggerMouseEvent(target, eventType) {
+    var e = document.createEvent('MouseEvents');
+    e.initEvent(eventType, true, true);
+    target.dispatchEvent(e);
+}
+exports.triggerMouseEvent = triggerMouseEvent;
+function getPlatformNames(platform) {
+    var ru = platform.name, _a = platform.altNames, fi = _a.fi, en = _a.en, names = !fi ? [ru] : i18n.userLanguage === 'fi' ? [fi, ru] : [ru, fi];
+    if (en)
+        names.push(en);
+    return names;
+}
+exports.getPlatformNames = getPlatformNames;
+function getPlatformNamesZipped(platforms) {
+    var platformNames = platforms.map(getPlatformNames);
+    return [0, 1, 2]
+        .map(function (no) { return platforms.map(function (p, i) { return platformNames[i][no]; }); })
+        .map(uniquify)
+        .map(function (arr) { return arr.reduce(function (prev, cur) { return (prev + " / " + cur); }); })
+        .filter(function (s) { return s !== undefined; });
+}
+exports.getPlatformNamesZipped = getPlatformNamesZipped;
+function circleByIndex(index) {
+    return document.getElementById('p-' + index);
+}
+exports.circleByIndex = circleByIndex;
+function circleByDummy(dummyCircle) {
+    return document.getElementById('p-' + dummyCircle.id.slice(2));
+}
+exports.circleByDummy = circleByDummy;
+function platformByCircle(circle, network) {
+    return network.platforms[+circle.id.slice(2)];
+}
+exports.platformByCircle = platformByCircle;
+function trim3d(_a) {
+    var style = _a.style;
+    style.transform = style.transform.replace(/translate3d\s*\((.+?,\s*.+?),\s*.+?\s*\)/i, 'translate($1)');
+}
+exports.trim3d = trim3d;
+var Color;
+(function (Color) {
+    function hexToArray(hex) {
+        return hex.match(/[0-9a-f]{1,2}/ig).map(function (s) { return parseInt(s, 16); });
+    }
+    function rgbToArray(rgb) {
+        return rgb.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i).slice(1).map(Number);
+    }
+    function mean(rgb) {
+        var reduceFunc = function (prev, cur) {
+            return (cur.startsWith('#') ? hexToArray : rgbToArray)(cur)
+                .map(function (it, i) { return prev[i] + it; });
+        };
+        var _a = rgb.reduce(reduceFunc, [0, 0, 0]).map(function (i) { return Math.floor(i / rgb.length); }), r = _a[0], g = _a[1], b = _a[2];
+        return "rgb(" + r + ", " + g + ", " + b + ")";
+    }
+    Color.mean = mean;
+})(Color = exports.Color || (exports.Color = {}));
+var File;
+(function (File) {
+    function download(title, dataURL) {
+        var a = document.createElement('a');
+        a.href = dataURL;
+        a.download = title;
+        a.click();
+    }
+    File.download = download;
+    function downloadBlob(title, blob) {
+        var url = URL.createObjectURL(blob);
+        download(title, url);
+        URL.revokeObjectURL(url);
+    }
+    File.downloadBlob = downloadBlob;
+    function downloadText(title, content) {
+        downloadBlob(title, new Blob([content], { type: 'octet/stream' }));
+    }
+    File.downloadText = downloadText;
+    function downloadSvgAsImage(title, root) {
+        svgToCanvas(root).then(function (canvas) { return download(title, canvas.toDataURL('image/png')); });
+    }
+    File.downloadSvgAsImage = downloadSvgAsImage;
+    function svgToCanvas(root) {
+        return new Promise(function (resolve) {
+            var img = svgToImg(root, true);
+            img.onload = function (e) {
+                var canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                canvas.getContext('2d').drawImage(img, 0, 0);
+                resolve(canvas);
+            };
+        });
+    }
+    File.svgToCanvas = svgToCanvas;
+    function svgToImg(root, appendExternalStyles) {
+        if (appendExternalStyles === void 0) { appendExternalStyles = false; }
+        if (appendExternalStyles) {
+            root = optimizeSvg(root);
+        }
+        var img = document.createElement('img');
+        img.width = parseInt(root.getAttribute('width')) || parseInt(root.style.width);
+        img.height = parseInt(root.getAttribute('height')) || parseInt(root.style.height);
+        img.src = svgToData(root);
+        return img;
+    }
+    File.svgToImg = svgToImg;
+    function svgToData(root) {
+        return 'data:image/svg+xml;base64,' + btoa(new XMLSerializer().serializeToString(root));
+    }
+    File.svgToData = svgToData;
+    function optimizeSvg(root) {
+        var optimized = root.cloneNode(true);
+        var dummy = optimized.querySelectorAll('[id^=dummy]');
+        for (var i = 0, len = dummy.length; i < len; ++i) {
+            dummy[i].parentNode.removeChild(dummy[i]);
+        }
+        optimized.style.left = optimized.style.top = '';
+        var plate = optimized.querySelector('#station-plate');
+        plate.parentNode.removeChild(plate);
+        var defs = optimized.querySelector('defs');
+        var styleElement = document.createElement('style');
+        styleElement.textContent = res_1.getStyleRulesAsText();
+        defs.insertBefore(styleElement, defs.firstChild);
+        return optimized;
+    }
+})(File = exports.File || (exports.File = {}));
+function flashTitle(titles, duration) {
+    var i = 0;
+    setInterval(function () { return document.title = titles[++i % titles.length]; }, duration);
+}
+exports.flashTitle = flashTitle;
+function scaleOverlay(overlay, scaleFactor, mousePos) {
+    var box = overlay.getBoundingClientRect();
+    if (!mousePos) {
+        var el = document.documentElement;
+        mousePos = new L.Point(el.clientWidth / 2, el.clientHeight / 2);
+    }
+    var clickOffset = new L.Point(mousePos.x - box.left, mousePos.y - box.top);
+    var ratio = new L.Point(clickOffset.x / box.width, clickOffset.y / box.height);
+    var overlayStyle = overlay.style;
+    // overlayStyle.left = '0';
+    // overlayStyle.top = '0';
+    overlayStyle.transformOrigin = ratio.x * 100 + "% " + ratio.y * 100 + "%";
+    overlayStyle.transform = "scale(" + scaleFactor + ")";
+}
+exports.scaleOverlay = scaleOverlay;
+function removeAllChildren(el) {
+    var child;
+    while (child = el.firstChild) {
+        el.removeChild(child);
+    }
+}
+exports.removeAllChildren = removeAllChildren;
+/**
+ * Fixes blurry font due to 'transform3d' CSS property. Changes everything to 'transform' when the map is not moving
+ */
+function fixFontRendering(parent) {
+    if (parent === void 0) { parent = document; }
+    var blurringStuff = parent.querySelectorAll('[style*="translate3d"]');
+    console.log('fixing font', parent, blurringStuff);
+    for (var i = 0; i < blurringStuff.length; ++i) {
+        trim3d(blurringStuff[i]);
+    }
+}
+exports.fixFontRendering = fixFontRendering;
+
+},{"./i18n":62,"./res":68,"leaflet":57}],82:[function(require,module,exports){
+'use strict';
+var res_1 = require('./res');
+var i18n_1 = require('./i18n');
+var i18n_2 = require('./i18n');
+var metromap_1 = require('./metromap');
+L.Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images';
+if (L.Browser.ie) {
+    alert("Does not work in IE (yet)");
+}
+var polyfills_1 = require('./polyfills');
+polyfills_1.default();
+res_1.getConfig().then(function (config) { return i18n_1.updateDictionary(config.url['dictionary']).then(function () {
+    document.title = i18n_2.translate(document.title);
+    new metromap_1.default(config);
+}); });
+console.log('user: ' + navigator.userLanguage);
+console.log('language: ' + navigator.language);
+console.log('browser: ' + navigator.browserLanguage);
+console.log('system: ' + navigator.systemLanguage);
+/* TODO:
+E-line have termini (larger circles?)
+no pole, bigger
+circles in 4+ platforms
+resolve colorful transfers perfomance issue
+
+*/
+/* TODO:
+1. FAQ with user with the following questions:
+a. why is everything in latinica
+b. why have some stations been renamed
+c. why have new stations been embedded between old ones
+d. st petersburg's climate not suited for overground railway (there are suburban trains... look at helsinki)
+e. wtf is ingria, why are the stations dubbed in finnish
+f. there's no money for it (whose fault is it?)
+g. i do not agree with the network, where's the station near my home (propose your own)
+h. malfunctioning in IE (get a normal browser ffs)
+i. why junctions have single name
+ */ /**/ 
+
+},{"./i18n":62,"./metromap":65,"./polyfills":67,"./res":68}],83:[function(require,module,exports){
+
+},{}]},{},[83,82]);

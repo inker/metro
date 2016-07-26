@@ -20,8 +20,6 @@ a:hover {
     height: 100%; /* the map should have a defined height */
     font-size: 12px;
     cursor: default;
-    transition-property: filter -webkit-filter;
-    transition-duration:  200ms;
 }
 
 .leaflet-dragging #map-container {

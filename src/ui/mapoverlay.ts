@@ -2,7 +2,7 @@
 import * as L from 'leaflet';
 import * as util from '../util';
 import { createSVGElement } from '../svg';
-import { MemoizeWithParameters } from '../decorators';
+//import { MemoizeWithParameters } from '../decorators';
 
 export default class MapOverlay implements L.ILayer {
     private map: L.Map;
@@ -82,10 +82,6 @@ export default class MapOverlay implements L.ILayer {
                 util.scaleOverlay(this._overlayContainer, scaleFactor, mousePos);
             }
             scaleFactor = 1;
-        }).on('zoomanim', e => {
-            // const toZoom: number = e['zoom'];
-            // scaleFactor = 2 ** (toZoom - fromZoom);
-            // util.scaleOverlay(this.overlay, scaleFactor, mousePos);
         }).on('zoomend', e => {
             scaleFactor = 1;
             console.log('zoomend', e);
@@ -105,7 +101,7 @@ export default class MapOverlay implements L.ILayer {
             }
             // the secret of correct positioning is the movend transform check for corrent transform
             style.transform = null;
-        }).on('layeradd layerremove', () => util.fixFontRendering());
+        });
         
         const changeScaleFactor = (isZoomIn: boolean) => {
             const oldZoom = this.map.getZoom();

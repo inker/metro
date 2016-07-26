@@ -1,3 +1,4 @@
+/// <reference path="../typings/tsd.d.ts" />;
 export function time(target: Object, key: string, descriptor: TypedPropertyDescriptor<any>) {
     const originalMethod: Function = descriptor.value;
     descriptor.value = function (...args: any[]) {

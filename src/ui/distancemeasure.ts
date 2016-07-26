@@ -53,6 +53,19 @@ export default class DistanceMeasure {
             .removeLayer(this.dashedLine);
     }
 
+    private onCircleClick(e: L.LeafletMouseEvent) {
+        if (e.originalEvent.button !== 0) return;
+        this.markers.removeLayer(e.target);
+        if (this.markers.getLayers().length === 0) {
+            this.metroMap.receiveEvent(new MouseEvent('deletemeasurements'));
+            return;
+        }
+        this.updateDistances();
+        if (!this.metroMap.getMap().hasLayer(this.dashedLine)) {
+            this.addDashedLine();
+        }
+    }
+
     private makeMarker = (e: L.LeafletMouseEvent) => {
         if (e.originalEvent.button !== 0) return;
         const map = this.metroMap.getMap();
@@ -62,18 +75,7 @@ export default class DistanceMeasure {
             .on('mouseover', e => this.removeDashedLine())
             .on('mouseout', e => this.addDashedLine())
             .on('drag', e => this.updateDistances())
-            .on('click', (e: L.LeafletMouseEvent) => {
-                if (e.originalEvent.button !== 0) return;
-                this.markers.removeLayer(marker);
-                if (this.markers.getLayers().length === 0) {
-                    this.metroMap.receiveEvent(new MouseEvent('deletemeasurements'));
-                    return;
-                }
-                this.updateDistances();
-                if (!map.hasLayer(this.dashedLine)) {
-                    this.addDashedLine();
-                }
-            });
+            .on('click', this.onCircleClick.bind(this));
         // const el = { lang: { ru: 'Udaliť izmerenia', en: 'Delete measurements' } };
         //this.metroMap.contextMenu.extraItems.set(circle, new Map().set('deletemeasurements', el));
         this.markers.addLayer(marker);
