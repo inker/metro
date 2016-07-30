@@ -53,9 +53,12 @@ export function verify(network: nw.Network, hints: Hints) {
  * >=0: is an array
  */
 export function hintContainsLine(network: nw.Network, dirHints: CrossPlatformHint, platform: nw.Platform): number {
-    const spans = platform.spans.map(i => network.spans[i]);
     const routes: nw.Route[] = [];
-    spans.forEach(span => span.routes.forEach(i => routes.push(network.routes[i])));
+    for (let span of platform.spans) {
+        for (let route of span.routes) {
+            routes.push(route);
+        }
+    }
     const lines = routes.map(r => r.line);
     const platformHints = dirHints[platform.name];
     if (platformHints) {

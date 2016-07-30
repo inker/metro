@@ -1,9 +1,10 @@
 /// <reference path="../typings/tsd.d.ts" />
-import { Hints } from './hints';
+
+import { tryGet } from './util/utilities';
 
 export type Config = {
     containerId: string,
-    center: number[],
+    // center: number[],
     zoom: number,
     minZoom: number,
     maxZoom: number,
@@ -38,13 +39,16 @@ export function getStyleRulesAsText(): string {
 }
 
 export const getLineRules = () => new Promise<CSSStyleSheet>(resolve => {
-    const link = document.querySelector(`[href$="css/scheme.css"]`) as HTMLLinkElement;
+    const link = document.getElementById('scheme') as HTMLLinkElement;
     const sheet = link.sheet as CSSStyleSheet;
-    if (sheet && sheet.cssRules) {
-        resolve(sheet);
-    } else {
-        link.onload = e => resolve(sheet);
-    }
+    return tryGet(() => link.sheet as CSSStyleSheet, sheet => sheet !== null).then(resolve);
+    // if (sheet && sheet.cssRules) {
+    //     console.log('resolving immediately');
+    //     resolve(sheet);
+    // } else {
+    //     console.log('resolving delayed');
+    //     ;
+    // }
 }).then(styleSheet => {
     const lineRules = new Map<string, CSSStyleDeclaration>();
     for (let rule of (styleSheet.cssRules as any as CSSStyleRule[])) {

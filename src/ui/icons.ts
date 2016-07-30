@@ -1,5 +1,5 @@
-import * as svg from '../svg';
-import { File } from '../util';
+import * as svg from '../util/svg';
+import { File } from '../util/utilities';
 
 export const Start = L.icon({
     iconUrl: 'http://map.project-osrm.org/images/marker-start-icon-2x.png',
@@ -36,7 +36,7 @@ export const Circle = (() => {
     root.appendChild(ci);
     const r = 5;
     return L.icon({
-        iconUrl: File.svgToData(root),
+        iconUrl: File.svgToDataUrl(root),
         iconSize: [r * 2, r * 2],
         iconAnchor: [r, r],
         popupAnchor: [0, -r]        

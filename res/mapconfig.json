@@ -1,15 +1,15 @@
 {
     "containerId": "map-container",
-    "center": [59.943556, 30.30452],
     "minZoom": 7,
     "maxZoom": 18,
     "zoom": 11,
     "detailedZoom": 12,
     "url": {
         "dictionary": "res/dictionary.json",
-        "graph": "res/graph.json",
-        "hints": "res/hints.json",
+        "graph": "res/{city}/graph.json",
+        "hints": "res/{city}/hints.json",
         "contextMenu": "res/contextmenudata.json",
-        "data": "res/data.json"
+        "data": "res/data.json",
+        "scheme": "res/{city}/scheme.css"
     }
 }

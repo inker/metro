@@ -60,6 +60,18 @@ a:hover {
     /*will-change: transform;*/ /*blurs fonts */
 }
 
+#wait {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.2em;
+    z-index: 10000;
+    color: #606060;
+    opacity: 0;
+    transition: opacity 2s linear;
+}
+
 circle {
     transform-origin: 50% 50%;
 }

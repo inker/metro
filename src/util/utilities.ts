@@ -1,10 +1,10 @@
-/// <reference path="../typings/tsd.d.ts" />
+/// <reference path="../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
-import * as nw from './network';
-import * as i18n from './i18n';
-import { getStyleRulesAsText } from './res';
+import * as nw from '../network';
+import * as i18n from '../i18n';
+import { getStyleRulesAsText } from '../res';
 
-export function arrayEquals<T>(a: T[], b: T[]) {
+export function arraysEquals<T>(a: T[], b: T[]) {
     const n = a.length;
     if (n !== b.length) return false;
     for (let i = 0; i < n; ++i) {
@@ -13,8 +13,32 @@ export function arrayEquals<T>(a: T[], b: T[]) {
     return true;
 }
 
+export function setsEqual<T>(a: Set<T>, b: Set<T>) {
+    const n = a.size;
+    if (n !== b.size) return false;
+    for (let vals = a.values(), el = vals.next(); !el.done; el = vals.next()) {
+        if (!b.has(el.value)) return false;
+    }
+    return true;
+}
+
+export function intersection<T>(a: Set<T>, b: Set<T>) {
+    const isn = new Set<T>();
+    a.forEach(item => {
+        if (b.has(item)) isn.add(item)
+    });
+    return isn;
+}
+
 export function uniquify<T>(arr: T[]) {
     return Array.from(new Set(arr));
+}
+
+export function deleteFromArray<T>(arr: T[], el: T) {
+    const pos = arr.indexOf(el);
+    if (pos < 0) return;
+    arr[pos] = arr[arr.length - 1];
+    arr.pop();
 }
 
 export function formatInteger(integer: number): string {
@@ -30,7 +54,12 @@ export function formatInteger(integer: number): string {
 }
 
 export function roundPoint(point: L.Point, precision: number): L.Point {
-    return (point.multiplyBy(precision) as any)._round()._divideBy(precision);
+    return new L.Point(+point.x.toFixed(precision), +point.y.toFixed(precision));
+}
+
+export function generateId(collision?: (temp: string) => boolean) {
+    const id = Math.random().toString(36).slice(2);
+    return collision !== undefined && collision(id) ? generateId(collision) : id;  
 }
 
 export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {
@@ -108,18 +137,6 @@ export function getPlatformNamesZipped(platforms: nw.Platform[]) {
         .filter(s => s !== undefined);
 }
 
-export function circleByIndex(index: number): SVGCircleElement {
-    return document.getElementById('p-' + index) as any;
-}
-
-export function circleByDummy(dummyCircle: Element): SVGCircleElement {
-    return document.getElementById('p-' + dummyCircle.id.slice(2)) as any;
-}
-
-export function platformByCircle(circle: Element, network: nw.Network) {
-    return network.platforms[+circle.id.slice(2)];
-}
-
 export function trim3d<T extends { style: CSSStyleDeclaration }>({ style }: T) {
     style.transform = style.transform.replace(/translate3d\s*\((.+?,\s*.+?),\s*.+?\s*\)/i, 'translate($1)');
 }
@@ -160,11 +177,11 @@ export namespace File {
         downloadBlob(title, new Blob([content], { type: 'octet/stream' }));
     }
 
-    export function downloadSvgAsPicture(title: string, root: SVGSVGElement, format: 'png' | 'jpeg') {
+    export function downloadSvgAsPicture(title: string, root: SVGSVGElement, format: string) {
         svgToPictureDataUrl(root, format).then(dataURL => download(title, dataURL));
     }
 
-    export function svgToPictureDataUrl(root: SVGSVGElement, format: 'png' | 'jpeg'): Promise<string> {
+    export function svgToPictureDataUrl(root: SVGSVGElement, format: string): Promise<string> {
         return svgToCanvas(root).then(canvas => canvas.toDataURL('image/' + format));
     }
 
@@ -219,7 +236,7 @@ export function flashTitle(titles: string[], duration: number) {
     setInterval(() => document.title = titles[++i % titles.length], duration);
 }
 
-export function scaleOverlay(overlay: SVGSVGElement, scaleFactor: number, mousePos?: L.Point) {
+export function scaleOverlay(overlay: Element&{ style: CSSStyleDeclaration }, scaleFactor: number, mousePos?: L.Point) {
     const box = overlay.getBoundingClientRect();
     if (!mousePos) {
         const el = document.documentElement;
@@ -232,6 +249,25 @@ export function scaleOverlay(overlay: SVGSVGElement, scaleFactor: number, mouseP
     // overlayStyle.top = '0';
     overlayStyle.transformOrigin = `${ratio.x * 100}% ${ratio.y * 100}%`;
     overlayStyle.transform = `scale(${scaleFactor})`;
+}
+
+export function tryGet<T>(getter: () => T, validate: (val: T) => boolean, interval = 100, ttl = 100) {
+    return new Promise<T>((resolve, reject) => setTimeout(function bar() {
+        const val = getter();
+        if (validate(val)) {
+            return resolve(val);
+        }
+        if (--ttl > 0) {
+            return bar();
+        }
+        reject(val);
+    }));    
+}
+
+export function tryGetElement(query: string, interval = 100, ttl = 100) {
+    const rest = query.slice(1);
+    const foo = query[0] === '#' ? (() => document.getElementById(rest)) : () => document.querySelector(query);
+    return tryGet(foo, val => val !== null, interval, ttl);
 }
 
 export function removeAllChildren(el: Node) {

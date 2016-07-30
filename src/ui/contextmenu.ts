@@ -1,8 +1,8 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 import MetroMap from '../metromap';
-import { DeferredWidget } from './widget';
-import * as util from '../util';
+import { DeferredWidget } from './base/widget';
+import * as util from '../util/utilities';
 import { getJSON } from '../res';
 import { translate } from '../i18n';
 
@@ -12,7 +12,7 @@ export type ContextMenuItem = {
     text: string,
     predicate?: (target: EventTarget) => boolean,
     event?: string,
-    icon?: string, 
+    icon?: string,
     disabled?: boolean;
 }
 
@@ -89,7 +89,7 @@ export default class ContextMenu extends DeferredWidget {
             if (eventType) {
                 this.hide();
                 const me = new MouseEvent(eventType, { clientX, clientY, relatedTarget: event.target });
-                this.metroMap.receiveEvent(me)
+                this.metroMap.publish(me)
             }
         };
         const { width, height } = this.container.getBoundingClientRect(),

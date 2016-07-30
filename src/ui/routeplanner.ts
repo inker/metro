@@ -2,28 +2,38 @@
 const alertify = require('alertifyjs');
 import * as L from 'leaflet';
 import MetroMap from '../metromap';
-import * as util from '../util';
-import { Animation, Filters } from '../svg';
-import { shortestRoute, ShortestRouteObject } from '../algorithm';
+import * as util from '../util/utilities';
+import * as sfx from '../util/sfx';
+import { shortestRoute } from '../util/algorithm';
 import { Icons, cacheIcons } from '../ui';
-import { tr, formatTime as ft } from '../i18n';
+import { Widget } from './base/widget';
 
-export default class RoutePlanner {
+export default class RoutePlanner implements Widget {
     private metroMap: MetroMap;
     private fromMarker: L.Marker;
     private toMarker: L.Marker;
 
-    constructor(metroMap: MetroMap) {
+    constructor() {
+        this.fromMarker = new L.Marker([0, 0], { draggable: true, icon: Icons.Start });
+        this.toMarker = new L.Marker([0, 0], { draggable: true, icon: Icons.End });
+        this.addMarkerListeners();
+    }
+    
+    addTo(metroMap: MetroMap) {
         this.metroMap = metroMap;
         const map = metroMap.getMap();
         const center = map.getCenter();
-        this.fromMarker = new L.Marker(center, { draggable: true, icon: Icons.Start });
-        this.toMarker = new L.Marker(center, { draggable: true, icon: Icons.End });
-        cacheIcons(metroMap.getMap(), [this.fromMarker, this.toMarker]);
-        this.addMarkerListeners();
-        metroMap.addListener('routefrom routeto', this.handleFromTo.bind(this));
-        metroMap.addListener('clearroute', e => this.clearRoute());
-        map.on('zoomstart', e => Animation.terminateAnimations());
+        this.fromMarker.setLatLng(center);
+        this.toMarker.setLatLng(center);
+        cacheIcons(map, [this.fromMarker, this.toMarker]);
+        metroMap.subscribe('routefrom routeto', this.handleFromTo.bind(this));
+        metroMap.subscribe('clearroute', e => this.clearRoute());
+        map.on('zoomstart', e => sfx.Animation.terminateAnimations());
+        addEventListener('keydown', e => {
+            if (e.keyCode !== 27) return;
+            metroMap.publish(new Event('clearroute'));
+        });
+        return this;
     }
 
     private handleFromTo(e: MouseEvent) {
@@ -62,50 +72,12 @@ export default class RoutePlanner {
     private visualizeRouteBetween(from: L.LatLng, to: L.LatLng, animate = true) {
         util.resetStyle();
         alertify.dismissAll();
-        this.visualizeRoute(shortestRoute(this.metroMap.getNetwork(), from, to), animate);
-    }
-
-    private visualizeRoute(obj: ShortestRouteObject, animate = true) {
-        const { platforms, edges, time } = obj;
-        const walkTo = ft(time.walkTo);
-        if (edges === undefined) {
-            return alertify.success(tr`${walkTo} on foot!`);
-        }
-        const selector = '#paths-inner *, #paths-outer *, #transfers-inner *, #transfers-outer *, #station-circles *';
-        Animation.terminateAnimations().then(() => {
-            for (let { style } of document.querySelectorAll(selector) as any) {
-                //style['-webkit-filter'] = 'grayscale(1)';
-                style.filter = null;
-                style.opacity = '0.25';
-            }
-            if (animate) {
-                return Animation.animateRoute(this.metroMap.getNetwork(), platforms, edges, 1);
-            }
-            for (let edgeIdTail of edges) {
-                const outer = document.getElementById('o' + edgeIdTail);
-                if (outer === null) continue;
-                outer.style.opacity = null;
-                const inner = document.getElementById('i' + edgeIdTail);
-                if (inner !== null) {
-                    inner.style.opacity = null;
-                }
-                if (outer.id.charAt(1) !== 't') {
-                    Filters.applyDrop(outer);
-                }
-            }
-            for (let platformNum of platforms) {
-                document.getElementById('p-' + platformNum).style.opacity = null;
-            }      
-        }).then(finished => {
-            // finished is undefined if not animated, false if animation is still running or true if otherwise
-            if (!finished) return;
-            alertify.message(tr`TIME:<br>${walkTo} on foot<br>${ft(time.metro)} by metro<br>${ft(time.walkFrom)} on foot<br>TOTAL: ${ft(time.total)}`, 10)
-        });
+        sfx.visualizeRoute(shortestRoute(this.metroMap.getNetwork().platforms, from, to), animate);
     }
 
     private clearRoute() {
         const map = this.metroMap.getMap();
-        const terminate = Animation.terminateAnimations();
+        const terminate = sfx.Animation.terminateAnimations();
         map.removeLayer(this.fromMarker).removeLayer(this.toMarker);
         this.fromMarker.off('drag').off('dragend');
         this.toMarker.off('drag').off('dragend');

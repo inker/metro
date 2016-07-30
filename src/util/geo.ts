@@ -1,7 +1,7 @@
-/// <reference path="../typings/tsd.d.ts" />
+/// <reference path="../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 import { time } from './decorators';
-import { callMeMaybe } from './util';
+import { callMeMaybe } from './utilities';
 
 interface Locatable { location: L.LatLng };
 

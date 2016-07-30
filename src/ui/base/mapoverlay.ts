@@ -1,44 +1,34 @@
-/// <reference path="../../typings/tsd.d.ts" />
+/// <reference path="../../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
-import * as util from '../util';
-import { createSVGElement } from '../svg';
-//import { MemoizeWithParameters } from '../decorators';
+import * as util from '../../util/utilities';
 
-export default class MapOverlay implements L.ILayer {
+export default class MapOverlay<Container extends Element&{ style: CSSStyleDeclaration }> implements L.ILayer {
     private map: L.Map;
+    protected overlayContainer: Container;
+    
     private _bounds: L.LatLngBounds;
+    private topLeft: L.Point;
+    protected margin: L.Point;
+    
     private minZoom: number;
     private maxZoom: number;
-    private _overlayContainer: SVGSVGElement;
-    private _defs: SVGDefsElement;
-    private _origin: SVGGElement;
-    private topLeft: L.Point;
-    private margin: L.Point;
 
     onZoomChange: (e: L.LeafletEvent) => void;
 
-    get origin() { return this._origin; }
-    get defs() { return this._defs; }
+    constructor(bounds?: L.LatLngBounds, margin = new L.Point(100, 100)) {
+        this.margin = margin.round();
+        this._bounds = bounds;
+        Object.freeze(this._bounds);        
+    }
 
     set bounds(bounds: L.LatLngBounds) {
         this._bounds = bounds;
+        Object.freeze(this._bounds);
         this.updateOverlayPositioning();
     }
 
-    constructor(bounds?: L.LatLngBounds, margin = new L.Point(100, 100)) {
-        this.margin = margin.round();
-
-        this._overlayContainer = createSVGElement('svg') as SVGSVGElement;
-        this._overlayContainer.id = 'overlay';
-
-        this._defs = createSVGElement('defs') as SVGDefsElement;
-        this._overlayContainer.appendChild(this._defs);
-
-        this._origin = createSVGElement('g') as SVGGElement;
-        this._origin.id = 'origin';
-        this._overlayContainer.appendChild(this._origin);
-
-        this._bounds = bounds;
+    get bounds() {
+        return this._bounds;
     }
 
     addTo(map: L.Map) {
@@ -54,7 +44,7 @@ export default class MapOverlay implements L.ILayer {
         this.updateOverlayPositioning();
         
         const { objectsPane, markerPane, mapPane } = map.getPanes();
-        (L.version[0] === '1' ? mapPane : objectsPane).insertBefore(this._overlayContainer, markerPane);
+        (L.version[0] === '1' ? mapPane : objectsPane).insertBefore(this.overlayContainer, markerPane);
         
         this.addMapMovementListeners();
     }
@@ -62,13 +52,13 @@ export default class MapOverlay implements L.ILayer {
     onRemove(map: L.Map) {
         this.map = this.minZoom = this.maxZoom = undefined;
         const { objectsPane, markerPane, mapPane } = map.getPanes();
-        (L.version[0] === '1' ? mapPane : objectsPane).removeChild(this._overlayContainer);
+        (L.version[0] === '1' ? mapPane : objectsPane).removeChild(this.overlayContainer);
         this.map.clearAllEventListeners(); // fix later
     }
 
     private addMapMovementListeners(): void {
         const { mapPane, tilePane, overlayPane } = this.map.getPanes();
-        const { style, classList } = this._overlayContainer;
+        const { style, classList } = this.overlayContainer;
         const fixFontDelayed = (parent: Element, time = 250) => setTimeout(() => util.fixFontRendering(parent), time);
         let scaleFactor = 1, mousePos: L.Point;
         this.map.on('zoomstart', e => {
@@ -79,7 +69,7 @@ export default class MapOverlay implements L.ILayer {
             if (scaleFactor !== 1) {
                 //mousePos = e.target['scrollWheelZoom']['_lastMousePos'];
                 console.log('mousepos:', mousePos);
-                util.scaleOverlay(this._overlayContainer, scaleFactor, mousePos);
+                util.scaleOverlay(this.overlayContainer, scaleFactor, mousePos);
             }
             scaleFactor = 1;
         }).on('zoomend', e => {
@@ -90,7 +80,9 @@ export default class MapOverlay implements L.ILayer {
             classList.remove('leaflet-zoom-animated' );
 
             this.updateOverlayPositioning();
-            this.onZoomChange(e);
+            if (this.onZoomChange !== undefined) {
+                this.onZoomChange(e);
+            }
             this.map.dragging.enable();
         }).on('moveend', e => {
             util.fixFontRendering();
@@ -150,23 +142,20 @@ export default class MapOverlay implements L.ILayer {
         this.topLeft = this.map.project(nw).round();
 
         const pixelBounds = new L.Bounds(this.map.latLngToLayerPoint(nw), this.map.latLngToLayerPoint(se));
-        const { style } = this._overlayContainer;
+        const { style } = this.overlayContainer;
         const topLeft = pixelBounds.min.subtract(this.margin);
         style.left = topLeft.x + 'px';
         style.top = topLeft.y + 'px';
-        
-        //TODO: test which one is faster
-        // transform may not work with svg elements
-        //origin.setAttribute('x', margin.x + 'px');
-        //origin.setAttribute('y', margin.y + 'px');
-        this._origin.setAttribute('transform', `translate(${this.margin.x}, ${this.margin.y})`);
-        //origin.style.transform = `translate(${margin.x}px, ${margin.y}px)`;
-        //origin.style.left = margin.x + 'px';
-        //origin.style.top = margin.y + 'px';
 
         const overlaySize = pixelBounds.getSize().add(this.margin).add(this.margin);
         style.width = overlaySize.x + 'px';
         style.height = overlaySize.y + 'px';
+
+        this.additionalUpdate();
+    }
+
+    protected additionalUpdate() {
+
     }
 
     latLngToSvgPoint(location: L.LatLng): L.Point {
@@ -174,7 +163,7 @@ export default class MapOverlay implements L.ILayer {
             .project(location)
             .round()
             .subtract(this.topLeft);
-    }    
+    }
 
     // latLngToSvgPoint(location: L.LatLng): L.Point {
     //     // return this.map.latLngToContainerPoint(location)

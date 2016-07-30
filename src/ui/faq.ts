@@ -1,8 +1,8 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import * as Hammer from 'hammerjs';
 import MetroMap from '../metromap';
-import { DeferredWidget } from './widget';
-import { once } from '../util';
+import { DeferredWidget } from './base/widget';
+import { once } from '../util/utilities';
 
 type FAQData = { faq: { q: string, a: string }[] };
 
@@ -36,8 +36,7 @@ export default class FAQ extends DeferredWidget {
         });
     }
 
-    addTo(metroMap: MetroMap) {
-        this.map = metroMap.getMap();
+    addTo(map: L.Map) {
         this._whenAvailable.then(faq => {
             document.querySelector('.leaflet-right.leaflet-top').appendChild(this.button);
             document.body.appendChild(this.card);

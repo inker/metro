@@ -1,12 +1,13 @@
-/// <reference path="../typings/tsd.d.ts" />
+/// <reference path="../../typings/tsd.d.ts" />
 
 export default class Mediator {
     private eventListeners = new Map<string, EventListener[]>();
     
     constructor() {}
 
-    addListener(type: string, listener: EventListener) {
+    subscribe(type: string, listener: EventListener) {
         for (let t of type.split(/\s+/)) {
+            console.log('adding event listener ' + t);
             const listenerArr = this.eventListeners.get(t);
             if (listenerArr === undefined) {
                 this.eventListeners.set(t, [listener]);
@@ -16,7 +17,7 @@ export default class Mediator {
         }
     }
 
-    removeListener(type: string, listener: EventListener) {
+    unsubscribe(type: string, listener: EventListener) {
         const listenerArr = this.eventListeners.get(type);
         if (listenerArr === undefined) return;
         const pos = listenerArr.indexOf(listener);
@@ -24,8 +25,13 @@ export default class Mediator {
         listenerArr.splice(pos, 1);
     }
 
-    receiveEvent(event: Event): boolean {
+    publish(event: Event): boolean {
         console.log('event as seen from the dispatcher', event);
+        const listenerArr = this.eventListeners.get(event.type);
+        if (listenerArr === undefined) {
+            console.log('no event listeners registered for ' + event.type);
+            return;
+        }
         for (let handler of this.eventListeners.get(event.type)) {
             handler(event);
         }

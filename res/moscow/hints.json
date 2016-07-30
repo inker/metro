@@ -1,0 +1,31 @@
+{
+  "crossPlatform": {
+    "Kuncevo": {
+      "M3": "Davydkovo",
+      "M4": "Mazilovo"
+    },
+    "Kitaj-gorod": {
+      "M6": "Zamoskvorečje",
+      "M7": "Taganka"
+    },
+    "Zamoskvorečje": {
+      "M6": "Poľanka",
+      "M8": "Volchonka"
+    },
+    "Petrovsko-Razumovskoje": {
+      "M9": "Vladykino",
+      "M10": "Okružnaja"
+    },
+    "Sadovniki": {
+      "M2": "Kantemirovskaja",
+      "M11": "Varšavskaja"
+    },
+    "Kačalovo": {
+      "M9": "Annino",
+      "M11": "Lesoparkovaja"
+    }
+  },
+  "elevationSegments": {
+
+  }
+}

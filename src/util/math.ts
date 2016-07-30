@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+/// <reference path="../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 
 export function dot(v1: L.Point, v2: L.Point): number {

@@ -1,21 +1,23 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 import MetroMap from '../metromap';
-import * as util from '../util';
+import * as util from '../util/utilities';
 import { Icons } from '../ui';
+import { Widget } from './base/widget';
 
-export default class DistanceMeasure {
+export default class DistanceMeasure implements Widget {
     private metroMap: MetroMap;
     private polyline = new L.Polyline([], { color: 'red'});
     private markers = new L.FeatureGroup().on('layeradd layerremove', e => util.fixFontRendering());
     private dashedLine = new L.Polyline([], { color: 'red', opacity: 0.5, dashArray: '0,9' });
 
-    constructor(metroMap: MetroMap) {
+    addTo(metroMap: MetroMap) {
         this.metroMap = metroMap;
         const map = metroMap.getMap();
         const measureListener = (e: MouseEvent) => this.measureDistance(util.mouseToLatLng(map, e));
-        metroMap.addListener('measuredistance', measureListener);
-        metroMap.addListener('deletemeasurements', e => this.deleteMeasurements());
+        metroMap.subscribe('measuredistance', measureListener);
+        metroMap.subscribe('deletemeasurements', e => this.deleteMeasurements());
+        return this;
     }
 
     private updateDistances() {
@@ -41,40 +43,46 @@ export default class DistanceMeasure {
         }
     }
 
-    private addDashedLine() {
-        this.metroMap.getMap()
-            .addLayer(this.dashedLine)
-            .on('mousemove', this.resetDashedLine);
+    private showDashedLine() {
+        this.dashedLine.setStyle({ opacity: 0.5 });
+        // this.metroMap.getMap()
+        //     .addLayer(this.dashedLine)
+        //     .on('mousemove', this.resetDashedLine);
     }
 
-    private removeDashedLine() {
-        this.metroMap.getMap()
-            .off('mousemove', this.resetDashedLine)
-            .removeLayer(this.dashedLine);
+    private hideDashedLine() {
+        this.dashedLine.setStyle({ opacity: 0 });
+        // this.metroMap.getMap()
+        //     .off('mousemove', this.resetDashedLine)
+        //     .removeLayer(this.dashedLine);
     }
 
     private onCircleClick(e: L.LeafletMouseEvent) {
         if (e.originalEvent.button !== 0) return;
         this.markers.removeLayer(e.target);
         if (this.markers.getLayers().length === 0) {
-            this.metroMap.receiveEvent(new MouseEvent('deletemeasurements'));
+            this.metroMap.publish(new MouseEvent('deletemeasurements'));
             return;
         }
         this.updateDistances();
         if (!this.metroMap.getMap().hasLayer(this.dashedLine)) {
-            this.addDashedLine();
+            this.showDashedLine();
         }
     }
 
     private makeMarker = (e: L.LeafletMouseEvent) => {
         if (e.originalEvent.button !== 0) return;
         const map = this.metroMap.getMap();
+        const handleDrag = e => {
+            this.dashedLine.setStyle({ opacity: 0});
+            this.updateDistances();
+        };
         const marker = new L.Marker(e.latlng, { draggable: true })
             .setIcon(Icons.Circle)
             .bindPopup('')
-            .on('mouseover', e => this.removeDashedLine())
-            .on('mouseout', e => this.addDashedLine())
-            .on('drag', e => this.updateDistances())
+            .on('mouseover', e => this.hideDashedLine())
+            .on('mouseout', e => this.showDashedLine())
+            .on('drag', handleDrag)
             .on('click', this.onCircleClick.bind(this));
         // const el = { lang: { ru: 'Udaliť izmerenia', en: 'Delete measurements' } };
         //this.metroMap.contextMenu.extraItems.set(circle, new Map().set('deletemeasurements', el));
@@ -96,7 +104,7 @@ export default class DistanceMeasure {
             .on('click', this.makeMarker)
             .on('mousemove', this.resetDashedLine)
             .fire('click', { latlng: initialCoordinate, originalEvent: { button: 0 } });
-        util.onceEscapePress(e => this.metroMap.receiveEvent(new MouseEvent('deletemeasurements')));
+        util.onceEscapePress(e => this.metroMap.publish(new MouseEvent('deletemeasurements')));
     }
 
     private deleteMeasurements() {

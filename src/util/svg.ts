@@ -1,6 +1,5 @@
-/// <reference path="../typings/tsd.d.ts" />
+/// <reference path="../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
-import * as nw from './network';
 import * as math from './math';
 
 export function createSVGElement(tagName: string) {
@@ -121,54 +120,6 @@ export function circleOffset(circle: SVGCircleElement): L.Point {
     return c.subtract(offset);
 }
 
-export namespace Scale {
-    export function scaleCircle(circle: SVGCircleElement, scaleFactor: number, asAttribute = false) {
-        if (!asAttribute) {
-            circle.style.transform = `scale(${scaleFactor})`;
-            return;
-        }
-        initialCircles.add(circle);
-        // const t = scaleFactor - 1,
-        //     tx = -circle.getAttribute('cx') * t,
-        //     ty = -circle.getAttribute('cy') * t;
-        //circle.setAttribute('transform', `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${tx}, ${ty})`);
-        const oldR = circle.getAttribute('r');
-        circle.setAttribute('data-r', oldR);
-        circle.setAttribute('r', (+oldR * scaleFactor).toString());
-    }
-     
-    const initialCircles = new Set<SVGCircleElement>();
-    const initialTransfers = new Set<SVGPathElement|SVGLineElement>();
-    export function scaleStation(nwPlatforms: nw.Platform[], station: nw.Station, scaleFactor: number, nwTransfers?: nw.Transfer[]) {
-        const transferOuterStrokeWidth = parseFloat(document.getElementById('transfers-outer').style.strokeWidth),
-            transferInnerStrokeWidth = parseFloat(document.getElementById('transfers-inner').style.strokeWidth)
-        for (let p of station.platforms) {
-            const circle = document.getElementById('p-' + p) as any;
-            scaleCircle(circle, scaleFactor, true);
-            if (nwTransfers === undefined || station.platforms.length < 2) continue;
-            for (let i = 0; i < nwTransfers.length; ++i) {
-                const tr = nwTransfers[i];
-                if (tr.source === p || tr.target === p) {
-                    const outer = document.getElementById('ot-' + i) as any;
-                    const inner = document.getElementById('it-' + i) as any;
-                    initialTransfers.add(outer);
-                    initialTransfers.add(inner);
-                    outer.style.strokeWidth = transferOuterStrokeWidth * scaleFactor + 'px';
-                    inner.style.strokeWidth = transferInnerStrokeWidth * scaleFactor + 'px';
-                }
-            }
-        }    
-    }
-    
-    export function unscaleAll() {
-        initialCircles.forEach(circle => circle.setAttribute('r', circle.getAttribute('data-r')));
-        //initialCircles.forEach(circle => circle.removeAttribute('transform'));
-        initialTransfers.forEach(tr => tr.style.strokeWidth = null);
-        initialTransfers.clear();
-        initialCircles.clear(); 
-    }
-}
-
 export namespace Filters {
     export function makeDrop(): SVGFilterElement {
         const filter = createSVGElement('filter');
@@ -270,114 +221,14 @@ export namespace Gradients {
 
     export function setDirection(gradient: Element, vector: L.Point) {
         const coors = math.vectorToGradCoordinates(vector);
-        gradient.setAttribute('x1', (1 - coors.x) * 50 + '%');
-        gradient.setAttribute('y1', (1 - coors.y) * 50 + '%');
-        gradient.setAttribute('x2', (1 + coors.x) * 50 + '%');
-        gradient.setAttribute('y2', (1 + coors.y) * 50 + '%');
+        gradient.setAttribute('x1', ((1 - coors.x) * 50).toFixed(3) + '%');
+        gradient.setAttribute('y1', ((1 - coors.y) * 50).toFixed(3) + '%');
+        gradient.setAttribute('x2', ((1 + coors.x) * 50).toFixed(3) + '%');
+        gradient.setAttribute('y2', ((1 + coors.y) * 50).toFixed(3) + '%');
     }
 
     export function setOffset(gradient: Element, offset: number) {
         (gradient.firstChild as SVGStopElement).setAttribute('offset', offset.toString());
         (gradient.lastChild as SVGStopElement).setAttribute('offset', (1 - offset).toString());
-    }
-}
-
-export namespace Animation {
-
-    let animationsAllowed = true;
-    let currentAnimation: Promise<boolean> = null;
-    
-    export function terminateAnimations() {
-        if (currentAnimation === null) {
-            return Promise.resolve(true);
-        }
-        animationsAllowed = false;
-        return currentAnimation;
-    }
-    
-    export function animateRoute(network: nw.Network, platforms: number[], edges: string[], speed = 1) {
-        const pulsate = L.Browser.webkit && !L.Browser.mobile;
-        currentAnimation = terminateAnimations().then(current => new Promise<boolean>((resolve, reject) => (function animateSpan(i: number) {
-            if (!animationsAllowed) {
-                return resolve(false);
-            }
-            const circle: SVGCircleElement = document.getElementById('p-' + platforms[i]) as any;
-            circle.style.opacity = null;
-            if (pulsate) {
-                pulsateCircle(circle, i < edges.length ? 1.5 : 3, 200);
-            }
-            if (i === edges.length) {
-                return resolve(true);
-            }
-            const outerOld: SVGPathElement | SVGLineElement = document.getElementById('o' + edges[i]) as any;
-            if (outerOld === null) {
-                return animateSpan(i + 1);
-            }
-            const innerOld: typeof outerOld = document.getElementById('i' + edges[i]) as any;
-            const outer: typeof outerOld = outerOld.cloneNode(true) as any;
-            const inner: typeof outer = innerOld === null ? null : innerOld.cloneNode(true) as any;
-            document.getElementById('paths-outer').appendChild(outer);
-            if (inner) {
-                document.getElementById('paths-inner').appendChild(inner);
-            }
-            
-            let length: number;
-            if (outer instanceof SVGPathElement) {
-                length = outer.getTotalLength();
-            } else {
-                const from = new L.Point(+outer.getAttribute('x1'), +outer.getAttribute('y1')),
-                    to = new L.Point(+outer.getAttribute('x2'), +outer.getAttribute('y2'));
-                length = from.distanceTo(to);
-            }
-
-            const idParts = edges[i].split('-');
-            const edge: nw.Transfer | nw.Span = network[idParts[0] === 'p' ? 'spans' : 'transfers'][+idParts[1]];
-            const initialOffset = edge.source === platforms[i] ? length : -length;
-            const duration = length / speed;
-            Filters.applyDrop(outer);
-            for (let path of (inner === null ? [outer] : [outer, inner])) {
-                const pathStyle = path.style;
-                pathStyle.transition = null;
-                pathStyle.opacity = null;
-                pathStyle.strokeDasharray = length + ' ' + length;
-                pathStyle.strokeDashoffset = initialOffset.toString();
-                path.getBoundingClientRect();
-                pathStyle.transition = `stroke-dashoffset ${duration}ms linear`;
-                pathStyle.strokeDashoffset = '0';
-            }
-            outer.addEventListener('transitionend', e => {
-                outerOld.style.opacity = null;
-                if (outer.id.charAt(1) !== 't') {
-                    Filters.applyDrop(outerOld);
-                }
-                outer.parentNode.removeChild(outer);
-                if (inner) {
-                    innerOld.style.opacity = null;
-                    inner.parentNode.removeChild(inner);
-                }
-                animateSpan(i + 1);
-            });
-            //console.log(outer);
-        })(0)).then(finished => {
-            currentAnimation = null;
-            animationsAllowed = true;
-            return finished;
-        }));
-        return currentAnimation;
-    }
-
-    export function pulsateCircle(circle: SVGCircleElement, scaleFactor: number, duration: number) {
-        circle.getBoundingClientRect();
-        circle.style.transition = `transform ${duration / 2}ms linear`;
-        Scale.scaleCircle(circle, scaleFactor);
-        circle.addEventListener('transitionend', function foo(e) {
-            this.removeEventListener('transitionend', foo);
-            this.style.transform = 'scale(1)';
-            this.addEventListener('transitionend', function bar(e) {
-                this.removeEventListener('transitionend', bar);
-                this.style.transition = null;
-                this.style.transform = null;
-            });
-        });
     }
 }
