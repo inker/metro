@@ -12,6 +12,10 @@
       "M6": "Poľanka",
       "M8": "Volchonka"
     },
+    "Park Pobedy": {
+      "M3": "Dorogomilovo",
+      "M8": "Delovoj centr"
+    },
     "Petrovsko-Razumovskoje": {
       "M9": "Vladykino",
       "M10": "Okružnaja"
@@ -23,6 +27,10 @@
     "Kačalovo": {
       "M9": "Annino",
       "M11": "Lesoparkovaja"
+    },
+    "Nižegorodskaja": {
+      "M11": "Textiľščiki",
+      "M13": "Pätigorskaja"
     }
   },
   "elevationSegments": {

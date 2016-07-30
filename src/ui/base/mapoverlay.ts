@@ -13,8 +13,6 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
     private minZoom: number;
     private maxZoom: number;
 
-    onZoomChange: (e: L.LeafletEvent) => void;
-
     constructor(bounds?: L.LatLngBounds, margin = new L.Point(100, 100)) {
         this.margin = margin.round();
         this._bounds = bounds;
@@ -80,9 +78,7 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
             classList.remove('leaflet-zoom-animated' );
 
             this.updateOverlayPositioning();
-            if (this.onZoomChange !== undefined) {
-                this.onZoomChange(e);
-            }
+            this.map.fireEvent('overlayupdate', this);
             this.map.dragging.enable();
         }).on('moveend', e => {
             util.fixFontRendering();

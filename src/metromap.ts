@@ -44,7 +44,6 @@ export default class MetroMap extends Mediator {
             .then(results => hints.verify(results[1], results[0]))
             .catch(console.error)
             .then(json => this.hints = json);
-        const contextMenu = new ui.ContextMenu(config.url['contextMenu']);
         const faq = new ui.FAQ(config.url['data']);
         const tileLoadPromise = new Promise(resolve => mapbox.once('load', e => resolve()));
         
@@ -82,7 +81,7 @@ export default class MetroMap extends Mediator {
             //wait.textContent = 'adding content...';
             this.resetMapView();
             this.map.addLayer(mapbox);
-            this.overlay.onZoomChange = e => this.redrawNetwork();
+            this.map.on('overlayupdate', overlay => this.redrawNetwork());
             this.initNetwork();
             // TODO: fix the kludge making the grey area disappear
             this.map.invalidateSize(false);
@@ -90,10 +89,8 @@ export default class MetroMap extends Mediator {
             new ui.DistanceMeasure().addTo(this);
             //this.routeWorker.postMessage(this.network);
             //ui.drawZones(this.map, this.network.platforms);
-            return contextMenu.whenAvailable;
-        }).then(() => {
-            contextMenu.addTo(this);
-            this.contextMenu = contextMenu;
+
+            this.addContextMenu();
             if (!L.Browser.mobile) {
                 new ui.MapEditor(this.config.detailedZoom).addTo(this);
             }
@@ -112,6 +109,31 @@ export default class MetroMap extends Mediator {
             //     .then(canvas => util.File.downloadText('svg.txt', canvas.toDataURL('image/png')));
             // util.File.downloadText('img.txt', img.src);
         });
+    }
+
+    private addContextMenu() {
+        const arr = [{
+            "event": "routefrom",
+            "text": "Route from here"
+        }, {
+            "event": "routeto",
+            "text": "Route to here"
+        }, {
+            "event": "clearroute",
+            "text": "Clear route"
+        }, {
+            "event": "measuredistance",
+            "text": "Measure distance"
+        }, {
+            "event": "showheatmap",
+            "text": "Show heatmap",
+            "disabled": true
+        }];
+        this.contextMenu = new ui.ContextMenu(arr);
+        for (let el of arr) {
+            this.map.on(el.event, this.publish.bind(this));
+        }
+        this.contextMenu.addTo(this.map);
     }
 
     private addMapListeners() {
@@ -145,9 +167,19 @@ export default class MetroMap extends Mediator {
                 this.plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));                
             },
             'platformadd': (e: CustomEvent) => {
-                const location = util.mouseToLatLng(this.map, e.detail);
+                const { detail } = e;
+                const location = util.mouseToLatLng(this.map, detail);
+                const newPlatform = new nw.Platform(tr`New station`, location, {});
+                this.network.platforms.push(newPlatform);
+                if (detail.relatedTarget !== undefined) {
+                    const path = detail.relatedTarget as SVGPathElement;
+                    const span = (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as nw.Span;
+                    const prop = span.source === newPlatform ? 'target' : 'source';
+                    const newSpan = new nw.Span(newPlatform, span[prop], span.routes);
+                    span[prop] = newPlatform;
+                    this.network.spans.push(newSpan);
+                }
                 const json: nw.GraphJSON = JSON.parse(this.network.toJSON());
-                json.platforms.push({ name: tr`New station`, altNames: {}, location });
                 this.resetNetwork(json);
             },
             'platformdelete': (e: MouseEvent) => {
@@ -199,6 +231,11 @@ export default class MetroMap extends Mediator {
                 this.contextMenu.insertItem({text: 'Delete station', predicate, event: 'platformdelete'});
                 this.contextMenu.insertItem({text: 'Span from here', predicate, event: 'spanstart'});
                 this.contextMenu.insertItem({text: 'Transfer from here', predicate, event: 'transferstart'});
+                const spanPredicate = (target: EventTarget) => {
+                    const parentId = (target as SVGElement).parentElement.id;
+                    return parentId === 'paths-outer' || parentId === 'paths-inner';
+                };
+                this.contextMenu.insertItem({text: 'Add station to line', predicate: spanPredicate, event: 'platformaddtolineclick'});    
             },
             'editmapend': (e: Event) => {
                 this.contextMenu.removeItem('platformadd');

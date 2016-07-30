@@ -1,7 +1,7 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 import MetroMap from '../metromap';
-import { DeferredWidget } from './base/widget';
+import { Widget } from './base/widget';
 import * as util from '../util/utilities';
 import { getJSON } from '../res';
 import { translate } from '../i18n';
@@ -16,33 +16,34 @@ export type ContextMenuItem = {
     disabled?: boolean;
 }
 
-export default class ContextMenu extends DeferredWidget {
-    private metroMap: MetroMap;
+export default class ContextMenu implements L.ILayer {
+    private map: L.Map;
     private items: ContextMenuItem[];
     private container: HTMLDivElement;
 
-    constructor(url: string) {
-        super();
-        this._whenAvailable = getJSON(url).then(json => {
-            console.log('adding context menu');
+    constructor(items: ContextMenuItem[]) {
+        console.log('adding context menu');
 
-            this.items = json;
-            //this._extraItems = new Map();
-            
-            this.container = document.createElement('div');
-            this.container.id = 'contextmenu';
-            this.container.addEventListener('contextmenu', e => {
-                e.preventDefault();
-                (e.target as HTMLElement).click();
-            });
-
-            console.log('context menu ready');
+        this.items = items;
+        //this._extraItems = new Map();
+        
+        this.container = document.createElement('div');
+        this.container.id = 'contextmenu';
+        this.container.addEventListener('contextmenu', e => {
+            e.preventDefault();
+            (e.target as HTMLElement).click();
         });
+
+        console.log('context menu ready');
     }
 
-    addTo(metroMap: MetroMap) {
-        this.metroMap = metroMap;
-        const map = metroMap.getMap();
+    addTo(map: L.Map) {
+        this.onAdd(map);
+        return this;
+    }
+
+    onAdd(map: L.Map) {
+        this.map = map;
         if (map === undefined) {
             throw new Error('cannot add map editor to metro map: leaflet map is missing');
         }
@@ -50,16 +51,18 @@ export default class ContextMenu extends DeferredWidget {
             mapContainer = map.getContainer(),
             listener = e => this.handler(e),
             cancelListener = e => this.hide();
-        this._whenAvailable.then(menu => {
-            mapPane.addEventListener('contextmenu', listener, false);
-            //objectsPane.addEventListener('contextmenu', listener, true); // 'true' prevents propagation
-            mapContainer.addEventListener('mousedown', cancelListener);
-            mapContainer.addEventListener('touchstart', cancelListener);
-            if (!L.Browser.mobile) {
-                map.on('movestart', cancelListener);
-            }
-            document.body.appendChild(this.container);   
-        });
+        mapPane.addEventListener('contextmenu', listener, false);
+        //objectsPane.addEventListener('contextmenu', listener, true); // 'true' prevents propagation
+        mapContainer.addEventListener('mousedown', cancelListener);
+        mapContainer.addEventListener('touchstart', cancelListener);
+        if (!L.Browser.mobile) {
+            map.on('movestart', cancelListener);
+        }
+        document.body.appendChild(this.container);
+    }
+
+    onRemove(map: L.Map) {
+        // TODO
     }
 
     private handler(event: MouseEvent) {
@@ -88,8 +91,7 @@ export default class ContextMenu extends DeferredWidget {
             const eventType = cell.getAttribute('data-event');
             if (eventType) {
                 this.hide();
-                const me = new MouseEvent(eventType, { clientX, clientY, relatedTarget: event.target });
-                this.metroMap.publish(me)
+                this.map.fireEvent(eventType, { clientX, clientY, relatedTarget: event.target });
             }
         };
         const { width, height } = this.container.getBoundingClientRect(),
@@ -122,14 +124,14 @@ export default class ContextMenu extends DeferredWidget {
     private show() {
         this.container.style.visibility = null;
         if (L.Browser.mobile) {
-            this.metroMap.getMap().dragging.disable();
+            this.map.dragging.disable();
         }
     }
     
     private hide() {
         this.container.style.visibility = 'hidden';
         if (L.Browser.mobile) {
-            this.metroMap.getMap().dragging.enable();
+            this.map.dragging.enable();
         }
     }
 }

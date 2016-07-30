@@ -64,6 +64,8 @@ export default class MapEditor implements Widget {
         console.log('adding edit map listeners');
         const map = this.metroMap.getMap();
         const dummyCircles = document.getElementById('dummy-circles');
+        const pathsOuter = document.getElementById('paths-outer');
+        const pathsInner = document.getElementById('paths-inner');
 
         let movingCircle: SVGCircleElement;
         let type: string;
@@ -115,6 +117,10 @@ export default class MapEditor implements Widget {
         this.metroMap.subscribe('platformaddclick', (e: MouseEvent) => {
             const { clientX, clientY } = e;
             this.metroMap.publish(new CustomEvent('platformadd', { detail: { clientX, clientY }}));
+        });
+
+        this.metroMap.subscribe('platformaddtolineclick', (e: MouseEvent) => {
+            this.metroMap.publish(new CustomEvent('platformadd', { detail: e }));
         });
 
     }

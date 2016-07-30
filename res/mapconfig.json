@@ -8,7 +8,6 @@
         "dictionary": "res/dictionary.json",
         "graph": "res/{city}/graph.json",
         "hints": "res/{city}/hints.json",
-        "contextMenu": "res/contextmenudata.json",
         "data": "res/data.json",
         "scheme": "res/{city}/scheme.css"
     }
