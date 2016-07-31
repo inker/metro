@@ -1,6 +1,6 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
-import * as util from '../../util/utilities';
+import { fixFontRendering, scaleOverlay } from '../../util/utilities';
 
 export default class MapOverlay<Container extends Element&{ style: CSSStyleDeclaration }> implements L.ILayer {
     private map: L.Map;
@@ -57,7 +57,7 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
     private addMapMovementListeners(): void {
         const { mapPane, tilePane, overlayPane } = this.map.getPanes();
         const { style, classList } = this.overlayContainer;
-        const fixFontDelayed = (parent: Element, time = 250) => setTimeout(() => util.fixFontRendering(parent), time);
+        const fixFontDelayed = (parent: Element, time = 250) => setTimeout(() => fixFontRendering(parent), time);
         let scaleFactor = 1, mousePos: L.Point;
         this.map.on('zoomstart', e => {
             classList.add('leaflet-zoom-animated');
@@ -67,7 +67,7 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
             if (scaleFactor !== 1) {
                 //mousePos = e.target['scrollWheelZoom']['_lastMousePos'];
                 console.log('mousepos:', mousePos);
-                util.scaleOverlay(this.overlayContainer, scaleFactor, mousePos);
+                scaleOverlay(this.overlayContainer, scaleFactor, mousePos);
             }
             scaleFactor = 1;
         }).on('zoomend', e => {
@@ -81,7 +81,7 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
             this.map.fireEvent('overlayupdate', this);
             this.map.dragging.enable();
         }).on('moveend', e => {
-            util.fixFontRendering();
+            fixFontRendering();
             if (L.version[0] === '1') {
                 fixFontDelayed(tilePane.firstElementChild);
             } else if (overlayPane.hasChildNodes()) {

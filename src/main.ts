@@ -21,7 +21,7 @@ getConfig().then(config => {
     for (let url of Object.keys(config.url)) {
         config.url[url] = config.url[url].replace(/\{city\}/g, city);
     }
-    (document.getElementById('scheme') as HTMLLinkElement).href = config.url['scheme'];
+
     document.title = translate(document.title);
     dictPromise.then(() => {
         document.title = translate(document.title);

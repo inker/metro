@@ -198,6 +198,17 @@ export namespace File {
         })
     }
 
+    export function svgToPicture(root: SVGSVGElement): Promise<HTMLImageElement> {
+        const dataUrlPromise = svgToPictureDataUrl(root, 'png');
+        const img = document.createElement('img');
+        img.width = parseInt(root.getAttribute('width')) || parseInt(root.style.width);
+        img.height = parseInt(root.getAttribute('height')) || parseInt(root.style.height);
+        return dataUrlPromise.then(dataUrl => {
+            img.src = dataUrl;
+            return img;
+        });
+    }
+
     export function svgToImg(root: SVGSVGElement, appendExternalStyles = false): HTMLImageElement {
         if (appendExternalStyles) {
             root = optimizeSvg(root);
@@ -251,16 +262,18 @@ export function scaleOverlay(overlay: Element&{ style: CSSStyleDeclaration }, sc
     overlayStyle.transform = `scale(${scaleFactor})`;
 }
 
-export function tryGet<T>(getter: () => T, validate: (val: T) => boolean, interval = 100, ttl = 100) {
+export function tryGet<T>(fetch: () => T, validate: (val: T) => boolean, interval = 100, ttl = 100) {
     return new Promise<T>((resolve, reject) => setTimeout(function bar() {
-        const val = getter();
+        console.log(ttl);
+        if (--ttl <= 0) {
+            console.error('rejected', bar);
+            reject();
+        }
+        const val = fetch();
         if (validate(val)) {
             return resolve(val);
         }
-        if (--ttl > 0) {
-            return bar();
-        }
-        reject(val);
+        setTimeout(bar, interval);
     }));    
 }
 

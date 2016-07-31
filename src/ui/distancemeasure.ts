@@ -1,22 +1,30 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
-import MetroMap from '../metromap';
 import * as util from '../util/utilities';
 import { Icons } from '../ui';
-import { Widget } from './base/widget';
 
-export default class DistanceMeasure implements Widget {
-    private metroMap: MetroMap;
+export default class implements L.ILayer {
+    private map: L.Map;
     private polyline = new L.Polyline([], { color: 'red'});
     private markers = new L.FeatureGroup().on('layeradd layerremove', e => util.fixFontRendering());
     private dashedLine = new L.Polyline([], { color: 'red', opacity: 0.5, dashArray: '0,9' });
 
-    addTo(metroMap: MetroMap) {
-        this.metroMap = metroMap;
-        const map = metroMap.getMap();
+    onAdd(map: L.Map) {
+        this.map = map;
         const measureListener = (e: MouseEvent) => this.measureDistance(util.mouseToLatLng(map, e));
-        metroMap.subscribe('measuredistance', measureListener);
-        metroMap.subscribe('deletemeasurements', e => this.deleteMeasurements());
+        map.fireEvent('distancemeasureinit');
+        map.on('measuredistance', (e: MouseEvent) => this.measureDistance(util.mouseToLatLng(map, e)));
+        //map.on('measuredistance', e => this.measureDistance(util.mouseToLatLng(map, e.originalEvent)));
+        // metroMap.subscribe('measuredistance', measureListener);
+        // metroMap.subscribe('deletemeasurements', e => this.deleteMeasurements());
+        return this;
+    }
+
+    onRemove(map: L.Map) {
+
+    }
+    addTo(map: L.Map) {
+        this.onAdd(map);
         return this;
     }
 
@@ -45,34 +53,28 @@ export default class DistanceMeasure implements Widget {
 
     private showDashedLine() {
         this.dashedLine.setStyle({ opacity: 0.5 });
-        // this.metroMap.getMap()
-        //     .addLayer(this.dashedLine)
-        //     .on('mousemove', this.resetDashedLine);
     }
 
     private hideDashedLine() {
         this.dashedLine.setStyle({ opacity: 0 });
-        // this.metroMap.getMap()
-        //     .off('mousemove', this.resetDashedLine)
-        //     .removeLayer(this.dashedLine);
     }
 
     private onCircleClick(e: L.LeafletMouseEvent) {
         if (e.originalEvent.button !== 0) return;
         this.markers.removeLayer(e.target);
         if (this.markers.getLayers().length === 0) {
-            this.metroMap.publish(new MouseEvent('deletemeasurements'));
+            this.map.fire('deletemeasurements');
             return;
         }
         this.updateDistances();
-        if (!this.metroMap.getMap().hasLayer(this.dashedLine)) {
+        if (!this.map.hasLayer(this.dashedLine)) {
             this.showDashedLine();
         }
     }
 
     private makeMarker = (e: L.LeafletMouseEvent) => {
+                console.log('firing');
         if (e.originalEvent.button !== 0) return;
-        const map = this.metroMap.getMap();
         const handleDrag = e => {
             this.dashedLine.setStyle({ opacity: 0});
             this.updateDistances();
@@ -97,22 +99,23 @@ export default class DistanceMeasure implements Widget {
 
     private measureDistance(initialCoordinate: L.LatLng) {
         this.dashedLine.addLatLng(initialCoordinate).addLatLng(initialCoordinate);
-        this.metroMap.getMap()
+        this.map
             .addLayer(this.polyline.setLatLngs([]))
             .addLayer(this.markers)
             .addLayer(this.dashedLine.setLatLngs([]))
             .on('click', this.makeMarker)
             .on('mousemove', this.resetDashedLine)
             .fire('click', { latlng: initialCoordinate, originalEvent: { button: 0 } });
-        util.onceEscapePress(e => this.metroMap.publish(new MouseEvent('deletemeasurements')));
+        util.onceEscapePress(e => this.deleteMeasurements());
     }
 
     private deleteMeasurements() {
-        this.metroMap.getMap()
+        this.map
             .removeLayer(this.polyline)
             .removeLayer(this.markers.clearLayers())
             .removeLayer(this.dashedLine)
             .off('mousemove', this.resetDashedLine)
-            .off('click', this.makeMarker);
+            .off('click', this.makeMarker)
+        	.fire('deletemeasurements');
     }
 }

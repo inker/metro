@@ -37,10 +37,4 @@ export default class Mediator {
         }
         return false;
     }
-
-    protected addListenersFromObject(listenerObj: {[eventType: string]: EventListener}) {
-        for (let key of Object.keys(listenerObj)) {
-            this.eventListeners.set(key, [listenerObj[key]]);
-        }        
-    }
 }

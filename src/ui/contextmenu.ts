@@ -1,14 +1,11 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
-import MetroMap from '../metromap';
-import { Widget } from './base/widget';
-import * as util from '../util/utilities';
-import { getJSON } from '../res';
+import { removeAllChildren } from '../util/utilities';
 import { translate } from '../i18n';
 
 // TODO: merge items & extra items, introduce item index
 
-export type ContextMenuItem = {
+type ContextMenuItem = {
     text: string,
     predicate?: (target: EventTarget) => boolean,
     event?: string,
@@ -16,7 +13,7 @@ export type ContextMenuItem = {
     disabled?: boolean;
 }
 
-export default class ContextMenu implements L.ILayer {
+export default class implements L.ILayer {
     private map: L.Map;
     private items: ContextMenuItem[];
     private container: HTMLDivElement;
@@ -68,7 +65,7 @@ export default class ContextMenu implements L.ILayer {
     private handler(event: MouseEvent) {
         event.preventDefault();
         console.log('target', event.target, event.target['parentNode']);
-        util.removeAllChildren(this.container);
+        removeAllChildren(this.container);
         for (let item of this.items) {
             if (item.predicate !== undefined && !item.predicate(event.target)) {
                 console.log(item.predicate(event.target));
@@ -104,6 +101,7 @@ export default class ContextMenu implements L.ILayer {
     }
 
     insertItem(item: ContextMenuItem, index?: number) {
+        // register a dummy listener, so that it doesn't fail during check
         if (index === undefined || index < 0) {
             this.items.push(item);
         } else {

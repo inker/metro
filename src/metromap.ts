@@ -35,7 +35,7 @@ export default class MetroMap extends Mediator {
 
     constructor(config: res.Config) {
         super();
-        
+        (document.getElementById('scheme') as HTMLLinkElement).href = config.url['scheme'];
         const networkPromise = res.getJSON(config.url['graph'])
             .then(json => this.network = new nw.Network(json));
         const lineRulesPromise = res.getLineRules()
@@ -68,6 +68,7 @@ export default class MetroMap extends Mediator {
             this.resetNetwork();
         });
         //wait.textContent = 'loading graph...';
+        this.addContextMenu();
         networkPromise.then(network => {
             const bounds = new L.LatLngBounds(this.network.platforms.map(p => p.location));
             this.overlay = new ui.SvgOverlay(bounds).addTo(this.map);
@@ -81,16 +82,23 @@ export default class MetroMap extends Mediator {
             //wait.textContent = 'adding content...';
             this.resetMapView();
             this.map.addLayer(mapbox);
-            this.map.on('overlayupdate', overlay => this.redrawNetwork());
+            this.map.on('overlayupdate', overlay => {
+                this.redrawNetwork();
+                // console.time('conversion');
+                // util.File.svgToPicture(document.getElementById('overlay') as any).then(img => {
+                //     document.body.appendChild(img);
+                //     console.timeEnd('conversion');
+                // });
+            });
             this.initNetwork();
             // TODO: fix the kludge making the grey area disappear
             this.map.invalidateSize(false);
             new ui.RoutePlanner().addTo(this);
-            new ui.DistanceMeasure().addTo(this);
+            new ui.DistanceMeasure().addTo(this.map);
             //this.routeWorker.postMessage(this.network);
             //ui.drawZones(this.map, this.network.platforms);
 
-            this.addContextMenu();
+
             if (!L.Browser.mobile) {
                 new ui.MapEditor(this.config.detailedZoom).addTo(this);
             }
@@ -111,6 +119,12 @@ export default class MetroMap extends Mediator {
         });
     }
 
+    public subscribe(type: string, listener: EventListener) {
+        super.subscribe(type, listener);
+        // forwarding map event to mediator
+        this.map.on(type, e => this.publish(e as any));
+    }
+
     private addContextMenu() {
         const arr = [{
             "event": "routefrom",
@@ -122,132 +136,163 @@ export default class MetroMap extends Mediator {
             "event": "clearroute",
             "text": "Clear route"
         }, {
-            "event": "measuredistance",
-            "text": "Measure distance"
-        }, {
             "event": "showheatmap",
             "text": "Show heatmap",
             "disabled": true
         }];
         this.contextMenu = new ui.ContextMenu(arr);
         for (let el of arr) {
-            this.map.on(el.event, this.publish.bind(this));
+            this.map.on(el.event, e => {
+                console.log(e);
+                this.publish(e as any)
+            });
         }
         this.contextMenu.addTo(this.map);
     }
 
     private addMapListeners() {
-        super.addListenersFromObject({
-            'measuredistance': (e: Event) => {
-                this.contextMenu.removeItem('measuredistance');
-                this.contextMenu.insertItem({event: 'deletemeasurements', text: 'Clear measurements'});
-            },
-            'deletemeasurements': (e: Event) => {
-                this.contextMenu.removeItem('deletemeasurements');
-                this.contextMenu.insertItem({event: 'measuredistance', text: 'Measure distance'});
-            },
-            'platformrename': (e: MouseEvent) => {
-                const circle = e.relatedTarget as SVGCircleElement;
-                const platform = pool.dummyBindings.getKey(circle);
-                this.plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));
-                ui.platformRenameDialog(platform);
-            },
-            'platformmovestart': (e: MouseEvent) => {
-                this.plate.disabled = true;
-            },
-            'platformmove': (e: MouseEvent) => {
-                const circle = e.relatedTarget as SVGCircleElement;
-                const platform = pool.dummyBindings.getKey(circle);
-                platform.location = util.mouseToLatLng(this.map, e);
-            },
-            'platformmoveend': (e: MouseEvent) => {
-                const circle = e.relatedTarget as SVGCircleElement;
-                const platform = pool.dummyBindings.getKey(circle);
-                this.plate.disabled = false;
-                this.plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));                
-            },
-            'platformadd': (e: CustomEvent) => {
-                const { detail } = e;
-                const location = util.mouseToLatLng(this.map, detail);
-                const newPlatform = new nw.Platform(tr`New station`, location, {});
-                this.network.platforms.push(newPlatform);
-                if (detail.relatedTarget !== undefined) {
-                    const path = detail.relatedTarget as SVGPathElement;
-                    const span = (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as nw.Span;
-                    const prop = span.source === newPlatform ? 'target' : 'source';
-                    const newSpan = new nw.Span(newPlatform, span[prop], span.routes);
-                    span[prop] = newPlatform;
-                    this.network.spans.push(newSpan);
-                }
-                const json: nw.GraphJSON = JSON.parse(this.network.toJSON());
-                this.resetNetwork(json);
-            },
-            'platformdelete': (e: MouseEvent) => {
-                const circle = e.relatedTarget as SVGCircleElement;
-                const platform = pool.dummyBindings.getKey(circle);
-                this.network.deletePlatform(platform);
-                this.redrawNetwork();
-            },
-            'spanend': (e: CustomEvent) => {
-                const source = pool.dummyBindings.getKey(e.detail.source);
-                const target = pool.dummyBindings.getKey(e.detail.target);
-                console.log(source, target);
-                this.contextMenu.removeItem('spanend');
-                const json: nw.GraphJSON = JSON.parse(this.network.toJSON());
-                const sourceRoutes = source.passingRoutes();
-                const targetRoutes = target.passingRoutes();
-                const intersection = util.intersection(sourceRoutes, targetRoutes);
-                const routeSet = intersection.size > 0 ? intersection :
-                    util.setsEqual(sourceRoutes, targetRoutes) || sourceRoutes.size === 1 ? sourceRoutes : targetRoutes;
-                json.spans.push({
-                    source: this.network.platforms.indexOf(source),
-                    target: this.network.platforms.indexOf(target),
-                    routes: Array.from(routeSet).map(r => this.network.routes.indexOf(r))
-                });
-                this.resetNetwork(json);
-            },
-            'transferend': (e: CustomEvent) => {
-                const source = pool.dummyBindings.getKey(e.detail.source);
-                const target = pool.dummyBindings.getKey(e.detail.target);
-                console.log(source, target);
-                this.contextMenu.removeItem('transferend');
-                const json: nw.GraphJSON = JSON.parse(this.network.toJSON());
-                json.transfers.push({
-                    source: this.network.platforms.indexOf(source),
-                    target: this.network.platforms.indexOf(target)
-                });
-                this.resetNetwork(json);           
-            },
-            'editmapstart': (e: Event) => {
-                if (this.map.getZoom() < this.config.detailedZoom) {
-                    // const plusButton = this.map.zoomControl.getContainer().firstChild;
-                    // util.triggerMouseEvent(plusButton, 'mousedown');
-                    // util.triggerMouseEvent(plusButton, 'click');
-                    this.map.setZoom(this.config.detailedZoom);
-                }
-                this.contextMenu.insertItem({text: 'New station', event: 'platformaddclick'});
-                const predicate = (target: EventTarget) => (target as SVGElement).parentElement.id === 'dummy-circles';
-                this.contextMenu.insertItem({text: 'Rename station', predicate, event: 'platformrename'});
-                this.contextMenu.insertItem({text: 'Delete station', predicate, event: 'platformdelete'});
-                this.contextMenu.insertItem({text: 'Span from here', predicate, event: 'spanstart'});
-                this.contextMenu.insertItem({text: 'Transfer from here', predicate, event: 'transferstart'});
-                const spanPredicate = (target: EventTarget) => {
-                    const parentId = (target as SVGElement).parentElement.id;
-                    return parentId === 'paths-outer' || parentId === 'paths-inner';
-                };
-                this.contextMenu.insertItem({text: 'Add station to line', predicate: spanPredicate, event: 'platformaddtolineclick'});    
-            },
-            'editmapend': (e: Event) => {
-                this.contextMenu.removeItem('platformadd');
-                this.contextMenu.removeItem('platformrename');
-                this.contextMenu.removeItem('platformdelete');
-            },
-            'mapsave': (e: Event) => {
-                util.File.downloadText('graph.json', this.network.toJSON());
-            },
-            'showheatmap': (e: Event) => {
-                //this.showHeatMap();
+        this.subscribe('distancemeasureinit', e => {
+            this.contextMenu.insertItem({event: 'measuredistance', text: 'Measure distance'});
+        });
+        this.map.on('deletemeasurements', e => {
+            this.contextMenu.removeItem('deletemeasurements');
+            this.contextMenu.insertItem({event: 'measuredistance', text: 'Measure distance'});        
+        });
+        this.subscribe('measuredistance', (e: Event) => {
+            this.contextMenu.removeItem('measuredistance');
+            this.contextMenu.insertItem({event: 'deletemeasurements', text: 'Clear measurements'});
+        });
+        this.subscribe('deletemeasurements', (e: Event) => {
+
+        });
+        this.subscribe('platformrename', (e: MouseEvent) => {
+            const circle = e.relatedTarget as SVGCircleElement;
+            const platform = pool.dummyBindings.getKey(circle);
+            this.plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));
+            ui.platformRenameDialog(platform);
+        });
+        this.subscribe('platformmovestart', (e: MouseEvent) => {
+            this.plate.disabled = true;
+        });
+        this.subscribe('platformmove', (e: MouseEvent) => {
+            const circle = e.relatedTarget as SVGCircleElement;
+            const platform = pool.dummyBindings.getKey(circle);
+            platform.location = util.mouseToLatLng(this.map, e);
+        });
+        this.subscribe('platformmoveend', (e: MouseEvent) => {
+            const circle = e.relatedTarget as SVGCircleElement;
+            const platform = pool.dummyBindings.getKey(circle);
+            this.plate.disabled = false;
+            this.plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));                
+        });
+        this.subscribe('platformadd', (e: CustomEvent) => {
+            console.log(e);
+            const { detail } = e;
+            const location = util.mouseToLatLng(this.map, detail);
+            const newPlatform = new nw.Platform(tr`New station`, location, {});
+            this.network.platforms.push(newPlatform);
+            if (detail.relatedTarget !== undefined) {
+                const path = detail.relatedTarget as SVGPathElement;
+                const span = (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as nw.Span;
+                const prop = span.source === newPlatform ? 'target' : 'source';
+                const newSpan = new nw.Span(newPlatform, span[prop], span.routes);
+                span[prop] = newPlatform;
+                this.network.spans.push(newSpan);
             }
+            const json: nw.GraphJSON = JSON.parse(this.network.toJSON());
+            this.resetNetwork(json);
+        });
+        this.subscribe('platformdelete', (e: MouseEvent) => {
+            const circle = e.relatedTarget as SVGCircleElement;
+            const platform = pool.dummyBindings.getKey(circle);
+            this.network.deletePlatform(platform);
+            this.redrawNetwork();
+        });
+        this.subscribe('spanend', (e: CustomEvent) => {
+            const source = pool.dummyBindings.getKey(e.detail.source);
+            const target = pool.dummyBindings.getKey(e.detail.target);
+            console.log(source, target);
+            this.contextMenu.removeItem('spanend');
+
+            const sourceRoutes = source.passingRoutes();
+            const targetRoutes = target.passingRoutes();
+            const sn = sourceRoutes.size, tn = targetRoutes.size;
+            
+            const ask = (defSet?: Set<nw.Route>) => {
+                const def = defSet === undefined ? undefined : Array.from(defSet).map(r => r.line + r.branch).join('|')
+                const answer = prompt('routes', def);
+                const strings = answer.split('|');
+                let routeSet = new Set<nw.Route>();
+                for (let s of strings) {
+                    var tokens = s[0] === 'M' ? s.match(/(M\d{0,2})(\w?)/) : s.match(/([EL])(.{0,2})/);
+                    if (!tokens) {
+                        console.error('incorrect route', s);
+                        continue;
+                    }
+                    let route = this.network.routes.find(r => r.line === tokens[1] && r.branch === tokens[2]);
+                    if (route === undefined) {
+                        console.log('creating new route');
+                        route = { line: tokens[1], branch: tokens[2] };
+                        this.network.routes.push(route);
+                    }
+                    routeSet.add(route); 
+                }
+                return routeSet;
+            }
+            let routeSet: Set<nw.Route>;
+            if (sn === 0 && tn === 0) {
+               routeSet = ask();
+            } else if (sn === 1 && tn === 0) {
+                routeSet = sourceRoutes;
+            } else if (tn === 1 && sn === 0) {
+                routeSet = targetRoutes;
+            } else if (sn > 0 && tn === 0) {
+                routeSet = ask(sourceRoutes);
+            } else if (tn > 0 && sn === 0) {
+                routeSet = ask(targetRoutes);
+            } else {
+                routeSet = ask(util.intersection(sourceRoutes, targetRoutes));
+            }
+            this.network.spans.push(new nw.Span(source, target, Array.from(routeSet)));
+            this.resetNetwork(JSON.parse(this.network.toJSON()));
+        });
+        this.subscribe('transferend', (e: CustomEvent) => {
+            const source = pool.dummyBindings.getKey(e.detail.source);
+            const target = pool.dummyBindings.getKey(e.detail.target);
+            console.log(source, target);
+            this.contextMenu.removeItem('transferend');
+            this.network.transfers.push(new nw.Transfer(source, target));
+            this.resetNetwork(JSON.parse(this.network.toJSON()));           
+        });
+        this.subscribe('editmapstart', (e: Event) => {
+            if (this.map.getZoom() < this.config.detailedZoom) {
+                // const plusButton = this.map.zoomControl.getContainer().firstChild;
+                // util.triggerMouseEvent(plusButton, 'mousedown');
+                // util.triggerMouseEvent(plusButton, 'click');
+                this.map.setZoom(this.config.detailedZoom);
+            }
+            this.contextMenu.insertItem({text: 'New station', event: 'platformaddclick'});
+            const predicate = (target: EventTarget) => (target as SVGElement).parentElement.id === 'dummy-circles';
+            this.contextMenu.insertItem({text: 'Rename station', predicate, event: 'platformrename'});
+            this.contextMenu.insertItem({text: 'Delete station', predicate, event: 'platformdelete'});
+            this.contextMenu.insertItem({text: 'Span from here', predicate, event: 'spanstart'});
+            this.contextMenu.insertItem({text: 'Transfer from here', predicate, event: 'transferstart'});
+            const spanPredicate = (target: EventTarget) => {
+                const parentId = (target as SVGElement).parentElement.id;
+                return parentId === 'paths-outer' || parentId === 'paths-inner';
+            };
+            this.contextMenu.insertItem({text: 'Add station to line', predicate: spanPredicate, event: 'platformaddtolineclick'});    
+        });
+        this.subscribe('editmapend', (e: Event) => {
+            this.contextMenu.removeItem('platformaddclick');
+            this.contextMenu.removeItem('platformrename');
+            this.contextMenu.removeItem('platformdelete');
+            this.contextMenu.removeItem('spanstart');
+            this.contextMenu.removeItem('transferstart');
+            this.contextMenu.removeItem('platformaddtolineclick');
+        });
+        this.subscribe('mapsave', (e: Event) => {
+            util.File.downloadText('graph.json', this.network.toJSON());
         });
     }
 

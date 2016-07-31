@@ -80,8 +80,7 @@ export default class MapEditor implements Widget {
                 this.metroMap.publish(new CustomEvent(type === 'span' ? 'spanend' : 'transferend', { detail }));
                 fromCircle = undefined;
                 type = undefined;
-            }
-            if (e.button === 0) {
+            } else if (e.button === 0) {
                 map.dragging.disable();
                 movingCircle = e.target as SVGCircleElement;
                 this.metroMap.publish(new MouseEvent('platformmovestart', { relatedTarget: e.target }));

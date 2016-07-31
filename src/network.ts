@@ -139,14 +139,18 @@ export class Transfer extends Edge<Platform> {
     get source() { return this._source; }
     get target() { return this._target; }
     set source(vertex: Platform) {
-        const oldTransfers = this._source.transfers;
-        oldTransfers.splice(oldTransfers.indexOf(this), 1);
+        if (this._source !== undefined) {
+            deleteFromArray(this._source.transfers, this);
+        }
         this._source = vertex;
+        vertex.transfers.push(this);
     }
     set target(vertex: Platform) {
-        const oldTransfers = this._target.transfers;
-        oldTransfers.splice(oldTransfers.indexOf(this), 1);
+        if (this._target !== undefined) {
+            deleteFromArray(this._target.transfers, this);
+        }
         this._target = vertex;
+        vertex.transfers.push(this);
     }
 }
 
@@ -161,14 +165,18 @@ export class Span extends Edge<Platform> {
     get source() { return this._source; }
     get target() { return this._target; }  
     set source(vertex: Platform) {
-        const oldSpans = this._source.spans;
-        oldSpans.splice(oldSpans.indexOf(this), 1);
+        if (this._source !== undefined) {
+            deleteFromArray(this._source.spans, this);
+        }
         this._source = vertex;
+        vertex.spans.push(this);
     }
     set target(vertex: Platform) {
-        const oldSpans = this._target.spans;
-        oldSpans.splice(oldSpans.indexOf(this), 1);
+        if (this._target !== undefined) {
+            deleteFromArray(this._target.spans, this);
+        }
         this._target = vertex;
+        vertex.spans.push(this);
     }
 }
 
