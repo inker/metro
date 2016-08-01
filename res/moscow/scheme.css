@@ -68,6 +68,7 @@ path {
 .M11 { stroke: rgb(0,177,176); }
 .M12 { stroke: rgb(132,205,188); }
 .M13 { stroke: rgb(243,134,160); }
+.M14 { stroke: rgb(35,31,32); }
 .E { stroke: rgb(35,31,32); }
 .L { stroke: rgb(96,64,153); }
 #paths-inner * { stroke: #FFFFFF; }

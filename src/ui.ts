@@ -41,6 +41,26 @@ export function platformRenameDialog(platform: nw.Platform) {
     }, () => alertify.warning(tr`Name change cancelled`));
 }
 
+export function askRoutes(network: nw.Network, defSet?: Set<nw.Route>) {
+    const def = defSet === undefined ? undefined : Array.from(defSet).map(r => r.line + r.branch).join('|')
+    let routeSet = new Set<nw.Route>();
+    for (let s of prompt('routes', def).split('|')) {
+        var tokens = s[0] === 'M' ? s.match(/(M\d{0,2})(\w?)/) : s.match(/([EL])(.{0,2})/);
+        if (!tokens) {
+            console.error('incorrect route', s);
+            continue;
+        }
+        let route = network.routes.find(r => r.line === tokens[1] && r.branch === tokens[2]);
+        if (route === undefined) {
+            console.log('creating new route');
+            route = { line: tokens[1], branch: tokens[2] };
+            network.routes.push(route);
+        }
+        routeSet.add(route); 
+    }
+    return routeSet;    
+}
+
 export function addLayerSwitcher(map: L.Map, layers: L.TileLayer[]): void {
     let currentLayerIndex = 0;
     console.log(layers.length);

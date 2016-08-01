@@ -154,16 +154,13 @@ export default class MetroMap extends Mediator {
         this.subscribe('distancemeasureinit', e => {
             this.contextMenu.insertItem({event: 'measuredistance', text: 'Measure distance'});
         });
-        this.map.on('deletemeasurements', e => {
-            this.contextMenu.removeItem('deletemeasurements');
+        this.map.on('clearmeasurements', e => {
+            this.contextMenu.removeItem('clearmeasurements');
             this.contextMenu.insertItem({event: 'measuredistance', text: 'Measure distance'});        
         });
         this.subscribe('measuredistance', (e: Event) => {
             this.contextMenu.removeItem('measuredistance');
-            this.contextMenu.insertItem({event: 'deletemeasurements', text: 'Clear measurements'});
-        });
-        this.subscribe('deletemeasurements', (e: Event) => {
-
+            this.contextMenu.insertItem({event: 'clearmeasurements', text: 'Clear measurements'});
         });
         this.subscribe('platformrename', (e: MouseEvent) => {
             const circle = e.relatedTarget as SVGCircleElement;
@@ -208,6 +205,14 @@ export default class MetroMap extends Mediator {
             this.network.deletePlatform(platform);
             this.redrawNetwork();
         });
+        this.subscribe('spanroutechange', (e: MouseEvent) => {
+            if (e.relatedTarget === undefined) return;
+            const path = e.relatedTarget as SVGPathElement;
+            const span = (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as nw.Span;
+            const routeSet = ui.askRoutes(this.network, new Set(span.routes));
+            span.routes = Array.from(routeSet);
+            this.resetNetwork(JSON.parse(this.network.toJSON()));
+        });
         this.subscribe('spanend', (e: CustomEvent) => {
             const source = pool.dummyBindings.getKey(e.detail.source);
             const target = pool.dummyBindings.getKey(e.detail.target);
@@ -218,44 +223,20 @@ export default class MetroMap extends Mediator {
             const targetRoutes = target.passingRoutes();
             const sn = sourceRoutes.size, tn = targetRoutes.size;
             
-            const ask = (defSet?: Set<nw.Route>) => {
-                const def = defSet === undefined ? undefined : Array.from(defSet).map(r => r.line + r.branch).join('|')
-                const answer = prompt('routes', def);
-                const strings = answer.split('|');
-                let routeSet = new Set<nw.Route>();
-                for (let s of strings) {
-                    var tokens = s[0] === 'M' ? s.match(/(M\d{0,2})(\w?)/) : s.match(/([EL])(.{0,2})/);
-                    if (!tokens) {
-                        console.error('incorrect route', s);
-                        continue;
-                    }
-                    let route = this.network.routes.find(r => r.line === tokens[1] && r.branch === tokens[2]);
-                    if (route === undefined) {
-                        console.log('creating new route');
-                        route = { line: tokens[1], branch: tokens[2] };
-                        this.network.routes.push(route);
-                    }
-                    routeSet.add(route); 
-                }
-                return routeSet;
-            }
-            let routeSet: Set<nw.Route>;
-            if (sn === 0 && tn === 0) {
-               routeSet = ask();
-            } else if (sn === 1 && tn === 0) {
-                routeSet = sourceRoutes;
-            } else if (tn === 1 && sn === 0) {
-                routeSet = targetRoutes;
-            } else if (sn > 0 && tn === 0) {
-                routeSet = ask(sourceRoutes);
-            } else if (tn > 0 && sn === 0) {
-                routeSet = ask(targetRoutes);
-            } else {
-                routeSet = ask(util.intersection(sourceRoutes, targetRoutes));
-            }
+            const routeSet = sn > 0 && tn === 0 ? (sn === 1 ? sourceRoutes : ui.askRoutes(this.network, sourceRoutes)) :
+                tn > 0 && sn === 0 ? (tn === 1 ? targetRoutes : ui.askRoutes(this.network, targetRoutes)) :
+                ui.askRoutes(this.network, util.intersection(sourceRoutes, targetRoutes))
+            
             this.network.spans.push(new nw.Span(source, target, Array.from(routeSet)));
             this.resetNetwork(JSON.parse(this.network.toJSON()));
         });
+        this.subscribe('spandelete', (e: MouseEvent) => {
+            if (e.relatedTarget === undefined) return;
+            const path = e.relatedTarget as SVGPathElement;
+            const span = (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as nw.Span;
+            util.deleteFromArray(this.network.spans, span);
+            this.resetNetwork(JSON.parse(this.network.toJSON()));
+        });  
         this.subscribe('transferend', (e: CustomEvent) => {
             const source = pool.dummyBindings.getKey(e.detail.source);
             const target = pool.dummyBindings.getKey(e.detail.target);
@@ -272,16 +253,18 @@ export default class MetroMap extends Mediator {
                 this.map.setZoom(this.config.detailedZoom);
             }
             this.contextMenu.insertItem({text: 'New station', event: 'platformaddclick'});
-            const predicate = (target: EventTarget) => (target as SVGElement).parentElement.id === 'dummy-circles';
-            this.contextMenu.insertItem({text: 'Rename station', predicate, event: 'platformrename'});
-            this.contextMenu.insertItem({text: 'Delete station', predicate, event: 'platformdelete'});
-            this.contextMenu.insertItem({text: 'Span from here', predicate, event: 'spanstart'});
-            this.contextMenu.insertItem({text: 'Transfer from here', predicate, event: 'transferstart'});
-            const spanPredicate = (target: EventTarget) => {
+            const trigger = (target: EventTarget) => (target as SVGElement).parentElement.id === 'dummy-circles';
+            this.contextMenu.insertItem({text: 'Rename station', trigger, event: 'platformrename'});
+            this.contextMenu.insertItem({text: 'Delete station', trigger, event: 'platformdelete'});
+            this.contextMenu.insertItem({text: 'Span from here', trigger, event: 'spanstart'});
+            this.contextMenu.insertItem({text: 'Transfer from here', trigger, event: 'transferstart'});
+            const pathTrigger = (target: EventTarget) => {
                 const parentId = (target as SVGElement).parentElement.id;
                 return parentId === 'paths-outer' || parentId === 'paths-inner';
-            };
-            this.contextMenu.insertItem({text: 'Add station to line', predicate: spanPredicate, event: 'platformaddtolineclick'});    
+            }
+            this.contextMenu.insertItem({text: 'Change route', event: 'spanroutechange', trigger: pathTrigger})
+            this.contextMenu.insertItem({text: 'Add station to line', event: 'platformaddtolineclick', trigger: pathTrigger });
+            this.contextMenu.insertItem({text: 'Delete span', event: 'spandelete', trigger: pathTrigger });            
         });
         this.subscribe('editmapend', (e: Event) => {
             this.contextMenu.removeItem('platformaddclick');
@@ -290,6 +273,8 @@ export default class MetroMap extends Mediator {
             this.contextMenu.removeItem('spanstart');
             this.contextMenu.removeItem('transferstart');
             this.contextMenu.removeItem('platformaddtolineclick');
+            this.contextMenu.removeItem('spanroutechange');
+            this.contextMenu.removeItem('spandelete');
         });
         this.subscribe('mapsave', (e: Event) => {
             util.File.downloadText('graph.json', this.network.toJSON());

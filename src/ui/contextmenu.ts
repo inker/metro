@@ -7,8 +7,8 @@ import { translate } from '../i18n';
 
 type ContextMenuItem = {
     text: string,
-    predicate?: (target: EventTarget) => boolean,
-    event?: string,
+    event: string,
+    trigger?: (target: EventTarget) => boolean,
     icon?: string,
     disabled?: boolean;
 }
@@ -67,8 +67,8 @@ export default class implements L.ILayer {
         console.log('target', event.target, event.target['parentNode']);
         removeAllChildren(this.container);
         for (let item of this.items) {
-            if (item.predicate !== undefined && !item.predicate(event.target)) {
-                console.log(item.predicate(event.target));
+            if (item.trigger !== undefined && !item.trigger(event.target)) {
+                console.log(item.trigger(event.target));
                 continue;
             }
             const cell = document.createElement('div');

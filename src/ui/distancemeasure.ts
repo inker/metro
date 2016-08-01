@@ -14,9 +14,7 @@ export default class implements L.ILayer {
         const measureListener = (e: MouseEvent) => this.measureDistance(util.mouseToLatLng(map, e));
         map.fireEvent('distancemeasureinit');
         map.on('measuredistance', (e: MouseEvent) => this.measureDistance(util.mouseToLatLng(map, e)));
-        //map.on('measuredistance', e => this.measureDistance(util.mouseToLatLng(map, e.originalEvent)));
-        // metroMap.subscribe('measuredistance', measureListener);
-        // metroMap.subscribe('deletemeasurements', e => this.deleteMeasurements());
+        map.on('clearmeasurements', (e: MouseEvent) => this.clearMeasurements());
         return this;
     }
 
@@ -63,7 +61,7 @@ export default class implements L.ILayer {
         if (e.originalEvent.button !== 0) return;
         this.markers.removeLayer(e.target);
         if (this.markers.getLayers().length === 0) {
-            this.map.fire('deletemeasurements');
+            this.map.fire('clearmeasurements');
             return;
         }
         this.updateDistances();
@@ -106,16 +104,15 @@ export default class implements L.ILayer {
             .on('click', this.makeMarker)
             .on('mousemove', this.resetDashedLine)
             .fire('click', { latlng: initialCoordinate, originalEvent: { button: 0 } });
-        util.onceEscapePress(e => this.deleteMeasurements());
+        util.onceEscapePress(e => this.map.fire('clearmeasurements'));
     }
 
-    private deleteMeasurements() {
+    private clearMeasurements() {
         this.map
             .removeLayer(this.polyline)
             .removeLayer(this.markers.clearLayers())
             .removeLayer(this.dashedLine)
             .off('mousemove', this.resetDashedLine)
-            .off('click', this.makeMarker)
-        	.fire('deletemeasurements');
+            .off('click', this.makeMarker);
     }
 }
