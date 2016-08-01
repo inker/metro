@@ -245,6 +245,14 @@ export default class MetroMap extends Mediator {
             this.network.transfers.push(new nw.Transfer(source, target));
             this.resetNetwork(JSON.parse(this.network.toJSON()));           
         });
+        this.subscribe('transferdelete', (e: MouseEvent) => {
+            if (e.relatedTarget === undefined) return;
+            const path = e.relatedTarget as SVGPathElement|SVGLineElement;
+            const transfer = (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as nw.Transfer;
+            console.log(transfer);
+            util.deleteFromArray(this.network.transfers, transfer);
+            this.resetNetwork(JSON.parse(this.network.toJSON()));
+        });  
         this.subscribe('editmapstart', (e: Event) => {
             if (this.map.getZoom() < this.config.detailedZoom) {
                 // const plusButton = this.map.zoomControl.getContainer().firstChild;
@@ -265,6 +273,10 @@ export default class MetroMap extends Mediator {
             this.contextMenu.insertItem({text: 'Change route', event: 'spanroutechange', trigger: pathTrigger})
             this.contextMenu.insertItem({text: 'Add station to line', event: 'platformaddtolineclick', trigger: pathTrigger });
             this.contextMenu.insertItem({text: 'Delete span', event: 'spandelete', trigger: pathTrigger });            
+            this.contextMenu.insertItem({text: 'Delete transfer', event: 'transferdelete', trigger: target => {
+                const parentId = (target as SVGElement).parentElement.id;
+                return parentId === 'transfers-outer' || parentId === 'transfers-inner';                
+            } });
         });
         this.subscribe('editmapend', (e: Event) => {
             this.contextMenu.removeItem('platformaddclick');
@@ -275,6 +287,7 @@ export default class MetroMap extends Mediator {
             this.contextMenu.removeItem('platformaddtolineclick');
             this.contextMenu.removeItem('spanroutechange');
             this.contextMenu.removeItem('spandelete');
+            this.contextMenu.removeItem('transferdelete');
         });
         this.subscribe('mapsave', (e: Event) => {
             util.File.downloadText('graph.json', this.network.toJSON());
