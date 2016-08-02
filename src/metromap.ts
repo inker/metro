@@ -196,8 +196,8 @@ export default class MetroMap extends Mediator {
                 span[prop] = newPlatform;
                 this.network.spans.push(newSpan);
             }
-            const json: nw.GraphJSON = JSON.parse(this.network.toJSON());
-            this.resetNetwork(json);
+            this.overlay.extendBounds(location);
+            this.resetNetwork(JSON.parse(this.network.toJSON()));
         });
         this.subscribe('platformdelete', (e: MouseEvent) => {
             const circle = e.relatedTarget as SVGCircleElement;
@@ -685,7 +685,7 @@ export default class MetroMap extends Mediator {
             this.whiskers.get(span.target).get(span),
             this.platformsOnSVG.get(span.target)
         ];
-        //console.log(controlPoints);
+        //console.log(span, this.whiskers.get(span.target), controlPoints);
         const bezier = svg.makeCubicBezier(controlPoints);
         //bezier.id = 'op-' + spanIndex;
         if (lineType === 'E') {

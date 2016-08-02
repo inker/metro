@@ -307,7 +307,7 @@ export class Network {
     }
 
     deletePlatform(platform: Platform) {
-        console.log('removing platform');
+        console.log('removing platform', platform);
         for (let transfer of platform.transfers) {
             deleteFromArray(this.transfers, transfer);
         }
@@ -319,20 +319,16 @@ export class Network {
             deleteFromArray(this.spans, span);
         } else if (platform.spans.length === 2) {
             const [first, second] = platform.spans;
-            if (platform.passingRoutes().size === 1) {
-                // temporary
-                const end = second.other(platform);
-                end.spans[end.spans.indexOf(second)] = first;
-                if (first.source === platform) {
-                    first.source = end;
-                } else {
-                    first.target = end;
-                }
-            } else {
-                deleteFromArray(this.spans, first);
+            const end = second.other(platform);
+            if (platform.passingRoutes().size === 2) {
                 deleteFromArray(first.other(platform).spans, first);
-                deleteFromArray(second.other(platform).spans, second);
+                deleteFromArray(this.spans, first);
+            } else if (first.source === platform) {
+                first.source = end;
+            } else {
+                first.target = end;
             }
+            deleteFromArray(end.spans, second);
             deleteFromArray(this.spans, second);
         } else {
             for (let span of platform.spans) {

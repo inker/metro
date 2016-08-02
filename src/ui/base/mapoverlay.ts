@@ -19,11 +19,11 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
         Object.freeze(this._bounds);        
     }
 
-    set bounds(bounds: L.LatLngBounds) {
-        this._bounds = bounds;
-        Object.freeze(this._bounds);
-        this.updateOverlayPositioning();
-    }
+    // set bounds(bounds: L.LatLngBounds) {
+    //     this._bounds = bounds;
+    //     Object.freeze(this._bounds);
+    //     this.updateOverlayPositioning();
+    // }
 
     get bounds() {
         return this._bounds;
@@ -146,12 +146,12 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
         const overlaySize = pixelBounds.getSize().add(this.margin).add(this.margin);
         style.width = overlaySize.x + 'px';
         style.height = overlaySize.y + 'px';
-
-        this.additionalUpdate();
     }
 
-    protected additionalUpdate() {
-
+    extendBounds(point: L.LatLng) {
+        const old = this._bounds;
+        this._bounds = new L.LatLngBounds([old.getNorthWest(), old.getSouthEast(), point]);
+        this.updateOverlayPositioning();
     }
 
     latLngToSvgPoint(location: L.LatLng): L.Point {
@@ -160,25 +160,4 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
             .round()
             .subtract(this.topLeft);
     }
-
-    // latLngToSvgPoint(location: L.LatLng): L.Point {
-    //     // return this.map.latLngToContainerPoint(location)
-    //     //             .subtract(this.map.latLngToContainerPoint(this.bounds.getNorthWest()));
-    //     // return this.map
-    //     //     .project(location)
-    //     //     .round()
-    //     //     .subtract(this.topLeft);
-    //     return this._latLngToSvgPoint(location, this.map.getZoom());
-    // }
-
-    // @MemoizeWithParameters
-    // private _latLngToSvgPoint(location: L.LatLng, zoom: number): L.Point {
-    //     console.time('func');
-    //     const pt = this.map
-    //         .project(location, zoom)
-    //         .round()
-    //         .subtract(this.topLeft);
-    //     console.timeEnd('func');
-    //     return pt;
-    // }
 }

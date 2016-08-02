@@ -21,18 +21,7 @@ export default class extends MapOverlay<SVGSVGElement> {
 
         this._origin = createSVGElement('g') as SVGGElement;
         this._origin.id = 'origin';
-        this.overlayContainer.appendChild(this._origin);
-    }
-
-    protected additionalUpdate() {
-        console.log('gets called');
-        //TODO: test which one is faster
-        // transform may not work with svg elements
-        //origin.setAttribute('x', margin.x + 'px');
-        //origin.setAttribute('y', margin.y + 'px');
         this._origin.setAttribute('transform', `translate(${this.margin.x}, ${this.margin.y})`);
-        //origin.style.transform = `translate(${margin.x}px, ${margin.y}px)`;
-        //origin.style.left = margin.x + 'px';
-        //origin.style.top = margin.y + 'px';        
+        this.overlayContainer.appendChild(this._origin);
     }
 }
