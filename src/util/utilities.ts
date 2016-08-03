@@ -57,7 +57,11 @@ export function roundPoint(point: L.Point, precision: number): L.Point {
     return new L.Point(+point.x.toFixed(precision), +point.y.toFixed(precision));
 }
 
-export function generateId(collision?: (temp: string) => boolean) {
+export function getFraction(num: number, radix = 10): string {
+    return num.toString(radix).split('.')[1] || '0';
+}
+
+export function generateId(collision?: (temp: string) => boolean): string {
     const id = Math.random().toString(36).slice(2);
     return collision !== undefined && collision(id) ? generateId(collision) : id;  
 }

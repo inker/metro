@@ -7,7 +7,7 @@ export default class Mediator {
 
     subscribe(type: string, listener: EventListener) {
         for (let t of type.split(/\s+/)) {
-            console.log('adding event listener ' + t);
+            //console.log('adding event listener ' + t);
             const listenerArr = this.eventListeners.get(t);
             if (listenerArr === undefined) {
                 this.eventListeners.set(t, [listener]);

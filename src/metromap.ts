@@ -55,7 +55,7 @@ export default class MetroMap extends Mediator {
         mapPaneStyle.visibility = 'hidden';
 
         ui.addLayerSwitcher(this.map, [mapbox, mapnik, osmFrance, cartoDBNoLabels, wikimapia]);
-        this.addMapListeners();
+
         addEventListener('keydown', e => {
             if (!e.shiftKey || !e.ctrlKey || e.keyCode !== 82) return;
             this.resetNetwork();
@@ -106,8 +106,9 @@ export default class MetroMap extends Mediator {
         }).then(() => {
             //wait.parentElement.removeChild(wait);
             util.fixFontRendering();
-            mapPaneStyle.visibility = '';
+            this.addMapListeners();
             this.map.on('layeradd layerremove', e => util.fixFontRendering());
+            mapPaneStyle.visibility = '';
             // const img = util.File.svgToImg(document.getElementById('overlay') as any, true);
             // util.File.svgToCanvas(document.getElementById('overlay') as any)
             //     .then(canvas => util.File.downloadText('svg.txt', canvas.toDataURL('image/png')));
@@ -147,6 +148,13 @@ export default class MetroMap extends Mediator {
     }
 
     private addMapListeners() {
+        const relatedTargetToSpan = (rt: EventTarget) => {
+            const path = rt as SVGPathElement;
+            return (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as nw.Span;
+        };
+
+        const relatedTargetToPlatform = (rt: EventTarget) => pool.dummyBindings.getKey(rt as SVGCircleElement);
+
         this.subscribe('distancemeasureinit', e => {
             this.contextMenu.insertItem({event: 'measuredistance', text: 'Measure distance'});
         });
@@ -154,29 +162,29 @@ export default class MetroMap extends Mediator {
             this.contextMenu.removeItem('clearmeasurements');
             this.contextMenu.insertItem({event: 'measuredistance', text: 'Measure distance'});        
         });
+        this.map.on('zoomstart', e => {
+            this.plate.hide();
+        });
         this.subscribe('measuredistance', (e: Event) => {
             this.contextMenu.removeItem('measuredistance');
             this.contextMenu.insertItem({event: 'clearmeasurements', text: 'Clear measurements'});
         });
         this.subscribe('platformrename', (e: MouseEvent) => {
-            const circle = e.relatedTarget as SVGCircleElement;
-            const platform = pool.dummyBindings.getKey(circle);
-            this.plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));
+            const platform = relatedTargetToPlatform(e.relatedTarget);
+            this.plate.show(svg.circleOffset(e.relatedTarget as SVGCircleElement), util.getPlatformNames(platform));
             ui.platformRenameDialog(platform);
         });
         this.subscribe('platformmovestart', (e: MouseEvent) => {
             this.plate.disabled = true;
         });
         this.subscribe('platformmove', (e: MouseEvent) => {
-            const circle = e.relatedTarget as SVGCircleElement;
-            const platform = pool.dummyBindings.getKey(circle);
+            const platform = relatedTargetToPlatform(e.relatedTarget);
             platform.location = util.mouseToLatLng(this.map, e);
         });
         this.subscribe('platformmoveend', (e: MouseEvent) => {
-            const circle = e.relatedTarget as SVGCircleElement;
-            const platform = pool.dummyBindings.getKey(circle);
+            const platform = relatedTargetToPlatform(e.relatedTarget);
             this.plate.disabled = false;
-            this.plate.show(svg.circleOffset(circle), util.getPlatformNames(platform));                
+            this.plate.show(svg.circleOffset(e.relatedTarget as SVGCircleElement), util.getPlatformNames(platform));   
         });
         this.subscribe('platformadd', (e: CustomEvent) => {
             console.log(e);
@@ -185,8 +193,7 @@ export default class MetroMap extends Mediator {
             const newPlatform = new nw.Platform(tr`New station`, location, {});
             this.network.platforms.push(newPlatform);
             if (detail.relatedTarget !== undefined) {
-                const path = detail.relatedTarget as SVGPathElement;
-                const span = (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as nw.Span;
+                const span = relatedTargetToSpan(detail.relatedTarget);
                 const prop = span.source === newPlatform ? 'target' : 'source';
                 const newSpan = new nw.Span(newPlatform, span[prop], span.routes);
                 span[prop] = newPlatform;
@@ -196,23 +203,20 @@ export default class MetroMap extends Mediator {
             this.resetNetwork(JSON.parse(this.network.toJSON()));
         });
         this.subscribe('platformdelete', (e: MouseEvent) => {
-            const circle = e.relatedTarget as SVGCircleElement;
-            const platform = pool.dummyBindings.getKey(circle);
+            const platform = relatedTargetToPlatform(e.relatedTarget);
             this.network.deletePlatform(platform);
             this.redrawNetwork();
         });
         this.subscribe('spanroutechange', (e: MouseEvent) => {
             if (e.relatedTarget === undefined) return;
-            const path = e.relatedTarget as SVGPathElement;
-            const span = (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as nw.Span;
+            const span = relatedTargetToSpan(e.relatedTarget);
             const routeSet = ui.askRoutes(this.network, new Set(span.routes));
             span.routes = Array.from(routeSet);
             this.resetNetwork(JSON.parse(this.network.toJSON()));
         });
         this.subscribe('spaninvert', (e: MouseEvent) => {
             if (e.relatedTarget === undefined) return;
-            const path = e.relatedTarget as SVGPathElement;
-            const span = (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as nw.Span;
+            const span = relatedTargetToSpan(e.relatedTarget);
             span.invert();
             this.resetNetwork(JSON.parse(this.network.toJSON()));
         });        
@@ -235,8 +239,7 @@ export default class MetroMap extends Mediator {
         });
         this.subscribe('spandelete', (e: MouseEvent) => {
             if (e.relatedTarget === undefined) return;
-            const path = e.relatedTarget as SVGPathElement;
-            const span = (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as nw.Span;
+            const span = relatedTargetToSpan(e.relatedTarget);
             util.deleteFromArray(this.network.spans, span);
             this.resetNetwork(JSON.parse(this.network.toJSON()));
         });  
@@ -258,17 +261,16 @@ export default class MetroMap extends Mediator {
         });  
         this.subscribe('editmapstart', (e: Event) => {
             if (this.map.getZoom() < this.config.detailedZoom) {
-                // const plusButton = this.map.zoomControl.getContainer().firstChild;
-                // util.triggerMouseEvent(plusButton, 'mousedown');
-                // util.triggerMouseEvent(plusButton, 'click');
                 this.map.setZoom(this.config.detailedZoom);
             }
             this.contextMenu.insertItem({text: 'New station', event: 'platformaddclick'});
+            
             const trigger = (target: EventTarget) => (target as SVGElement).parentElement.id === 'dummy-circles';
             this.contextMenu.insertItem({text: 'Rename station', trigger, event: 'platformrename'});
             this.contextMenu.insertItem({text: 'Delete station', trigger, event: 'platformdelete'});
             this.contextMenu.insertItem({text: 'Span from here', trigger, event: 'spanstart'});
             this.contextMenu.insertItem({text: 'Transfer from here', trigger, event: 'transferstart'});
+            
             const pathTrigger = (target: EventTarget) => {
                 const parentId = (target as SVGElement).parentElement.id;
                 return parentId === 'paths-outer' || parentId === 'paths-inner';
@@ -484,10 +486,7 @@ export default class MetroMap extends Mediator {
                 let gradient = pool.gradientBindings.get(transfer);
                 if (gradient === undefined) {
                     gradient = svg.Gradients.makeLinear(gradientVector, gradientColors, circlePortion);
-                    const loc = transfer.source.location;
-                    const re = /\d+\.(\d+)/;
-                    const salt = loc.lat.toString().match(re)[1] + loc.lng.toString().match(re)[1];
-                    gradient.id = `${util.generateId()}-${salt}`;
+                    gradient.id = util.generateId(id => document.getElementById(id) !== null);
                     pool.gradientBindings.set(transfer, gradient);
                     defs.appendChild(gradient);
                 } else {

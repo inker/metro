@@ -21,8 +21,7 @@ getConfig().then(config => {
     for (let url of Object.keys(config.url)) {
         config.url[url] = config.url[url].replace(/\{city\}/g, city);
     }
-
-    document.title = translate(document.title);
+    document.title = translate(`${city === 'moscow' ? 'Moscow' : 'St Petersburg'} metro plan proposal`);
     dictPromise.then(() => {
         document.title = translate(document.title);
         new MetroMap(config);
