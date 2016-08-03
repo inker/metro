@@ -4,7 +4,7 @@ import { tryGet } from './util/utilities';
 
 export type Config = {
     containerId: string,
-    // center: number[],
+    center?: number[],
     zoom: number,
     minZoom: number,
     maxZoom: number,
@@ -42,13 +42,6 @@ export const getLineRules = () => new Promise<CSSStyleSheet>(resolve => {
     const link = document.getElementById('scheme') as HTMLLinkElement;
     const sheet = link.sheet as CSSStyleSheet;
     return tryGet(() => link.sheet as CSSStyleSheet, sheet => sheet !== null).then(resolve);
-    // if (sheet && sheet.cssRules) {
-    //     console.log('resolving immediately');
-    //     resolve(sheet);
-    // } else {
-    //     console.log('resolving delayed');
-    //     ;
-    // }
 }).then(styleSheet => {
     const lineRules = new Map<string, CSSStyleDeclaration>();
     for (let rule of (styleSheet.cssRules as any as CSSStyleRule[])) {

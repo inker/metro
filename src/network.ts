@@ -124,6 +124,10 @@ export class Edge<V> {
         return this.has(edge._source) || this.has(edge._target);
     }
 
+    invert() {
+        [this._source, this._target] = [this._target, this._source];
+    }
+
     destroy() {
         this.source = undefined;
         this.target = undefined;

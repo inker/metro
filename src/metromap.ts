@@ -1,7 +1,6 @@
 /// <reference path="../typings/tsd.d.ts" />;
 import * as L from 'leaflet';
 import * as nw from './network';
-import * as hints from './hints';
 import * as ui from './ui';
 import * as svg from './util/svg';
 import * as util from './util/utilities';
@@ -21,7 +20,6 @@ export default class MetroMap extends Mediator {
     private contextMenu: ui.ContextMenu;
 
     private network: nw.Network;
-    private hints: hints.Hints;
     private lineRules: Map<string, CSSStyleDeclaration>;
     private whiskers = new WeakMap<nw.Platform, Map<nw.Span, L.Point>>();
     private platformsOnSVG = new WeakMap<nw.Platform, L.Point>();
@@ -36,21 +34,16 @@ export default class MetroMap extends Mediator {
     constructor(config: res.Config) {
         super();
         (document.getElementById('scheme') as HTMLLinkElement).href = config.url['scheme'];
-        const networkPromise = res.getJSON(config.url['graph'])
-            .then(json => this.network = new nw.Network(json));
-        const lineRulesPromise = res.getLineRules()
-            .then(lineRules => this.lineRules = lineRules);
-        const hintsPromise = Promise.all([res.getJSON(config.url['hints']), networkPromise] as any[])
-            .then(results => hints.verify(results[1], results[0]))
-            .catch(console.error)
-            .then(json => this.hints = json);
-        const faq = new ui.FAQ(config.url['data']);
+        const networkPromise = res.getJSON(config.url['graph']);
+        const lineRulesPromise = res.getLineRules();
         const tileLoadPromise = new Promise(resolve => mapbox.once('load', e => resolve()));
+
+        const faq = new ui.FAQ(config.url['data']);
         
         //wait.textContent = 'making map...';
         this.config = config;
+        this.config.center = [0, 0];
         const mapOptions = Object.assign({}, config);
-        mapOptions['center'] = [0, 0];
         if (L.version[0] === '1') {
             mapOptions['wheelPxPerZoomLevel'] = 75;
             mapOptions['inertiaMaxSpeed'] = 1500;
@@ -69,16 +62,20 @@ export default class MetroMap extends Mediator {
         });
         //wait.textContent = 'loading graph...';
         this.addContextMenu();
-        networkPromise.then(network => {
+        networkPromise.then(json => {
+            this.network = new nw.Network(json);
             const bounds = new L.LatLngBounds(this.network.platforms.map(p => p.location));
+            const center = bounds.getCenter();
+            this.config.center = [center.lat, center.lng];
             this.overlay = new ui.SvgOverlay(bounds).addTo(this.map);
             const { defs } = this.overlay;
             svg.Filters.appendAll(defs);
             if (defs.textContent.length === 0) {
                 alert(tr`Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience.`);
             }
-            return Promise.all([lineRulesPromise, hintsPromise] as any[]);
-        }).then(results => {
+            return lineRulesPromise;
+        }).then(lineRules => {
+            this.lineRules = lineRules;
             //wait.textContent = 'adding content...';
             this.resetMapView();
             this.map.addLayer(mapbox);
@@ -97,7 +94,6 @@ export default class MetroMap extends Mediator {
             new ui.DistanceMeasure().addTo(this.map);
             //this.routeWorker.postMessage(this.network);
             //ui.drawZones(this.map, this.network.platforms);
-
 
             if (!L.Browser.mobile) {
                 new ui.MapEditor(this.config.detailedZoom).addTo(this);
@@ -213,6 +209,13 @@ export default class MetroMap extends Mediator {
             span.routes = Array.from(routeSet);
             this.resetNetwork(JSON.parse(this.network.toJSON()));
         });
+        this.subscribe('spaninvert', (e: MouseEvent) => {
+            if (e.relatedTarget === undefined) return;
+            const path = e.relatedTarget as SVGPathElement;
+            const span = (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as nw.Span;
+            span.invert();
+            this.resetNetwork(JSON.parse(this.network.toJSON()));
+        });        
         this.subscribe('spanend', (e: CustomEvent) => {
             const source = pool.dummyBindings.getKey(e.detail.source);
             const target = pool.dummyBindings.getKey(e.detail.target);
@@ -270,7 +273,8 @@ export default class MetroMap extends Mediator {
                 const parentId = (target as SVGElement).parentElement.id;
                 return parentId === 'paths-outer' || parentId === 'paths-inner';
             }
-            this.contextMenu.insertItem({text: 'Change route', event: 'spanroutechange', trigger: pathTrigger})
+            this.contextMenu.insertItem({text: 'Change route', event: 'spanroutechange', trigger: pathTrigger});
+            this.contextMenu.insertItem({text: 'Invert span', event: 'spaninvert', trigger: pathTrigger});
             this.contextMenu.insertItem({text: 'Add station to line', event: 'platformaddtolineclick', trigger: pathTrigger });
             this.contextMenu.insertItem({text: 'Delete span', event: 'spandelete', trigger: pathTrigger });            
             this.contextMenu.insertItem({text: 'Delete transfer', event: 'transferdelete', trigger: target => {
@@ -321,8 +325,7 @@ export default class MetroMap extends Mediator {
     private resetMapView(): void {
         //const fitness = (points, pt) => points.reduce((prev, cur) => this.bounds., 0);
         //const center = geo.calculateGeoMean(this.network.platforms.map(p => p.location), fitness, 0.1);
-        const center = this.overlay.bounds.getCenter(),
-            { zoom } = this.config;
+        const { center, zoom } = this.config;
         const options = {
             pan: { animate: false },
             zoom: { animate: false }
@@ -569,27 +572,13 @@ export default class MetroMap extends Mediator {
             // 0 - prev, 1 - next
             const points: L.Point[][] = [[], []];
             const spanIds: nw.Span[][] = [[], []];
-            const dirHints = this.hints.crossPlatform;
-            const idx = hints.hintContainsLine(this.network, dirHints, platform);
-            if (platform.name in dirHints && idx !== null) {
-                // array or object
-                const platformHint = idx > -1 ? dirHints[platform.name][idx] : dirHints[platform.name];
-                const nextPlatformNames: string[] = [];
-                for (let key of Object.keys(platformHint)) {
-                    const val = platformHint[key];
-                    if (typeof val === 'string') {
-                        nextPlatformNames.push(val);
-                    } else {
-                        nextPlatformNames.push(...val);
-                    }
-                }
-                for (let span of platform.spans) {
-                    const neighbor = span.other(platform);
-                    const neighborPos = this.platformsOnSVG.get(neighbor);
-                    const dirIdx = nextPlatformNames.includes(neighbor.name) ? 1 : 0;
-                    points[dirIdx].push(neighborPos);
-                    spanIds[dirIdx].push(span);
-                }
+            for (let span of platform.spans) {
+                const neighbor = span.other(platform);
+                const neighborPos = this.platformsOnSVG.get(neighbor);
+                //const dirIdx = nextPlatformNames.includes(neighbor.name) ? 1 : 0;
+                const dirIdx = span.source === platform ? 0 : 1;
+                points[dirIdx].push(neighborPos);
+                spanIds[dirIdx].push(span);
             }
             const midPts = points.map(pts => posOnSVG
                 .add(pts.length === 1 ? pts[0] : pts.length === 0 ? posOnSVG : getCenter(pts))
