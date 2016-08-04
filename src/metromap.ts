@@ -33,15 +33,16 @@ export default class MetroMap extends Mediator {
 
     constructor(config: res.Config) {
         super();
+        this.config = config;
         (document.getElementById('scheme') as HTMLLinkElement).href = config.url['scheme'];
-        const networkPromise = res.getJSON(config.url['graph']);
+        const networkPromise = this.getGraph();
         const lineRulesPromise = res.getLineRules();
-        const tileLoadPromise = new Promise(resolve => mapbox.once('load', e => resolve()));
+        const tileLoadPromise = new Promise(resolve => mapbox.once('load', resolve));
 
         const faq = new ui.FAQ(config.url['data']);
         
         //wait.textContent = 'making map...';
-        this.config = config;
+
         this.config.center = [0, 0];
         const mapOptions = Object.assign({}, config);
         if (L.version[0] === '1') {
@@ -58,7 +59,7 @@ export default class MetroMap extends Mediator {
 
         addEventListener('keydown', e => {
             if (!e.shiftKey || !e.ctrlKey || e.keyCode !== 82) return;
-            this.resetNetwork();
+            this.getGraph().then(nw => this.resetNetwork(nw));
         });
         //wait.textContent = 'loading graph...';
         this.addContextMenu();
@@ -90,6 +91,7 @@ export default class MetroMap extends Mediator {
             this.initNetwork();
             // TODO: fix the kludge making the grey area disappear
             this.map.invalidateSize(false);
+            this.addMapListeners();
             new ui.RoutePlanner().addTo(this);
             new ui.DistanceMeasure().addTo(this.map);
             //this.routeWorker.postMessage(this.network);
@@ -103,10 +105,10 @@ export default class MetroMap extends Mediator {
             faq.addTo(this.map);
             //wait.textContent = 'loading tiles...';
             return tileLoadPromise;
-        }).then(() => {
+        }).then(tileLoadEvent => {
+            const a: 'foo'|'bar' = 'foo';
             //wait.parentElement.removeChild(wait);
             util.fixFontRendering();
-            this.addMapListeners();
             this.map.on('layeradd layerremove', e => util.fixFontRendering());
             mapPaneStyle.visibility = '';
             // const img = util.File.svgToImg(document.getElementById('overlay') as any, true);
@@ -124,18 +126,20 @@ export default class MetroMap extends Mediator {
 
     private addContextMenu() {
         const arr = [{
-            "event": "routefrom",
-            "text": "Route from here"
+            event: "routefrom",
+            text: "Route from here"
         }, {
-            "event": "routeto",
-            "text": "Route to here"
+            event: "routeto",
+            text: "Route to here"
         }, {
-            "event": "clearroute",
-            "text": "Clear route"
+            event: "clearroute",
+            text: "Clear route"
         }, {
-            "event": "showheatmap",
-            "text": "Show heatmap",
-            "disabled": true
+            event: "showheatmap",
+            text: "Show heatmap",
+            extra: {
+                disabled: true
+            }
         }];
         this.contextMenu = new ui.ContextMenu(arr);
         for (let el of arr) {
@@ -155,19 +159,19 @@ export default class MetroMap extends Mediator {
 
         const relatedTargetToPlatform = (rt: EventTarget) => pool.dummyBindings.getKey(rt as SVGCircleElement);
 
-        this.subscribe('distancemeasureinit', e => {
-            this.contextMenu.insertItem({event: 'measuredistance', text: 'Measure distance'});
+        this.map.on('distancemeasureinit', e => {
+            this.contextMenu.insertItem('measuredistance', 'Measure distance');
         });
         this.map.on('clearmeasurements', e => {
             this.contextMenu.removeItem('clearmeasurements');
-            this.contextMenu.insertItem({event: 'measuredistance', text: 'Measure distance'});        
+            this.contextMenu.insertItem('measuredistance', 'Measure distance');        
         });
         this.map.on('zoomstart', e => {
             this.plate.hide();
         });
         this.subscribe('measuredistance', (e: Event) => {
             this.contextMenu.removeItem('measuredistance');
-            this.contextMenu.insertItem({event: 'clearmeasurements', text: 'Clear measurements'});
+            this.contextMenu.insertItem('clearmeasurements', 'Clear measurements');
         });
         this.subscribe('platformrename', (e: MouseEvent) => {
             const platform = relatedTargetToPlatform(e.relatedTarget);
@@ -263,26 +267,26 @@ export default class MetroMap extends Mediator {
             if (this.map.getZoom() < this.config.detailedZoom) {
                 this.map.setZoom(this.config.detailedZoom);
             }
-            this.contextMenu.insertItem({text: 'New station', event: 'platformaddclick'});
-            
-            const trigger = (target: EventTarget) => (target as SVGElement).parentElement.id === 'dummy-circles';
-            this.contextMenu.insertItem({text: 'Rename station', trigger, event: 'platformrename'});
-            this.contextMenu.insertItem({text: 'Delete station', trigger, event: 'platformdelete'});
-            this.contextMenu.insertItem({text: 'Span from here', trigger, event: 'spanstart'});
-            this.contextMenu.insertItem({text: 'Transfer from here', trigger, event: 'transferstart'});
-            
             const pathTrigger = (target: EventTarget) => {
                 const parentId = (target as SVGElement).parentElement.id;
                 return parentId === 'paths-outer' || parentId === 'paths-inner';
             }
-            this.contextMenu.insertItem({text: 'Change route', event: 'spanroutechange', trigger: pathTrigger});
-            this.contextMenu.insertItem({text: 'Invert span', event: 'spaninvert', trigger: pathTrigger});
-            this.contextMenu.insertItem({text: 'Add station to line', event: 'platformaddtolineclick', trigger: pathTrigger });
-            this.contextMenu.insertItem({text: 'Delete span', event: 'spandelete', trigger: pathTrigger });            
-            this.contextMenu.insertItem({text: 'Delete transfer', event: 'transferdelete', trigger: target => {
+            this.contextMenu.insertItem('platformaddclick', 'New station', target => !pathTrigger(target));
+            
+            const trigger = (target: EventTarget) => (target as SVGElement).parentElement.id === 'dummy-circles';
+            this.contextMenu.insertItem('platformrename', 'Rename station', trigger);
+            this.contextMenu.insertItem('platformdelete', 'Delete station', trigger);
+            this.contextMenu.insertItem('spanstart', 'Span from here', trigger);
+            this.contextMenu.insertItem('transferstart', 'Transfer from here', trigger);
+            
+            this.contextMenu.insertItem('spanroutechange', 'Change route', pathTrigger);
+            this.contextMenu.insertItem('spaninvert', 'Invert span', pathTrigger);
+            this.contextMenu.insertItem('platformaddtolineclick', 'Add station to line', pathTrigger);
+            this.contextMenu.insertItem('spandelete', 'Delete span', pathTrigger);            
+            this.contextMenu.insertItem('transferdelete', 'Delete transfer', target => {
                 const parentId = (target as SVGElement).parentElement.id;
                 return parentId === 'transfers-outer' || parentId === 'transfers-inner';                
-            } });
+            });
         });
         this.subscribe('editmapend', (e: Event) => {
             this.contextMenu.removeItem('platformaddclick');
@@ -340,12 +344,9 @@ export default class MetroMap extends Mediator {
         return res.getJSON(this.config.url['graph']);
     }
 
-    private resetNetwork(json?: nw.GraphJSON): void {
-        (json === undefined ? this.getGraph() : Promise.resolve(json)).then(json => {
-            //this.cleanPool();
-            this.network = new nw.Network(json);
-            this.redrawNetwork();            
-        });
+    private resetNetwork(json: nw.GraphJSON): void {
+        this.network = new nw.Network(json);
+        this.redrawNetwork();            
     }
 
     private cleanElements(): void {
@@ -566,60 +567,36 @@ export default class MetroMap extends Mediator {
         if (platform.spans.length === 1) {
             return whiskers.set(platform.spans[0], posOnSVG);
         }
-
-        if (platform.spans.length > 2) {
-            // 0 - prev, 1 - next
-            const points: L.Point[][] = [[], []];
-            const spanIds: nw.Span[][] = [[], []];
-            for (let span of platform.spans) {
-                const neighbor = span.other(platform);
-                const neighborPos = this.platformsOnSVG.get(neighbor);
-                //const dirIdx = nextPlatformNames.includes(neighbor.name) ? 1 : 0;
-                const dirIdx = span.source === platform ? 0 : 1;
-                points[dirIdx].push(neighborPos);
-                spanIds[dirIdx].push(span);
+        if (platform.spans.length === 2) {
+            if (platform.passingLines().size === 2) {
+                return whiskers.set(platform.spans[0], posOnSVG).set(platform.spans[1], posOnSVG);   
             }
-            const midPts = points.map(pts => posOnSVG
-                .add(pts.length === 1 ? pts[0] : pts.length === 0 ? posOnSVG : getCenter(pts))
-                .divideBy(2)
-            );
-            const lens = midPts.map(midPt => posOnSVG.distanceTo(midPt));
-            const midOfMidsWeighted = midPts[1]
-                .subtract(midPts[0])
-                .multiplyBy(lens[0] / (lens[0] + lens[1]))
-                .add(midPts[0]);
-            const offset = posOnSVG.subtract(midOfMidsWeighted);
-            const ends = midPts.map(v => util.roundPoint(v.add(offset), 2));
-            spanIds[0].forEach(i => whiskers.set(i, ends[0]));
-            spanIds[1].forEach(i => whiskers.set(i, ends[1]));
-            return whiskers;
+            const midPts = [posOnSVG, posOnSVG];
+            for (let i = 0; i < 2; ++i) {
+                const span = platform.spans[i];
+                const neighbor = span.other(platform);
+                const neighborOnSVG = this.platformsOnSVG.get(neighbor);
+                midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
+            }
+            const ends = util.midPointsToEnds(posOnSVG, midPts);
+            return whiskers.set(platform.spans[0], ends[0]).set(platform.spans[1], ends[1]);
         }
 
-        // TODO: refactor this stuff, unify 2-span & >2-span platforms
-        if (platform.passingLines().size === 2) {
-            return whiskers.set(platform.spans[0], posOnSVG).set(platform.spans[1], posOnSVG);
-        }
-
-        // const firstSpan = this.network.spans[platform.spans[0]];
-        // if (firstSpan.source === platformIndex) {
-        //     platform.spans.reverse();
-        // }
-        // previous node should come first
-        const midPts = [posOnSVG, posOnSVG], lens = [0, 0];
-        for (let i = 0; i < 2; ++i) {
-            const span = platform.spans[i];
+        const points: L.Point[][] = [[], []];
+        const spanIds: nw.Span[][] = [[], []];
+        for (let span of platform.spans) {
             const neighbor = span.other(platform);
-            const neighborOnSVG = this.platformsOnSVG.get(neighbor);
-            lens[i] = posOnSVG.distanceTo(neighborOnSVG);
-            midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
+            const neighborPos = this.platformsOnSVG.get(neighbor);
+            const dirIdx = span.source === platform ? 0 : 1;
+            points[dirIdx].push(neighborPos);
+            spanIds[dirIdx].push(span);
         }
-        const midOfMidsWeighted = midPts[1]
-            .subtract(midPts[0])
-            .multiplyBy(lens[0] / (lens[0] + lens[1]))
-            .add(midPts[0]);
-        const offset = posOnSVG.subtract(midOfMidsWeighted);
-        const ends = midPts.map(v => util.roundPoint(v.add(offset), 2));
-        return whiskers.set(platform.spans[0], ends[0]).set(platform.spans[1], ends[1]);
+        const avg = (pts: L.Point[]) => pts.length === 1 ? pts[0] : pts.length === 0 ? posOnSVG : getCenter(pts);
+        const midPts = points.map(pts => avg(pts).add(posOnSVG).divideBy(2));
+        const ends = util.midPointsToEnds(posOnSVG, midPts);
+        spanIds[0].forEach(i => whiskers.set(i, ends[0]));
+        spanIds[1].forEach(i => whiskers.set(i, ends[1]));
+        return whiskers;
     }
 
     private makeTransferArc(transfer: nw.Transfer, cluster: nw.Platform[]): SVGLineElement[]|SVGPathElement[] {

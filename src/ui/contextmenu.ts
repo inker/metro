@@ -4,13 +4,15 @@ import { removeAllChildren } from '../util/utilities';
 import { translate } from '../i18n';
 
 // TODO: merge items & extra items, introduce item index
-
+type Extra = {
+    icon?: string,
+    disabled?: boolean;
+}
 type ContextMenuItem = {
     text: string,
     event: string,
     trigger?: (target: EventTarget) => boolean,
-    icon?: string,
-    disabled?: boolean;
+    extra?: Extra
 }
 
 export default class implements L.ILayer {
@@ -72,7 +74,7 @@ export default class implements L.ILayer {
                 continue;
             }
             const cell = document.createElement('div');
-            if (item.disabled) {
+            if (item.extra !== undefined && item.extra.disabled) {
                 cell.setAttribute('disabled', '');
             } else {
                 cell.setAttribute('data-event', item.event);
@@ -100,8 +102,8 @@ export default class implements L.ILayer {
         this.show();
     }
 
-    insertItem(item: ContextMenuItem, index?: number) {
-        // register a dummy listener, so that it doesn't fail during check
+    insertItem(event: string, text: string, trigger?: (target: EventTarget) => boolean, extra?: Extra, index?: number) {
+        const item = { event, text, trigger, extra };
         if (index === undefined || index < 0) {
             this.items.push(item);
         } else {

@@ -141,6 +141,16 @@ export function getPlatformNamesZipped(platforms: nw.Platform[]) {
         .filter(s => s !== undefined);
 }
 
+export function midPointsToEnds(posOnSVG: L.Point, midPts: L.Point[]) {
+    const lens = midPts.map(midPt => posOnSVG.distanceTo(midPt));
+    const midOfMidsWeighted = midPts[1]
+        .subtract(midPts[0])
+        .multiplyBy(lens[0] / (lens[0] + lens[1]))
+        .add(midPts[0]);
+    const offset = posOnSVG.subtract(midOfMidsWeighted);
+    return midPts.map(v => roundPoint(v.add(offset), 2));    
+}
+
 export function trim3d<T extends { style: CSSStyleDeclaration }>({ style }: T) {
     style.transform = style.transform.replace(/translate3d\s*\((.+?,\s*.+?),\s*.+?\s*\)/i, 'translate($1)');
 }

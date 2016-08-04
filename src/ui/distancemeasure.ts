@@ -71,7 +71,6 @@ export default class implements L.ILayer {
     }
 
     private makeMarker = (e: L.LeafletMouseEvent) => {
-                console.log('firing');
         if (e.originalEvent.button !== 0) return;
         const handleDrag = e => {
             this.dashedLine.setStyle({ opacity: 0});

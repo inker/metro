@@ -220,11 +220,8 @@ export namespace Gradients {
     }
 
     export function setDirection(gradient: Element, vector: L.Point) {
-        const coors = math.vectorToGradCoordinates(vector);
-        gradient.setAttribute('x1', ((1 - coors.x) * 50).toFixed(3) + '%');
-        gradient.setAttribute('y1', ((1 - coors.y) * 50).toFixed(3) + '%');
-        gradient.setAttribute('x2', ((1 + coors.x) * 50).toFixed(3) + '%');
-        gradient.setAttribute('y2', ((1 + coors.y) * 50).toFixed(3) + '%');
+        const rotate = `rotate(${Math.atan2(vector.y, vector.x) * 180 / Math.PI}, 0.5, 0.5)`;
+        gradient.setAttribute('gradientTransform', rotate);
     }
 
     export function setOffset(gradient: Element, offset: number) {
