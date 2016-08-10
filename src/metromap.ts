@@ -29,7 +29,7 @@ export default class MetroMap extends Mediator {
     //private routeWorker = new Worker('js/routeworker.js');
 
     getMap(): L.Map { return this.map; }
-    getNetwork(): nw.Network { return this.network; }  
+    getNetwork(): nw.Network { return this.network; }
 
     constructor(config: res.Config) {
         super();
@@ -40,7 +40,7 @@ export default class MetroMap extends Mediator {
         const tileLoadPromise = new Promise(resolve => mapbox.once('load', resolve));
 
         const faq = new ui.FAQ(config.url['data']);
-        
+
         //wait.textContent = 'making map...';
 
         this.config.center = [0, 0];
@@ -106,7 +106,6 @@ export default class MetroMap extends Mediator {
             //wait.textContent = 'loading tiles...';
             return tileLoadPromise;
         }).then(tileLoadEvent => {
-            const a: 'foo'|'bar' = 'foo';
             //wait.parentElement.removeChild(wait);
             util.fixFontRendering();
             this.map.on('layeradd layerremove', e => util.fixFontRendering());
@@ -164,7 +163,7 @@ export default class MetroMap extends Mediator {
         });
         this.map.on('clearmeasurements', e => {
             this.contextMenu.removeItem('clearmeasurements');
-            this.contextMenu.insertItem('measuredistance', 'Measure distance');        
+            this.contextMenu.insertItem('measuredistance', 'Measure distance');
         });
         this.map.on('zoomstart', e => {
             this.plate.hide();
@@ -188,7 +187,7 @@ export default class MetroMap extends Mediator {
         this.subscribe('platformmoveend', (e: MouseEvent) => {
             const platform = relatedTargetToPlatform(e.relatedTarget);
             this.plate.disabled = false;
-            this.plate.show(svg.circleOffset(e.relatedTarget as SVGCircleElement), util.getPlatformNames(platform));   
+            this.plate.show(svg.circleOffset(e.relatedTarget as SVGCircleElement), util.getPlatformNames(platform));
         });
         this.subscribe('platformadd', (e: CustomEvent) => {
             console.log(e);
@@ -223,7 +222,7 @@ export default class MetroMap extends Mediator {
             const span = relatedTargetToSpan(e.relatedTarget);
             span.invert();
             this.resetNetwork(JSON.parse(this.network.toJSON()));
-        });        
+        });
         this.subscribe('spanend', (e: CustomEvent) => {
             const source = pool.dummyBindings.getKey(e.detail.source);
             const target = pool.dummyBindings.getKey(e.detail.target);
@@ -233,11 +232,11 @@ export default class MetroMap extends Mediator {
             const sourceRoutes = source.passingRoutes();
             const targetRoutes = target.passingRoutes();
             const sn = sourceRoutes.size, tn = targetRoutes.size;
-            
+
             const routeSet = sn > 0 && tn === 0 ? (sn === 1 ? sourceRoutes : ui.askRoutes(this.network, sourceRoutes)) :
                 tn > 0 && sn === 0 ? (tn === 1 ? targetRoutes : ui.askRoutes(this.network, targetRoutes)) :
-                ui.askRoutes(this.network, util.intersection(sourceRoutes, targetRoutes))
-            
+                    ui.askRoutes(this.network, util.intersection(sourceRoutes, targetRoutes))
+
             this.network.spans.push(new nw.Span(source, target, Array.from(routeSet)));
             this.resetNetwork(JSON.parse(this.network.toJSON()));
         });
@@ -246,23 +245,22 @@ export default class MetroMap extends Mediator {
             const span = relatedTargetToSpan(e.relatedTarget);
             util.deleteFromArray(this.network.spans, span);
             this.resetNetwork(JSON.parse(this.network.toJSON()));
-        });  
+        });
         this.subscribe('transferend', (e: CustomEvent) => {
             const source = pool.dummyBindings.getKey(e.detail.source);
             const target = pool.dummyBindings.getKey(e.detail.target);
             console.log(source, target);
             this.contextMenu.removeItem('transferend');
             this.network.transfers.push(new nw.Transfer(source, target));
-            this.resetNetwork(JSON.parse(this.network.toJSON()));           
+            this.resetNetwork(JSON.parse(this.network.toJSON()));
         });
         this.subscribe('transferdelete', (e: MouseEvent) => {
             if (e.relatedTarget === undefined) return;
-            const path = e.relatedTarget as SVGPathElement|SVGLineElement;
+            const path = e.relatedTarget as SVGPathElement | SVGLineElement;
             const transfer = (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as nw.Transfer;
-            console.log(transfer);
             util.deleteFromArray(this.network.transfers, transfer);
             this.resetNetwork(JSON.parse(this.network.toJSON()));
-        });  
+        });
         this.subscribe('editmapstart', (e: Event) => {
             if (this.map.getZoom() < this.config.detailedZoom) {
                 this.map.setZoom(this.config.detailedZoom);
@@ -270,22 +268,22 @@ export default class MetroMap extends Mediator {
             const pathTrigger = (target: EventTarget) => {
                 const parentId = (target as SVGElement).parentElement.id;
                 return parentId === 'paths-outer' || parentId === 'paths-inner';
-            }
+            };
             this.contextMenu.insertItem('platformaddclick', 'New station', target => !pathTrigger(target));
-            
+
             const trigger = (target: EventTarget) => (target as SVGElement).parentElement.id === 'dummy-circles';
             this.contextMenu.insertItem('platformrename', 'Rename station', trigger);
             this.contextMenu.insertItem('platformdelete', 'Delete station', trigger);
             this.contextMenu.insertItem('spanstart', 'Span from here', trigger);
             this.contextMenu.insertItem('transferstart', 'Transfer from here', trigger);
-            
+
             this.contextMenu.insertItem('spanroutechange', 'Change route', pathTrigger);
             this.contextMenu.insertItem('spaninvert', 'Invert span', pathTrigger);
             this.contextMenu.insertItem('platformaddtolineclick', 'Add station to line', pathTrigger);
-            this.contextMenu.insertItem('spandelete', 'Delete span', pathTrigger);            
+            this.contextMenu.insertItem('spandelete', 'Delete span', pathTrigger);
             this.contextMenu.insertItem('transferdelete', 'Delete transfer', target => {
                 const parentId = (target as SVGElement).parentElement.id;
-                return parentId === 'transfers-outer' || parentId === 'transfers-inner';                
+                return parentId === 'transfers-outer' || parentId === 'transfers-inner';
             });
         });
         this.subscribe('editmapend', (e: Event) => {
@@ -338,7 +336,7 @@ export default class MetroMap extends Mediator {
         };
         this.map.setView(center, zoom + 1, options);
         this.map.setView(center, zoom, options);
-    }   
+    }
 
     private getGraph(): Promise<nw.GraphJSON> {
         return res.getJSON(this.config.url['graph']);
@@ -346,7 +344,7 @@ export default class MetroMap extends Mediator {
 
     private resetNetwork(json: nw.GraphJSON): void {
         this.network = new nw.Network(json);
-        this.redrawNetwork();            
+        this.redrawNetwork();
     }
 
     private cleanElements(): void {
@@ -374,13 +372,13 @@ export default class MetroMap extends Mediator {
         const zoom = this.map.getZoom(),
             coef = zoom > 9 ? zoom : zoom > 8 ? 9.5 : 9,
             //lineWidth = 2 ** (zoom / 4 - 1.75);
-        	lineWidth = (coef - 7) * 0.5,
+            lineWidth = (coef - 7) * 0.5,
             lightLineWidth = lineWidth * 0.75,
-        	circleRadius = coef < detailedZoom ? lineWidth * 1.25 : lineWidth,
-        	circleBorder = coef < detailedZoom ? circleRadius * 0.4 : circleRadius * 0.6,
-            dummyCircleRadius = circleRadius * 2, 
-        	transferWidth = lineWidth * 0.9,
-        	transferBorder = circleBorder * 1.25;
+            circleRadius = coef < detailedZoom ? lineWidth * 1.25 : lineWidth,
+            circleBorder = coef < detailedZoom ? circleRadius * 0.4 : circleRadius * 0.6,
+            dummyCircleRadius = circleRadius * 2,
+            transferWidth = lineWidth * 0.9,
+            transferBorder = circleBorder * 1.25;
 
         const strokeWidths = {
             'station-circles': circleBorder,
@@ -559,26 +557,21 @@ export default class MetroMap extends Mediator {
     }
 
     private makeWhiskers(platform: nw.Platform): Map<nw.Span, L.Point> {
-        const posOnSVG = this.platformsOnSVG.get(platform);
+        const pos = this.platformsOnSVG.get(platform);
         const whiskers = new Map<nw.Span, L.Point>();
         if (platform.spans.length === 0) {
             return whiskers;
         }
         if (platform.spans.length === 1) {
-            return whiskers.set(platform.spans[0], posOnSVG);
+            return whiskers.set(platform.spans[0], pos);
         }
         if (platform.spans.length === 2) {
             if (platform.passingLines().size === 2) {
-                return whiskers.set(platform.spans[0], posOnSVG).set(platform.spans[1], posOnSVG);   
+                return whiskers.set(platform.spans[0], pos).set(platform.spans[1], pos);
             }
-            const midPts = [posOnSVG, posOnSVG];
-            for (let i = 0; i < 2; ++i) {
-                const span = platform.spans[i];
-                const neighbor = span.other(platform);
-                const neighborOnSVG = this.platformsOnSVG.get(neighbor);
-                midPts[i] = posOnSVG.add(neighborOnSVG).divideBy(2);
-            }
-            const ends = util.midPointsToEnds(posOnSVG, midPts);
+            const getNeighborPos = (span: nw.Span) => this.platformsOnSVG.get(span.other(platform));
+            const midPts = platform.spans.map(span => getNeighborPos(span).add(pos).divideBy(2));
+            const ends = util.midPointsToEnds(pos, midPts);
             return whiskers.set(platform.spans[0], ends[0]).set(platform.spans[1], ends[1]);
         }
 
@@ -591,15 +584,15 @@ export default class MetroMap extends Mediator {
             points[dirIdx].push(neighborPos);
             spanIds[dirIdx].push(span);
         }
-        const avg = (pts: L.Point[]) => pts.length === 1 ? pts[0] : pts.length === 0 ? posOnSVG : getCenter(pts);
-        const midPts = points.map(pts => avg(pts).add(posOnSVG).divideBy(2));
-        const ends = util.midPointsToEnds(posOnSVG, midPts);
+        const avg = (pts: L.Point[]) => pts.length === 1 ? pts[0] : pts.length === 0 ? pos : getCenter(pts);
+        const midPts = points.map(pts => avg(pts).add(pos).divideBy(2));
+        const ends = util.midPointsToEnds(pos, midPts);
         spanIds[0].forEach(i => whiskers.set(i, ends[0]));
         spanIds[1].forEach(i => whiskers.set(i, ends[1]));
         return whiskers;
     }
 
-    private makeTransferArc(transfer: nw.Transfer, cluster: nw.Platform[]): SVGLineElement[]|SVGPathElement[] {
+    private makeTransferArc(transfer: nw.Transfer, cluster: nw.Platform[]): SVGLineElement[] | SVGPathElement[] {
         const pl1 = transfer.source,
             pl2 = transfer.target;
         const pos1 = this.platformsOnSVG.get(transfer.source),
@@ -641,7 +634,7 @@ export default class MetroMap extends Mediator {
         if (routes.length > 0) {
             [lineId, lineType, lineNum] = span.routes[0].line.match(/([MEL])(\d{0,2})/);
         } else {
-            console.error(span, 'span has no routes!');          
+            console.error(span, 'span has no routes!');
         }
         //console.log(span.source, span.target);
         const controlPoints = [
@@ -715,7 +708,7 @@ export default class MetroMap extends Mediator {
             const transfers = this.map.getZoom() < this.config.detailedZoom ? undefined : this.network.transfers;
             Scale.scaleStation(station, scaleFactor, transfers);
             platform = station.platforms.reduce((prev, cur) => prev.location.lat < cur.location.lat ? cur : prev);
-            circle = pool.platformBindings.get(platform); 
+            circle = pool.platformBindings.get(platform);
         }
         this.plate.show(svg.circleOffset(circle), names);
     }
@@ -765,7 +758,7 @@ export default class MetroMap extends Mediator {
     }
 
     private transferToModel(transfer: nw.Transfer, elements: Element[]) {
-        const cached =  [transfer.source, transfer.target];
+        const cached = [transfer.source, transfer.target];
         const { tagName } = elements[0];
         ['source', 'target'].forEach((prop, pi) => {
             Object.defineProperty(transfer, prop, {

@@ -196,7 +196,6 @@ export class Network {
     transfers: Transfer[];
     spans: Span[];
     routes: Route[];
-    hints: any;
     constructor(json: GraphJSON) {
         const objectifyLatLng = (obj: LatLngJSON) => new L.LatLng(obj.lat, obj.lng);
         this.platforms = json.platforms.map(p => new Platform(p.name, objectifyLatLng(p.location), p.altNames));
