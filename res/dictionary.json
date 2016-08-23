@@ -1,0 +1,95 @@
+{
+    "Your browser doesn't seem to have capabilities to display some features of the map. Consider using the latest versions of Chrome or Firefox for the best experience.": {
+        "ru": "Ваш браузер не может в полной мере отобразить некоторые возможности карты. Используйте последние версии Chrome или Firefox."
+    },
+    "St Petersburg metro plan proposal": {
+        "ru": "Plan metro Sankt-Peterburga",
+        "fi": "Pietarin metron hankesuunnitelma"
+    },
+    "Moscow metro plan proposal": {
+        "ru": "Plan metro Moskvy",
+        "fi": "Moskovan metron hankesuunnitelma"
+    },
+    "Edit map": {
+        "ru": "Redaktirovať kartu",
+        "fi": "Muokkaa karttaa"
+    },
+    "Save map": {
+        "ru": "Sochraniť kartu",
+        "fi": "Tallenna kartta"
+    },
+    "New station": {
+        "ru": "Novaja stancia",
+        "fi": "Uusi asema"
+    },
+    "Rename station": {
+        "ru": "Pereimenovať stanciu",
+        "fi": "Nimeä asema uudelleen"
+    },
+    "Delete station": {
+        "ru": "Udaliť stanciu",
+        "fi": "Poista asema"
+    },
+    "Clear route": {
+        "ru": "Očistiť maršrut",
+        "fi": "Tyhjennä reitti"
+    },
+    "Measure distance": {
+        "ru": "Pomeriť rasstojanie",
+        "fi": "Mittaa etäisyys"
+    },
+    "Show heatmap": {
+        "ru": "Pokazať teplokartu",
+        "fi": "Näytä lämpökartta"
+    },
+    "Route from here": {
+        "ru": "Maršrut otśuda",
+        "fi": "Reitti täältä"
+    },
+    "Route to here": {
+        "ru": "Maršrut śuda",
+        "fi": "Reitti tänne"
+    },
+    "time": {
+        "ru": "vremä",
+        "fi": "aika"
+    },
+    "on foot": {
+        "ru": "peškom",
+        "fi": "jalan"
+    },
+    "by metro": {
+        "ru": "na metro",
+        "fi": "metrolla"
+    },
+    "%hour%": {
+        "en": "h",
+        "ru": "č",
+        "fi": "t"
+    },
+    "total": {
+        "ru": "itogo",
+        "fi": "yhteensä"
+    },
+    
+    "New name": {
+        "ru": "Novoje imä",
+        "fi": "Uusi nimi"
+    },
+    "Name change cancelled": {
+        "ru": "Pereimenovanie otmeneno",
+        "fi": "Uudelleennimeäminen on peruutettu"
+    },
+    "Rename the entire station": {
+        "ru": "Pereimenovať veś uzel",
+        "fi": "Nimeäkö koko asema uudelleen"
+    },
+    "renamed to": {
+        "ru": "pereimenovana v",
+        "fi": "nimettiin"
+    },
+    "The entire station was renamed to": {
+        "ru": "Veś uzel byl pereimenovan v",
+        "fi": "Koko asema nimettiin"
+    }
+}

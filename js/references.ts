@@ -1,1 +1,0 @@
-var WURFL: Object;

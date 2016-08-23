@@ -1,0 +1,147 @@
+path {
+    fill-opacity: 0; /* so that no white stuff be visible */
+}
+
+#station-circles {
+    fill: white;
+    stroke: black;
+}
+
+#dummy-circles {
+    opacity: 0;
+    stroke: blue;
+    stroke-width: 0.5px;
+}
+
+#paths-outer, #paths-inner, #transfers-outer, #transfers-inner {
+    fill: none;
+}
+
+#transfers-outer {
+    stroke: #404040;
+    /*stroke-opacity: 1;*/
+    /*position: absolute;*/
+}
+
+#transfers-inner {
+    stroke: #FFFFFF;
+    /*stroke-opacity: 1;*/
+    /*position: absolute;*/
+}
+
+.M-line {
+    /*stroke-width: 2;*/
+}
+
+#paths-outer > .L {
+    stroke-width: 0px;
+}
+
+
+/*.M1 { stroke: #E32017; }
+.M2 { stroke: #003688; }
+.M3 { stroke: #00782A; }
+.M4 { stroke: #EE7C0E; }
+.M5 { stroke: #9B0056; }
+.M6 { stroke: #B36305; }
+.M7 { stroke: #FFD300; }
+.M8 { stroke: #A0A5A9; }
+.M9 { stroke: #0098D4; }
+.M10 { stroke: #F371BB; }
+.M11 { stroke: #000000; }
+.M12 { stroke: #84B817; }
+.E { stroke:  #7156A5; }
+.L { stroke: #00A4A7; }
+#paths-inner * { stroke: #FFFFFF; }*/
+
+/* reverse engineered from the original map */
+.M1 { stroke: rgb(238,46,34); }
+.M2 { stroke: rgb(0,132,61); }
+.M3 { stroke: rgb(27,63,148); }
+.M4 { stroke: rgb(6,157,220); }
+.M5 { stroke: rgb(176,95,15); }
+.M6 { stroke: rgb(244,128,38); }
+.M7 { stroke: rgb(151,1,94); }
+.M8 { stroke: rgb(254,209,5); }
+.M9 { stroke: rgb(149,156,161); }
+.M10 { stroke: rgb(121,193,66); }
+.M11 { stroke: rgb(0,177,176); }
+.M12 { stroke: rgb(132,205,188); }
+.M13 { stroke: rgb(243,134,160); }
+.M14 { stroke: rgb(35,31,32); }
+.E { stroke: rgb(96,64,153); }
+.L { stroke: rgb(96,64,153); }
+#paths-inner * { stroke: #FFFFFF; }
+
+/* wikipedia */
+/*.M1 { stroke: #DC241F; }
+.M2 { stroke: #0019A8; }
+.M3 { stroke: #007229; }
+.M4 { stroke: #FF6600; }
+.M5 { stroke: #751056; }
+.M6 { stroke: #894E24; }
+.M7 { stroke: #FFCE00; }
+.M8 { stroke: #868F98; }
+.M9 { stroke: #00A0E2; }
+.M10 { stroke: #D799AF; }
+.M11 { stroke: #000000; }
+.M12 { stroke: #66CC00; }
+.E { stroke:  #6666CC; }
+.L { stroke: #00AFAD; }
+#paths-inner * { stroke: #FFFFFF; }*/
+
+/* pantones */
+/*.M1 { stroke: #DA291C; }
+.M2 { stroke: #0019A8; }
+.M3 { stroke: #007229; }
+.M4 { stroke: #FF6600; }
+.M5 { stroke: #751056; }
+.M6 { stroke: #A45A2A; }
+.M7 { stroke: #FFCE00; }
+.M8 { stroke: #868F98; }
+.M9 { stroke: #00A0E2; }
+.M10 { stroke: #E89CAE; }
+.M11 { stroke: #2D2926; }
+.M12 { stroke: #66CC00; }
+.E { stroke:  #6666CC; }
+.L { stroke: #00AFAD; }
+#paths-inner * { stroke: #FFFFFF; }*/
+
+
+/* moscow */
+/*.M1 { stroke: #ED1B35; }
+.M2 { stroke: #0078BF; }
+.M3 { stroke: #44B85C; }
+.M4 { stroke: #F58631; }
+.M5 { stroke: #8E479C; }
+.M6 { stroke: #894E35; }
+.M7 { stroke: #FFCB31; }
+.M8 { stroke: #A1A2A3; }
+.M9 { stroke: #19C1F3; }
+.M10 { stroke: #CC0066; }
+.M11 { stroke: #000000; }
+.M12 { stroke: #B3D445; }
+.E { stroke:  #79CDCD; }
+.L { stroke: #79CDCD; }
+#paths-inner * { stroke: #FFFFFF; }*/
+
+
+/* material colors */
+/*
+.M1 { stroke: #F44336; }
+.M2 { stroke: #3F51B5; }
+.M3 { stroke: #4CAF50; }
+.M4 { stroke: #FF9800; }
+.M5 { stroke: #9C27B0; }
+.M6 { stroke: #795548; }
+.M7 { stroke: #FFEB3B; }
+.M8 { stroke: #9E9E9E; }
+.M9 { stroke: #03A9F4; }
+.M10 { stroke: #E91E63; }
+.M11 { stroke: #000000; }
+.M12 { stroke: #8BC34A; }
+.L { stroke: #009688; }
+#paths-outer .E { stroke: #607D8B; }
+#paths-inner .E { stroke: #FFFFFF; }
+*/
+

@@ -2,27 +2,35 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>Plan metro Sankt-Peterburga</title>
-    
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <meta name="keywords" content="Петербург, план, метро">
+    <meta name="description" content="План метро Санкт-Петербурга">
+    <meta name="author" content="Anton Veselyev">
+    <meta name="theme-color" content="#003688">
+    <title>Metro</title>
+    <!--<link href='https://fonts.googleapis.com/css?family=Cambay:400,700' rel='stylesheet' type='text/css'>-->
     <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Spb_metro_logo.svg/293px-Spb_metro_logo.svg.png" />
-    <link rel="stylesheet" href="https://cdn.rawgit.com/chriscalip/L.UniformControl/master/lib/uniform/themes/default/css/uniform.default.min.css" media="screen" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.rawgit.com/MohammadYounes/AlertifyJS/master/build/css/alertify.min.css"/>
+    <link rel="stylesheet" href="https://cdn.rawgit.com/MohammadYounes/AlertifyJS/master/build/css/themes/default.min.css"/>
+    <!--<link rel="stylesheet" href="css/fonts.css"/>-->
     <link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" id="scheme"/>
+    <link rel="stylesheet" href="css/contextmenu.css"/>
+    <link rel="stylesheet" href="css/textplate.css"/>
+    <link rel="stylesheet" href="css/faq.css"/>
     
     <script src="https://cdn.rawgit.com/github/fetch/master/fetch.js" defer></script>
-    <script type='text/javascript' src="//wurfl.io/wurfl.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js" defer></script>
-
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" defer></script>
-    <script src="https://cdn.rawgit.com/chriscalip/L.UniformControl/master/lib/uniform/jquery.uniform.min.js" defer></script>
-    <script src="https://cdn.rawgit.com/chriscalip/L.UniformControl/master/src/UniformControl.js" defer></script>
-
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet-src.js" defer></script>-->
+    <!--<script>
+        window['ActiveXObject'] = 1;
+        document.documentElement.style['transition'] = '1';
+    </script>-->
     <script src="js/script.js" defer></script>
-
 </head>
 <body>
-<div id="map-container">
-    <svg id="overlay"></svg>
-</div>
+
+<div id="map-container"/>
+
 </body>
 </html>
