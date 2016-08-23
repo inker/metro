@@ -17,14 +17,14 @@ export function getCircumcenter(positions: L.Point[]): L.Point {
     if (positions.length !== 3) {
         throw new Error('must have 3 vertices');
     }
-    const first = positions[0];
-    const b = positions[1].subtract(first);
-    const c = positions[2].subtract(first);
+    const a = positions[0];
+    const b = positions[1].subtract(a);
+    const c = positions[2].subtract(a);
     const bb = dot(b, b);
     const cc = dot(c, c);
     return new L.Point((c.y * bb - b.y * cc), (b.x * cc - c.x * bb))
         .divideBy(2.0 * (b.x * c.y - b.y * c.x))
-        .add(first);
+        .add(a);
 }
 
 export function polarToCartesian(center: L.Point, radius: number, angle: number) {
