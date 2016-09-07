@@ -648,6 +648,10 @@ export default class MetroMap extends Mediator {
         //bezier.id = 'op-' + spanIndex;
         if (lineType === 'E') {
             bezier.classList.add('E');
+            // const { branch } = span.routes[0];
+            // if (branch !== undefined) {
+            //     bezier.classList.add('E' + branch);
+            // }
             const inner = bezier.cloneNode(true) as typeof bezier;
             //inner.id = 'ip-' + spanIndex;
             pool.outerEdgeBindings.set(span, bezier);
