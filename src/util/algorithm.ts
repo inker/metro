@@ -57,11 +57,11 @@ export function shortestRoute(objects: nw.Platform[], p1: L.LatLng, p2: L.LatLng
         let distance = distanceBetween(p1, o.location),
             time = distance / walkingWithObstacles;
         currentTime.set(o, time + (hasE ? eLineWaitingTime : metroWaitingTime));
-        //currentTime.push(time + (hasE ? eLineWaitingTime : metroWaitingTime));
+        // currentTime.push(time + (hasE ? eLineWaitingTime : metroWaitingTime));
         distance = distanceBetween(o.location, p2);
         time = distance / walkingWithObstacles;
         fromPlatformToDest.set(o, time);
-        //fromPlatformToDest.push(time);
+        // fromPlatformToDest.push(time);
     }
     // pick the closest one so far
     let currentNode = findClosestObject(p1, objects);
@@ -79,7 +79,6 @@ export function shortestRoute(objects: nw.Platform[], p1: L.LatLng, p2: L.LatLng
             }
         });
         objectSet.delete(currentNode);
-        //console.log('current:', currentIndex, currentNode.name);
         // getting his previous
         var prevNode = prev.get(currentNode);
         const prevSpan = currentNode.spans.find(s => s.has(prevNode));
@@ -94,7 +93,7 @@ export function shortestRoute(objects: nw.Platform[], p1: L.LatLng, p2: L.LatLng
             let lineChangePenalty = 0;
             if (prevSpan && prevSpan.routes[0] !== s.routes[0]) {
                 // doesn't seem to work
-                //lineChangePenalty = metroWaitingTime;
+                // lineChangePenalty = metroWaitingTime;
             }
             // TODO: lower priority for E-lines
             const callTime = s.routes[0].line.startsWith('E') ? eLineStopTime : metroStopTime;
@@ -139,10 +138,10 @@ export function shortestRoute(objects: nw.Platform[], p1: L.LatLng, p2: L.LatLng
         platformPath = [currentNode];
     // remove later
     for (let prevNode = prev.get(currentNode); prevNode !== undefined; prevNode = prev.get(currentNode)) {
-        //console.log('current', currentNode.name);
-        //const prevIndex = prev[currentIndex];
+        // console.log('current', currentNode.name);
+        // const prevIndex = prev[currentIndex];
         if (prevNode === undefined) break;
-        //console.log('prev', objects[prevIndex].name);
+        // console.log('prev', objects[prevIndex].name);
         let p: nw.Edge<nw.Platform>;
         for (let s of currentNode.spans) {
             if (s.has(prevNode)) {

@@ -84,7 +84,7 @@ export default class implements L.ILayer {
             .on('drag', handleDrag)
             .on('click', this.onCircleClick.bind(this));
         // const el = { lang: { ru: 'Udaliť izmerenia', en: 'Delete measurements' } };
-        //this.metroMap.contextMenu.extraItems.set(circle, new Map().set('deletemeasurements', el));
+        // this.metroMap.contextMenu.extraItems.set(circle, new Map().set('deletemeasurements', el));
         this.markers.addLayer(marker);
         this.updateDistances();
     };

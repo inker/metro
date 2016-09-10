@@ -20,7 +20,7 @@ export namespace Scale {
         // const t = scaleFactor - 1,
         //     tx = -circle.getAttribute('cx') * t,
         //     ty = -circle.getAttribute('cy') * t;
-        //circle.setAttribute('transform', `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${tx}, ${ty})`);
+        // circle.setAttribute('transform', `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${tx}, ${ty})`);
         const oldR = circle.getAttribute('r');
         circle.setAttribute('data-r', oldR);
         circle.setAttribute('r', (+oldR * scaleFactor).toString());

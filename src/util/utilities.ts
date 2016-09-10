@@ -25,7 +25,7 @@ export function setsEqual<T>(a: Set<T>, b: Set<T>) {
 export function intersection<T>(a: Set<T>, b: Set<T>) {
     const isn = new Set<T>();
     a.forEach(item => {
-        if (b.has(item)) isn.add(item)
+        if (b.has(item)) isn.add(item);
     });
     return isn;
 }
@@ -63,7 +63,7 @@ export function getFraction(num: number, radix = 10): string {
 
 export function generateId(collision?: (temp: string) => boolean): string {
     const id = Math.random().toString(36).slice(2);
-    return collision !== undefined && collision(id) ? generateId(collision) : id;  
+    return collision !== undefined && collision(id) ? generateId(collision) : id;
 }
 
 export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {
@@ -92,7 +92,7 @@ export function onceEscapePress(handler: (ev: KeyboardEvent) => any) {
     const backbuttonListener = e => {
         removeListener();
         handler(e);
-    }
+    };
     function removeListener() {
         removeEventListener('keydown', keydownListener);
         removeEventListener('backbutton', backbuttonListener);
@@ -148,7 +148,7 @@ export function midPointsToEnds(posOnSVG: L.Point, midPts: L.Point[]) {
         .multiplyBy(lens[0] / (lens[0] + lens[1]))
         .add(midPts[0]);
     const offset = posOnSVG.subtract(midOfMidsWeighted);
-    return midPts.map(v => roundPoint(v.add(offset), 2));    
+    return midPts.map(v => roundPoint(v.add(offset), 2));
 }
 
 export function trim3d<T extends { style: CSSStyleDeclaration }>({ style }: T) {
@@ -209,7 +209,7 @@ export namespace File {
                 canvas.getContext('2d').drawImage(img, 0, 0);
                 resolve(canvas);
             };
-        })
+        });
     }
 
     export function svgToPicture(root: SVGSVGElement): Promise<HTMLImageElement> {
@@ -288,7 +288,7 @@ export function tryGet<T>(fetch: () => T, validate: (val: T) => boolean, interva
             return resolve(val);
         }
         setTimeout(bar, interval);
-    }));    
+    }));
 }
 
 export function tryGetElement(query: string, interval = 100, ttl = 100) {

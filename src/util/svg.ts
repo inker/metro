@@ -65,7 +65,7 @@ export function setCircularPath(el: Element, start: L.Point, end: L.Point, third
     const center = math.getCircumcenter([start, end, third]);
     const startAngle = Math.atan2(start.y - center.y, start.x - center.x),
         endAngle = Math.atan2(end.y - center.y, end.x - center.x);
-    //const thirdAngle = Math.atan2(third.y - center.y, third.x - center.x);
+    // const thirdAngle = Math.atan2(third.y - center.y, third.x - center.x);
     const diff = endAngle - startAngle;
     let large = diff <= Math.PI || diff > -Math.PI ? 0 : 1;
     const u = start.subtract(center),
@@ -155,7 +155,7 @@ export namespace Filters {
             </feMerge>`;
         return filter as any;
     }
-    
+
     export function makeOpacity(): SVGFilterElement {
         const filter = createSVGElement('filter');
         filter.id = 'opacity';
@@ -164,7 +164,7 @@ export namespace Filters {
         </feComponentTransfer>`;
         return filter as any;
     }
-    
+
     export function makeGray(): SVGFilterElement {
         const filter = createSVGElement('filter');
         filter.id = 'gray';
@@ -182,20 +182,18 @@ export namespace Filters {
         defs.appendChild(makeOpacity());
         defs.appendChild(makeGray());
     }
-    
+
     export function applyDrop(path: Element & SVGStylable) {
         // fixing disappearing lines
         const box = path.getBoundingClientRect();
         const strokeWidth = parseFloat(getComputedStyle(path).strokeWidth) * 2;
         if (box.height >= strokeWidth && box.width >= strokeWidth) {
             path.style.filter = 'url(#black-glow)';
-        }        
+        }
     }
 }
 
 export namespace Gradients {
-    //let defs; 
-    
     export function makeUndirectedLinear(colors: string[]): SVGLinearGradientElement {
         const gradient = createSVGElement('linearGradient') as SVGLinearGradientElement;
         if ('innerHTML' in gradient) {

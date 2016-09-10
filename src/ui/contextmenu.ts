@@ -24,8 +24,8 @@ export default class implements L.ILayer {
         console.log('adding context menu');
 
         this.items = items;
-        //this._extraItems = new Map();
-        
+        // this._extraItems = new Map();
+
         this.container = document.createElement('div');
         this.container.id = 'contextmenu';
         this.container.addEventListener('contextmenu', e => {
@@ -51,7 +51,7 @@ export default class implements L.ILayer {
             listener = e => this.handler(e),
             cancelListener = e => this.hide();
         mapPane.addEventListener('contextmenu', listener, false);
-        //objectsPane.addEventListener('contextmenu', listener, true); // 'true' prevents propagation
+        // objectsPane.addEventListener('contextmenu', listener, true); // 'true' prevents propagation
         mapContainer.addEventListener('mousedown', cancelListener);
         mapContainer.addEventListener('touchstart', cancelListener);
         if (!L.Browser.mobile) {
@@ -80,7 +80,7 @@ export default class implements L.ILayer {
                 cell.setAttribute('data-event', item.event);
             }
             cell.textContent = translate(item.text);
-            this.container.appendChild(cell);            
+            this.container.appendChild(cell);
         }
 
         // defined here so that the marker gets set here (TODO: fix later)
@@ -115,7 +115,7 @@ export default class implements L.ILayer {
         if (all) {
             this.items = this.items.filter(item => item.event !== event);
             return;
-        } 
+        }
         const index = this.items.findIndex(item => item.event === event);
         if (index === undefined || index < 0) return;
         this.items.splice(index, 1);
@@ -127,7 +127,7 @@ export default class implements L.ILayer {
             this.map.dragging.disable();
         }
     }
-    
+
     private hide() {
         this.container.style.visibility = 'hidden';
         if (L.Browser.mobile) {

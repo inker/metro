@@ -16,11 +16,11 @@ export default class MapEditor implements Widget {
             this.button.onclick = e => this.saveMapClick();
             const dummyCircles = document.getElementById('dummy-circles');
             dummyCircles.onmousedown = dummyCircles.onclick = null;
-            this.metroMap.publish(new Event("editmapstart"));
+            this.metroMap.publish(new Event('editmapstart'));
         } else {
             this.button.textContent = tr`Edit map`;
             this.button.onclick = e => this.editMapClick();
-            this.metroMap.publish(new Event("editmapend"));
+            this.metroMap.publish(new Event('editmapend'));
         }
         this._editMode = val;
     }

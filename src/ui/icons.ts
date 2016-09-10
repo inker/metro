@@ -15,7 +15,7 @@ export const End = L.icon({
 
 export const Red = L.icon({
     iconUrl: 'http://harrywood.co.uk/maps/examples/leaflet/marker-icon-red.png',
-    //iconRetinaUrl: 'my-icon@2x.png',
+    // iconRetinaUrl: 'my-icon@2x.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],

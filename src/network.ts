@@ -49,7 +49,7 @@ export class Platform {
         }
         return routes;
     }
-    
+
     passingLines(): Set<string> {
         const lines = new Set<string>();
         for (let span of this.spans) {
@@ -70,7 +70,7 @@ export class Station {
     }
 
     getNames(): string[] {
-        return getPlatformNamesZipped(this.platforms);      
+        return getPlatformNamesZipped(this.platforms);
     }
 
     getCenter(): L.LatLng {
@@ -88,13 +88,13 @@ export class Station {
         }
         return lines;
     }
-    
+
 };
 
 export class Edge<V> {
     protected _source: V;
     protected _target: V;
-    
+
     get source() { return this._source; }
     get target() { return this._target; }
     set source(vertex: V) {
@@ -167,7 +167,7 @@ export class Span extends Edge<Platform> {
         this.routes = routes;
     }
     get source() { return this._source; }
-    get target() { return this._target; }  
+    get target() { return this._target; }
     set source(vertex: Platform) {
         if (this._source !== undefined) {
             deleteFromArray(this._source.spans, this);
@@ -233,7 +233,7 @@ export class Network {
         platformsCopy.forEach(pl => this.stations.push(new Station([pl])));
         console.timeEnd('restore');
 
-        //console.log(this.toJSON() === JSON.stringify(json));
+        // console.log(this.toJSON() === JSON.stringify(json));
 
         // const chains: number[][] = [];
         // for (let i = 0; i < this.routes.length; ++i) {
@@ -266,9 +266,9 @@ export class Network {
         //             if (s.source === )
         //         }
         //     }
-        //}
+        // }
     }
-    
+
     toJSON(): string {
         // const map = {}; // routeNum -> platforms
         // for (let span of spans) {

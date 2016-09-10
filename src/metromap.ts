@@ -26,7 +26,7 @@ export default class MetroMap extends Mediator {
 
     private plate: ui.TextPlate;
 
-    //private routeWorker = new Worker('js/routeworker.js');
+    // private routeWorker = new Worker('js/routeworker.js');
 
     getMap(): L.Map { return this.map; }
     getNetwork(): nw.Network { return this.network; }
@@ -41,7 +41,7 @@ export default class MetroMap extends Mediator {
 
         const faq = new ui.FAQ(config.url['data']);
 
-        //wait.textContent = 'making map...';
+        // wait.textContent = 'making map...';
 
         this.config.center = [0, 0];
         const mapOptions = Object.assign({}, config);
@@ -61,7 +61,7 @@ export default class MetroMap extends Mediator {
             if (!e.shiftKey || !e.ctrlKey || e.keyCode !== 82) return;
             this.getGraph().then(nw => this.resetNetwork(nw));
         });
-        //wait.textContent = 'loading graph...';
+        // wait.textContent = 'loading graph...';
         this.addContextMenu();
         networkPromise.then(json => {
             this.network = new nw.Network(json);
@@ -77,7 +77,7 @@ export default class MetroMap extends Mediator {
             return lineRulesPromise;
         }).then(lineRules => {
             this.lineRules = lineRules;
-            //wait.textContent = 'adding content...';
+            // wait.textContent = 'adding content...';
             this.resetMapView();
             this.map.addLayer(mapbox);
             this.map.on('overlayupdate', overlay => {
@@ -94,8 +94,8 @@ export default class MetroMap extends Mediator {
             this.addMapListeners();
             new ui.RoutePlanner().addTo(this);
             new ui.DistanceMeasure().addTo(this.map);
-            //this.routeWorker.postMessage(this.network);
-            //ui.drawZones(this.map, this.network.platforms);
+            // this.routeWorker.postMessage(this.network);
+            // ui.drawZones(this.map, this.network.platforms);
 
             if (!L.Browser.mobile) {
                 new ui.MapEditor(this.config.detailedZoom).addTo(this);
@@ -103,10 +103,10 @@ export default class MetroMap extends Mediator {
             return faq.whenAvailable;
         }).then(() => {
             faq.addTo(this.map);
-            //wait.textContent = 'loading tiles...';
+            // wait.textContent = 'loading tiles...';
             return tileLoadPromise;
         }).then(tileLoadEvent => {
-            //wait.parentElement.removeChild(wait);
+            // wait.parentElement.removeChild(wait);
             util.fixFontRendering();
             this.map.on('layeradd layerremove', e => util.fixFontRendering());
             mapPaneStyle.visibility = '';
@@ -125,17 +125,17 @@ export default class MetroMap extends Mediator {
 
     private addContextMenu() {
         const arr = [{
-            event: "routefrom",
-            text: "Route from here"
+            event: 'routefrom',
+            text: 'Route from here'
         }, {
-            event: "routeto",
-            text: "Route to here"
+            event: 'routeto',
+            text: 'Route to here'
         }, {
-            event: "clearroute",
-            text: "Clear route"
+            event: 'clearroute',
+            text: 'Clear route'
         }, {
-            event: "showheatmap",
-            text: "Show heatmap",
+            event: 'showheatmap',
+            text: 'Show heatmap',
             extra: {
                 disabled: true
             }
@@ -144,7 +144,7 @@ export default class MetroMap extends Mediator {
         for (let el of arr) {
             this.map.on(el.event, e => {
                 console.log(e);
-                this.publish(e as any)
+                this.publish(e as any);
             });
         }
         this.contextMenu.addTo(this.map);
@@ -235,7 +235,7 @@ export default class MetroMap extends Mediator {
 
             const routeSet = sn > 0 && tn === 0 ? (sn === 1 ? sourceRoutes : ui.askRoutes(this.network, sourceRoutes)) :
                 tn > 0 && sn === 0 ? (tn === 1 ? targetRoutes : ui.askRoutes(this.network, targetRoutes)) :
-                    ui.askRoutes(this.network, util.intersection(sourceRoutes, targetRoutes))
+                    ui.askRoutes(this.network, util.intersection(sourceRoutes, targetRoutes));
 
             this.network.spans.push(new nw.Span(source, target, Array.from(routeSet)));
             this.resetNetwork(JSON.parse(this.network.toJSON()));
@@ -327,8 +327,8 @@ export default class MetroMap extends Mediator {
     }
 
     private resetMapView(): void {
-        //const fitness = (points, pt) => points.reduce((prev, cur) => this.bounds., 0);
-        //const center = geo.calculateGeoMean(this.network.platforms.map(p => p.location), fitness, 0.1);
+        // const fitness = (points, pt) => points.reduce((prev, cur) => this.bounds., 0);
+        // const center = geo.calculateGeoMean(this.network.platforms.map(p => p.location), fitness, 0.1);
         const { center, zoom } = this.config;
         const options = {
             pan: { animate: false },
@@ -371,7 +371,7 @@ export default class MetroMap extends Mediator {
         const { detailedZoom } = this.config;
         const zoom = this.map.getZoom(),
             coef = zoom > 9 ? zoom : zoom > 8 ? 9.5 : 9,
-            //lineWidth = 2 ** (zoom / 4 - 1.75);
+            // lineWidth = 2 ** (zoom / 4 - 1.75);
             lineWidth = (coef - 7) * 0.5,
             lightLineWidth = lineWidth * 0.75,
             circleRadius = coef < detailedZoom ? lineWidth * 1.25 : lineWidth,
@@ -421,10 +421,10 @@ export default class MetroMap extends Mediator {
             // }
             for (let platform of station.platforms) {
                 const posOnSVG = this.platformsOnSVG.get(platform);
-                //const posOnSVG = this.overlay.latLngToSvgPoint(platform.location);
+                // const posOnSVG = this.overlay.latLngToSvgPoint(platform.location);
                 if (zoom > 9) {
                     const ci = svg.makeCircle(posOnSVG, circleRadius);
-                    //ci.id = 'p-' + platformIndex;
+                    // ci.id = 'p-' + platformIndex;
                     pool.platformBindings.set(platform, ci);
                     if (zoom >= detailedZoom) {
                         this.colorizePlatformCircle(ci, platform.passingLines());
@@ -433,7 +433,7 @@ export default class MetroMap extends Mediator {
                     //     ci.style.stroke = stationMeanColor;
                     // }
                     const dummyCircle = svg.makeCircle(posOnSVG, dummyCircleRadius);
-                    //dummyCircle.id = 'd-' + platformIndex;
+                    // dummyCircle.id = 'd-' + platformIndex;
                     pool.dummyBindings.set(platform, dummyCircle);
 
                     stationCirclesFrag.appendChild(ci);
@@ -496,7 +496,7 @@ export default class MetroMap extends Mediator {
 
                 transfersOuterFrag.appendChild(paths[0]);
                 transfersInnerFrag.appendChild(paths[1]);
-                //this.transferToModel(transfer, paths);
+                // this.transferToModel(transfer, paths);
             }
         }
 
@@ -604,9 +604,9 @@ export default class MetroMap extends Mediator {
         } else if (pl1 === cluster[2] && pl2 === cluster[3] || pl1 === cluster[3] && pl2 === cluster[2]) {
             return svg.makeTransferLine(pos1, pos2);
         }
-        //const s = transfer.source;
-        //const pl1neighbors = this.network.transfers.filter(t => t.source === s || t.target === s);
-        //const pl1deg = pl1neighbors.length;
+        // const s = transfer.source;
+        // const pl1neighbors = this.network.transfers.filter(t => t.source === s || t.target === s);
+        // const pl1deg = pl1neighbors.length;
         const rarr: nw.Platform[] = [];
         for (let t of this.network.transfers) {
             if (t === transfer) continue;
@@ -618,12 +618,12 @@ export default class MetroMap extends Mediator {
         }
         let third: nw.Platform;
         if (rarr.length === 2) {
-            if (rarr[0] !== rarr[1]) throw Error("FFFFUC");
+            if (rarr[0] !== rarr[1]) throw Error('FFFFUC');
             third = rarr[0];
         } else if (rarr.length === 3) {
             third = rarr[0] === rarr[1] ? rarr[2] : rarr[0] === rarr[2] ? rarr[1] : rarr[0];
         } else {
-            throw new Error("111FUUFF");
+            throw new Error('111FUUFF');
         }
         return makeArc(third);
     }
@@ -636,16 +636,16 @@ export default class MetroMap extends Mediator {
         } else {
             console.error(span, 'span has no routes!');
         }
-        //console.log(span.source, span.target);
+        // console.log(span.source, span.target);
         const controlPoints = [
             this.platformsOnSVG.get(span.source),
             this.whiskers.get(span.source).get(span),
             this.whiskers.get(span.target).get(span),
             this.platformsOnSVG.get(span.target)
         ];
-        //console.log(span, this.whiskers.get(span.target), controlPoints);
+        // console.log(span, this.whiskers.get(span.target), controlPoints);
         const bezier = svg.makeCubicBezier(controlPoints);
-        //bezier.id = 'op-' + spanIndex;
+        // bezier.id = 'op-' + spanIndex;
         if (lineType === 'E') {
             bezier.classList.add('E');
             // const { branch } = span.routes[0];
@@ -653,7 +653,7 @@ export default class MetroMap extends Mediator {
             //     bezier.classList.add('E' + branch);
             // }
             const inner = bezier.cloneNode(true) as typeof bezier;
-            //inner.id = 'ip-' + spanIndex;
+            // inner.id = 'ip-' + spanIndex;
             pool.outerEdgeBindings.set(span, bezier);
             pool.innerEdgeBindings.set(span, inner);
             return [bezier, inner];
@@ -754,7 +754,7 @@ export default class MetroMap extends Mediator {
                     if (inner !== undefined) svg.setBezierPath(inner, controlPoints);
                 });
                 for (let tr of platform.transfers) {
-                    tr[tr.source === platform ? 'source' : 'target'] = platform
+                    tr[tr.source === platform ? 'source' : 'target'] = platform;
                 }
             }
         });

@@ -2,7 +2,7 @@
 import MetroMap from '../../metromap';
 
 export interface Widget {
-    addTo(metroMap: MetroMap): this;   
+    addTo(metroMap: MetroMap): this;
 }
 
 export abstract class DeferredWidget {

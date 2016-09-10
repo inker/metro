@@ -38,7 +38,7 @@ export default class TextPlate {
     }
 
     get editable() {
-        return this._editable
+        return this._editable;
     }
 
     set editable(val: boolean) {
@@ -60,7 +60,7 @@ export default class TextPlate {
         this._element.setAttribute('transform', `translate(${bottomRight.x}, ${bottomRight.y})`);
         this._element.style.display = null;
         const { width, height } = div.getBoundingClientRect();
-        
+
         foreign.setAttribute('transform', `translate(${-width}, ${-height})`);
         console.log(foreign.getBoundingClientRect());
         console.log(div.getBoundingClientRect());

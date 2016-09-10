@@ -14,7 +14,7 @@ export default class FAQ extends DeferredWidget {
     constructor(faqDataUrl: string) {
         super();
         const promise: Promise<FAQData> = fetch(faqDataUrl).then(data => data.json());
-        
+
         const btn = document.createElement('button');
         btn.id = 'faq-button';
         btn.textContent = 'FAQ';
@@ -23,11 +23,11 @@ export default class FAQ extends DeferredWidget {
         this.button = btn;
         this.card = document.createElement('div');
         this.card.id = 'faq-card';
-        
+
         if (L.Browser.mobile) {
             new Hammer(this.card).on('swipeleft swiperight', e => this.hideFAQ());
         }
-        
+
         const urlRe = /\[\[(.+?)\|(.*?)\]\]/g;
         const replacement = '<a href=\"$1\" target=\"_blank\">$2</a>';
         const qa2html = qa => `<div><span class="question">${qa.q}</span><span class="answer">${qa.a}</span></div>`;

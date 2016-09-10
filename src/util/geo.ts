@@ -41,7 +41,7 @@ export function getCenter(points: L.LatLng[]): L.LatLng {
 
 type FitnessFunc = (current: L.LatLng) => number;
 type OnClimb = (coordinate: L.LatLng) => void;
-//@time
+
 export function calculateGeoMean(points: L.LatLng[], fitnessFunc: FitnessFunc, minStep = 0.00001, onClimb?: OnClimb): L.LatLng {
     let point = getCenter(points);
     let fitness = fitnessFunc(point);

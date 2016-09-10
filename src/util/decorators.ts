@@ -5,7 +5,7 @@ export function time(target: Object, key: string, descriptor: TypedPropertyDescr
         console.time(key);
         originalMethod.apply(this, args);
         console.timeEnd(key);
-    }
+    };
     return descriptor;
 }
 
@@ -20,10 +20,10 @@ export function MemoizeWithParameters(target: any, propertyName: string, descrip
         const serialized = JSON.stringify(args);
         const f = results.get(serialized);
         if (f !== undefined) {
-            //console.log('already exists!');
+            // console.log('already exists!');
             return f;
         }
-        //console.log('calculating');
+        // console.log('calculating');
         const result = value.apply(this, args);
         results.set(serialized, result);
         return result;

@@ -18,7 +18,7 @@ export function updateDictionary(url: string) {
             const translations = dict[key];
             dictionary.set(key.toLowerCase(), userLanguage in translations ? translations[userLanguage] : key);
         }
-        regexDict = new RegExp(keys.join('|'), 'ig')
+        regexDict = new RegExp(keys.join('|'), 'ig');
     });
 }
 

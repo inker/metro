@@ -18,7 +18,7 @@ export default class RoutePlanner implements Widget {
         this.toMarker = new L.Marker([0, 0], { draggable: true, icon: Icons.End });
         this.addMarkerListeners();
     }
-    
+
     addTo(metroMap: MetroMap) {
         this.metroMap = metroMap;
         const map = metroMap.getMap();
@@ -61,7 +61,7 @@ export default class RoutePlanner implements Widget {
                 this.visualizeShortestRoute();
             });
         }
-    }    
+    }
 
     private visualizeShortestRoute(animate = true) {
         const map = this.metroMap.getMap();

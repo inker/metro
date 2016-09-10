@@ -2,9 +2,9 @@
 import * as L from 'leaflet';
 
 export const mapbox = new L.TileLayer('https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png', {
-    //id: 'inker.mlo91c41',
+    // id: 'inker.mlo91c41',
     detectRetina: false,
-    //reuseTiles: true,
+    // reuseTiles: true,
     bounds: null,
     attribution: "Map data &copy; <a href=\"https://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://mapbox.com\">Mapbox</a>"
 });
@@ -19,7 +19,7 @@ export const osmFrance = L.tileLayer('http://{s}.tile.openstreetmap.fr/osmfr/{z}
 
 export const openMapSurfer = new L.TileLayer('https://openmapsurfer.uni-hd.de/tiles/roads/x={x}&y={y}&z={z}', {
     detectRetina: true,
-    //reuseTiles: true,
+    // reuseTiles: true,
     attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="https://server.ts.openstreetmap.org/copyright">OpenStreetMap</a>'
 });
 
@@ -35,12 +35,12 @@ export const esriGrey = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest
 
 export const cartoDB = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
-	//subdomains: 'abcd',
+	// subdomains: 'abcd',
 });
 
 export const cartoDBNoLabels = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
 	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
-	//subdomains: 'abcd',
+	// subdomains: 'abcd',
 });
 
 export const wikimapia = L.tileLayer('http://i{hash}.wikimapia.org/?x={x}&y={y}&zoom={z}', {

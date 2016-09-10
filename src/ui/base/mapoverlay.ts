@@ -9,17 +9,17 @@ function fixFontDelayed(parent: Element, time = 250) {
 export default class MapOverlay<Container extends Element&{ style: CSSStyleDeclaration }> implements L.ILayer {
     private map: L.Map;
     protected overlayContainer: Container;
-    
+
     private _bounds: L.LatLngBounds;
     private topLeft: L.Point;
     protected margin: L.Point;
-    
+
     private minZoom: number;
     private maxZoom: number;
 
     constructor(bounds?: L.LatLngBounds, margin = new L.Point(100, 100)) {
         this.margin = margin.round();
-        this._bounds = bounds;       
+        this._bounds = bounds;
     }
 
     addTo(map: L.Map) {
@@ -33,10 +33,10 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
         this.maxZoom = map.getMaxZoom();
 
         this.updateOverlayPositioning();
-        
+
         const { objectsPane, markerPane, mapPane } = map.getPanes();
         (L.version[0] === '1' ? mapPane : objectsPane).insertBefore(this.overlayContainer, markerPane);
-        
+
         this.addMapMovementListeners();
     }
 
@@ -69,7 +69,7 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
             classList.remove('leaflet-zoom-animated');
             style.transform = null;
             style.transformOrigin = null;
-            
+
             this.updateOverlayPositioning();
             this.map.fireEvent('overlayupdate', this);
             this.map.dragging.enable();
