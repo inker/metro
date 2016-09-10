@@ -1,0 +1,55 @@
+path {
+    fill-opacity: 0; /* so that no white stuff be visible */
+}
+
+#station-circles {
+    fill: white;
+    stroke: black;
+}
+
+#dummy-circles {
+    opacity: 0;
+    stroke: blue;
+    stroke-width: 0.5px;
+}
+
+#paths-outer, #paths-inner, #transfers-outer, #transfers-inner {
+    fill: none;
+}
+
+#transfers-outer {
+    stroke: #404040;
+    /*stroke-opacity: 1;*/
+    /*position: absolute;*/
+}
+
+#transfers-inner {
+    stroke: #FFFFFF;
+    /*stroke-opacity: 1;*/
+    /*position: absolute;*/
+}
+
+.M-line {
+    /*stroke-width: 2;*/
+}
+
+#paths-outer > .L {
+    stroke-width: 0px;
+}
+
+/* reverse engineered from the original map */
+.M1 { stroke: rgb(244,128,38); }
+.M2 { stroke: rgb(151,1,94); }
+.M3 { stroke: rgb(0,132,61); }
+.M4 { stroke: rgb(238,46,34); }
+.M5 { stroke: rgb(27,63,148); }
+.M6 { stroke: rgb(176,95,15); }
+.M7 { stroke: rgb(254,209,5); }
+.M8 { stroke: rgb(149,156,161); }
+.M9 { stroke: rgb(6,157,220); }
+.M10 { stroke: rgb(243,134,160); }
+.M11 { stroke: rgb(35,31,32); }
+.M12 { stroke: rgb(121,193,66); }
+.E { stroke:  rgb(96,64,153); }
+.L { stroke: rgb(0,177,176); }
+#paths-inner * { stroke: #FFFFFF; }
