@@ -56,9 +56,9 @@ export function askRoutes(network: nw.Network, defSet?: Set<nw.Route>) {
             route = { line: tokens[1], branch: tokens[2] };
             network.routes.push(route);
         }
-        routeSet.add(route); 
+        routeSet.add(route);
     }
-    return routeSet;    
+    return routeSet;
 }
 
 export function addLayerSwitcher(map: L.Map, layers: L.TileLayer[]): void {
