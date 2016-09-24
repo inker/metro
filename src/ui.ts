@@ -14,15 +14,18 @@ export { DistanceMeasure, MapEditor, FAQ, TextPlate, RoutePlanner, ContextMenu, 
 import * as L from 'leaflet';
 import * as nw from './network';
 import { calculateGeoMean } from './util/geo';
-import { tr } from './i18n';
+import { tr, userLanguage } from './i18n';
 
 export function platformRenameDialog(platform: nw.Platform) {
     const ru = platform.name, {fi, en} = platform.altNames;
     const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru];
     const nameString = names.join('|');
+    const tokens = window.location.search.match(/city=(\w+)/);
+    const city = tokens ? tokens[1] : 'spb';
+    const second = city === 'spb' ? 'fi' : city === 'helsinki' ? 'se' : undefined;
     alertify.prompt(tr`New name`, nameString, (okev, val: string) => {
         const newNames = val.split('|');
-        [platform.name, platform.altNames['fi'], platform.altNames['en']] = newNames;
+        [platform.name, platform.altNames[second], platform.altNames['en']] = newNames;
         if (val === nameString) {
             return alertify.warning(tr`Name was not changed`);
         }

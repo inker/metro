@@ -8,7 +8,6 @@ const fs = require('fs');
 const util = require('gulp-util');
 const buffer = require('vinyl-buffer');
 //const es         = require('event-stream');
-const literalify = require('literalify');
 const sourcemaps = require('gulp-sourcemaps');
 const ts = require('gulp-typescript');
 const tsify = require('tsify');

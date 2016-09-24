@@ -125,10 +125,9 @@ export function triggerMouseEvent(target: Node, eventType: string) {
 }
 
 export function getPlatformNames(platform: nw.Platform): string[] {
-    const ru = platform.name,
-        { fi, en } = platform.altNames,
-        names = !fi ? [ru] : i18n.userLanguage === 'fi' ? [fi, ru] : [ru, fi];
-    if (en) names.push(en);
+    const { name, altNames } = platform;
+    const second = getSecondLanguage();
+    const names = [name, altNames[second], altNames['en']].filter(name => name !== undefined);
     return names;
 }
 
@@ -313,4 +312,10 @@ export function fixFontRendering(parent: { querySelectorAll } = document): void 
     for (let i = 0; i < blurringStuff.length; ++i) {
         trim3d(blurringStuff[i] as HTMLElement & SVGStylable);
     }
+}
+
+export function getSecondLanguage() {
+    const tokens = window.location.search.match(/city=(\w+)/);
+    const city = tokens ? tokens[1] : 'spb';
+    return city === 'spb' ? 'fi' : city === 'helsinki' ? 'se' : undefined;
 }

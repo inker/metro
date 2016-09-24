@@ -197,7 +197,7 @@ export namespace Gradients {
     export function makeUndirectedLinear(colors: string[]): SVGLinearGradientElement {
         const gradient = createSVGElement('linearGradient') as SVGLinearGradientElement;
         if ('innerHTML' in gradient) {
-            gradient['innerHTML'] = `<stop style="stop-color:${colors[0]}" /><stop style="stop-color:${colors[1]}" />`;
+            gradient.innerHTML = `<stop style="stop-color:${colors[0]}" /><stop style="stop-color:${colors[1]}" />`;
             return gradient;
         } else {
             const from = createSVGElement('stop') as SVGStopElement;
