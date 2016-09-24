@@ -4,6 +4,7 @@ import * as nw from './network';
 import * as ui from './ui';
 import * as svg from './util/svg';
 import * as util from './util/utilities';
+import * as geo from './util/geo';
 import * as res from './res';
 import pool from './objectpool';
 import { Scale } from './util/sfx';
@@ -65,9 +66,9 @@ export default class MetroMap extends Mediator {
         this.addContextMenu();
         networkPromise.then(json => {
             this.network = new nw.Network(json);
-            const bounds = new L.LatLngBounds(this.network.platforms.map(p => p.location));
-            const center = bounds.getCenter();
+            const center = geo.getCenter(this.network.platforms.map(p => p.location));
             this.config.center = [center.lat, center.lng];
+            const bounds = new L.LatLngBounds(this.network.platforms.map(p => p.location));
             this.overlay = new ui.SvgOverlay(bounds).addTo(this.map);
             const { defs } = this.overlay;
             svg.Filters.appendAll(defs);
