@@ -1,4 +1,3 @@
-/// <reference path="../../typings/tsd.d.ts" />
 import * as Hammer from 'hammerjs';
 import MetroMap from '../metromap';
 import { DeferredWidget } from './base/widget';

@@ -1,4 +1,3 @@
-/// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 import { getCenter } from './util/geo';
 import { getPlatformNamesZipped, deleteFromArray } from './util/utilities';

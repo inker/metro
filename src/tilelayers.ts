@@ -1,4 +1,3 @@
-/// <reference path="../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 
 export const mapbox = new L.TileLayer('https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png', {
@@ -14,14 +13,13 @@ export const mapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}
 });
 
 export const osmFrance = L.tileLayer('http://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-	attribution: '&copy; Openstreetmap France | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    attribution: '&copy; Openstreetmap France | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 });
 
-export const openMapSurfer = new L.TileLayer('https://openmapsurfer.uni-hd.de/tiles/roads/x={x}&y={y}&z={z}', {
-    detectRetina: true,
-    // reuseTiles: true,
-    attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="https://server.ts.openstreetmap.org/copyright">OpenStreetMap</a>'
+export const openMapSurfer = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
+    attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 });
+
 
 export const hyddaBase = L.tileLayer('https://{s}.tile.openstreetmap.se/hydda/base/{z}/{x}/{y}.png', {
     detectRetina: true,

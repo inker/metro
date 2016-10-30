@@ -1,4 +1,3 @@
-/// <reference path="../../typings/tsd.d.ts" />
 import MetroMap from '../metromap';
 import { tr } from '../i18n';
 import { Widget } from './base/widget';

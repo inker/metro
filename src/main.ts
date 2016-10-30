@@ -16,14 +16,14 @@ polyfills();
 const tokens = window.location.search.match(/city=(\w+)/);
 const city = tokens ? tokens[1] : 'spb';
 
-getConfig().then(config => {
+(async function () {
+    const config = await getConfig();
     const dictPromise = updateDictionary(config.url['dictionary']);
     for (let url of Object.keys(config.url)) {
         config.url[url] = config.url[url].replace(/\{city\}/g, city);
     }
     document.title = translate(`${city === 'moscow' ? 'Moscow' : 'St Petersburg'} metro plan proposal`);
-    dictPromise.then(() => {
-        document.title = translate(document.title);
-        new MetroMap(config);
-    });
-});
+    await dictPromise;
+    document.title = translate(document.title);
+    new MetroMap(config);
+})();

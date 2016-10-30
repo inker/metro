@@ -1,4 +1,3 @@
-/// <reference path="../../../typings/tsd.d.ts" />
 import MetroMap from '../../metromap';
 
 export interface Widget {

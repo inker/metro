@@ -1,4 +1,3 @@
-/// <reference path="../../typings/tsd.d.ts" />
 const alertify = require('alertifyjs');
 import * as L from 'leaflet';
 import MetroMap from '../metromap';

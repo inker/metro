@@ -31,7 +31,7 @@ export function translate(text: string): string {
     // return translation.split('').map((c, i) => ucBitmap[i] ? c.toUpperCase() : c).join('');
 }
 
-export function tr(strings: string[], ...values: string[]) {
+export function tr(strings: TemplateStringsArray, ...values: string[]) {
     return strings.map(s => s.replace(regexDict, translate))
         .map((s, i) => s + (values[i] || ''))
         .join('');

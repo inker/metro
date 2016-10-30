@@ -1,4 +1,3 @@
-/// <reference path="../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 import * as util from '../util/utilities';
 import { Icons } from '../ui';

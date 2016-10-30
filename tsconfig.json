@@ -1,13 +1,11 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "es2015",
         "module": "commonjs",
         "sourceMap": false,
         "watch": true,
         "experimentalDecorators": true,
-        "experimentalAsyncFunctions": true,
-        "lib": ["es5", "es6"],
-        "noLib": true
+        "experimentalAsyncFunctions": true
     },
     "exclude": [ "node_modules" ]
 }

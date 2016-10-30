@@ -75,7 +75,6 @@ gulp.task('watch-ts-for-all-way', () => {
 
 gulp.task('ts-transpile-merge-compress', () => {
     browserify()
-        .add('typings/tsd.d.ts')
          .add('src/main.ts')
         .plugin(tsify, {target: 'es5', module: 'commonjs', noLib: true})
 

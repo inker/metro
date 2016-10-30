@@ -1,4 +1,3 @@
-/// <reference path="../../typings/tsd.d.ts" />
 import * as L from 'leaflet';
 import { removeAllChildren } from '../util/utilities';
 import { translate } from '../i18n';

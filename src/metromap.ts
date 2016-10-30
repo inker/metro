@@ -1,4 +1,3 @@
-/// <reference path="../typings/tsd.d.ts" />;
 import * as L from 'leaflet';
 import * as nw from './network';
 import * as ui from './ui';
@@ -10,7 +9,7 @@ import pool from './objectpool';
 import { Scale } from './util/sfx';
 import { getCenter } from './util/math';
 import { findCircle } from './util/algorithm';
-import { mapbox, mapnik, osmFrance, cartoDBNoLabels, wikimapia } from './tilelayers';
+import { mapbox, mapnik, osmFrance, openMapSurfer, cartoDBNoLabels, wikimapia } from './tilelayers';
 import { tr } from './i18n';
 import Mediator from './util/mediator';
 
@@ -35,6 +34,11 @@ export default class MetroMap extends Mediator {
     constructor(config: res.Config) {
         super();
         this.config = config;
+        this.makeMap();
+    }
+
+    public async makeMap() {
+        const { config } = this;
         (document.getElementById('scheme') as HTMLLinkElement).href = config.url['scheme'];
         const networkPromise = this.getGraph();
         const lineRulesPromise = res.getLineRules();
@@ -56,7 +60,7 @@ export default class MetroMap extends Mediator {
         const mapPaneStyle = this.map.getPanes().mapPane.style;
         mapPaneStyle.visibility = 'hidden';
 
-        ui.addLayerSwitcher(this.map, [mapbox, mapnik, osmFrance, cartoDBNoLabels, wikimapia]);
+        ui.addLayerSwitcher(this.map, [mapbox, mapnik, osmFrance, openMapSurfer, cartoDBNoLabels, wikimapia]);
 
         addEventListener('keydown', e => {
             if (!e.shiftKey || !e.ctrlKey || e.keyCode !== 82) return;
@@ -64,58 +68,58 @@ export default class MetroMap extends Mediator {
         });
         // wait.textContent = 'loading graph...';
         this.addContextMenu();
-        networkPromise.then(json => {
-            this.network = new nw.Network(json);
-            const center = geo.getCenter(this.network.platforms.map(p => p.location));
-            this.config.center = [center.lat, center.lng];
-            const bounds = new L.LatLngBounds(this.network.platforms.map(p => p.location));
-            this.overlay = new ui.SvgOverlay(bounds).addTo(this.map);
-            const { defs } = this.overlay;
-            svg.Filters.appendAll(defs);
-            if (defs.textContent.length === 0) {
-                alert(tr`Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience.`);
-            }
-            return lineRulesPromise;
-        }).then(lineRules => {
-            this.lineRules = lineRules;
-            // wait.textContent = 'adding content...';
-            this.resetMapView();
-            this.map.addLayer(mapbox);
-            this.map.on('overlayupdate', overlay => {
-                this.redrawNetwork();
-                // console.time('conversion');
-                // util.File.svgToPicture(document.getElementById('overlay') as any).then(img => {
-                //     document.body.appendChild(img);
-                //     console.timeEnd('conversion');
-                // });
-            });
-            this.initNetwork();
-            // TODO: fix the kludge making the grey area disappear
-            this.map.invalidateSize(false);
-            this.addMapListeners();
-            new ui.RoutePlanner().addTo(this);
-            new ui.DistanceMeasure().addTo(this.map);
-            // this.routeWorker.postMessage(this.network);
-            // ui.drawZones(this.map, this.network.platforms);
 
-            if (!L.Browser.mobile) {
-                new ui.MapEditor(this.config.detailedZoom).addTo(this);
-            }
-            return faq.whenAvailable;
-        }).then(() => {
-            faq.addTo(this.map);
-            // wait.textContent = 'loading tiles...';
-            return tileLoadPromise;
-        }).then(tileLoadEvent => {
-            // wait.parentElement.removeChild(wait);
-            util.fixFontRendering();
-            this.map.on('layeradd layerremove', e => util.fixFontRendering());
-            mapPaneStyle.visibility = '';
-            // const img = util.File.svgToImg(document.getElementById('overlay') as any, true);
-            // util.File.svgToCanvas(document.getElementById('overlay') as any)
-            //     .then(canvas => util.File.downloadText('svg.txt', canvas.toDataURL('image/png')));
-            // util.File.downloadText('img.txt', img.src);
+        const json = await networkPromise;
+        this.network = new nw.Network(json);
+        const center = geo.getCenter(this.network.platforms.map(p => p.location));
+        this.config.center = [center.lat, center.lng];
+        const bounds = new L.LatLngBounds(this.network.platforms.map(p => p.location));
+        this.overlay = new ui.SvgOverlay(bounds).addTo(this.map);
+        const { defs } = this.overlay;
+        svg.Filters.appendAll(defs);
+        if (defs.textContent.length === 0) {
+            alert(tr`Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience.`);
+        }
+
+        const lineRules = await lineRulesPromise;
+        this.lineRules = lineRules;
+        // wait.textContent = 'adding content...';
+        this.resetMapView();
+        this.map.addLayer(mapbox);
+        this.map.on('overlayupdate', overlay => {
+            this.redrawNetwork();
+            // console.time('conversion');
+            // util.File.svgToPicture(document.getElementById('overlay') as any).then(img => {
+            //     document.body.appendChild(img);
+            //     console.timeEnd('conversion');
+            // });
         });
+        this.initNetwork();
+        // TODO: fix the kludge making the grey area disappear
+        this.map.invalidateSize(false);
+        this.addMapListeners();
+        new ui.RoutePlanner().addTo(this);
+        new ui.DistanceMeasure().addTo(this.map);
+        // this.routeWorker.postMessage(this.network);
+        // ui.drawZones(this.map, this.network.platforms);
+
+        if (!L.Browser.mobile) {
+            new ui.MapEditor(this.config.detailedZoom).addTo(this);
+        }
+
+        await faq.whenAvailable;
+        faq.addTo(this.map);
+        // wait.textContent = 'loading tiles...';
+
+        const tileLoadEvent = await tileLoadPromise;
+        // wait.parentElement.removeChild(wait);
+        util.fixFontRendering();
+        this.map.on('layeradd layerremove', e => util.fixFontRendering());
+        mapPaneStyle.visibility = '';
+        // const img = util.File.svgToImg(document.getElementById('overlay') as any, true);
+        // util.File.svgToCanvas(document.getElementById('overlay') as any)
+        //     .then(canvas => util.File.downloadText('svg.txt', canvas.toDataURL('image/png')));
+        // util.File.downloadText('img.txt', img.src);
     }
 
     public subscribe(type: string, listener: EventListener) {
