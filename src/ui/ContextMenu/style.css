@@ -1,0 +1,39 @@
+#contextmenu {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 10000;
+    background-color: white;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    font-family: "Segoe UI", Tahoma, Ubuntu, Cambay, Roboto, sans-serif;
+    font-size: 0.7em;
+    margin-left: 1px; /* so that the first element is not automatically selected */
+    border-collapse: collapse;
+    transform-origin: 0 0;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+@media only screen and (max-device-width: 400px) and (-webkit-min-device-pixel-ratio: 2) {
+    #contextmenu {
+        font-size: 1.2em;
+    }
+} 
+
+#contextmenu div {
+    padding: 5px;
+    cursor: default;
+}
+
+#contextmenu div[disabled] {
+    color: grey;
+    /*cursor: not-allowed*/
+}
+
+#contextmenu div:not([disabled]):hover {
+    background-color: #82B1FF;
+    /*color: #ffffff;*/
+}

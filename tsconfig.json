@@ -12,5 +12,8 @@
             "dom", "es7"
         ]
     },
+    "awesomeTypescriptLoaderOptions": {
+        /* ... */
+    },
     "exclude": [ "node_modules" ]
 }
