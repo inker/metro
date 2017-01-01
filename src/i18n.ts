@@ -34,7 +34,7 @@ export function translate(text: string): string {
     // return translation.split('').map((c, i) => ucBitmap[i] ? c.toUpperCase() : c).join('');
 }
 
-export function tr(strings: TemplateStringsArray, ...values: string[]) {
+export function tr(strings: TemplateStringsArray, ...values: (string|undefined|null)[]) {
     return strings.map(s => s.replace(regexDict, translate))
         .map((s, i) => s + (values[i] || ''))
         .join('')
@@ -44,7 +44,10 @@ function inflect(value: number, str: string) {
     return value === 0 ? '' : `${value}${value > 1 && userLanguage === 'en' ? str + 's' : str}`
 }
 
-export function formatTime(time: number) {
+export function formatTime(time?: number) {
+    if (time === undefined) {
+        return ''
+    }
     if (time < 60) {
         return `${Math.round(time)} seconds`
     }

@@ -99,7 +99,7 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
         const timeToNeighbors: number[] = []
         for (const s of currentNode.spans) {
             const neighborNode = s.other(currentNode)
-            if (!neighborNode || !objectSet.has(neighborNode)) {
+            if (!objectSet.has(neighborNode)) {
                 continue
             }
             neighborNodes.push(neighborNode)

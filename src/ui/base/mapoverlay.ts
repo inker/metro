@@ -88,7 +88,12 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
         const onWheel = (e: WheelEvent) => mousePos = L.DomEvent.getMousePosition(e)
         mapPane.addEventListener('wheel', onWheel)
         // controls are not a part of the map pane, so a special listener is for them
-        document.querySelector('.leaflet-control-container').addEventListener('wheel', onWheel)
+        const leafletControlContainer = document.querySelector('.leaflet-control-container')
+        if (leafletControlContainer) {
+            leafletControlContainer.addEventListener('wheel', onWheel)
+        } else {
+            console.error('cannot append wheel to leaflet-control-container')
+        }
 
         // +/- button click
         map.zoomControl.getContainer()

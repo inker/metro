@@ -30,7 +30,13 @@ export default class<V> {
         return this._source === vertex || this._target === vertex
     }
     other(vertex: V) {
-        return this._source === vertex ? this._target : this._target === vertex ? this._source : null
+        if (this._source === vertex) {
+            return this._target
+        }
+        if (this._target === vertex) {
+            return this._source
+        }
+        throw new Error('span does not have vertex')
     }
     isAdjacent(edge: this) {
         return this.has(edge._source) || this.has(edge._target)

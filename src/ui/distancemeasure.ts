@@ -3,6 +3,8 @@ import * as L from 'leaflet'
 import * as util from '../util'
 import { Icons } from '../ui'
 
+type LeafletMouseEvent = L.LeafletMouseEvent|L.MouseEvent
+
 export default class implements L.ILayer {
     private map: L.Map
     private polyline = L.polyline([], { color: 'red'})
@@ -57,7 +59,7 @@ export default class implements L.ILayer {
         this.dashedLine.setStyle({ opacity: 0 })
     }
 
-    private onCircleClick(e: L.MouseEvent) {
+    private onCircleClick(e: LeafletMouseEvent) {
         if (e.originalEvent.button !== 0) return
         this.markers.removeLayer(e.target)
         if (this.markers.getLayers().length === 0) {
@@ -70,7 +72,7 @@ export default class implements L.ILayer {
         }
     }
 
-    private makeMarker = (e: L.MouseEvent) => {
+    private makeMarker = (e: LeafletMouseEvent) => {
         if (e.originalEvent.button !== 0) return
         const handleDrag = e => {
             this.dashedLine.setStyle({ opacity: 0})
@@ -89,7 +91,7 @@ export default class implements L.ILayer {
         this.updateDistances()
     }
 
-    private resetDashedLine = (e: L.MouseEvent) => {
+    private resetDashedLine = (e: LeafletMouseEvent) => {
         this.dashedLine.getLatLngs()[1] = e.latlng
         this.dashedLine.redraw()
     }

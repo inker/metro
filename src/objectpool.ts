@@ -6,7 +6,7 @@ import {
 } from './network'
 
 const store = {
-    platformBindings: new Map<Platform, SVGCircleElement>(),
+    platformBindings: new WeakMap<Platform, SVGCircleElement>(),
     dummyBindings: new WeakBiMap<Platform, SVGCircleElement>(),
     outerEdgeBindings: new WeakBiMap<Edge<Platform>, SVGPathElement|SVGLineElement>(),
     innerEdgeBindings: new WeakBiMap<Edge<Platform>, SVGPathElement|SVGLineElement>(),

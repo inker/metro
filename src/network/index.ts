@@ -25,6 +25,7 @@ export {
     Span,
     Transfer,
     Route,
+    GraphJSON,
 }
 
 export default class {
@@ -168,9 +169,7 @@ export default class {
             }
             if (platform.passingRoutes().size === 2) {
                 const otherPlatform = first.other(platform)
-                if (otherPlatform) {
-                    deleteFromArray(otherPlatform.spans, first)
-                }
+                deleteFromArray(otherPlatform.spans, first)
                 deleteFromArray(this.spans, first)
             } else if (first.source === platform) {
                 first.source = end
@@ -182,9 +181,7 @@ export default class {
         } else {
             for (const span of platform.spans) {
                 const neighbor = span.other(platform)
-                if (neighbor) {
-                    deleteFromArray(neighbor.spans, span)
-                }
+                deleteFromArray(neighbor.spans, span)
                 deleteFromArray(this.spans, span)
             }
         }

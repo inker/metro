@@ -60,7 +60,10 @@ export function getCircularPath(path: Element) {
     const points: number[] = []
     const re = /\D([\d\.]+)/g
     const d = path.getAttribute('d')
-    let m: RegExpExecArray
+    if (!d) {
+        return
+    }
+    let m: RegExpExecArray|null
     while ((m = re.exec(d)) !== null) {
         points.push(Number(m[1]))
     }

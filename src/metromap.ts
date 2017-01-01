@@ -1,11 +1,15 @@
 import * as L from 'leaflet'
-import { get } from 'lodash'
+import {
+    get,
+    difference,
+} from 'lodash'
 
 import Network, {
     Platform,
     Station,
     Span,
     Transfer,
+    GraphJSON,
 } from './network'
 import * as ui from './ui'
 import * as util from './util'
@@ -389,6 +393,7 @@ export default class extends Mediator {
         }
         if (!center) {
             console.error(`cannot set map to center`)
+            return
         }
         this.map.setView(center, zoom + 1, options)
         this.map.setView(center, zoom, options)
@@ -413,7 +418,6 @@ export default class extends Mediator {
 
     private addBindings() {
         const { platforms } = this.network
-        const { tryGetFromMap } = util
         const { platformBindings, dummyBindings } = pool
         for (const platform of platforms) {
             this.platformToModel(platform, [
@@ -454,12 +458,7 @@ export default class extends Mediator {
         const docFrags = new Map<string, DocumentFragment>()
         for (const id of Object.keys(strokeWidths)) {
             docFrags.set(id, document.createDocumentFragment())
-            const container = document.getElementById(id)
-            if (!container) {
-                console.error(`container ${id} does not exist`)
-                continue
-            }
-            container.style.strokeWidth = strokeWidths[id] + 'px'
+            util.byId(id).style.strokeWidth = strokeWidths[id] + 'px'
         }
 
         const lightRailPathStyle = tryGetFromMap(this.lineRules, 'light-rail-path')
@@ -590,13 +589,7 @@ export default class extends Mediator {
 
         console.time('appending')
 
-        docFrags.forEach((val, key) => {
-            const frag = document.getElementById(key)
-            if (!frag) {
-                throw new Error(`frag ${key} does not exist`)
-            }
-            frag.appendChild(val)
-        })
+        docFrags.forEach((val, key) => util.byId(key).appendChild(val))
 
         this.addBindings()
         console.timeEnd('appending')
@@ -680,11 +673,11 @@ export default class extends Mediator {
     private makeTransferArc(transfer: Transfer, cluster: Platform[]): SVGLineElement[] | SVGPathElement[] {
         const pl1 = transfer.source
         const pl2 = transfer.target
-        const pos1 = this.platformsOnSVG.get(transfer.source)
-        const pos2 = this.platformsOnSVG.get(transfer.target)
-        const makeArc = (third: Platform) => svg.makeTransferArc(pos1, pos2, this.platformsOnSVG.get(third))
+        const pos1 = tryGetFromMap(this.platformsOnSVG, transfer.source)
+        const pos2 = tryGetFromMap(this.platformsOnSVG, transfer.target)
+        const makeArc = (third: Platform) => svg.makeTransferArc(pos1, pos2, tryGetFromMap(this.platformsOnSVG, third))
         if (cluster.length === 3) {
-            const third = cluster.find(p => p !== pl1 && p !== pl2)
+            const third = difference(cluster, [pl1, pl2])[0]
             return makeArc(third)
         } else if (pl1 === cluster[2] && pl2 === cluster[3] || pl1 === cluster[3] && pl2 === cluster[2]) {
             return svg.makeTransferLine(pos1, pos2)
@@ -694,7 +687,9 @@ export default class extends Mediator {
         // const pl1deg = pl1neighbors.length;
         const rarr: Platform[] = []
         for (const t of this.network.transfers) {
-            if (t === transfer) continue
+            if (t === transfer) {
+                continue
+            }
             if (transfer.has(t.source)) {
                 rarr.push(t.target)
             } else if (transfer.has(t.target)) {
@@ -768,10 +763,7 @@ export default class extends Mediator {
             this.plate.hide()
             Scale.unscaleAll()
         }
-        const dummyCircles = document.getElementById('dummy-circles')
-        if (!dummyCircles) {
-            throw new Error('dummy-circles do not exist')
-        }
+        const dummyCircles = util.byId('dummy-circles')
         dummyCircles.addEventListener('mouseover', e => {
             const dummy = e.target as SVGCircleElement
             const platform = pool.dummyBindings.getKey(dummy)
@@ -788,14 +780,8 @@ export default class extends Mediator {
             const names = util.getPlatformNamesZipped([transfer.source, transfer.target])
             this.highlightStation(transfer.source.station, names)
         }
-        const transfersOuter = document.getElementById('transfers-outer')
-        if (!transfersOuter) {
-            throw new Error('transfers-outer do not exist')
-        }
-        const transfersInner = document.getElementById('transfers-inner')
-        if (!transfersInner) {
-            throw new Error('transfers-inner do not exist')
-        }
+        const transfersOuter = util.byId('transfers-outer')
+        const transfersInner = util.byId('transfers-inner')
         transfersOuter.addEventListener('mouseover', onTransferOver)
         transfersInner.addEventListener('mouseover', onTransferOver)
         transfersOuter.addEventListener('mouseout', onMouseOut)
@@ -880,9 +866,6 @@ export default class extends Mediator {
                     if (tagName === 'line') {
                         const n = pi + 1
                         const other = transfer.other(platform)
-                        if (!other) {
-                            throw new Error(`no other for ${platform.name}`)
-                        }
                         for (const el of elements) {
                             el.setAttribute('x' + n, pos.x.toString())
                             el.setAttribute('y' + n, pos.y.toString())

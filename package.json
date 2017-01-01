@@ -33,7 +33,8 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "scripts": {
-    "start": "gulp; static-server"
+    "start": "gulp; static-server",
+    "uglify": "uglifyjs -m -c --screw-ie8 -o js/script.js -- js/script.js"
   },
   "author": "Anton Veselyev",
   "license": "MIT"

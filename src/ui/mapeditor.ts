@@ -1,6 +1,7 @@
 import MetroMap from '../MetroMap'
 import { tr } from '../i18n'
 import { Widget } from './base/Widget'
+import { byId } from '../util'
 
 export default class MapEditor implements Widget {
     private metroMap: MetroMap
@@ -11,13 +12,11 @@ export default class MapEditor implements Widget {
 
     set editMode(val: boolean) {
         if (val) {
-            const dummyCircles = document.getElementById('dummy-circles')
-            if (dummyCircles) {
-                this.button.textContent = tr`Save map`
-                this.button.onclick = e => this.saveMapClick()
-                dummyCircles.onmousedown = dummyCircles.onclick = () => false
-                this.metroMap.publish(new Event('editmapstart'))
-            }
+            const dummyCircles = byId('dummy-circles')
+            this.button.textContent = tr`Save map`
+            this.button.onclick = e => this.saveMapClick()
+            dummyCircles.onmousedown = dummyCircles.onclick = () => false
+            this.metroMap.publish(new Event('editmapstart'))
         } else {
             this.button.textContent = tr`Edit map`
             this.button.onclick = e => this.editMapClick()
@@ -69,34 +68,32 @@ export default class MapEditor implements Widget {
     private addMapListeners() {
         console.log('adding edit map listeners')
         const map = this.metroMap.getMap()
-        const dummyCircles = document.getElementById('dummy-circles')
-        const pathsOuter = document.getElementById('paths-outer')
-        const pathsInner = document.getElementById('paths-inner')
+        const dummyCircles = byId('dummy-circles')
+        const pathsOuter = byId('paths-outer')
+        const pathsInner = byId('paths-inner')
 
         let movingCircle: SVGCircleElement|null
         let type: string|undefined
         let fromCircle: SVGCircleElement|null
-        if (dummyCircles) {
-            dummyCircles.addEventListener('mousedown', e => {
-                if (e.button !== 2 && fromCircle) {
-                    const detail = {
-                        source: fromCircle,
-                        target: e.target as SVGCircleElement,
-                    }
-                    console.log(detail)
-                    this.metroMap.publish(new CustomEvent(type === 'span' ? 'spanend' : 'transferend', { detail }))
-                    fromCircle = null
-                    type = undefined
-                } else if (e.button === 0) {
-                    map.dragging.disable()
-                    movingCircle = e.target as SVGCircleElement
-                    this.metroMap.publish(new MouseEvent('platformmovestart', { relatedTarget: e.target }))
-                } else if (e.button === 1) {
-                    console.log('foo', e.target)
-                    this.metroMap.publish(new MouseEvent('spanstart', { relatedTarget: e.target }))
+        dummyCircles.addEventListener('mousedown', e => {
+            if (e.button !== 2 && fromCircle) {
+                const detail = {
+                    source: fromCircle,
+                    target: e.target as SVGCircleElement,
                 }
-            })
-        }
+                console.log(detail)
+                this.metroMap.publish(new CustomEvent(type === 'span' ? 'spanend' : 'transferend', { detail }))
+                fromCircle = null
+                type = undefined
+            } else if (e.button === 0) {
+                map.dragging.disable()
+                movingCircle = e.target as SVGCircleElement
+                this.metroMap.publish(new MouseEvent('platformmovestart', { relatedTarget: e.target }))
+            } else if (e.button === 1) {
+                console.log('foo', e.target)
+                this.metroMap.publish(new MouseEvent('spanstart', { relatedTarget: e.target }))
+            }
+        })
         map.on('mousemove', (e: L.MouseEvent) => {
             if (!movingCircle) {
                 return

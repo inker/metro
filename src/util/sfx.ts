@@ -11,7 +11,7 @@ import {
 import { Filters } from './svg'
 import { ShortestRouteObject } from '../util/algorithm'
 import { tr, formatTime as ft } from '../i18n'
-import { tryGetFromMap } from './index'
+import { tryGetFromMap, byId } from './index'
 
 const ANIMATION_GREYING_SELECTOR = [
     'paths-inner',
@@ -37,13 +37,15 @@ export namespace Scale {
         //     ty = -circle.getAttribute('cy') * t;
         // circle.setAttribute('transform', `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${tx}, ${ty})`);
         const oldR = circle.getAttribute('r')
-        circle.setAttribute('data-r', oldR)
+        if (oldR) {
+            circle.setAttribute('data-r', oldR)
+        }
         circle.setAttribute('r', (+oldR * scaleFactor).toString())
     }
 
     export function scaleStation(station: Station, scaleFactor: number, nwTransfers?: Transfer[]) {
-        const transferOuterStrokeWidth = parseFloat(document.getElementById('transfers-outer').style.strokeWidth)
-        const transferInnerStrokeWidth = parseFloat(document.getElementById('transfers-inner').style.strokeWidth)
+        const transferOuterStrokeWidth = parseFloat(byId('transfers-outer').style.strokeWidth || '')
+        const transferInnerStrokeWidth = parseFloat(byId('transfers-inner').style.strokeWidth || '')
         for (const p of station.platforms) {
             const circle = tryGetFromMap(pool.platformBindings, p)
             scaleCircle(circle, scaleFactor, true)
@@ -111,15 +113,9 @@ export namespace Animation {
             const innerOld = pool.innerEdgeBindings.get(edges[i])
             const outer: typeof outerOld = outerOld.cloneNode(true) as any
             const inner: typeof outer = innerOld === undefined ? undefined : innerOld.cloneNode(true) as any
-            const pathsOuter = document.getElementById('paths-outer')
-            if (!pathsOuter) {
-                return reject(Error('paths outer do not exist'))
-            }
+            const pathsOuter = byId('paths-outer')
             pathsOuter.appendChild(outer)
-            const pathsInner = document.getElementById('paths-inner')
-            if (!pathsInner) {
-                return reject(Error('paths inner do not exist'))
-            }
+            const pathsInner = byId('paths-inner')
             if (inner) {
                 pathsInner.appendChild(inner)
             }

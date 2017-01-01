@@ -1,4 +1,4 @@
-import Hammer from 'hammerjs'
+import * as Hammer from 'hammerjs'
 
 import { DeferredWidget } from './base/Widget'
 import { once } from '../util'

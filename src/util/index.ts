@@ -151,7 +151,13 @@ export function triggerMouseEvent(target: Node, eventType: string) {
 export function getPlatformNames(platform: Platform): string[] {
     const { name, altNames } = platform
     const second = getSecondLanguage()
-    const names = [name, altNames[second], altNames['en']].filter(name => name !== undefined)
+    const names = [name]
+    if (second && altNames[second]) {
+        names.push(altNames[second])
+    }
+    if (altNames['en']) {
+        names.push(altNames['en'])
+    }
     return names
 }
 
@@ -253,4 +259,12 @@ export function tryGetFromMap<K, V>(map: Map<K, V>|WeakMap<K, V>, key: K) {
         throw new Error('key or val is undefined')
     }
     return val
+}
+
+export function byId(id: string) {
+    const el = document.getElementById(id)
+    if (!el) {
+        throw new Error(`no element with id=${id} exists`)
+    }
+    return el
 }
