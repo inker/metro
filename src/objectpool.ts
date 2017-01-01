@@ -1,15 +1,16 @@
-/// <reference path="../typings/tsd.d.ts" />
-import { WeakBiMap } from 'bim';
-import * as nw from './network';
+import { WeakBiMap } from 'bim'
+import {
+    Platform,
+    Transfer,
+    Edge,
+} from './network'
 
 const store = {
-    platformBindings: new WeakMap<nw.Platform, SVGCircleElement>(),
-    dummyBindings: new WeakBiMap<nw.Platform, SVGCircleElement>(),
-    outerEdgeBindings: new WeakBiMap<nw.Edge<nw.Platform>, SVGPathElement|SVGLineElement>(),
-    innerEdgeBindings: new WeakBiMap<nw.Edge<nw.Platform>, SVGPathElement|SVGLineElement>(),
-    gradientBindings: new WeakMap<nw.Transfer, SVGGradientElement>()
-};
+    platformBindings: new Map<Platform, SVGCircleElement>(),
+    dummyBindings: new WeakBiMap<Platform, SVGCircleElement>(),
+    outerEdgeBindings: new WeakBiMap<Edge<Platform>, SVGPathElement|SVGLineElement>(),
+    innerEdgeBindings: new WeakBiMap<Edge<Platform>, SVGPathElement|SVGLineElement>(),
+    gradientBindings: new WeakMap<Transfer, SVGGradientElement>(),
+}
 
-Object.freeze(store);
-
-export default store;
+export default store

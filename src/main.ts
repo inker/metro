@@ -1,29 +1,29 @@
-'use strict';
+'use strict'
 
-import { getConfig, getContent } from './res';
-import { updateDictionary, translate } from './i18n';
-import MetroMap from './metromap';
+import { getConfig } from './res'
+import { updateDictionary, translate } from './i18n'
+import MetroMap from './MetroMap'
 
-L.Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images';
+L.Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images'
 
 if (L.Browser.ie) {
-    alert("Does not work in IE (yet)");
+    alert('Does not work in IE (yet)')
 }
 
-import polyfills from './util/polyfills';
-polyfills();
+import polyfills from './util/polyfills'
+polyfills()
 
-const tokens = window.location.search.match(/city=(\w+)/);
+const tokens = window.location.search.match(/city=(\w+)/)
 const city = tokens ? tokens[1] : 'spb';
 
-(async function () {
-    const config = await getConfig();
-    const dictPromise = updateDictionary(config.url['dictionary']);
-    for (let url of Object.keys(config.url)) {
-        config.url[url] = config.url[url].replace(/\{city\}/g, city);
+(async () => {
+    const config = await getConfig()
+    const dictPromise = updateDictionary(config.url['dictionary'])
+    for (const url of Object.keys(config.url)) {
+        config.url[url] = config.url[url].replace(/\{city\}/g, city)
     }
-    document.title = translate(`${city === 'moscow' ? 'Moscow' : 'St Petersburg'} metro plan proposal`);
-    await dictPromise;
-    document.title = translate(document.title);
-    new MetroMap(config);
-})();
+    document.title = translate(`${city === 'moscow' ? 'Moscow' : 'St Petersburg'} metro plan proposal`)
+    await dictPromise
+    document.title = translate(document.title)
+    new MetroMap(config)
+})()

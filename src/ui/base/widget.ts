@@ -1,10 +1,10 @@
-import MetroMap from '../../metromap';
+import MetroMap from '../../MetroMap'
 
 export interface Widget {
-    addTo(metroMap: MetroMap): this;
+    addTo(metroMap: MetroMap): this
 }
 
 export abstract class DeferredWidget {
-    protected _whenAvailable: Promise<void>;
-    get whenAvailable() { return this._whenAvailable; }
+    protected _whenAvailable: Promise<void>
+    get whenAvailable() { return this._whenAvailable }
 }

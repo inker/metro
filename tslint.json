@@ -1,58 +1,41 @@
 {
+    "extends": [
+        "tslint:latest"
+    ],
     "rules": {
-        "class-name": true,
-        "comment-format": [
+        "array-type": [
             true,
-            "check-space"
+            "array"
         ],
-        "indent": [
-            true,
-            "spaces"
+        "arrow-parens": false,
+        "member-access": false,
+        "member-ordering": [
+            false
         ],
+        "no-angle-bracket-type-assertion": true,
+        "no-bitwise": false,
         "no-duplicate-variable": true,
-        "no-eval": true,
-        "no-internal-module": true,
-        "no-trailing-whitespace": true,
-        "no-unsafe-finally": true,
-        "no-var-keyword": true,
-        "one-line": [
+        "no-namespace": false,
+        "no-unused-variable": true,
+        "object-literal-key-quotes": [
             true,
-            "check-open-brace",
-            "check-whitespace"
+            "as-needed"
         ],
+        "object-literal-sort-keys": false,
+        "ordered-imports": [
+            false
+        ],
+        "prefer-const": true,
         "quotemark": [
             true,
-            "single"
+            "single",
+            "jsx-double",
+            "avoid-escape"
         ],
+        "radix": false,
         "semicolon": [
             true,
-            "always"
-        ],
-        "triple-equals": [
-            true,
-            "allow-null-check"
-        ],
-        "typedef-whitespace": [
-            true,
-            {
-                "call-signature": "nospace",
-                "index-signature": "nospace",
-                "parameter": "nospace",
-                "property-declaration": "nospace",
-                "variable-declaration": "nospace"
-            }
-        ],
-        "variable-name": [
-            true,
-            "ban-keywords"
-        ],
-        "whitespace": [
-            true,
-            "check-branch",
-            "check-decl",
-            "check-operator",
-            "check-separator",
-            "check-type"
+            "never"
         ]
     }
 }

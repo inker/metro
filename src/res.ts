@@ -1,4 +1,4 @@
-import { tryGet } from './util/utilities';
+import { tryGet } from './util'
 
 export type Config = {
     containerId: string,
@@ -10,47 +10,64 @@ export type Config = {
     url: { [resource: string]: string }
 }
 
-export const getJSON = (url: string) => fetch(url).then(data => data.json());
+export const getJSON = (url: string) => fetch(url).then(data => data.json())
 
-export const getContent = (url: string) => fetch(url).then(data => data.text());
+export const getContent = (url: string) => fetch(url).then(data => data.text())
 
-export const getConfig = () => fetch('res/mapconfig.json').then(data => data.json()) as Promise<Config>;
+export const getConfig = () => fetch('res/mapconfig.json').then(data => data.json()) as any as Promise<Config>
 
 export function getStyleRulesAsText(): string {
-    const styles = document.styleSheets;
-    let text = '';
+    const styles = document.styleSheets
+    let text = ''
     for (let i = 0, len = styles.length; i < len; ++i) {
-        const sheet = styles[i] as CSSStyleSheet;
-        console.log(sheet.cssText);
-        const rules = sheet.cssRules;
+        const sheet = styles[i] as CSSStyleSheet
+        console.log(sheet.cssText)
+        const rules = sheet.cssRules
         // cross-origin style sheets don't have rules
         if (!rules) {
-            console.log(sheet);
-            continue;
+            console.log(sheet)
+            continue
         }
         for (let i = 0; i < rules.length; ++i) {
-            text += rules[i].cssText;
+            text += rules[i].cssText
         }
     }
-    console.log('css text ready');
-    return text;
+    console.log('css text ready')
+    return text
 }
 
-export const getLineRules = () => new Promise<CSSStyleSheet>(resolve => {
-    const link = document.getElementById('scheme') as HTMLLinkElement;
-    const sheet = link.sheet as CSSStyleSheet;
-    return tryGet(() => link.sheet as CSSStyleSheet, sheet => sheet !== null).then(resolve);
-}).then(styleSheet => {
-    const lineRules = new Map<string, CSSStyleDeclaration>();
-    for (let rule of (styleSheet.cssRules as any as CSSStyleRule[])) {
-        if (!(rule instanceof CSSStyleRule)) continue;
-        const tokens = rule.selectorText.match(/^.(M\d+|L|E)$/);
+export async function getLineRules() {
+    const link = document.getElementById('scheme') as HTMLLinkElement
+    const styleSheet = await tryGet(() => link.sheet as CSSStyleSheet, sheet => sheet !== null)
+    const lineRules = new Map<string, CSSStyleDeclaration>()
+    for (const rule of (styleSheet.cssRules as any as CSSStyleRule[])) {
+        if (!(rule instanceof CSSStyleRule)) continue
+        const tokens = rule.selectorText.match(/^.(M\d+|L|E)$/)
         if (tokens && tokens[1]) {
-            lineRules.set(tokens[1], rule.style);
+            lineRules.set(tokens[1], rule.style)
         } else if (rule.selectorText === '#paths-outer > .L') {
-            lineRules.set('light-rail-path', rule.style);
+            lineRules.set('light-rail-path', rule.style)
         }
     }
-    console.log(lineRules);
-    return lineRules;
-});
+    console.log(lineRules)
+    return lineRules
+}
+
+// export const getLineRules = () => new Promise<CSSStyleSheet>(resolve => {
+//     const link = document.getElementById('scheme') as HTMLLinkElement;
+//     const sheet = link.sheet as CSSStyleSheet;
+//     return tryGet(() => link.sheet as CSSStyleSheet, sheet => sheet !== null).then(resolve);
+// }).then(styleSheet => {
+//     const lineRules = new Map<string, CSSStyleDeclaration>();
+//     for (let rule of (styleSheet.cssRules as any as CSSStyleRule[])) {
+//         if (!(rule instanceof CSSStyleRule)) continue;
+//         const tokens = rule.selectorText.match(/^.(M\d+|L|E)$/);
+//         if (tokens && tokens[1]) {
+//             lineRules.set(tokens[1], rule.style);
+//         } else if (rule.selectorText === '#paths-outer > .L') {
+//             lineRules.set('light-rail-path', rule.style);
+//         }
+//     }
+//     console.log(lineRules);
+//     return lineRules;
+// })

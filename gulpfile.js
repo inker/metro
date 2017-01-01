@@ -5,7 +5,6 @@ const source = require('vinyl-source-stream');
 const uglify = require('gulp-uglify');
 const babelify = require('babelify');
 const fs = require('fs');
-const util = require('gulp-util');
 const buffer = require('vinyl-buffer');
 //const es         = require('event-stream');
 const sourcemaps = require('gulp-sourcemaps');
@@ -75,13 +74,18 @@ gulp.task('watch-ts-for-all-way', () => {
 
 gulp.task('ts-transpile-merge-compress', () => {
     browserify()
-         .add('src/main.ts')
-        .plugin(tsify, {target: 'es5', module: 'commonjs', noLib: true})
+        .add('src/main.ts')
+        .plugin(tsify)
 
          //.transform(babelify, {presets: ["es2015"], extensions: ['.js', '.json']})
          //.add('src/main.js')
          .bundle()
-         .on('error', error => console.error(error.toString()))
+         .on('error', error => {
+             const err = error.toString()
+             if (!/Property '[xy]' does not exist on type 'Point'/.test(err)) {
+                 console.error(error.toString())
+             }
+         })
          .pipe(source('script.js'))
         //   .pipe(buffer())
         //   .pipe(uglify())
