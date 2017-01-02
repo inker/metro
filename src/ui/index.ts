@@ -16,6 +16,7 @@ import ContextMenu from './ContextMenu'
 import DistanceMeasure from './DistanceMeasure'
 import SvgOverlay from './SvgOverlay'
 import * as Icons from './Icons'
+import * as tileLayers from './tilelayers'
 
 export {
     DistanceMeasure,
@@ -26,6 +27,7 @@ export {
     ContextMenu,
     Icons,
     SvgOverlay,
+    tileLayers,
 }
 
 export function platformRenameDialog(platform: Platform) {

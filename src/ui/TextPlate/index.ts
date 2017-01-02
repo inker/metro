@@ -5,7 +5,7 @@ import { svg } from '../../util'
 import './style.css'
 
 export default class TextPlate {
-    private _element: SVGGElement
+    readonly element = svg.createSVGElement('g') as SVGGElement
     private _disabled = false
     private _editable = false
 
@@ -18,15 +18,10 @@ export default class TextPlate {
         foreign.setAttribute('width', '100%')
         foreign.setAttribute('height', '100%')
         foreign.appendChild(div)
-        const g = svg.createSVGElement('g') as SVGGElement
-        g.id = 'station-plate'
-        g.style.display = 'none'
-        g.appendChild(foreign)
-        this._element = g
-    }
-
-    get element() {
-        return this._element
+        const { element } = this
+        element.id = 'station-plate'
+        element.style.display = 'none'
+        element.appendChild(foreign)
     }
 
     get disabled() {
@@ -43,23 +38,23 @@ export default class TextPlate {
     }
 
     set editable(val: boolean) {
-        const strVal = val ? 'true' : null
-        const text = (this._element.childNodes[1] as HTMLElement).children[1] as HTMLElement
-        const textlings = text.children
-        for (let i = 0; i < textlings.length; ++i) {
-            (textlings[i] as HTMLElement).contentEditable = strVal
+        const strVal = val ? 'true' : 'false'
+        const text = (this.element.childNodes[1] as HTMLElement).children[1] as HTMLElement
+        const textlings = text.children as any as HTMLElement[]
+        for (const textling of textlings) {
+            textling.contentEditable = strVal
         }
     }
 
     show(bottomRight: L.Point, names: string[]) {
-        if (this.disabled || this._element.style.display !== 'none') return
+        if (this.disabled || this.element.style.display !== 'none') return
 
-        const foreign = this._element.firstChild as SVGForeignObjectElement
+        const foreign = this.element.firstChild as SVGForeignObjectElement
         const div = foreign.firstChild as HTMLDivElement
 
         div.innerHTML = names.join('<br>')
-        this._element.setAttribute('transform', `translate(${bottomRight.x}, ${bottomRight.y})`)
-        this._element.style.display = null
+        this.element.setAttribute('transform', `translate(${bottomRight.x}, ${bottomRight.y})`)
+        this.element.style.display = null
         const { width, height } = div.getBoundingClientRect()
 
         foreign.setAttribute('transform', `translate(${-width}, ${-height})`)
@@ -68,6 +63,6 @@ export default class TextPlate {
     }
 
     hide() {
-        this._element.style.display = 'none'
+        this.element.style.display = 'none'
     }
 }

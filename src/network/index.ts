@@ -29,12 +29,12 @@ export {
 }
 
 export default class {
-    platforms: Platform[]
-    stations: Station[]
-    lines: {}
-    transfers: Transfer[]
-    spans: Span[]
-    routes: Route[]
+    readonly platforms: Platform[]
+    readonly stations: Station[]
+    readonly lines: {}
+    readonly transfers: Transfer[]
+    readonly spans: Span[]
+    readonly routes: Route[]
     constructor(json: GraphJSON) {
         const objectifyLatLng = (obj: LatLngJSON) => latLng(obj.lat, obj.lng)
         this.platforms = json.platforms.map(p => new Platform(p.name, objectifyLatLng(p.location), p.altNames))
@@ -155,7 +155,7 @@ export default class {
         for (const transfer of platform.transfers) {
             deleteFromArray(this.transfers, transfer)
         }
-        platform.transfers = []
+        platform.transfers.length = 0
         if (platform.spans.length === 1) {
             const span = platform.spans[0]
             const neighbor = span.other(platform)

@@ -38,7 +38,7 @@ export default class extends DeferredWidget {
     }
 
     addTo(map: L.Map) {
-        this._whenAvailable.then(faq => {
+        this.whenAvailable.then(faq => {
             const leafletTopRight = document.querySelector('.leaflet-right.leaflet-top')
             document.body.appendChild(this.card)
             if (!leafletTopRight) {

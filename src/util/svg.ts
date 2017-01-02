@@ -50,7 +50,6 @@ export function setBezierPath(el: Element, controlPoints: Point[]) {
     if (controlPoints.length !== 4) {
         throw new Error('there should be 4 points')
     }
-    const path = createSVGElement('path')
     const s = ['M'].concat(controlPoints.map(pt => `${pt.x},${pt.y}`))
     s.splice(2, 0, 'C')
     el.setAttribute('d', s.join(' '))
@@ -80,15 +79,15 @@ export function setCircularPath(el: Element, start: Point, end: Point, third: Po
     const u = start.subtract(center)
     const v = end.subtract(center)
     let sweep = u.x * v.y - v.x * u.y < 0 ? 0 : 1
-    const dotProduct = dot(third.subtract(start), third.subtract(end))
-    if (dotProduct < 0) {
+    const codir = dot(third.subtract(start), third.subtract(end))
+    if (codir < 0) {
         sweep = 1 - sweep
         large = 1 - large
     }
     const radius = center.distanceTo(start)
     const d = [
         'M', start.x, start.y,
-        'A', radius, radius, 0, large, sweep, end.x, end.y
+        'A', radius, radius, 0, large, sweep, end.x, end.y,
     ].join(' ')
     el.setAttribute('d', d)
 }

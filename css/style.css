@@ -36,10 +36,6 @@ a:hover {
     opacity: 1;
 }
 
-#edit-map-button[disabled] {
-    cursor: not-allowed;
-}
-
 .ajs-message {
     bottom: 20px;
     background-color: #ccc;

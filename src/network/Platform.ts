@@ -12,12 +12,14 @@ export default class {
     name: string
     altNames: AltNames
     location: LatLng
-    spans: Span[] = []
-    transfers: Transfer[] = []
+    readonly spans: Span[] = []
+    readonly transfers: Transfer[] = []
     private _station: Station
     elevation: number|undefined
 
-    get station() { return this._station }
+    get station() {
+        return this._station
+    }
 
     constructor(name: string, location: LatLng, altNames: AltNames = {}, elevation?: number) {
         this.name = name

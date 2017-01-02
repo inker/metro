@@ -4,6 +4,8 @@ import {
     scaleOverlay,
 } from '../../util'
 
+type LeafletMouseEvent = L.LeafletMouseEvent
+
 function fixFontDelayed(parent: Element, time = 250) {
     setTimeout(() => fixFontRendering(parent), time)
 }
@@ -12,7 +14,7 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
     private map: L.Map
     protected overlayContainer: Container
 
-    private _bounds: L.LatLngBounds
+    private bounds: L.LatLngBounds
     private topLeft: L.Point
     protected margin: L.Point
 
@@ -21,7 +23,7 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
 
     constructor(bounds: L.LatLngBounds, margin = L.point(100, 100)) {
         this.margin = margin.round()
-        this._bounds = bounds
+        this.bounds = bounds
     }
 
     addTo(map: L.Map) {
@@ -44,7 +46,7 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
 
     onRemove(map: L.Map) {
         // this.map = this.minZoom = this.maxZoom = undefined
-        const { objectsPane, markerPane, mapPane } = map.getPanes();
+        const { objectsPane, mapPane } = map.getPanes();
         (L.version[0] === '1' ? mapPane : objectsPane).removeChild(this.overlayContainer)
         this.map.clearAllEventListeners() // fix later
     }
@@ -53,7 +55,7 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
         const { map } = this
         const { mapPane, tilePane, overlayPane } = map.getPanes()
         const { style, classList } = this.overlayContainer
-        let mousePos: L.Point
+        let mousePos: L.Point|null
         map.on('zoomstart', e => {
             classList.add('leaflet-zoom-animated')
             console.log('zoomstart', e)
@@ -67,7 +69,7 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
             mousePos = null
         }).on('zoomend', e => {
             console.log('zoomend', e)
-            //console.log(map.project(this.network.platforms[69].location, map.getZoom()).divideBy(2 ** map.getZoom()));
+            // console.log(map.project(this.network.platforms[69].location, map.getZoom()).divideBy(2 ** map.getZoom()))
 
             classList.remove('leaflet-zoom-animated')
             style.transform = null
@@ -100,15 +102,15 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
             .addEventListener('mousedown', e => mousePos = L.point(innerWidth / 2, innerHeight / 2).round(), true)
 
         // double click zoom
-        map.on('dblclick', (e: L.MouseEvent) => mousePos = L.DomEvent.getMousePosition(e.originalEvent))
+        map.on('dblclick', (e: LeafletMouseEvent) => mousePos = L.DomEvent.getMousePosition(e.originalEvent))
 
         // keyboard zoom
         document.addEventListener('keydown', e => mousePos = L.point(innerWidth / 2, innerHeight / 2))
     }
 
     private updateOverlayPositioning(): void {
-        const nw = this._bounds.getNorthWest()
-        const se = this._bounds.getSouthEast()
+        const nw = this.bounds.getNorthWest()
+        const se = this.bounds.getSouthEast()
         const { map, margin } = this
         this.topLeft = map.project(nw).round()
 
@@ -124,7 +126,7 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
     }
 
     extendBounds(point: L.LatLng) {
-        this._bounds.extend(point)
+        this.bounds.extend(point)
         this.updateOverlayPositioning()
     }
 

@@ -91,9 +91,10 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
             }
         })
         objectSet.delete(currentNode)
-        // getting his previous
-        var prevNode = prev.get(currentNode)
-        const prevSpan = currentNode.spans.find(s => s.has(prevNode))
+
+        // // getting his previous
+        // var prevNode = prev.get(currentNode)
+        // const prevSpan = currentNode.spans.find(s => s.has(prevNode))
 
         const neighborNodes: Platform[] = []
         const timeToNeighbors: number[] = []
@@ -105,10 +106,10 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
             neighborNodes.push(neighborNode)
             const distance = distanceBetween(currentNode.location, neighborNode.location)
             let lineChangePenalty = 0
-            if (prevSpan && prevSpan.routes[0] !== s.routes[0]) {
-                // doesn't seem to work
-                // lineChangePenalty = metroWaitingTime;
-            }
+            // if (prevSpan && prevSpan.routes[0] !== s.routes[0]) {
+            //     // doesn't seem to work
+            //     // lineChangePenalty = metroWaitingTime;
+            // }
             // TODO: lower priority for E-lines
             const callTime = s.routes[0].line.startsWith('E') ? eLineStopTime : metroStopTime
             const travelTime = timeToTravel(distance, maxTrainSpeed, trainAcceleration)
@@ -117,7 +118,9 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
         // TODO: if transferring to an E-line, wait more
         // TODO: penalty for changing lines (cross-platform)
         for (const neighborNode of currentNode.station.platforms) {
-            if (!objectSet.has(neighborNode)) continue
+            if (!objectSet.has(neighborNode)) {
+                continue
+            }
             neighborNodes.push(neighborNode)
             const hasE = neighborNode.spans.some(s => s.routes[0].line.startsWith('E'))
             const distance = distanceBetween(currentNode.location, neighborNode.location) / 2
@@ -240,7 +243,7 @@ function shortestTransfer(p1: Platform, p2: Platform) {
     const midPlatforms: Platform[] = []
     currentNode = p2
     for (; ;) {
-        var prevNode = prev.get(currentNode)
+        const prevNode = prev.get(currentNode)
         if (!prevNode) {
             break
         }

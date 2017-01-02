@@ -1,19 +1,22 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "module": "commonjs",
-        "sourceMap": false,
-        "watch": true,
-        "experimentalDecorators": true,
-        "experimentalAsyncFunctions": true,
-        // "allowSyntheticDefaultImports": true,
-        "strictNullChecks": true,
-        "lib": [
-            "dom", "es7"
-        ]
-    },
-    "awesomeTypescriptLoaderOptions": {
-        /* ... */
-    },
-    "exclude": [ "node_modules" ]
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "sourceMap": true,
+    "watch": true,
+    "pretty": true,
+    "experimentalDecorators": true,
+    "experimentalAsyncFunctions": true,
+    // "allowSyntheticDefaultImports": true,
+    "strictNullChecks": true,
+    "lib": [
+      "dom", "es7"
+    ]
+  },
+  "awesomeTypescriptLoaderOptions": {
+    /* ... */
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }

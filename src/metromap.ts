@@ -11,18 +11,11 @@ import Network, {
     Transfer,
     GraphJSON,
 } from './network'
+
 import * as ui from './ui'
 import * as util from './util'
 import * as res from './res'
 import pool from './ObjectPool'
-import {
-    mapbox,
-    mapnik,
-    osmFrance,
-    openMapSurfer,
-    cartoDBNoLabels,
-    wikimapia,
-} from './tilelayers'
 import { tr } from './i18n'
 
 const {
@@ -36,6 +29,16 @@ const {
     file,
     tryGetFromMap,
 } = util
+
+const {
+    mapbox,
+    mapnik,
+    osmFrance,
+    openMapSurfer,
+    cartoDBNoLabels,
+    wikimapia,
+} = ui.tileLayers
+
 const { Scale } = sfx
 const { getCenter } = math
 const { findCircle } = algorithm
