@@ -159,10 +159,10 @@ export function getPlatformNames(platform: Platform): string[] {
 
 export function getPlatformNamesZipped(platforms: Platform[]) {
     const platformNames = platforms.map(getPlatformNames)
+    console.log('pl', platformNames)
     return [0, 1, 2]
         .map(no => platforms.map((p, i) => platformNames[i][no]))
-        .map(uniq)
-        .map(arr => arr.reduce((prev, cur) => `${prev} / ${cur}`))
+        .map(arr => uniq(arr).reduce((prev, cur) => `${prev} / ${cur}`))
         .filter(s => s !== undefined)
 }
 
@@ -245,10 +245,20 @@ export function fixFontRendering(parent: { querySelectorAll } = document): void 
 export function getSecondLanguage() {
     const tokens = window.location.search.match(/city=(\w+)/)
     const city = tokens ? tokens[1] : 'spb'
-    return city === 'spb' ? 'fi' : city === 'helsinki' ? 'se' : undefined
+    const obj = {
+        spb: 'fi',
+        qazan: 'tt',
+        helsinki: 'se',
+    } as {
+        [city: string]: string|undefined,
+    }
+    return obj[city]
 }
 
-export function tryGetFromMap<K, V>(map: Map<K, V>|WeakMap<K, V>, key: K) {
+interface Dict<K, V> {
+    get: (K) => V|undefined,
+}
+export function tryGetFromMap<K, V>(map: Dict<K, V>, key: K): V {
     const val = map.get(key)
     if (val === undefined) {
         console.error('in map', map, ':', key, '->', val)

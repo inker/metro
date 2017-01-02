@@ -906,8 +906,8 @@ export default class extends Mediator {
                             const thirdPos = circumpoints.find(pos => pos !== pos1 && pos !== pos2)
                             if (thirdPos) {
                                 svg.setCircularPath(outer, pos1, pos2, thirdPos)
+                                inner.setAttribute('d', outer.getAttribute('d') as string)
                             }
-                            inner.setAttribute('d', outer.getAttribute('d'))
                             const gradient = tryGetFromMap(pool.gradientBindings, tr)
                             svg.Gradients.setDirection(gradient, pos2.subtract(pos1))
                             const circlePortion = circleTotalRadius / pos1.distanceTo(pos2)

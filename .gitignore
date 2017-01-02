@@ -9,6 +9,7 @@ bin/*.js.map
 node_modules
 .idea/
 !gulpfile.js
+!webpack.*.js
 !js/script.js
 
 #################

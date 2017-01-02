@@ -47,7 +47,9 @@ export default class TextPlate {
     }
 
     show(bottomRight: L.Point, names: string[]) {
-        if (this.disabled || this.element.style.display !== 'none') return
+        if (this.disabled || this.element.style.display !== 'none') {
+            return
+        }
 
         const foreign = this.element.firstChild as SVGForeignObjectElement
         const div = foreign.firstChild as HTMLDivElement

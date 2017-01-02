@@ -1,0 +1,104 @@
+const {
+  optimize: {
+    UglifyJsPlugin,
+    CommonsChunkPlugin,
+  },
+  // debugger: {
+  //   SourceMapDevToolPlugin,
+  // },
+  ProvidePlugin,
+} = require('webpack')
+
+const { CheckerPlugin } = require('awesome-typescript-loader')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const WebpackBrowserPlugin = require('webpack-browser-plugin')
+
+module.exports = {
+  target: 'web',
+  context: `${__dirname}/src`,
+  entry: {
+    vendor: [
+      'leaflet',
+      'alertifyjs',
+      'hammerjs',
+      'lodash',
+    ],
+    app: './main.ts',
+  },
+  output: {
+    path: `${__dirname}/dist`,
+    filename: '[name].js',
+    sourceMapFilename: '[file].map',
+  },
+  resolve: {
+    extensions: [
+      '.ts',
+      '.tsx',
+      '.js',
+      '.jsx',
+    ],
+  },
+  devtool: 'source-map',
+  module: {
+    rules: [
+      {
+        enforce: 'pre',
+        test: /\.js$/,
+        loader: 'source-map-loader',
+      },
+      {
+        test: /\.css$/,
+        loaders: [
+          'style-loader',
+          'css-loader?importLoaders=1',
+          'postcss-loader',
+        ],
+      },
+      {
+        test: /\.ts$/,
+        loader: 'awesome-typescript-loader',
+      },
+    ],
+  },
+  plugins: [
+    new CheckerPlugin(),
+    new CommonsChunkPlugin({
+      name: "vendor",
+      filename: "vendor.js",
+      minChunks: Infinity,
+    }),
+    new ProvidePlugin({
+      'Promise': 'es6-promise',
+      // 'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch',
+    }),
+    new UglifyJsPlugin({
+      compress: {
+        warnings: false,
+        drop_debugger: false,
+        dead_code: true,
+        properties: true,
+        unused: true,
+        join_vars: true,
+      },
+      output: {
+        comments: false,
+      },
+      sourceMap: true,
+    }),
+    new HtmlWebpackPlugin({
+      filename: '../index.html',
+      template: 'template.html',
+      css: [
+        'css/style.css',
+      ],
+      hash: true,
+    }),
+    // new SourceMapDevToolPlugin({
+    //   test: /\.js/,
+    // }),
+    new WebpackBrowserPlugin({
+      url: 'http://localhost',
+      port: 9080,
+    }),
+  ],
+}
