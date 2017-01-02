@@ -8,7 +8,6 @@ import * as decorators from './decorators'
 import * as geo from './geo'
 import * as math from './math'
 import Mediator from './Mediator'
-import * as polyfills from './polyfills'
 import * as sfx from './sfx'
 import * as svg from './svg'
 import * as file from './file'
@@ -20,7 +19,6 @@ export {
     geo,
     math,
     Mediator,
-    polyfills,
     sfx,
     svg,
     file,
@@ -67,13 +65,11 @@ export function deleteFromArray<T>(arr: T[], el: T) {
 
 export function formatInteger(integer: number): string {
     const s = integer.toString()
-    console.log(s)
     const start = s.length % 3
     const arr = start > 0 ? [s.slice(0, start)] : []
     for (let i = s.length % 3; i < s.length; i += 3) {
         arr.push(s.substr(i, 3))
     }
-    console.log(arr)
     return arr.join("'")
 }
 

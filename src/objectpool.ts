@@ -13,4 +13,4 @@ const store = {
     gradientBindings: new WeakMap<Transfer, SVGGradientElement>(),
 }
 
-export default store
+export default Object.freeze(store)

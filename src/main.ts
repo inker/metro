@@ -10,9 +10,6 @@ if (L.Browser.ie) {
     alert('Does not work in IE (yet)')
 }
 
-import polyfills from './util/polyfills'
-polyfills()
-
 const tokens = window.location.search.match(/city=(\w+)/)
 const city = tokens ? tokens[1] : 'spb';
 
