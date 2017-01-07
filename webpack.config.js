@@ -26,7 +26,7 @@ module.exports = {
     app: './main.ts',
   },
   output: {
-    path: `${__dirname}/dist`,
+    path: `${__dirname}/public`,
     filename: '[name].js',
     sourceMapFilename: '[file].map',
   },
@@ -50,7 +50,7 @@ module.exports = {
         test: /\.css$/,
         loaders: [
           'style-loader',
-          'css-loader?importLoaders=1',
+          'css-loader?importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
           'postcss-loader',
         ],
       },

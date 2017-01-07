@@ -4,7 +4,6 @@
   "description": "St Petersburg's future metro",
   "main": "bin/www",
   "dependencies": {
-    "@types/bim": "^0.1.4",
     "@types/hammerjs": "^2.0.34",
     "@types/leaflet": "^0",
     "@types/lodash": "^4.14.45",

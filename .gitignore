@@ -1,7 +1,7 @@
 routes/*.js
 routes/*.js.map
-public/js/.*js
-public/js/.*js.map
+!public/js/.*js
+!public/js/.*js.map
 bin/*.js
 bin/*.js.map
 *.js
