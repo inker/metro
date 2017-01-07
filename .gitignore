@@ -2,9 +2,10 @@ routes/*.js
 routes/*.js.map
 !public/js/.*js
 !public/js/.*js.map
+!public.*js
 bin/*.js
 bin/*.js.map
-*.js
+!*.js
 *.js.map
 node_modules
 .idea/
