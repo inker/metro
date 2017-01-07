@@ -11,6 +11,7 @@ const {
 
 const { CheckerPlugin } = require('awesome-typescript-loader')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const WebpackBrowserPlugin = require('webpack-browser-plugin')
 
 module.exports = {
@@ -85,12 +86,17 @@ module.exports = {
       },
       sourceMap: true,
     }),
+    new CopyWebpackPlugin([
+      {
+        from: 'css',
+      },
+    ]),
     new HtmlWebpackPlugin({
       filename: '../index.html',
       template: 'template.html',
-      css: [
-        'css/style.css',
-      ],
+      // css: [
+      //   'css/style.css',
+      // ],
       hash: true,
     }),
     // new SourceMapDevToolPlugin({
