@@ -30,6 +30,8 @@ a:hover {
 #map-container.dimmed {
     -webkit-filter: brightness(0.75);
     filter: brightness(0.75);
+    transition-property: filter -webkit-filter;
+    transition-duration: 200ms;
 }
 
 .leaflet-control-scale-line {

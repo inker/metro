@@ -3,9 +3,16 @@ import * as Hammer from 'hammerjs'
 import { DeferredWidget } from '../base/Widget'
 import { once } from '../../util'
 
-import './style.css'
+import * as style from './style.css'
 
-type FAQData = { faq: { q: string, a: string }[] }
+type QA = {
+    q: string,
+    a: string,
+}[]
+
+type FAQData = {
+    faq: QA[],
+}
 
 export default class extends DeferredWidget {
     private button: HTMLButtonElement
@@ -17,13 +24,13 @@ export default class extends DeferredWidget {
         const promise: Promise<FAQData> = fetch(faqDataUrl).then(data => data.json()) as any
 
         const btn = document.createElement('button')
-        btn.id = 'faq-button'
         btn.textContent = 'FAQ'
         btn.classList.add('leaflet-control')
+        btn.classList.add(style['faq-button'])
         btn.addEventListener('click', e => this.showFAQ())
         this.button = btn
         this.card = document.createElement('div')
-        this.card.id = 'faq-card'
+        this.card.classList.add(style['faq-card'])
 
         if (L.Browser.mobile) {
             new Hammer(this.card).on('swipeleft swiperight', e => this.hideFAQ())
@@ -31,13 +38,21 @@ export default class extends DeferredWidget {
 
         const urlRe = /\[\[(.+?)\|(.*?)\]\]/g
         const replacement = '<a href=\"$1\" target=\"_blank\">$2</a>'
-        const qa2html = qa => `<div><span class="question">${qa.q}</span><span class="answer">${qa.a}</span></div>`
+        const questionClass = style.question
+        const answerClass = style.answer
+        const qa2html = qa => `
+            <div>
+                <span class="${questionClass}">${qa.q}</span>
+                <span class="${answerClass}">${qa.a}</span>
+            </div>
+        `
         this._whenAvailable = promise.then(data => {
             this.card.innerHTML += data.faq.map(qa2html).join('').replace(urlRe, replacement)
         })
     }
 
     addTo(map: L.Map) {
+        this.map = map
         this.whenAvailable.then(faq => {
             const leafletTopRight = document.querySelector('.leaflet-right.leaflet-top')
             document.body.appendChild(this.card)

@@ -2,7 +2,7 @@ import * as L from 'leaflet'
 
 import { svg } from '../../util'
 
-import './style.css'
+import * as style from './style.css'
 
 export default class TextPlate {
     readonly element = svg.createSVGElement('g') as SVGGElement
@@ -11,7 +11,7 @@ export default class TextPlate {
 
     constructor() {
         const div = document.createElement('div')
-        div.classList.add('plate-box')
+        div.classList.add(style['plate-box'])
         const foreign = svg.createSVGElement('foreignObject') as SVGForeignObjectElement
         foreign.setAttribute('x', '0')
         foreign.setAttribute('y', '0')

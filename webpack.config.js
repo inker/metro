@@ -51,7 +51,7 @@ module.exports = {
         test: /\.css$/,
         loaders: [
           'style-loader',
-          'css-loader?importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
+          'css-loader?modules=true&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
           'postcss-loader',
         ],
       },
@@ -70,7 +70,7 @@ module.exports = {
     }),
     new ProvidePlugin({
       'Promise': 'es6-promise',
-      // 'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch',
+      'fetch': 'imports-loader?this=>global!exports-loader?global.fetch!whatwg-fetch',
     }),
     new UglifyJsPlugin({
       compress: {

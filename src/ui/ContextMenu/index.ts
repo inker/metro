@@ -3,7 +3,7 @@ import * as L from 'leaflet'
 import { removeAllChildren } from '../../util'
 import { translate } from '../../i18n'
 
-import './style.css'
+import * as style from './style.css'
 
 // TODO: merge items & extra items, introduce item index
 type Extra = {
@@ -29,7 +29,7 @@ export default class implements L.ILayer {
         // this._extraItems = new Map();
 
         this.container = document.createElement('div')
-        this.container.id = 'contextmenu'
+        this.container.classList.add(style.contextmenu)
         this.container.addEventListener('contextmenu', e => {
             e.preventDefault();
             (e.target as HTMLElement).click()

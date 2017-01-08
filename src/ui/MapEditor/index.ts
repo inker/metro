@@ -3,6 +3,8 @@ import { tr } from '../../i18n'
 import { Widget } from '../base/Widget'
 import { byId } from '../../util'
 
+import * as style from './style.css'
+
 type LeafletMouseEvent = L.LeafletMouseEvent
 
 export default class MapEditor implements Widget {
@@ -29,9 +31,9 @@ export default class MapEditor implements Widget {
 
     constructor(minZoom: number) {
         const btn = document.createElement('button')
-        btn.id = 'edit-map-button'
         btn.textContent = 'Edit Map'
         btn.classList.add('leaflet-control')
+        btn.classList.add(style['edit-map-button'])
         btn.onclick = e => this.editMapClick()
         this.button = btn
     }

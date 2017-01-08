@@ -1,5 +1,5 @@
 
-#faq-card {
+.faq-card {
     position: absolute;
     top: 5%;
     bottom: 5%;
@@ -19,7 +19,7 @@
 }
 
 @media only screen and (max-width: 1000px) {
-    #faq-card {
+    .faq-card {
         max-width: 500px;
         width: 90%;
     }

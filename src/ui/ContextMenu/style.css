@@ -1,4 +1,4 @@
-#contextmenu {
+.contextmenu {
     position: fixed;
     left: 0;
     top: 0;
@@ -18,22 +18,22 @@
 }
 
 @media only screen and (max-device-width: 400px) and (-webkit-min-device-pixel-ratio: 2) {
-    #contextmenu {
+    .contextmenu {
         font-size: 1.2em;
     }
 } 
 
-#contextmenu div {
+.contextmenu div {
     padding: 5px;
     cursor: default;
 }
 
-#contextmenu div[disabled] {
+.contextmenu div[disabled] {
     color: grey;
     /*cursor: not-allowed*/
 }
 
-#contextmenu div:not([disabled]):hover {
+.contextmenu div:not([disabled]):hover {
     background-color: #82B1FF;
     /*color: #ffffff;*/
 }
