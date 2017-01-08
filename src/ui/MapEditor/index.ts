@@ -9,10 +9,12 @@ type LeafletMouseEvent = L.LeafletMouseEvent
 
 export default class MapEditor implements Widget {
     private metroMap: MetroMap
-    private button: HTMLButtonElement
+    private readonly button: HTMLButtonElement
     private _editMode: boolean
 
-    get editMode() { return this._editMode }
+    get editMode() {
+        return this._editMode
+    }
 
     set editMode(val: boolean) {
         if (val) {

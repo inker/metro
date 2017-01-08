@@ -16,6 +16,7 @@ export default class Span extends Edge<Platform> {
     get source() {
         return this._source
     }
+
     set source(vertex: Platform) {
         if (this._source !== undefined) {
             deleteFromArray(this._source.spans, this)
@@ -27,6 +28,7 @@ export default class Span extends Edge<Platform> {
     get target() {
         return this._target
     }
+
     set target(vertex: Platform) {
         if (this._target !== undefined) {
             deleteFromArray(this._target.spans, this)

@@ -11,7 +11,7 @@ import { timeToTravel } from './math'
 import { findClosestObject } from './geo'
 import { tryGetFromMap } from '../util'
 
-export function findCircle(network: Network, station: Station): Platform[] {
+export function findCycle(network: Network, station: Station): Platform[] {
     if (station.platforms.length < 3) {
         return []
     }

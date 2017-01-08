@@ -1,15 +1,15 @@
 import * as L from 'leaflet'
 
 import * as util from '../util'
-import { Icons } from '../ui'
+import { RedCircle } from './Icons'
 
 type LeafletMouseEvent = L.LeafletMouseEvent
 
 export default class implements L.ILayer {
     private map: L.Map
-    private polyline = L.polyline([], { color: 'red'})
-    private markers = L.featureGroup().on('layeradd layerremove', e => util.fixFontRendering())
-    private dashedLine = L.polyline([], { color: 'red', opacity: 0.5, dashArray: '0,9' })
+    private readonly polyline = L.polyline([], { color: 'red'})
+    private readonly markers = L.featureGroup().on('layeradd layerremove', e => util.fixFontRendering())
+    private readonly dashedLine = L.polyline([], { color: 'red', opacity: 0.5, dashArray: '0,9' })
 
     onAdd(map: L.Map) {
         this.map = map
@@ -83,7 +83,7 @@ export default class implements L.ILayer {
             this.updateDistances()
         }
         const marker = L.marker(e.latlng, { draggable: true })
-            .setIcon(Icons.Circle)
+            .setIcon(RedCircle)
             .bindPopup('')
             .on('mouseover', e => this.hideDashedLine())
             .on('mouseout', e => this.showDashedLine())

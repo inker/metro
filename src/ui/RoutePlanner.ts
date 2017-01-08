@@ -1,4 +1,8 @@
-import * as L from 'leaflet'
+import {
+    Marker,
+    marker,
+    LatLng,
+} from 'leaflet'
 import * as alertify from 'alertifyjs'
 
 import MetroMap from '../MetroMap'
@@ -14,12 +18,12 @@ const { shortestRoute } = util.algorithm
 
 export default class implements Widget {
     private metroMap: MetroMap
-    private fromMarker: L.Marker
-    private toMarker: L.Marker
+    private readonly fromMarker: Marker
+    private readonly toMarker: Marker
 
     constructor() {
-        this.fromMarker = L.marker([0, 0], { draggable: true, icon: Icons.Start })
-        this.toMarker = L.marker([0, 0], { draggable: true, icon: Icons.End })
+        this.fromMarker = marker([0, 0], { draggable: true, icon: Icons.start })
+        this.toMarker = marker([0, 0], { draggable: true, icon: Icons.end })
         this.addMarkerListeners()
     }
 
@@ -34,7 +38,9 @@ export default class implements Widget {
         metroMap.subscribe('clearroute', e => this.clearRoute())
         map.on('zoomstart', e => sfx.Animation.terminateAnimations())
         addEventListener('keydown', e => {
-            if (e.keyCode !== 27) return
+            if (e.keyCode !== 27) {
+                return
+            }
             metroMap.publish(new Event('clearroute'))
         })
         return this
@@ -69,11 +75,13 @@ export default class implements Widget {
 
     private visualizeShortestRoute(animate = true) {
         const map = this.metroMap.getMap()
-        if (!map.hasLayer(this.fromMarker) || !map.hasLayer(this.toMarker)) return
+        if (!map.hasLayer(this.fromMarker) || !map.hasLayer(this.toMarker)) {
+            return
+        }
         this.visualizeRouteBetween(this.fromMarker.getLatLng(), this.toMarker.getLatLng(), animate)
     }
 
-    private visualizeRouteBetween(from: L.LatLng, to: L.LatLng, animate = true) {
+    private visualizeRouteBetween(from: LatLng, to: LatLng, animate = true) {
         util.resetStyle()
         alertify.dismissAll()
         sfx.visualizeRoute(shortestRoute(this.metroMap.getNetwork().platforms, from, to), animate)

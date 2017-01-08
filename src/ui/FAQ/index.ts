@@ -15,8 +15,8 @@ type FAQData = {
 }
 
 export default class extends DeferredWidget {
-    private button: HTMLButtonElement
-    private card: HTMLDivElement
+    private readonly button: HTMLButtonElement
+    private readonly card: HTMLDivElement
     private map: L.Map
 
     constructor(faqDataUrl: string) {

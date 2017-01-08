@@ -2,7 +2,6 @@ import { latLng } from 'leaflet'
 
 import {
     deleteFromArray,
-    geo,
 } from '../util'
 
 import {

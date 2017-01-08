@@ -1,21 +1,21 @@
-import {
-    file,
-    svg,
-} from '../util'
+import RedCircle from './RedCircle'
+export {
+    RedCircle,
+}
 
-export const Start = L.icon({
+export const start = L.icon({
     iconUrl: 'https://proxy-antonv.rhcloud.com/?url=http://map.project-osrm.org/images/marker-start-icon-2x.png',
     iconSize: [20, 56],
     iconAnchor: [10, 28],
 })
 
-export const End = L.icon({
+export const end = L.icon({
     iconUrl: 'https://proxy-antonv.rhcloud.com/?url=http://map.project-osrm.org/images/marker-end-icon-2x.png',
     iconSize: [20, 56],
     iconAnchor: [10, 28],
 })
 
-export const Red = L.icon({
+export const red = L.icon({
     iconUrl: 'https://proxy-antonv.rhcloud.com/?url=http://harrywood.co.uk/maps/examples/leaflet/marker-icon-red.png',
     // iconRetinaUrl: 'my-icon@2x.png',
     iconSize: [25, 41],
@@ -26,21 +26,3 @@ export const Red = L.icon({
     shadowSize: [41, 41],
     shadowAnchor: [12, 41],
 })
-
-export const Circle = (() => {
-    const root = svg.createSVGElement('svg') as SVGSVGElement
-    root.setAttribute('width', '100')
-    root.setAttribute('height', '100')
-    const ci = svg.makeCircle(L.point(50, 50), 40)
-    ci.style.stroke = 'red'
-    ci.style.strokeWidth = '20px'
-    ci.style.fill = 'white'
-    root.appendChild(ci)
-    const r = 5
-    return L.icon({
-        iconUrl: file.svgToDataUrl(root),
-        iconSize: [r * 2, r * 2],
-        iconAnchor: [r, r],
-        popupAnchor: [0, -r],
-    })
-})()

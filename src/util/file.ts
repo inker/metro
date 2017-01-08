@@ -65,7 +65,7 @@ export function svgToImg(root: SVGSVGElement, appendExternalStyles = false): HTM
 }
 
 export function svgToDataUrl(root: SVGSVGElement): string {
-    return 'data:image/svg+xml;base64,' + btoa(new XMLSerializer().serializeToString(root))
+    return `data:image/svg+xml;base64,${btoa(new XMLSerializer().serializeToString(root))}`
 }
 
 function optimizeSvg(root: SVGSVGElement): SVGSVGElement {

@@ -5,7 +5,7 @@ export const mapbox = tileLayer('https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/
     detectRetina: false,
     // reuseTiles: true,
     attribution: 'Map data &copy; <a href=\"https://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://mapbox.com\">Mapbox</a>',
-});
+})
 
 export const mapnik = tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',

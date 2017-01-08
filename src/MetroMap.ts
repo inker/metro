@@ -41,7 +41,7 @@ const {
 
 const { Scale } = sfx
 const { getCenter } = math
-const { findCircle } = algorithm
+const { findCycle } = algorithm
 
 const contextMenuArray = [{
     event: 'routefrom',
@@ -61,22 +61,27 @@ const contextMenuArray = [{
 }]
 
 export default class extends Mediator {
-    private config: res.Config
+    private readonly config: res.Config
     private map: L.Map
     private overlay: ui.SvgOverlay
     private contextMenu: ui.ContextMenu
 
     private network: Network
     private lineRules: Map<string, CSSStyleDeclaration>
-    private whiskers = new WeakMap<Platform, Map<Span, L.Point>>()
+    private readonly whiskers = new WeakMap<Platform, Map<Span, L.Point>>()
     private platformsOnSVG = new WeakMap<Platform, L.Point>()
 
     private plate: ui.TextPlate
 
     // private routeWorker = new Worker('js/routeworker.js');
 
-    getMap(): L.Map { return this.map }
-    getNetwork(): Network { return this.network }
+    getMap(): L.Map {
+        return this.map
+    }
+
+    getNetwork(): Network {
+        return this.network
+    }
 
     constructor(config: res.Config) {
         super()
@@ -95,19 +100,27 @@ export default class extends Mediator {
 
         // wait.textContent = 'making map...';
 
-        this.config.center = [0, 0]
+        config.center = [0, 0]
         const mapOptions = Object.assign({}, config)
         if (L.version[0] === '1') {
             mapOptions['wheelPxPerZoomLevel'] = 75
             mapOptions['inertiaMaxSpeed'] = 1500
             mapOptions['fadeAnimation'] = false
         }
-        this.map = L.map(config.containerId, mapOptions)
-            .addControl(L.control.scale({ imperial: false }))
+        this.map = L.map(config.containerId, mapOptions).addControl(L.control.scale({
+            imperial: false,
+        }))
         const mapPaneStyle = this.map.getPanes().mapPane.style
         mapPaneStyle.visibility = 'hidden'
 
-        ui.addLayerSwitcher(this.map, [mapbox, mapnik, osmFrance, openMapSurfer, cartoDBNoLabels, wikimapia])
+        ui.addLayerSwitcher(this.map, [
+            mapbox,
+            mapnik,
+            osmFrance,
+            openMapSurfer,
+            cartoDBNoLabels,
+            wikimapia,
+        ])
 
         addEventListener('keydown', e => {
             if (e.shiftKey && e.ctrlKey && e.keyCode === 82) {
@@ -120,7 +133,7 @@ export default class extends Mediator {
         const json = await networkPromise
         this.network = new Network(json)
         const center = geo.getCenter(this.network.platforms.map(p => p.location))
-        this.config.center = [center.lat, center.lng]
+        config.center = [center.lat, center.lng]
         const bounds = L.latLngBounds(this.network.platforms.map(p => p.location))
         this.overlay = new ui.SvgOverlay(bounds).addTo(this.map)
         const { defs } = this.overlay
@@ -153,7 +166,7 @@ export default class extends Mediator {
         // ui.drawZones(this.map, this.network.platforms);
 
         if (!L.Browser.mobile) {
-            new ui.MapEditor(this.config.detailedZoom).addTo(this)
+            new ui.MapEditor(config.detailedZoom).addTo(this)
         }
 
         await faq.whenAvailable
@@ -251,14 +264,18 @@ export default class extends Mediator {
             this.redrawNetwork()
         })
         this.subscribe('spanroutechange', (e: MouseEvent) => {
-            if (e.relatedTarget === undefined) return
+            if (e.relatedTarget === undefined) {
+                return
+            }
             const span = relatedTargetToSpan(e.relatedTarget)
             const routeSet = ui.askRoutes(this.network, new Set(span.routes))
             span.routes = Array.from(routeSet)
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
         this.subscribe('spaninvert', (e: MouseEvent) => {
-            if (e.relatedTarget === undefined) return
+            if (e.relatedTarget === undefined) {
+                return
+            }
             const span = relatedTargetToSpan(e.relatedTarget)
             span.invert()
             this.resetNetwork(JSON.parse(this.network.toJSON()))
@@ -282,7 +299,9 @@ export default class extends Mediator {
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
         this.subscribe('spandelete', (e: MouseEvent) => {
-            if (e.relatedTarget === undefined) return
+            if (e.relatedTarget === undefined) {
+                return
+            }
             const span = relatedTargetToSpan(e.relatedTarget)
             util.deleteFromArray(this.network.spans, span)
             this.resetNetwork(JSON.parse(this.network.toJSON()))
@@ -324,8 +343,7 @@ export default class extends Mediator {
                 if (!targetsParent) {
                     return false
                 }
-                targetsParent.id === 'dummy-circles'
-                return true
+                return targetsParent.id === 'dummy-circles'
             }
 
             contextMenu.insertItem('platformrename', 'Rename station', trigger)
@@ -516,7 +534,7 @@ export default class extends Mediator {
                 this.whiskers.set(platform, this.makeWhiskers(platform))
             }
 
-            const circular = findCircle(this.network, station)
+            const circular = findCycle(this.network, station)
             if (circular.length > 0) {
                 for (const platform of station.platforms) {
                     if (circular.includes(platform)) {
@@ -793,7 +811,7 @@ export default class extends Mediator {
 
     private highlightStation(station: Station, names: string[]) {
         const scaleFactor = 1.25
-        let circle: SVGCircleElement|undefined
+        let circle: SVGCircleElement
         let platform: Platform
         if (station.platforms.length === 1) {
             platform = station.platforms[0]
@@ -884,7 +902,9 @@ export default class extends Mediator {
                         for (const t of this.network.transfers) {
                             if (transfer.isAdjacent(t)) {
                                 transfers.push(t)
-                                if (transfers.length === 3) break
+                                if (transfers.length === 3) {
+                                    break
+                                }
                             }
                         }
 
@@ -901,9 +921,9 @@ export default class extends Mediator {
                             const tr = transfers[i]
                             const outer = outerArcs[i]
                             const inner = innerArcs[i]
-                            var pos1 = tryGetFromMap(this.platformsOnSVG, tr.source)
-                            var pos2 = tryGetFromMap(this.platformsOnSVG, tr.target)
-                            const thirdPos = circumpoints.find(pos => pos !== pos1 && pos !== pos2)
+                            const pos1 = tryGetFromMap(this.platformsOnSVG, tr.source)
+                            const pos2 = tryGetFromMap(this.platformsOnSVG, tr.target)
+                            const thirdPos = difference(circumpoints, [pos1, pos2])[0]
                             if (thirdPos) {
                                 svg.setCircularPath(outer, pos1, pos2, thirdPos)
                                 inner.setAttribute('d', outer.getAttribute('d') as string)

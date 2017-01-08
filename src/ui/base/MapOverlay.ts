@@ -14,9 +14,9 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
     private map: L.Map
     protected overlayContainer: Container
 
-    private bounds: L.LatLngBounds
+    private readonly bounds: L.LatLngBounds
     private topLeft: L.Point
-    protected margin: L.Point
+    protected readonly margin: L.Point
 
     private minZoom: number
     private maxZoom: number

@@ -14,7 +14,7 @@ if (L.Browser.ie) {
 const tokens = location.search.match(/city=(\w+)/)
 const city = tokens ? tokens[1] : 'spb'
 
-;(async () => {
+; (async () => {
     const config = await getConfig()
     const dictPromise = updateDictionary(config.url['dictionary'])
     for (const url of Object.keys(config.url)) {

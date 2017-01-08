@@ -46,7 +46,12 @@ export function getCenter(points: LatLng[]): LatLng {
 type FitnessFunc = (current: LatLng) => number
 type OnClimb = (coordinate: LatLng) => void
 
-export function calculateGeoMean(points: LatLng[], fitnessFunc: FitnessFunc, minStep = 0.00001, onClimb?: OnClimb): LatLng {
+export function calculateGeoMean(
+    points: LatLng[],
+    fitnessFunc: FitnessFunc,
+    minStep = 0.00001,
+    onClimb?: OnClimb,
+): LatLng {
     let point = getCenter(points)
     let fitness = fitnessFunc(point)
     callMeMaybe(onClimb, point)

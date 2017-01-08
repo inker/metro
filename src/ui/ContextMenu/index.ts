@@ -1,4 +1,5 @@
 import * as L from 'leaflet'
+import { remove } from 'lodash'
 
 import { removeAllChildren } from '../../util'
 import { translate } from '../../i18n'
@@ -19,8 +20,8 @@ type ContextMenuItem = {
 
 export default class implements L.ILayer {
     private map: L.Map
-    private items: ContextMenuItem[]
-    private container: HTMLDivElement
+    private readonly items: ContextMenuItem[]
+    private readonly container: HTMLDivElement
 
     constructor(items: ContextMenuItem[]) {
         console.log('adding context menu')
@@ -115,7 +116,7 @@ export default class implements L.ILayer {
 
     removeItem(event: string, all = false) {
         if (all) {
-            this.items = this.items.filter(item => item.event !== event)
+            remove(this.items, item => item.event === event)
             return
         }
         const index = this.items.findIndex(item => item.event === event)
