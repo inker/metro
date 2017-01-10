@@ -203,19 +203,17 @@ export function scaleOverlay(overlay: Element&{ style: CSSStyleDeclaration }, sc
     overlayStyle.transform = `scale(${scaleFactor})`
 }
 
-export function tryGet<T>(fetch: () => T, validate: (val: T) => boolean, interval = 100, ttl = 100) {
-    return new Promise<T>((resolve, reject) => setTimeout(function bar() {
-        console.log(ttl)
-        if (--ttl <= 0) {
-            console.error('rejected', bar)
-            reject()
-        }
+export const delay = (ms: number) => new Promise((resolve, reject) => setTimeout(resolve, ms))
+
+export async function tryGet<T>(fetch: () => T, validate?: (val: T) => boolean, interval = 100, ttl = 100) {
+    for (let i = 0; i < ttl; ++i) {
         const val = fetch()
-        if (validate(val)) {
-            return resolve(val)
+        if (!validate || validate(val)) {
+            return val
         }
-        setTimeout(bar, interval)
-    }))
+        await delay(interval)
+    }
+    throw new Error('rejected')
 }
 
 export function tryGetElement(query: string, interval = 100, ttl = 100) {
@@ -235,10 +233,10 @@ export function removeAllChildren(el: Node) {
  * Fixes blurry font due to 'transform3d' CSS property. Changes everything to 'transform' when the map is not moving
  */
 export function fixFontRendering(parent: { querySelectorAll } = document): void {
-    const blurringStuff = parent.querySelectorAll('[style*="translate3d"]')
+    const blurringStuff = parent.querySelectorAll('[style*="translate3d"]') as any as HTMLElement[]
     console.log('fixing font', parent, blurringStuff)
-    for (let i = 0; i < blurringStuff.length; ++i) {
-        trim3d(blurringStuff[i] as HTMLElement & SVGStylable)
+    for (const blurry of blurringStuff) {
+        trim3d(blurry)
     }
 }
 
@@ -255,10 +253,10 @@ export function getSecondLanguage() {
     return obj[city]
 }
 
-interface Dict<K, V> {
+interface IMap<K, V> {
     get: (K) => V|undefined,
 }
-export function tryGetFromMap<K, V>(map: Dict<K, V>, key: K): V {
+export function tryGetFromMap<K, V>(map: IMap<K, V>, key: K): V {
     const val = map.get(key)
     if (val === undefined) {
         console.error('in map', map, ':', key, '->', val)
