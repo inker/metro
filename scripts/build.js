@@ -5,7 +5,7 @@ remove('public', err => {
   if (err) {
     throw err
   }
-  const { stdout, stderr } = exec('webpack --progress --colors --watch')
+  const { stdout, stderr } = exec('webpack --colors --watch')
   stdout.pipe(process.stdout)
   stderr.pipe(process.stderr)
 

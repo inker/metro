@@ -5,7 +5,7 @@ export interface Widget {
 }
 
 export abstract class DeferredWidget {
-    protected readonly _whenAvailable: Promise<void>
+    protected _whenAvailable: Promise<void>
     get whenAvailable() {
         return this._whenAvailable
     }

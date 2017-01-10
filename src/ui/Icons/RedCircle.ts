@@ -3,7 +3,7 @@ import {
     svg,
 } from '../../util'
 
-const root = svg.createSVGElement('svg') as SVGSVGElement
+const root = svg.createSVGElement('svg')
 root.setAttribute('width', '100')
 root.setAttribute('height', '100')
 const ci = svg.makeCircle(L.point(50, 50), 40)

@@ -96,10 +96,14 @@ export function callMeMaybe<ReturnType>(func: ((...params: any[]) => ReturnType)
     return func ? func(...params) : undefined
 }
 
-export function once(el: EventTarget, eventType: string, listener: EventListener) {
-    el.addEventListener(eventType, function handler(e: Event) {
+export function once<K extends keyof HTMLElementEventMap>(
+    el: EventTarget,
+    eventType: K,
+    listener: (e: HTMLElementEventMap[K]) => any,
+) {
+    el.addEventListener(eventType, function handler(e) {
         el.removeEventListener(eventType, handler)
-        listener(e)
+        listener(e as any)
     })
 }
 
