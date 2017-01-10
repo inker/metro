@@ -14,6 +14,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const WebpackBrowserPlugin = require('webpack-browser-plugin')
 
+const CleanCSS = require('clean-css')
+const cleanCSS = new CleanCSS()
+
 module.exports = {
   target: 'web',
   context: `${__dirname}/src`,
@@ -89,14 +92,12 @@ module.exports = {
     new CopyWebpackPlugin([
       {
         from: 'css',
+        transform: (content, path) => cleanCSS.minify(content).styles,
       },
     ]),
     new HtmlWebpackPlugin({
       filename: '../index.html',
       template: 'template.html',
-      // css: [
-      //   'css/style.css',
-      // ],
       hash: true,
     }),
     // new SourceMapDevToolPlugin({
