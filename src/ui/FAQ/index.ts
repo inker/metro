@@ -77,7 +77,9 @@ export default class extends DeferredWidget {
             this.map.getContainer().classList.add('dimmed')
             this.map.once('mousedown', e => this.hideFAQ())
             once(window, 'keydown', e => {
-                if ((e as KeyboardEvent).keyCode !== 27) return
+                if (e.keyCode !== 27) {
+                    return
+                }
                 this.map.fireEvent('mousedown')
             })
         }

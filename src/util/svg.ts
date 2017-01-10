@@ -5,12 +5,12 @@ import {
     getCircumcenter,
 } from './math'
 
-export function createSVGElement(tagName: string) {
-    return document.createElementNS('http://www.w3.org/2000/svg', tagName)
+export function createSVGElement<K extends keyof ElementTagNameMap>(tagName: K): ElementTagNameMap[K] {
+    return document.createElementNS('http://www.w3.org/2000/svg', tagName) as any
 }
 
 export function makeCircle(position: Point, radius: number): SVGCircleElement {
-    const circle = createSVGElement('circle') as SVGCircleElement
+    const circle = createSVGElement('circle')
     circle.setAttribute('r', radius.toString())
     circle.setAttribute('cy', position.y.toString())
     circle.setAttribute('cx', position.x.toString())
@@ -18,7 +18,7 @@ export function makeCircle(position: Point, radius: number): SVGCircleElement {
 }
 
 export function makeLine(start: Point, end: Point): SVGLineElement {
-    const line = createSVGElement('line') as SVGLineElement
+    const line = createSVGElement('line')
     line.setAttribute('x1', start.x.toString())
     line.setAttribute('y1', start.y.toString())
     line.setAttribute('x2', end.x.toString())
@@ -27,7 +27,7 @@ export function makeLine(start: Point, end: Point): SVGLineElement {
 }
 
 export function makeArc(start: Point, end: Point, third: Point): SVGPathElement {
-    const path = createSVGElement('path') as SVGPathElement
+    const path = createSVGElement('path')
     setCircularPath(path, start, end, third)
     return path
 }
@@ -93,7 +93,7 @@ export function setCircularPath(el: Element, start: Point, end: Point, third: Po
 }
 
 export function makeCubicBezier(controlPoints: Point[]): SVGPathElement {
-    const path = createSVGElement('path') as SVGPathElement
+    const path = createSVGElement('path')
     setBezierPath(path, controlPoints)
     return path
 }
@@ -134,7 +134,7 @@ export namespace Filters {
         filter.id = 'shadow'
         filter.setAttribute('width', '200%')
         filter.setAttribute('height', '200%');
-        (filter as any).innerHTML = `
+        filter.innerHTML = `
             <feOffset result="offOut" in="SourceAlpha" dx="0" dy="4" />
             <feColorMatrix result="matrixOut" in="offOut" type="matrix" values=
                 "0 0 0 0   0
@@ -145,13 +145,13 @@ export namespace Filters {
 
             <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
         `
-        return filter as any
+        return filter
     }
 
     export function makeGlow(): SVGFilterElement {
         const filter = createSVGElement('filter')
         filter.id = 'black-glow';
-        (filter as any).innerHTML = `<feColorMatrix type="matrix" values=
+        filter.innerHTML = `<feColorMatrix type="matrix" values=
                 "0 0 0 0   0
                 0 0 0 0   0
                 0 0 0 0   0
@@ -161,27 +161,27 @@ export namespace Filters {
                 <feMergeNode in="coloredBlur"/>
                 <feMergeNode in="SourceGraphic"/>
             </feMerge>`
-        return filter as any
+        return filter
     }
 
     export function makeOpacity(): SVGFilterElement {
         const filter = createSVGElement('filter')
         filter.id = 'opacity';
-        (filter as any).innerHTML = `<feComponentTransfer>
+        filter.innerHTML = `<feComponentTransfer>
             <feFuncA type="table" tableValues="0 0.5">
         </feComponentTransfer>`
-        return filter as any
+        return filter
     }
 
     export function makeGray(): SVGFilterElement {
         const filter = createSVGElement('filter')
         filter.id = 'gray';
-        (filter as any).innerHTML = `<feColorMatrix type="matrix"
+        filter.innerHTML = `<feColorMatrix type="matrix"
                values="0.2126 0.7152 0.0722 0 0
                        0.2126 0.7152 0.0722 0 0
                        0.2126 0.7152 0.0722 0 0
                        0 0 0 1 0"/>`
-        return filter as any
+        return filter
     }
 
     export function appendAll(defs: SVGDefsElement) {
@@ -204,14 +204,14 @@ export namespace Filters {
 
 export namespace Gradients {
     export function makeUndirectedLinear(colors: string[]): SVGLinearGradientElement {
-        const gradient = createSVGElement('linearGradient') as SVGLinearGradientElement
+        const gradient = createSVGElement('linearGradient')
         if ('innerHTML' in gradient) {
             gradient.innerHTML = `<stop style="stop-color:${colors[0]}" /><stop style="stop-color:${colors[1]}" />`
             return gradient
         } else {
-            const from = createSVGElement('stop') as SVGStopElement
+            const from = createSVGElement('stop')
             from.style.stopColor = colors[0]
-            const to = createSVGElement('stop') as SVGStopElement
+            const to = createSVGElement('stop')
             to.style.stopColor = colors[1]
             gradient.appendChild(from)
             gradient.appendChild(to)

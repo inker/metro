@@ -393,7 +393,7 @@ export default class extends Mediator {
         ]
 
         for (const groupId of groupIds) {
-            const g = svg.createSVGElement('g') as SVGGElement
+            const g = svg.createSVGElement('g')
             g.id = groupId
             origin.appendChild(g)
         }

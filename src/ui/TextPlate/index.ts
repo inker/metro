@@ -5,14 +5,14 @@ import { svg } from '../../util'
 import * as style from './style.css'
 
 export default class TextPlate {
-    readonly element = svg.createSVGElement('g') as SVGGElement
+    readonly element = svg.createSVGElement('g')
     private _disabled = false
     private _editable = false
 
     constructor() {
         const div = document.createElement('div')
         div.classList.add(style['plate-box'])
-        const foreign = svg.createSVGElement('foreignObject') as SVGForeignObjectElement
+        const foreign = svg.createSVGElement('foreignObject')
         foreign.setAttribute('x', '0')
         foreign.setAttribute('y', '0')
         foreign.setAttribute('width', '100%')
