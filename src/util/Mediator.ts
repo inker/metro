@@ -30,7 +30,7 @@ export default class {
     publish(event: Event): boolean {
         console.log('event as seen from the dispatcher', event)
         const listenerArr = this.eventListeners.get(event.type)
-        if (listenerArr === undefined) {
+        if (listenerArr === undefined || listenerArr.length === 0) {
             console.log('no event listeners registered for ' + event.type)
             return false
         }

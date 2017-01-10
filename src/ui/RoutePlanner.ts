@@ -64,8 +64,8 @@ export default class implements Widget {
         }
     }
 
-    private addMarkerListeners(): void {
-        for (let marker of [this.fromMarker, this.toMarker]) {
+    private addMarkerListeners() {
+        for (const marker of [this.fromMarker, this.toMarker]) {
             marker.on('drag', e => this.visualizeShortestRoute(false)).on('dragend', e => {
                 util.fixFontRendering()
                 this.visualizeShortestRoute()

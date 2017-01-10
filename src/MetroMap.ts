@@ -404,7 +404,7 @@ export default class extends Mediator {
         this.addStationListeners()
     }
 
-    private resetMapView(): void {
+    private resetMapView() {
         // const fitness = (points, pt) => points.reduce((prev, cur) => this.bounds., 0);
         // const center = geo.calculateGeoMean(this.network.platforms.map(p => p.location), fitness, 0.1);
         const { center, zoom } = this.config
@@ -424,12 +424,12 @@ export default class extends Mediator {
         return res.getJSON(this.config.url['graph']) as any
     }
 
-    private resetNetwork(json: GraphJSON): void {
+    private resetNetwork(json: GraphJSON) {
         this.network = new Network(json)
         this.redrawNetwork()
     }
 
-    private cleanElements(): void {
+    private cleanElements() {
         for (const child of (this.overlay.origin.childNodes as any)) {
             if (child !== this.plate.element) {
                 util.removeAllChildren(child)
@@ -479,11 +479,11 @@ export default class extends Mediator {
         const docFrags = new Map<string, DocumentFragment>()
         for (const id of Object.keys(strokeWidths)) {
             docFrags.set(id, document.createDocumentFragment())
-            util.byId(id).style.strokeWidth = strokeWidths[id] + 'px'
+            util.byId(id).style.strokeWidth = `${strokeWidths[id]}px`
         }
 
         const lightRailPathStyle = tryGetFromMap(this.lineRules, 'light-rail-path')
-        lightRailPathStyle.strokeWidth = lightLineWidth + 'px'
+        lightRailPathStyle.strokeWidth = `${lightLineWidth}px`
 
         // 11 - 11, 12 - 11.5, 13 - 12, 14 - 12.5
         const fontSize = Math.max((zoom + 10) * 0.5, 11)

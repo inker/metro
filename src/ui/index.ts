@@ -86,7 +86,7 @@ export function askRoutes(network: Network, defSet?: Set<Route>) {
     return routeSet
 }
 
-export function addLayerSwitcher(map: L.Map, layers: L.TileLayer[]): void {
+export function addLayerSwitcher(map: L.Map, layers: L.TileLayer[]) {
     let currentLayerIndex = 0
     console.log(layers.length)
     addEventListener('keydown', e => {

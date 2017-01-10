@@ -51,7 +51,7 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
         this.map.clearAllEventListeners() // fix later
     }
 
-    private addMapMovementListeners(): void {
+    private addMapMovementListeners() {
         const { map } = this
         const { mapPane, tilePane, overlayPane } = map.getPanes()
         const { style, classList } = this.overlayContainer
@@ -108,7 +108,7 @@ export default class MapOverlay<Container extends Element&{ style: CSSStyleDecla
         document.addEventListener('keydown', e => mousePos = L.point(innerWidth / 2, innerHeight / 2))
     }
 
-    private updateOverlayPositioning(): void {
+    private updateOverlayPositioning() {
         const nw = this.bounds.getNorthWest()
         const se = this.bounds.getSouthEast()
         const { map, margin } = this

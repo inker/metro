@@ -188,7 +188,11 @@ export function flashTitle(titles: string[], duration: number) {
     setInterval(() => document.title = titles[++i % titles.length], duration)
 }
 
-export function scaleOverlay(overlay: Element&{ style: CSSStyleDeclaration }, scaleFactor: number, mousePos?: L.Point) {
+export function scaleOverlay(
+    overlay: Element&{ style: CSSStyleDeclaration },
+    scaleFactor: number,
+    mousePos?: L.Point,
+) {
     const box = overlay.getBoundingClientRect()
     if (!mousePos) {
         const el = document.documentElement
@@ -205,7 +209,12 @@ export function scaleOverlay(overlay: Element&{ style: CSSStyleDeclaration }, sc
 
 export const delay = (ms: number) => new Promise((resolve, reject) => setTimeout(resolve, ms))
 
-export async function tryGet<T>(fetch: () => T, validate?: (val: T) => boolean, interval = 100, ttl = 100) {
+export async function tryGet<T>(
+    fetch: () => T,
+    validate?: (val: T) => boolean,
+    interval = 100,
+    ttl = 100,
+) {
     for (let i = 0; i < ttl; ++i) {
         const val = fetch()
         if (!validate || validate(val)) {
@@ -216,7 +225,7 @@ export async function tryGet<T>(fetch: () => T, validate?: (val: T) => boolean, 
     throw new Error('rejected')
 }
 
-export function tryGetElement(query: string, interval = 100, ttl = 100) {
+export function tryGetElement(query: string, interval = 100, ttl = 100): Promise<Element> {
     const rest = query.slice(1)
     const foo = query[0] === '#' ? (() => document.getElementById(rest)) : () => document.querySelector(query)
     return tryGet(foo, val => val !== null, interval, ttl)
@@ -232,7 +241,7 @@ export function removeAllChildren(el: Node) {
 /**
  * Fixes blurry font due to 'transform3d' CSS property. Changes everything to 'transform' when the map is not moving
  */
-export function fixFontRendering(parent: { querySelectorAll } = document): void {
+export function fixFontRendering(parent: { querySelectorAll } = document) {
     const blurringStuff = parent.querySelectorAll('[style*="translate3d"]') as any as HTMLElement[]
     console.log('fixing font', parent, blurringStuff)
     for (const blurry of blurringStuff) {
