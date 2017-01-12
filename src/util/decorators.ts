@@ -1,6 +1,6 @@
 export function time(target: Object, key: string, descriptor: TypedPropertyDescriptor<any>) {
     const originalMethod: Function = descriptor.value;
-    descriptor.value = function (...args: any[]) {
+    descriptor.value = function (this: typeof descriptor, ...args: any[]) {
         console.time(key)
         originalMethod.apply(this, args)
         console.timeEnd(key)
@@ -15,7 +15,7 @@ export function MemoizeWithParameters(target: any, propertyName: string, descrip
     }
     const results = new Map<string, any>()
 
-    descriptor.value = function (...args: any[]) {
+    descriptor.value = function (this: typeof descriptor, ...args: any[]) {
         const serialized = JSON.stringify(args)
         const f = results.get(serialized)
         if (f !== undefined) {

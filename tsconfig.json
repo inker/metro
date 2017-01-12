@@ -9,6 +9,7 @@
     "experimentalAsyncFunctions": true,
     // "allowSyntheticDefaultImports": true,
     "strictNullChecks": true,
+    "noImplicitThis": true,
     "lib": [
       "dom", "es7"
     ]

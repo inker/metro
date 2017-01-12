@@ -168,10 +168,10 @@ export namespace Animation {
         circle.getBoundingClientRect()
         circle.style.transition = `transform ${duration / 2}ms linear`
         Scale.scaleCircle(circle, scaleFactor)
-        circle.addEventListener('transitionend', function foo(e) {
+        circle.addEventListener('transitionend', function foo(this: typeof circle, e) {
             this.removeEventListener('transitionend', foo)
             this.style.transform = 'scale(1)'
-            this.addEventListener('transitionend', function bar(e) {
+            this.addEventListener('transitionend', function bar(this: typeof circle, e) {
                 this.removeEventListener('transitionend', bar)
                 this.style.transition = null
                 this.style.transform = null
