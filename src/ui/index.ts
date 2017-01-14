@@ -5,6 +5,7 @@ import Network, {
     Platform,
     Route,
 } from '../network'
+import { getSecondLanguage } from '../util'
 import { calculateGeoMean } from '../util/geo'
 import { tr } from '../i18n'
 
@@ -30,17 +31,24 @@ export {
     tileLayers,
 }
 
+function assignNames(platform: Platform, newNames: string[]) {
+    const second = getSecondLanguage()
+    const { altNames } = platform
+    if (second) {
+        [platform.name, altNames[second], altNames['en']] = newNames
+    } else {
+        [platform.name, altNames['en']] = newNames
+    }
+}
+
 export function platformRenameDialog(platform: Platform) {
     const ru = platform.name
     const { fi, en } = platform.altNames
     const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru]
     const nameString = names.join('|')
-    const tokens = window.location.search.match(/city=(\w+)/)
-    const city = tokens ? tokens[1] : 'spb'
-    const second = city === 'spb' ? 'fi' : city === 'helsinki' ? 'se' : 'defaultForeign'
     alertify.prompt(tr`New name`, nameString, (okev, val: string) => {
-        const newNames = val.split('|');
-        [platform.name, platform.altNames[second], platform.altNames['en']] = newNames
+        const newNames = val.split('|')
+        assignNames(platform, newNames)
         if (val === nameString) {
             return alertify.warning(tr`Name was not changed`)
         }
@@ -53,7 +61,7 @@ export function platformRenameDialog(platform: Platform) {
         }
         alertify.confirm(tr`Rename the entire station?`, () => {
             for (const p of station.platforms) {
-                [p.name, p.altNames['fi'], p.altNames['en']] = newNames
+                assignNames(p, newNames)
             }
             alertify.success(tr`The entire station was renamed to ${val}`)
         })
@@ -71,7 +79,7 @@ export function askRoutes(network: Network, defSet?: Set<Route>) {
             console.error('incorrect route', s)
             continue
         }
-        var [, line, branch] = tokens
+        const [, line, branch] = tokens
         let route = network.routes.find(r => r.line === line && r.branch === branch)
         if (route === undefined) {
             console.log('creating new route')
@@ -90,10 +98,14 @@ export function addLayerSwitcher(map: L.Map, layers: L.TileLayer[]) {
     let currentLayerIndex = 0
     console.log(layers.length)
     addEventListener('keydown', e => {
-        if (!e.shiftKey || !e.ctrlKey || e.keyCode !== 76) return
+        if (!e.shiftKey || !e.ctrlKey || e.keyCode !== 76) {
+            return
+        }
         e.preventDefault()
         map.removeLayer(layers[currentLayerIndex])
-        if (++currentLayerIndex === layers.length) currentLayerIndex = 0
+        if (++currentLayerIndex === layers.length) {
+            currentLayerIndex = 0
+        }
         map.addLayer(layers[currentLayerIndex])
         map.invalidateSize(false)
     })
@@ -110,11 +122,12 @@ export function drawZones(map: L.Map, platforms: Platform[]) {
         L.circle(metroMean, i + 250, { weight: 1 }).addTo(map)
     }
     const ePoints = platforms.filter(p => p.spans[0].routes[0].line.startsWith('E')).map(p => p.location)
-    const glavnyjVoxalPlatform = platforms.find(p => p.name === 'Glavnyj voxal' && p.spans[0].routes[0].line.startsWith('E'))
-    if (!glavnyjVoxalPlatform) {
+    const mainStationName = 'Glavnyj voxal'
+    const mainStationPlatform = platforms.find(p => p.name === mainStationName && p.spans[0].routes[0].line.startsWith('E'))
+    if (!mainStationPlatform) {
         return
     }
-    const eMean = glavnyjVoxalPlatform.location
+    const eMean = mainStationPlatform.location
     L.circle(eMean, 30000).addTo(map)
     L.circle(eMean, 45000).addTo(map)
 }

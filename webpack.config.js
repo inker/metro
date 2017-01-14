@@ -3,19 +3,12 @@ const {
     UglifyJsPlugin,
     CommonsChunkPlugin,
   },
-  // debugger: {
-  //   SourceMapDevToolPlugin,
-  // },
   ProvidePlugin,
 } = require('webpack')
 
 const { CheckerPlugin } = require('awesome-typescript-loader')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
 const WebpackBrowserPlugin = require('webpack-browser-plugin')
-
-const CleanCSS = require('clean-css')
-const cleanCSS = new CleanCSS()
 
 module.exports = {
   target: 'web',
@@ -51,11 +44,18 @@ module.exports = {
         loader: 'source-map-loader',
       },
       {
-        test: /\.css$/,
+        test: /^((?!global).)*\.css$/,
         loaders: [
           'style-loader',
           'css-loader?modules=true&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
           // 'postcss-loader',
+        ],
+      },
+      {
+        test: /global\.css/,
+        loaders: [
+          'style-loader',
+          'css-loader',
         ],
       },
       {
@@ -65,7 +65,7 @@ module.exports = {
     ],
   },
   plugins: [
-    new CheckerPlugin(),
+    // new CheckerPlugin(),
     new CommonsChunkPlugin({
       name: "vendor",
       filename: "vendor.js",
@@ -89,16 +89,14 @@ module.exports = {
       },
       sourceMap: true,
     }),
-    new CopyWebpackPlugin([
-      {
-        from: 'css',
-        transform: (content, path) => cleanCSS.minify(content).styles,
-      },
-    ]),
     new HtmlWebpackPlugin({
       filename: '../index.html',
       template: 'template.html',
       hash: true,
+      minify: {
+        minifyJS: true,
+        minifyCSS: true,
+      }
     }),
     // new SourceMapDevToolPlugin({
     //   test: /\.js/,

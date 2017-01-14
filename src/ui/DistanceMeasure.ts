@@ -1,4 +1,5 @@
 import * as L from 'leaflet'
+import { last } from 'lodash'
 
 import * as util from '../util'
 import { RedCircle } from './Icons'
@@ -44,10 +45,10 @@ export default class implements L.ILayer {
         if (latlngs.length > nMarkers) {
             latlngs.length = nMarkers
         }
-        this.dashedLine.getLatLngs()[0] = latlngs[latlngs.length - 1]
+        this.dashedLine.getLatLngs()[0] = last(latlngs)
         this.polyline.redraw()
         if (nMarkers > 1) {
-            markers[nMarkers - 1].openPopup()
+            last(markers).openPopup()
         }
     }
 

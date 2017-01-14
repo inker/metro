@@ -76,7 +76,7 @@ export default class extends DeferredWidget {
         if (!L.Browser.mobile) {
             this.map.getContainer().classList.add('dimmed')
             this.map.once('mousedown', e => this.hideFAQ())
-            once(window, 'keydown', e => {
+            once(window, 'keydown').then(e => {
                 if (e.keyCode !== 27) {
                     return
                 }
@@ -93,7 +93,8 @@ export default class extends DeferredWidget {
         if (!L.Browser.mobile) {
             this.map.getContainer().classList.remove('dimmed')
         }
-        once(this.card, 'transitionend', e => this.card.style.display = null)
+        once(this.card, 'transitionend')
+            .then(e => this.card.style.display = null)
         this.button.disabled = false
     }
 }

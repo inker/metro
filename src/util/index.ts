@@ -1,5 +1,8 @@
 import * as L from 'leaflet'
-import { uniq } from 'lodash'
+import {
+    last,
+    uniq,
+} from 'lodash'
 
 import { Platform } from '../network'
 
@@ -49,7 +52,9 @@ export function setsEqual<T>(a: Set<T>, b: Set<T>) {
 export function intersection<T>(a: Set<T>, b: Set<T>) {
     const isn = new Set<T>()
     a.forEach(item => {
-        if (b.has(item)) isn.add(item)
+        if (b.has(item)) {
+            isn.add(item)
+        }
     })
     return isn
 }
@@ -59,7 +64,7 @@ export function deleteFromArray<T>(arr: T[], el: T) {
     if (pos < 0) {
         return
     }
-    arr[pos] = arr[arr.length - 1]
+    arr[pos] = last(arr)
     arr.pop()
 }
 
@@ -96,16 +101,15 @@ export function callMeMaybe<ReturnType>(func: ((...params: any[]) => ReturnType)
     return func ? func(...params) : undefined
 }
 
-export function once<K extends keyof HTMLElementEventMap>(
+export const once = <K extends keyof HTMLElementEventMap>(
     el: EventTarget,
     eventType: K,
-    listener: (e: HTMLElementEventMap[K]) => any,
-) {
+) => new Promise<HTMLElementEventMap[K]>(resolve => {
     el.addEventListener(eventType, function handler(e) {
         el.removeEventListener(eventType, handler)
-        listener(e as any)
+        resolve(e as any)
     })
-}
+})
 
 export function onceEscapePress(handler: (ev: KeyboardEvent) => any) {
     const keydownListener = (e: KeyboardEvent) => {
@@ -131,10 +135,11 @@ export function onceEscapePress(handler: (ev: KeyboardEvent) => any) {
     // });
 }
 
+export const transitionEnd = (el: Element) => once(el, 'transitionend') as Promise<Event>
+
 export function resetStyle() {
-    const els = document.querySelectorAll(RESET_SELECTOR)
-    for (let i = 0; i < els.length; ++i) {
-        const el = els[i] as HTMLElement
+    const els = document.querySelectorAll(RESET_SELECTOR) as any as HTMLElement[]
+    for (const el of els) {
         el.style.opacity = null
         if (el.id[1] !== 't') {
             el.style.filter = null
@@ -254,7 +259,7 @@ export function fixFontRendering(parent: { querySelectorAll } = document) {
 }
 
 export function getSecondLanguage() {
-    const tokens = window.location.search.match(/city=(\w+)/)
+    const tokens = location.search.match(/city=(\w+)/)
     const city = tokens ? tokens[1] : 'spb'
     const obj = {
         spb: 'fi',

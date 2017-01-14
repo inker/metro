@@ -1,5 +1,8 @@
 import { LatLng } from 'leaflet'
-import { isEqual } from 'lodash'
+import {
+    isEqual,
+    last,
+} from 'lodash'
 
 import Network, {
     Platform,
@@ -188,7 +191,7 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
     }
     platformPath.reverse()
     path.reverse()
-    const walkFrom = fromPlatformToDest.get(platformPath[platformPath.length - 1])
+    const walkFrom = fromPlatformToDest.get(last(platformPath))
     const walkTo = tryGetFromMap(currentTime, platformPath[0])
     return {
         platforms: platformPath,
