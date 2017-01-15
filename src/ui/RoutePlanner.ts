@@ -29,19 +29,21 @@ export default class implements Widget {
 
     addTo(metroMap: MetroMap) {
         this.metroMap = metroMap
+        const { mediator } = metroMap
         const map = metroMap.getMap()
         const center = map.getCenter()
         this.fromMarker.setLatLng(center)
         this.toMarker.setLatLng(center)
         cacheIcons(map, [this.fromMarker, this.toMarker])
-        metroMap.subscribe('routefrom routeto', this.onFromTo)
-        metroMap.subscribe('clearroute', this.clearRoute)
+        mediator.subscribe('routefrom', this.onFromTo)
+        mediator.subscribe('routeto', this.onFromTo)
+        mediator.subscribe('clearroute', this.clearRoute)
         map.on('zoomstart', sfx.Animation.terminateAnimations)
         addEventListener('keydown', e => {
             if (e.keyCode !== 27) {
                 return
             }
-            metroMap.publish(new Event('clearroute'))
+            mediator.publish(new Event('clearroute'))
         })
         return this
     }

@@ -22,11 +22,11 @@ export default class MapEditor implements Widget {
             this.button.textContent = tr`Save map`
             this.button.onclick = e => this.saveMapClick()
             dummyCircles.onmousedown = dummyCircles.onclick = () => false
-            this.metroMap.publish(new Event('editmapstart'))
+            this.metroMap.mediator.publish(new Event('editmapstart'))
         } else {
             this.button.textContent = tr`Edit map`
             this.button.onclick = e => this.editMapClick()
-            this.metroMap.publish(new Event('editmapend'))
+            this.metroMap.mediator.publish(new Event('editmapend'))
         }
         this._editMode = val
     }
@@ -67,7 +67,7 @@ export default class MapEditor implements Widget {
     }
 
     private saveMapClick() {
-        this.metroMap.publish(new Event('mapsave'))
+        this.metroMap.mediator.publish(new Event('mapsave'))
         this.editMode = false
     }
 
@@ -81,6 +81,7 @@ export default class MapEditor implements Widget {
         let movingCircle: SVGCircleElement|null
         let type: string|undefined
         let fromCircle: SVGCircleElement|null
+        const { mediator } = this.metroMap
         dummyCircles.addEventListener('mousedown', e => {
             if (e.button !== 2 && fromCircle) {
                 const detail = {
@@ -88,16 +89,16 @@ export default class MapEditor implements Widget {
                     target: e.target as SVGCircleElement,
                 }
                 console.log(detail)
-                this.metroMap.publish(new CustomEvent(type === 'span' ? 'spanend' : 'transferend', { detail }))
+                mediator.publish(new CustomEvent(type === 'span' ? 'spanend' : 'transferend', { detail }))
                 fromCircle = null
                 type = undefined
             } else if (e.button === 0) {
                 map.dragging.disable()
                 movingCircle = e.target as SVGCircleElement
-                this.metroMap.publish(new MouseEvent('platformmovestart', { relatedTarget: e.target }))
+                mediator.publish(new MouseEvent('platformmovestart', { relatedTarget: e.target }))
             } else if (e.button === 1) {
                 console.log('foo', e.target)
-                this.metroMap.publish(new MouseEvent('spanstart', { relatedTarget: e.target }))
+                mediator.publish(new MouseEvent('spanstart', { relatedTarget: e.target }))
             }
         })
         map.on('mousemove', (e: LeafletMouseEvent) => {
@@ -106,35 +107,35 @@ export default class MapEditor implements Widget {
             }
             const { clientX, clientY } = e.originalEvent
             const dict = { relatedTarget: movingCircle as EventTarget, clientX, clientY }
-            this.metroMap.publish(new MouseEvent('platformmove', dict))
+            mediator.publish(new MouseEvent('platformmove', dict))
         }).on('mouseup', (e: LeafletMouseEvent) => {
             if (!movingCircle) {
                 return
             }
             map.dragging.enable()
             const dict = { relatedTarget: movingCircle as EventTarget }
-            this.metroMap.publish(new MouseEvent('platformmoveend', dict))
+            mediator.publish(new MouseEvent('platformmoveend', dict))
             // check if fell on path -> insert into the path
             movingCircle = null
         })
 
-        this.metroMap.subscribe('spanstart', (e: MouseEvent) => {
+        this.metroMap.subscribe('spanstart', e => {
             type = 'span'
             fromCircle = e.relatedTarget as SVGCircleElement
         })
 
-        this.metroMap.subscribe('transferstart', (e: MouseEvent) => {
+        this.metroMap.subscribe('transferstart', e => {
             type = 'transfer'
             fromCircle = e.relatedTarget as SVGCircleElement
         })
 
-        this.metroMap.subscribe('platformaddclick', (e: MouseEvent) => {
+        this.metroMap.subscribe('platformaddclick', e => {
             const { clientX, clientY } = e
-            this.metroMap.publish(new CustomEvent('platformadd', { detail: { clientX, clientY }}))
+            mediator.publish(new CustomEvent('platformadd', { detail: { clientX, clientY }}))
         })
 
-        this.metroMap.subscribe('platformaddtolineclick', (e: MouseEvent) => {
-            this.metroMap.publish(new CustomEvent('platformadd', { detail: e }))
+        this.metroMap.subscribe('platformaddtolineclick', e => {
+            mediator.publish(new CustomEvent('platformadd', { detail: e }))
         })
 
     }

@@ -1,7 +1,10 @@
 import * as L from 'leaflet'
 import { remove } from 'lodash'
 
-import { removeAllChildren } from '../../util'
+import {
+    MetroMapEventMap,
+    removeAllChildren,
+} from '../../util'
 import { translate } from '../../i18n'
 
 import * as style from './style.css'
@@ -9,21 +12,21 @@ import * as style from './style.css'
 // TODO: merge items & extra items, introduce item index
 interface Extra {
     icon?: string,
-    disabled?: boolean;
+    disabled?: boolean,
 }
-interface ContextMenuItem {
+interface ContextMenuItem<K extends keyof MetroMapEventMap> {
     text: string,
-    event: string,
+    event: K,
     trigger?: (target: EventTarget) => boolean,
     extra?: Extra,
 }
 
 export default class implements L.ILayer {
     private map: L.Map
-    private readonly items: ContextMenuItem[]
+    private readonly items: ContextMenuItem<keyof MetroMapEventMap>[]
     private readonly container: HTMLDivElement
 
-    constructor(items: ContextMenuItem[]) {
+    constructor(items: ContextMenuItem<keyof MetroMapEventMap>[]) {
         console.log('adding context menu')
 
         this.items = items
@@ -105,7 +108,13 @@ export default class implements L.ILayer {
         this.show()
     }
 
-    insertItem(event: string, text: string, trigger?: (target: EventTarget) => boolean, extra?: Extra, index?: number) {
+    insertItem<K extends keyof MetroMapEventMap>(
+        event: K,
+        text: string,
+        trigger?: (target: EventTarget) => boolean,
+        extra?: Extra,
+        index?: number,
+    ) {
         const item = { event, text, trigger, extra }
         if (index === undefined || index < 0) {
             this.items.push(item)
@@ -114,7 +123,10 @@ export default class implements L.ILayer {
         }
     }
 
-    removeItem(event: string, all = false) {
+    removeItem<K extends keyof MetroMapEventMap>(
+        event: K,
+        all = false,
+    ) {
         if (all) {
             remove(this.items, item => item.event === event)
             return

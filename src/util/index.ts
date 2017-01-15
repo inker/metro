@@ -15,6 +15,7 @@ import * as sfx from './sfx'
 import * as svg from './svg'
 import * as file from './file'
 import * as color from './color'
+import MetroMapEventMap from './MetroMapEventMap'
 
 export {
     algorithm,
@@ -26,6 +27,7 @@ export {
     svg,
     file,
     color,
+    MetroMapEventMap,
 }
 
 const RESET_SELECTOR = [

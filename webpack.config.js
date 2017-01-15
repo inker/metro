@@ -6,6 +6,8 @@ const {
   ProvidePlugin,
 } = require('webpack')
 
+const path = require('path')
+
 // const { CheckerPlugin } = require('awesome-typescript-loader')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const WebpackBrowserPlugin = require('webpack-browser-plugin')
@@ -14,7 +16,7 @@ const isModuleCSS = path => /\.css$/.test(path) && !/src\/css|node_modules/.test
 
 module.exports = {
   target: 'web',
-  context: `${__dirname}/src`,
+  context: path.join(__dirname, 'src'),
   entry: {
     vendor: [
       'leaflet',
@@ -28,7 +30,7 @@ module.exports = {
     app: './main.ts',
   },
   output: {
-    path: `${__dirname}/public`,
+    path: path.join(__dirname, 'public'),
     filename: '[name].js',
     sourceMapFilename: '[file].map',
   },
@@ -40,8 +42,8 @@ module.exports = {
       '.jsx',
     ],
     alias: {
-      'leaflet-dist': `${__dirname}/node_modules/leaflet/dist`,
-      'alertify-dist': `${__dirname}/node_modules/alertifyjs/build`,
+      'leaflet-dist': path.join(__dirname, 'node_modules/leaflet/dist'),
+      'alertify-dist': path.join(__dirname, 'node_modules/alertifyjs/build'),
     },
   },
   devtool: 'source-map',

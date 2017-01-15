@@ -1,41 +1,44 @@
+import MetroMapEventMap from './MetroMapEventMap'
+
+type MetroMapEventListener<K extends keyof MetroMapEventMap> = (e: MetroMapEventMap[K]) => void
+
 export default class {
-    private eventListeners = new Map<string, EventListener[]>()
+    private eventListeners = new Map<keyof MetroMapEventMap, MetroMapEventListener<keyof MetroMapEventMap>[]>()
 
     constructor() {}
 
-    subscribe(type: string, listener: EventListener) {
-        for (const t of type.split(/\s+/)) {
-            // console.log('adding event listener ' + t);
-            const listenerArr = this.eventListeners.get(t)
-            if (listenerArr === undefined) {
-                this.eventListeners.set(t, [listener])
-            } else {
-                listenerArr.push(listener)
-            }
+    subscribe<K extends keyof MetroMapEventMap>(type: K, listener: MetroMapEventListener<K>) {
+        // console.log('adding event listener ' + t);
+        const listenerArr = this.eventListeners.get(type)
+        if (listenerArr === undefined) {
+            this.eventListeners.set(type, [listener as any])
+        } else {
+            listenerArr.push(listener as any)
         }
     }
 
-    unsubscribe(type: string, listener: EventListener) {
+    unsubscribe<K extends keyof MetroMapEventMap>(type: K, listener: MetroMapEventListener<K>) {
         const listenerArr = this.eventListeners.get(type)
         if (listenerArr === undefined) {
             return
         }
-        const pos = listenerArr.indexOf(listener)
+        const pos = listenerArr.indexOf(listener as any)
         if (pos < 0) {
             return
         }
         listenerArr.splice(pos, 1)
     }
 
-    publish(event: Event): boolean {
+    publish = <K extends keyof MetroMapEventMap, Ev extends MetroMapEventMap[K]>(event: Ev): boolean => {
         console.log('event as seen from the dispatcher', event)
-        const listenerArr = this.eventListeners.get(event.type)
+        const { type } = event as any
+        const listenerArr = this.eventListeners.get(type)
         if (listenerArr === undefined || listenerArr.length === 0) {
-            console.log('no event listeners registered for ' + event.type)
+            console.log('no event listeners registered for', type)
             return false
         }
         for (const handler of listenerArr) {
-            handler(event)
+            handler(event as any)
         }
         return true
     }

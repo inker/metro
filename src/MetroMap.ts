@@ -13,12 +13,7 @@ import Network, {
 } from './network'
 
 import * as ui from './ui'
-import * as util from './util'
-import * as res from './res'
-import pool from './ObjectPool'
-import { tr } from './i18n'
-
-const {
+import {
     geo,
     sfx,
     svg,
@@ -28,7 +23,21 @@ const {
     color,
     file,
     tryGetFromMap,
-} = util
+    MetroMapEventMap,
+    deleteFromArray,
+    mouseToLatLng,
+    intersection,
+    getPlatformNames,
+    getPlatformNamesZipped,
+    fixFontRendering,
+    removeAllChildren,
+    byId,
+    midPointsToEnds,
+    generateId,
+} from './util'
+import * as res from './res'
+import pool from './ObjectPool'
+import { tr } from './i18n'
 
 const {
     mapbox,
@@ -60,7 +69,8 @@ const contextMenuArray = [{
     },
 }]
 
-export default class extends Mediator {
+export default class {
+    readonly mediator = new Mediator()
     private readonly config: res.Config
     private map: L.Map
     private overlay: ui.SvgOverlay
@@ -84,7 +94,6 @@ export default class extends Mediator {
     }
 
     constructor(config: res.Config) {
-        super()
         this.config = config
         this.makeMap()
     }
@@ -175,8 +184,8 @@ export default class extends Mediator {
 
         await tileLoadPromise
         // wait.parentElement.removeChild(wait);
-        util.fixFontRendering()
-        this.map.on('layeradd layerremove', e => util.fixFontRendering())
+        fixFontRendering()
+        this.map.on('layeradd layerremove', e => fixFontRendering())
         mapPaneStyle.visibility = ''
         // const img = file.svgToImg(document.getElementById('overlay') as any, true);
         // file.svgToCanvas(document.getElementById('overlay') as any)
@@ -184,19 +193,16 @@ export default class extends Mediator {
         // file.downloadText('img.txt', img.src);
     }
 
-    public subscribe(type: string, listener: EventListener) {
-        super.subscribe(type, listener)
+    public subscribe<K extends keyof MetroMapEventMap>(type: K, listener: (e: MetroMapEventMap[K]) => void) {
+        this.mediator.subscribe(type, listener)
         // forwarding map event to mediator
-        this.map.once(type, e => this.publish(e as any))
+        this.map.once(type, this.mediator.publish)
     }
 
     private addContextMenu() {
-        this.contextMenu = new ui.ContextMenu(contextMenuArray)
+        this.contextMenu = new ui.ContextMenu(contextMenuArray as any)
         for (const el of contextMenuArray) {
-            this.map.on(el.event, e => {
-                console.log(e)
-                this.publish(e as any)
-            })
+            this.map.on(el.event, this.mediator.publish)
         }
         this.contextMenu.addTo(this.map)
     }
@@ -221,31 +227,31 @@ export default class extends Mediator {
         map.on('zoomstart', e => {
             this.plate.hide()
         })
-        this.subscribe('measuredistance', (e: Event) => {
+        this.subscribe('measuredistance', e => {
             contextMenu.removeItem('measuredistance')
             contextMenu.insertItem('clearmeasurements', 'Clear measurements')
         })
-        this.subscribe('platformrename', (e: MouseEvent) => {
+        this.subscribe('platformrename', e => {
             const platform = relatedTargetToPlatform(e.relatedTarget)
-            this.plate.show(svg.circleOffset(e.relatedTarget as SVGCircleElement), util.getPlatformNames(platform))
+            this.plate.show(svg.circleOffset(e.relatedTarget as SVGCircleElement), getPlatformNames(platform))
             ui.platformRenameDialog(platform)
         })
-        this.subscribe('platformmovestart', (e: MouseEvent) => {
+        this.subscribe('platformmovestart', e => {
             this.plate.disabled = true
         })
-        this.subscribe('platformmove', (e: MouseEvent) => {
+        this.subscribe('platformmove', e => {
             const platform = relatedTargetToPlatform(e.relatedTarget)
-            platform.location = util.mouseToLatLng(map, e)
+            platform.location = mouseToLatLng(map, e)
         })
-        this.subscribe('platformmoveend', (e: MouseEvent) => {
+        this.subscribe('platformmoveend', e => {
             const platform = relatedTargetToPlatform(e.relatedTarget)
             this.plate.disabled = false
-            this.plate.show(svg.circleOffset(e.relatedTarget as SVGCircleElement), util.getPlatformNames(platform))
+            this.plate.show(svg.circleOffset(e.relatedTarget as SVGCircleElement), getPlatformNames(platform))
         })
-        this.subscribe('platformadd', (e: CustomEvent) => {
+        this.subscribe('platformadd', e => {
             console.log(e)
             const { detail } = e
-            const location = util.mouseToLatLng(map, detail)
+            const location = mouseToLatLng(map, detail)
             const newPlatform = new Platform(tr`New station`, location, {})
             this.network.platforms.push(newPlatform)
             if (detail.relatedTarget !== undefined) {
@@ -258,12 +264,12 @@ export default class extends Mediator {
             this.overlay.extendBounds(location)
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
-        this.subscribe('platformdelete', (e: MouseEvent) => {
+        this.subscribe('platformdelete', e => {
             const platform = relatedTargetToPlatform(e.relatedTarget)
             this.network.deletePlatform(platform)
             this.redrawNetwork()
         })
-        this.subscribe('spanroutechange', (e: MouseEvent) => {
+        this.subscribe('spanroutechange', e => {
             if (e.relatedTarget === undefined) {
                 return
             }
@@ -272,7 +278,7 @@ export default class extends Mediator {
             span.routes = Array.from(routeSet)
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
-        this.subscribe('spaninvert', (e: MouseEvent) => {
+        this.subscribe('spaninvert', e => {
             if (e.relatedTarget === undefined) {
                 return
             }
@@ -280,7 +286,7 @@ export default class extends Mediator {
             span.invert()
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
-        this.subscribe('spanend', (e: CustomEvent) => {
+        this.subscribe('spanend', e => {
             const source = pool.dummyBindings.getKey(e.detail.source)
             const target = pool.dummyBindings.getKey(e.detail.target)
             console.log(source, target)
@@ -293,20 +299,20 @@ export default class extends Mediator {
 
             const routeSet = sn > 0 && tn === 0 ? (sn === 1 ? sourceRoutes : ui.askRoutes(this.network, sourceRoutes)) :
                 tn > 0 && sn === 0 ? (tn === 1 ? targetRoutes : ui.askRoutes(this.network, targetRoutes)) :
-                    ui.askRoutes(this.network, util.intersection(sourceRoutes, targetRoutes))
+                    ui.askRoutes(this.network, intersection(sourceRoutes, targetRoutes))
 
             this.network.spans.push(new Span(source, target, Array.from(routeSet)))
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
-        this.subscribe('spandelete', (e: MouseEvent) => {
+        this.subscribe('spandelete', e => {
             if (e.relatedTarget === undefined) {
                 return
             }
             const span = relatedTargetToSpan(e.relatedTarget)
-            util.deleteFromArray(this.network.spans, span)
+            deleteFromArray(this.network.spans, span)
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
-        this.subscribe('transferend', (e: CustomEvent) => {
+        this.subscribe('transferend', e => {
             const source = pool.dummyBindings.getKey(e.detail.source)
             const target = pool.dummyBindings.getKey(e.detail.target)
             console.log(source, target)
@@ -314,16 +320,16 @@ export default class extends Mediator {
             this.network.transfers.push(new Transfer(source, target))
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
-        this.subscribe('transferdelete', (e: MouseEvent) => {
+        this.subscribe('transferdelete', e => {
             if (e.relatedTarget === undefined) {
                 return
             }
             const path = e.relatedTarget as SVGPathElement | SVGLineElement
             const transfer = (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as Transfer
-            util.deleteFromArray(this.network.transfers, transfer)
+            deleteFromArray(this.network.transfers, transfer)
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
-        this.subscribe('editmapstart', (e: Event) => {
+        this.subscribe('editmapstart', e => {
             if (map.getZoom() < this.config.detailedZoom) {
                 map.setZoom(this.config.detailedZoom)
             }
@@ -364,7 +370,7 @@ export default class extends Mediator {
                 return parentId === 'transfers-outer' || parentId === 'transfers-inner'
             })
         })
-        this.subscribe('editmapend', (e: Event) => {
+        this.subscribe('editmapend', e => {
             contextMenu.removeItem('platformaddclick')
             contextMenu.removeItem('platformrename')
             contextMenu.removeItem('platformdelete')
@@ -375,7 +381,7 @@ export default class extends Mediator {
             contextMenu.removeItem('spandelete')
             contextMenu.removeItem('transferdelete')
         })
-        this.subscribe('mapsave', (e: Event) => {
+        this.subscribe('mapsave', e => {
             file.downloadText('graph.json', this.network.toJSON())
         })
     }
@@ -432,7 +438,7 @@ export default class extends Mediator {
     private cleanElements() {
         for (const child of (this.overlay.origin.childNodes as any)) {
             if (child !== this.plate.element) {
-                util.removeAllChildren(child)
+                removeAllChildren(child)
             }
         }
     }
@@ -479,7 +485,7 @@ export default class extends Mediator {
         const docFrags = new Map<string, DocumentFragment>()
         for (const id of Object.keys(strokeWidths)) {
             docFrags.set(id, document.createDocumentFragment())
-            util.byId(id).style.strokeWidth = `${strokeWidths[id]}px`
+            byId(id).style.strokeWidth = `${strokeWidths[id]}px`
         }
 
         const lightRailPathStyle = tryGetFromMap(this.lineRules, 'light-rail-path')
@@ -577,7 +583,7 @@ export default class extends Mediator {
                 let gradient = pool.gradientBindings.get(transfer)
                 if (gradient === undefined) {
                     gradient = svg.Gradients.makeLinear(gradientVector, gradientColors, circlePortion)
-                    gradient.id = util.generateId(id => document.getElementById(id) !== null)
+                    gradient.id = generateId(id => document.getElementById(id) !== null)
                     pool.gradientBindings.set(transfer, gradient)
                     defs.appendChild(gradient)
                 } else {
@@ -610,7 +616,7 @@ export default class extends Mediator {
 
         console.time('appending')
 
-        docFrags.forEach((val, key) => util.byId(key).appendChild(val))
+        docFrags.forEach((val, key) => byId(key).appendChild(val))
 
         this.addBindings()
         console.timeEnd('appending')
@@ -670,7 +676,7 @@ export default class extends Mediator {
             }
             const getNeighborPos = (span: Span) => tryGetFromMap(this.platformsOnSVG, span.other(platform))
             const midPts = platform.spans.map(span => getNeighborPos(span).add(pos).divideBy(2))
-            const ends = util.midPointsToEnds(pos, midPts)
+            const ends = midPointsToEnds(pos, midPts)
             return whiskers.set(platform.spans[0], ends[0]).set(platform.spans[1], ends[1])
         }
 
@@ -685,7 +691,7 @@ export default class extends Mediator {
         }
         const avg = (pts: L.Point[]) => pts.length === 1 ? pts[0] : pts.length === 0 ? pos : getCenter(pts)
         const midPts = points.map(pts => avg(pts).add(pos).divideBy(2))
-        const ends = util.midPointsToEnds(pos, midPts)
+        const ends = midPointsToEnds(pos, midPts)
         spanIds[0].forEach(i => whiskers.set(i, ends[0]))
         spanIds[1].forEach(i => whiskers.set(i, ends[1]))
         return whiskers
@@ -784,25 +790,25 @@ export default class extends Mediator {
             this.plate.hide()
             Scale.unscaleAll()
         }
-        const dummyCircles = util.byId('dummy-circles')
+        const dummyCircles = byId('dummy-circles')
         dummyCircles.addEventListener('mouseover', e => {
             const dummy = e.target as SVGCircleElement
             const platform = pool.dummyBindings.getKey(dummy)
             const { station } = platform
             const names = this.map.getZoom() < this.config.detailedZoom && station.platforms.length > 1 ?
                 station.getNames() :
-                util.getPlatformNames(platform)
+                getPlatformNames(platform)
             this.highlightStation(station, names)
         })
         dummyCircles.addEventListener('mouseout', onMouseOut)
         const onTransferOver = (e: MouseEvent) => {
             const el = e.target as SVGPathElement | SVGLineElement
             const transfer = pool.outerEdgeBindings.getKey(el) || pool.innerEdgeBindings.getKey(el)
-            const names = util.getPlatformNamesZipped([transfer.source, transfer.target])
+            const names = getPlatformNamesZipped([transfer.source, transfer.target])
             this.highlightStation(transfer.source.station, names)
         }
-        const transfersOuter = util.byId('transfers-outer')
-        const transfersInner = util.byId('transfers-inner')
+        const transfersOuter = byId('transfers-outer')
+        const transfersInner = byId('transfers-inner')
         transfersOuter.addEventListener('mouseover', onTransferOver)
         transfersInner.addEventListener('mouseover', onTransferOver)
         transfersOuter.addEventListener('mouseout', onMouseOut)
