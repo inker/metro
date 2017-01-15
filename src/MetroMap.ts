@@ -187,7 +187,7 @@ export default class extends Mediator {
     public subscribe(type: string, listener: EventListener) {
         super.subscribe(type, listener)
         // forwarding map event to mediator
-        this.map.on(type, e => this.publish(e as any))
+        this.map.once(type, e => this.publish(e as any))
     }
 
     private addContextMenu() {

@@ -133,7 +133,7 @@ export namespace Filters {
         const filter = createSVGElement('filter')
         filter.id = 'shadow'
         filter.setAttribute('width', '200%')
-        filter.setAttribute('height', '200%');
+        filter.setAttribute('height', '200%')
         filter.innerHTML = `
             <feOffset result="offOut" in="SourceAlpha" dx="0" dy="4" />
             <feColorMatrix result="matrixOut" in="offOut" type="matrix" values=
@@ -150,7 +150,7 @@ export namespace Filters {
 
     export function makeGlow(): SVGFilterElement {
         const filter = createSVGElement('filter')
-        filter.id = 'black-glow';
+        filter.id = 'black-glow'
         filter.innerHTML = `<feColorMatrix type="matrix" values=
                 "0 0 0 0   0
                 0 0 0 0   0
@@ -166,7 +166,7 @@ export namespace Filters {
 
     export function makeOpacity(): SVGFilterElement {
         const filter = createSVGElement('filter')
-        filter.id = 'opacity';
+        filter.id = 'opacity'
         filter.innerHTML = `<feComponentTransfer>
             <feFuncA type="table" tableValues="0 0.5">
         </feComponentTransfer>`
@@ -175,7 +175,7 @@ export namespace Filters {
 
     export function makeGray(): SVGFilterElement {
         const filter = createSVGElement('filter')
-        filter.id = 'gray';
+        filter.id = 'gray'
         filter.innerHTML = `<feColorMatrix type="matrix"
                values="0.2126 0.7152 0.0722 0 0
                        0.2126 0.7152 0.0722 0 0

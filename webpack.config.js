@@ -98,9 +98,6 @@ module.exports = {
         minifyCSS: true,
       }
     }),
-    // new SourceMapDevToolPlugin({
-    //   test: /\.js/,
-    // }),
     new WebpackBrowserPlugin({
       url: 'http://localhost',
       port: 9080,

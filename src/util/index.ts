@@ -168,7 +168,6 @@ export function getPlatformNames(platform: Platform): string[] {
 
 export function getPlatformNamesZipped(platforms: Platform[]) {
     const platformNames = platforms.map(getPlatformNames)
-    console.log('pl', platformNames)
     return [0, 1, 2]
         .map(no => platforms.map((p, i) => platformNames[i][no]))
         .map(arr => uniq(arr).reduce((prev, cur) => `${prev} / ${cur}`))

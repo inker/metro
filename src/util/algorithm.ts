@@ -21,15 +21,14 @@ export function findCycle(network: Network, station: Station): Platform[] {
     // TODO: if n=3, leave as it is; if n=4, metro has priority
     const stationPlatforms = station.platforms
     if (stationPlatforms.length === 3) {
-        for (var i of station.platforms) {
-            if (network.transfers.filter(t => t.has(i)).length !== 2) {
+        for (const platform of station.platforms) {
+            if (network.transfers.filter(t => t.has(platform)).length !== 2) {
                 return []
             }
         }
         return stationPlatforms
     }
     if (stationPlatforms.length === 4) {
-        const gPls = network.platforms
         const gTrs = network.transfers
         const psAndDegs = stationPlatforms
             .map(p => ({platform: p, degree: gTrs.filter(t => t.has(p)).length }))
@@ -58,16 +57,22 @@ const eLineStopTime = 40
 const metroWaitingTime = 240
 const eLineWaitingTime = 360
 
-export interface ShortestRouteObject<V> {
-    platforms?: V[]
-    edges?: Edge<V>[]
-    time: { walkTo: number, metro?: number, walkFrom?: number, total?: number }
+export type ShortestRouteObject<V> = {
+    platforms?: V[],
+    edges?: Edge<V>[],
+    time: {
+        walkTo: number,
+        metro?: number,
+        walkFrom?: number,
+        total?: number,
+    },
 }
+
 export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): ShortestRouteObject<Platform> {
     // time to travel from station to the p1 location
     const currentTime = new Map<Platform, number>()
     const fromPlatformToDest = new Map<Platform, number>()
-    for (let o of objects) {
+    for (const o of objects) {
         const hasE = o.spans.some(s => s.routes[0].line.startsWith('E'))
         let distance = distanceBetween(p1, o.location)
         let time = distance / walkingWithObstacles
@@ -85,7 +90,7 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
     // time on foot between locations
 
     while (objectSet.size > 0) {
-        var minDist = Infinity
+        let minDist = Infinity
         objectSet.forEach(o => {
             const time = tryGetFromMap(currentTime, o)
             if (time < minDist) {
@@ -138,7 +143,7 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
                 prev.set(neighborNode, currentNode)
             }
         }
-        const alt = currentTime.get(currentNode) + fromPlatformToDest.get(currentNode)
+        // const alt = currentTime.get(currentNode) + fromPlatformToDest.get(currentNode)
     }
     // find the shortest time & the exit station
     let shortestTime = Infinity
@@ -220,7 +225,7 @@ function shortestTransfer(p1: Platform, p2: Platform) {
     dist.set(p1, 0)
     let currentNode = p1
     while (platformSet.size > 0) {
-        var minDist = Infinity
+        let minDist = Infinity
         platformSet.forEach(p => {
             const time = tryGetFromMap(dist, p)
             if (time < minDist) {
@@ -245,7 +250,7 @@ function shortestTransfer(p1: Platform, p2: Platform) {
     const transfers: Transfer[] = []
     const midPlatforms: Platform[] = []
     currentNode = p2
-    for (; ;) {
+    for (; ; ) {
         const prevNode = prev.get(currentNode)
         if (!prevNode) {
             break
@@ -262,6 +267,6 @@ function shortestTransfer(p1: Platform, p2: Platform) {
     midPlatforms.pop()
     return {
         transfers: transfers.reverse(),
-        midPlatforms: midPlatforms.reverse()
+        midPlatforms: midPlatforms.reverse(),
     }
 }

@@ -1,7 +1,10 @@
 import * as Hammer from 'hammerjs'
 
 import { DeferredWidget } from '../base/Widget'
-import { once } from '../../util'
+import {
+    transitionEnd,
+    once,
+} from '../../util'
 
 import * as style from './style.css'
 
@@ -65,36 +68,44 @@ export default class extends DeferredWidget {
     }
 
     showFAQ() {
-        const cardStyle = this.card.style
-        cardStyle.display = 'inline'
-        cardStyle.transform = 'scale(0.1)'
-        cardStyle.opacity = '0'
-        this.card.getBoundingClientRect()
-        cardStyle.transform = null
-        cardStyle.opacity = null
-        this.button.disabled = true
+        const {
+            card,
+            map,
+            button,
+        } = this
+        const { style } = this.card
+        style.display = 'inline'
+        style.transform = 'scale(0.1)'
+        style.opacity = '0'
+        card.getBoundingClientRect()
+        style.transform = null
+        style.opacity = null
+        button.disabled = true
         if (!L.Browser.mobile) {
-            this.map.getContainer().classList.add('dimmed')
-            this.map.once('mousedown', e => this.hideFAQ())
+            map.getContainer().classList.add('dimmed')
+            map.once('mousedown', e => this.hideFAQ())
             once(window, 'keydown').then(e => {
                 if (e.keyCode !== 27) {
                     return
                 }
-                this.map.fireEvent('mousedown')
+                map.fireEvent('mousedown')
             })
         }
     }
 
     hideFAQ() {
-        console.log('hiding')
-        this.card.getBoundingClientRect()
-        this.card.style.transform = 'scale(0.1)'
-        this.card.style.opacity = '0'
+        const {
+            card,
+            map,
+            button,
+        } = this
+        card.getBoundingClientRect()
+        card.style.transform = 'scale(0.1)'
+        card.style.opacity = '0'
         if (!L.Browser.mobile) {
-            this.map.getContainer().classList.remove('dimmed')
+            map.getContainer().classList.remove('dimmed')
         }
-        once(this.card, 'transitionend')
-            .then(e => this.card.style.display = null)
-        this.button.disabled = false
+        transitionEnd(card).then(e => card.style.display = null)
+        button.disabled = false
     }
 }

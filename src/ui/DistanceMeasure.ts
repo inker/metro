@@ -22,8 +22,9 @@ export default class implements L.ILayer {
     }
 
     onRemove(map: L.Map) {
-
+        // TODO
     }
+
     addTo(map: L.Map) {
         this.onAdd(map)
         return this

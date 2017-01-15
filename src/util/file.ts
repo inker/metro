@@ -69,10 +69,9 @@ export function svgToDataUrl(root: SVGSVGElement): string {
 }
 
 function optimizeSvg(root: SVGSVGElement): SVGSVGElement {
-    const optimized = root.cloneNode(true) as SVGSVGElement
-    const dummyElements = optimized.querySelectorAll('[id^=dummy]')
-    for (let i = 0, len = dummyElements.length; i < len; ++i) {
-        const dummy = dummyElements[i]
+    const optimized = root.cloneNode(true) as typeof root
+    const dummyElements = optimized.querySelectorAll('[id^=dummy]') as any as Element[]
+    for (const dummy of dummyElements) {
         const dummysParent = dummy.parentNode
         if (dummysParent) {
             dummysParent.removeChild(dummy)

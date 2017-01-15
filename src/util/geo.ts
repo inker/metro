@@ -4,16 +4,17 @@ import { callMeMaybe } from './index'
 interface Locatable { location: LatLng };
 
 export function findClosestObject<T extends Locatable|LatLng>(point: LatLng, objects: T[]): T {
-    if (objects.length < 1) {
+    const { length } = objects
+    if (length < 1) {
         throw new Error('an objects array must contain at least 1 object')
     }
     let closest = objects[0]
     let closestDistance = point.distanceTo(closest['location'] || closest)
-    for (let i = 1, len = objects.length; i < len; ++i) {
+    for (let i = 1; i < length; ++i) {
         const obj = objects[i]
         const tempDist = point.distanceTo(obj['location'] || obj)
         if (tempDist < closestDistance) {
-            closest = objects[i]
+            closest = obj
             closestDistance = tempDist
         }
     }
@@ -56,7 +57,8 @@ export function calculateGeoMean(
     let fitness = fitnessFunc(point)
     callMeMaybe(onClimb, point)
     for (let step = 10; step > minStep; step *= 0.61803398875) {
-        for (let max = step, lat = -max; lat <= max; lat += step) {
+        const max = step
+        for (let lat = -max; lat <= max; lat += step) {
             for (let lng = -max; lng <= max; lng += step) {
                 const pt = latLng(point.lat + lat, point.lng + lng)
                 const total = fitnessFunc(pt)

@@ -96,7 +96,6 @@ export function askRoutes(network: Network, defSet?: Set<Route>) {
 
 export function addLayerSwitcher(map: L.Map, layers: L.TileLayer[]) {
     let currentLayerIndex = 0
-    console.log(layers.length)
     addEventListener('keydown', e => {
         if (!e.shiftKey || !e.ctrlKey || e.keyCode !== 76) {
             return

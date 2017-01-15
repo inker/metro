@@ -72,63 +72,9 @@ export default class {
         }
         platformsCopy.forEach(pl => this.stations.push(new Station([pl])))
         console.timeEnd('restore')
-
-        // console.log(this.toJSON() === JSON.stringify(json));
-
-        // const chains: number[][] = [];
-        // for (let i = 0; i < this.routes.length; ++i) {
-        //     const route = this.routes[i];
-        //     const [start, end]: number[] = route as any;
-        //     route['start'] = route['end'] = undefined;
-        //     const starts = this.spans.filter(s => s.source === i),
-        //         ends = this.spans.filter(s => s.target === i);
-        //     for (let span of starts) {
-        //         if (span.target === end) {
-        //             if (span.routes !== undefined) {
-        //                 span.routes.push(i);
-        //             } else {
-        //                 span['routes'] = [i];
-        //             }
-        //             break; //!!!!!!
-        //         }
-        //         let newSpan = span;
-        //         while (true) {
-        //             newSpan = this.spans.filter(s => s.source === newSpan.target);
-        //         }
-        //     }
-        //     const foo: Span[][] = adjSpans.map(el => []);
-        //     for (let s of adjSpans) {
-        //         if (s.source === start && s.target === end || s.source === end && s.target === start) {
-        //             s['routes'] = i;
-        //             continue;
-        //         }
-        //         while (true) {
-        //             if (s.source === )
-        //         }
-        //     }
-        // }
     }
 
     toJSON(): string {
-        // const map = {}; // routeNum -> platforms
-        // for (let span of spans) {
-        //     for (let route of span.routes) {
-        //         const obj = map[route] || {};
-        //         obj[span.source] = !obj[span.source];
-        //         obj[span.target] = !obj[span.target];
-        //         map[route] = obj;
-        //     }
-        //     span.routes = undefined;
-        // }
-
-        // for (let ri of Object.keys(map)) {
-        //     const route = routes[ri];
-        //     const obj = map[ri];
-        //     const arr = Object.keys(obj).filter(pl => obj[pl]);
-        //     routes[ri]['start'] = arr[0];
-        //     routes[ri]['end'] = arr[1];
-        // }
-
         return JSON.stringify({
             platforms: this.platforms.map(p => ({
                 name: p.name,

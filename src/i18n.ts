@@ -4,8 +4,8 @@ export const userLanguage = navigator.language.slice(0, 2).toLowerCase()
 
 type Dictionary = {
     [phrase: string]: {
-        [language: string]: string
-    }
+        [language: string]: string,
+    },
 }
 type LanguageDictionary = Map<string, string>
 const dictionary: LanguageDictionary = new Map<string, string>()

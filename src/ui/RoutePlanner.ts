@@ -34,9 +34,9 @@ export default class implements Widget {
         this.fromMarker.setLatLng(center)
         this.toMarker.setLatLng(center)
         cacheIcons(map, [this.fromMarker, this.toMarker])
-        metroMap.subscribe('routefrom routeto', this.handleFromTo.bind(this))
-        metroMap.subscribe('clearroute', e => this.clearRoute())
-        map.on('zoomstart', e => sfx.Animation.terminateAnimations())
+        metroMap.subscribe('routefrom routeto', this.onFromTo)
+        metroMap.subscribe('clearroute', this.clearRoute)
+        map.on('zoomstart', sfx.Animation.terminateAnimations)
         addEventListener('keydown', e => {
             if (e.keyCode !== 27) {
                 return
@@ -46,7 +46,7 @@ export default class implements Widget {
         return this
     }
 
-    private handleFromTo(e: MouseEvent) {
+    private onFromTo = (e: MouseEvent) => {
         const map = this.metroMap.getMap()
         const coors = util.mouseToLatLng(map, e)
         const marker = e.type === 'routefrom' ? this.fromMarker : this.toMarker
@@ -59,8 +59,8 @@ export default class implements Widget {
             // fixing font rendering here boosts the performance
             util.fixFontRendering()
             this.visualizeRouteBetween(this.fromMarker.getLatLng(), this.toMarker.getLatLng())
-            //this.map.once('zoomend', e => this.visualizeShortestRoute(latLngArr));
-            //this.map.fitBounds(L.latLngBounds(latLngArr));
+            // this.map.once('zoomend', e => this.visualizeShortestRoute(latLngArr));
+            // this.map.fitBounds(L.latLngBounds(latLngArr));
         }
     }
 
@@ -87,7 +87,7 @@ export default class implements Widget {
         sfx.visualizeRoute(shortestRoute(this.metroMap.getNetwork().platforms, from, to), animate)
     }
 
-    private clearRoute() {
+    private clearRoute = () => {
         const map = this.metroMap.getMap()
         const terminate = sfx.Animation.terminateAnimations()
         map.removeLayer(this.fromMarker).removeLayer(this.toMarker)
