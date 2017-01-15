@@ -7,11 +7,11 @@ import { translate } from '../../i18n'
 import * as style from './style.css'
 
 // TODO: merge items & extra items, introduce item index
-type Extra = {
+interface Extra {
     icon?: string,
     disabled?: boolean;
 }
-type ContextMenuItem = {
+interface ContextMenuItem {
     text: string,
     event: string,
     trigger?: (target: EventTarget) => boolean,

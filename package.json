@@ -1,6 +1,6 @@
 {
-  "name": "MetroGraph",
-  "version": "0.1.0",
+  "name": "metro-map",
+  "version": "0.2.0",
   "description": "St Petersburg's future metro",
   "main": "bin/www",
   "dependencies": {
@@ -30,6 +30,7 @@
     "style-loader": "^0.13.1",
     "tslint": "^4.3.1",
     "typescript": "^2.1.5",
+    "url-loader": "^0.5.7",
     "webpack": "^2.2.0-rc.4",
     "webpack-browser-plugin": "^1.0.20",
     "whatwg-fetch": "^2.0.1"

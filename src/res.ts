@@ -1,6 +1,6 @@
 import { tryGet } from './util'
 
-export type Config = {
+export interface Config {
     containerId: string,
     center?: number[],
     zoom: number,

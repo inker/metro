@@ -1,4 +1,4 @@
-type Route = {
+interface Route {
     line: string,
     branch: string,
 }

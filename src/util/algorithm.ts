@@ -57,7 +57,7 @@ const eLineStopTime = 40
 const metroWaitingTime = 240
 const eLineWaitingTime = 360
 
-export type ShortestRouteObject<V> = {
+export interface ShortestRouteObject<V> {
     platforms?: V[],
     edges?: Edge<V>[],
     time: {

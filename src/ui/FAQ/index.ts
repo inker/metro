@@ -8,12 +8,12 @@ import {
 
 import * as style from './style.css'
 
-type QA = {
+interface QA {
     q: string,
     a: string,
 }[]
 
-type FAQData = {
+interface FAQData {
     faq: QA[],
 }
 

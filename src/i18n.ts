@@ -2,7 +2,7 @@ import { getJSON } from './res'
 
 export const userLanguage = navigator.language.slice(0, 2).toLowerCase()
 
-type Dictionary = {
+interface Dictionary {
     [phrase: string]: {
         [language: string]: string,
     },

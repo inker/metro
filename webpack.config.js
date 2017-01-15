@@ -10,6 +10,8 @@ const { CheckerPlugin } = require('awesome-typescript-loader')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const WebpackBrowserPlugin = require('webpack-browser-plugin')
 
+const isModuleCSS = path => /\.css$/.test(path) && !/src\/css|node_modules/.test(path)
+
 module.exports = {
   target: 'web',
   context: `${__dirname}/src`,
@@ -19,6 +21,9 @@ module.exports = {
       'alertifyjs',
       'hammerjs',
       'lodash',
+      'bim',
+      'leaflet-dist',
+      'alertify-dist',
     ],
     app: './main.ts',
   },
@@ -34,6 +39,10 @@ module.exports = {
       '.js',
       '.jsx',
     ],
+    alias: {
+      'leaflet-dist': `${__dirname}/node_modules/leaflet/dist`,
+      'alertify-dist': `${__dirname}/node_modules/alertifyjs/build`,
+    }
   },
   devtool: 'source-map',
   module: {
@@ -44,7 +53,7 @@ module.exports = {
         loader: 'source-map-loader',
       },
       {
-        test: /^((?!global).)*\.css$/,
+        test: isModuleCSS,
         loaders: [
           'style-loader',
           'css-loader?modules=true&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
@@ -52,11 +61,20 @@ module.exports = {
         ],
       },
       {
-        test: /global\.css/,
+        test: /(src\/css|node_modules).+?\.css$/,
         loaders: [
           'style-loader',
           'css-loader',
         ],
+      },
+      {
+        test: /\.(png|jpg|jpeg|gif)$/,
+        use: {
+          loader: 'url-loader',
+          options: {
+            limit: 10000,
+          }
+        }
       },
       {
         test: /\.ts$/,
@@ -96,6 +114,8 @@ module.exports = {
       minify: {
         minifyJS: true,
         minifyCSS: true,
+        removeComments: true,
+        collapseWhitespace: true,
       }
     }),
     new WebpackBrowserPlugin({

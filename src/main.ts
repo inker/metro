@@ -7,7 +7,10 @@ import MetroMap from './MetroMap'
 
 L.Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images'
 
-import './css/global.css'
+import 'leaflet-dist/leaflet.css'
+import 'alertify-dist/css/alertify.css'
+import 'alertify-dist/css/themes/default.css'
+import './css/index.css'
 
 if (L.Browser.ie) {
     alert('Does not work in IE (yet)')

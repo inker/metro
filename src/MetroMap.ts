@@ -281,8 +281,8 @@ export default class extends Mediator {
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
         this.subscribe('spanend', (e: CustomEvent) => {
-            const source: Platform = pool.dummyBindings.getKey(e.detail.source)
-            const target: Platform = pool.dummyBindings.getKey(e.detail.target)
+            const source = pool.dummyBindings.getKey(e.detail.source)
+            const target = pool.dummyBindings.getKey(e.detail.target)
             console.log(source, target)
             contextMenu.removeItem('spanend')
 

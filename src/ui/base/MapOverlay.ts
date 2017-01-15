@@ -10,7 +10,8 @@ function fixFontDelayed(parent: Element, time = 250) {
     setTimeout(() => fixFontRendering(parent), time)
 }
 
-export default class MapOverlay<Container extends Element&{ style: CSSStyleDeclaration }> implements L.ILayer {
+type ElementWithStyle = Element&{ style: CSSStyleDeclaration }
+export default class MapOverlay<Container extends ElementWithStyle> implements L.ILayer {
     private map: L.Map
     protected overlayContainer: Container
 

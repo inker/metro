@@ -1,44 +1,44 @@
 import { LatLng } from 'leaflet'
 export { LatLng }
 
-export type LatLngJSON = {
+export interface LatLngJSON {
     lat: number,
     lng: number,
 }
 
-export type AltNamesJSON = {
+export interface AltNamesJSON {
     [lang: string]: string,
 }
 
-export type PlatformJSON = {
+export interface PlatformJSON {
     name: string,
     altNames: AltNamesJSON,
     location: LatLngJSON,
 }
 
-export type TransferJSON = {
+export interface TransferJSON {
     source: number,
     target: number,
 }
 
-export type SpanJSON = {
+export interface SpanJSON {
     source: number,
     target: number,
     routes: number[],
 }
 
-export type LineJSON = {
+export interface LineJSON {
     name: {
         [lang: string]: string,
     },
 }
 
-export type RouteJSON = {
+export interface RouteJSON {
     line: string,
     branch: string,
 }
 
-export type GraphJSON = {
+export interface GraphJSON {
     platforms: PlatformJSON[],
     transfers: TransferJSON[],
     lines: {
@@ -48,6 +48,6 @@ export type GraphJSON = {
     routes: RouteJSON[],
 }
 
-export type AltNames = {
+export interface AltNames {
     [lang: string]: string,
 }
