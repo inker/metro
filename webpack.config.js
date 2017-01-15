@@ -24,8 +24,6 @@ module.exports = {
       'hammerjs',
       'lodash',
       'bim',
-      'leaflet-dist',
-      'alertify-dist',
     ],
     app: './main.ts',
   },
