@@ -5,12 +5,12 @@
   "main": "bin/www",
   "dependencies": {
     "@types/hammerjs": "^2.0.34",
-    "@types/leaflet": "^0",
+    "@types/leaflet": "^1.0.48",
     "@types/lodash": "^4.14.50",
     "alertifyjs": "^1.8.0",
     "bim": "^1.0.3",
     "hammerjs": "^2.0.8",
-    "leaflet": "^0",
+    "leaflet": "^1.0.2",
     "lodash": "^4.17.4"
   },
   "devDependencies": {
