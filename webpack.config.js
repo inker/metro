@@ -6,7 +6,7 @@ const {
   ProvidePlugin,
 } = require('webpack')
 
-const { CheckerPlugin } = require('awesome-typescript-loader')
+// const { CheckerPlugin } = require('awesome-typescript-loader')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const WebpackBrowserPlugin = require('webpack-browser-plugin')
 
@@ -42,7 +42,7 @@ module.exports = {
     alias: {
       'leaflet-dist': `${__dirname}/node_modules/leaflet/dist`,
       'alertify-dist': `${__dirname}/node_modules/alertifyjs/build`,
-    }
+    },
   },
   devtool: 'source-map',
   module: {
@@ -73,8 +73,8 @@ module.exports = {
           loader: 'url-loader',
           options: {
             limit: 10000,
-          }
-        }
+          },
+        },
       },
       {
         test: /\.ts$/,
@@ -116,7 +116,7 @@ module.exports = {
         minifyCSS: true,
         removeComments: true,
         collapseWhitespace: true,
-      }
+      },
     }),
     new WebpackBrowserPlugin({
       url: 'http://localhost',
