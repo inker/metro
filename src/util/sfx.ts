@@ -1,3 +1,7 @@
+import {
+    Browser,
+    point,
+} from 'leaflet'
 import * as alertify from 'alertifyjs'
 import { last } from 'lodash'
 
@@ -84,7 +88,7 @@ export namespace Scale {
     }
 }
 
-const pulsate = L.Browser.webkit && !L.Browser.mobile
+const pulsate = Browser.webkit && !Browser.mobile
 
 export namespace Animation {
     let animationsAllowed = true
@@ -103,8 +107,8 @@ export namespace Animation {
         if (path instanceof SVGPathElement) {
             length = path.getTotalLength()
         } else {
-            const from = L.point(+path.getAttribute('x1'), +path.getAttribute('y1'))
-            const to = L.point(+path.getAttribute('x2'), +path.getAttribute('y2'))
+            const from = point(+path.getAttribute('x1'), +path.getAttribute('y1'))
+            const to = point(+path.getAttribute('x2'), +path.getAttribute('y2'))
             length = from.distanceTo(to)
         }
         const initialOffset = reverse ? -length : length

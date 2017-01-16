@@ -12,8 +12,6 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const WebpackBrowserPlugin = require('webpack-browser-plugin')
 
-const isModuleCSS = path => /\.css$/.test(path) && !/src\/css|node_modules/.test(path)
-
 module.exports = {
   target: 'web',
   context: path.join(__dirname, 'src'),
@@ -53,7 +51,7 @@ module.exports = {
         loader: 'source-map-loader',
       },
       {
-        test: isModuleCSS,
+        test: path => /\.css$/.test(path) && !/src\/css|node_modules/.test(path),
         loaders: [
           'style-loader',
           'css-loader?modules=true&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
