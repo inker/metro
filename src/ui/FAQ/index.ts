@@ -1,3 +1,7 @@
+import {
+    Map,
+    Browser,
+} from 'leaflet'
 import * as Hammer from 'hammerjs'
 
 import { DeferredWidget } from '../base/Widget'
@@ -11,7 +15,7 @@ import * as style from './style.css'
 interface QA {
     q: string,
     a: string,
-}[]
+}
 
 interface FAQData {
     faq: QA[],
@@ -20,7 +24,7 @@ interface FAQData {
 export default class extends DeferredWidget {
     private readonly button: HTMLButtonElement
     private readonly card: HTMLDivElement
-    private map: L.Map
+    private map: Map
 
     constructor(faqDataUrl: string) {
         super()
@@ -35,7 +39,7 @@ export default class extends DeferredWidget {
         this.card = document.createElement('div')
         this.card.classList.add(style['faq-card'])
 
-        if (L.Browser.mobile) {
+        if (Browser.mobile) {
             new Hammer(this.card).on('swipeleft swiperight', e => this.hideFAQ())
         }
 
@@ -54,7 +58,7 @@ export default class extends DeferredWidget {
         })
     }
 
-    addTo(map: L.Map) {
+    addTo(map: Map) {
         this.map = map
         this.whenAvailable.then(faq => {
             const leafletTopRight = document.querySelector('.leaflet-right.leaflet-top')
@@ -81,7 +85,7 @@ export default class extends DeferredWidget {
         style.transform = null
         style.opacity = null
         button.disabled = true
-        if (!L.Browser.mobile) {
+        if (!Browser.mobile) {
             map.getContainer().classList.add('dimmed')
             map.once('mousedown', e => this.hideFAQ())
             once(window, 'keydown').then(e => {
@@ -102,7 +106,7 @@ export default class extends DeferredWidget {
         card.getBoundingClientRect()
         card.style.transform = 'scale(0.1)'
         card.style.opacity = '0'
-        if (!L.Browser.mobile) {
+        if (!Browser.mobile) {
             map.getContainer().classList.remove('dimmed')
         }
         transitionEnd(card).then(e => card.style.display = null)

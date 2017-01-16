@@ -1,4 +1,4 @@
-const { remove } = require('fs-extra')
+const fs = require('fs-extra')
 const { exec } = require('child_process')
 
 function execAndPipe(command) {
@@ -7,10 +7,7 @@ function execAndPipe(command) {
   stderr.pipe(process.stderr)
 }
 
-remove('public', err => {
-  if (err) {
-    throw err
-  }
-  execAndPipe('webpack --colors --watch')
-  execAndPipe('static-server')
-})
+fs.removeSync('public')
+fs.unlinkSync('index.html')
+execAndPipe('webpack --colors --watch')
+execAndPipe('static-server')

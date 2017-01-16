@@ -6,11 +6,17 @@ const {
   ProvidePlugin,
 } = require('webpack')
 
-const path = require('path')
-
 // const { CheckerPlugin } = require('awesome-typescript-loader')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const WebpackBrowserPlugin = require('webpack-browser-plugin')
+
+const path = require('path')
+
+const isGlobal = `src\\${path.sep}css|node_modules`
+const cssExt = '\\.css$'
+const IS_GLOBAL = new RegExp(isGlobal)
+const IS_CSS = new RegExp(cssExt)
+const IS_GLOBAL_CSS = new RegExp(`(${isGlobal}).+?${cssExt}`) 
 
 module.exports = {
   target: 'web',
@@ -51,7 +57,7 @@ module.exports = {
         loader: 'source-map-loader',
       },
       {
-        test: path => /\.css$/.test(path) && !/src\/css|node_modules/.test(path),
+        test: path => IS_CSS.test(path) && !IS_GLOBAL.test(path),
         loaders: [
           'style-loader',
           'css-loader?modules=true&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
@@ -59,7 +65,7 @@ module.exports = {
         ],
       },
       {
-        test: /(src\/css|node_modules).+?\.css$/,
+        test: IS_GLOBAL_CSS,
         loaders: [
           'style-loader',
           'css-loader',
