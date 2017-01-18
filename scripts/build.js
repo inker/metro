@@ -7,7 +7,9 @@ function execAndPipe(command) {
   stderr.pipe(process.stderr)
 }
 
+fs.rm
+
 fs.removeSync('public')
-fs.unlinkSync('index.html')
+fs.removeSync('index.html')
 execAndPipe('webpack --colors --watch')
 execAndPipe('static-server')

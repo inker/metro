@@ -12,11 +12,13 @@ const WebpackBrowserPlugin = require('webpack-browser-plugin')
 
 const path = require('path')
 
-const isGlobal = `src\\${path.sep}css|node_modules`
+const MyPlugin = require('./MyPlugin')
+
+const isGlobal = `src\\/css|node_modules`
 const cssExt = '\\.css$'
 const IS_GLOBAL = new RegExp(isGlobal)
 const IS_CSS = new RegExp(cssExt)
-const IS_GLOBAL_CSS = new RegExp(`(${isGlobal}).+?${cssExt}`) 
+const IS_GLOBAL_CSS = new RegExp(`(${isGlobal}).+?${cssExt}`)
 
 module.exports = {
   target: 'web',
@@ -88,6 +90,7 @@ module.exports = {
   },
   plugins: [
     // new CheckerPlugin(),
+    new MyPlugin('foo'),
     new CommonsChunkPlugin({
       name: "vendor",
       filename: "vendor.js",
