@@ -59,20 +59,24 @@ module.exports = {
         loader: 'source-map-loader',
       },
       {
-        test: path => IS_CSS.test(path) && !IS_GLOBAL.test(path),
-        loaders: [
-          'style-loader',
-          'css-loader?modules=true&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
-          // 'postcss-loader',
-        ],
+        test: /.css$/,
+        loader: 'polymorphic-css-loader',
       },
-      {
-        test: IS_GLOBAL_CSS,
-        loaders: [
-          'style-loader',
-          'css-loader',
-        ],
-      },
+      // {
+      //   test: path => IS_CSS.test(path) && !IS_GLOBAL.test(path),
+      //   loaders: [
+      //     'style-loader',
+      //     'css-loader?modules=true&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
+      //     // 'postcss-loader',
+      //   ],
+      // },
+      // {
+      //   test: IS_GLOBAL_CSS,
+      //   loaders: [
+      //     'style-loader',
+      //     'css-loader',
+      //   ],
+      // },
       {
         test: /\.(png|jpg|jpeg|gif)$/,
         use: {
@@ -90,7 +94,7 @@ module.exports = {
   },
   plugins: [
     // new CheckerPlugin(),
-    new MyPlugin('foo'),
+    // new MyPlugin('foo'),
     new CommonsChunkPlugin({
       name: "vendor",
       filename: "vendor.js",
