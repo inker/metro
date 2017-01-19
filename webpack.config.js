@@ -59,7 +59,7 @@ module.exports = {
         loader: 'source-map-loader',
       },
       {
-        test: /.css$/,
+        test: /\.css$/,
         loader: 'polymorphic-css-loader',
       },
       // {
