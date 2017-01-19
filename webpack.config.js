@@ -16,7 +16,7 @@ const isGlobal = `src\\${path.sep}css|node_modules`
 const cssExt = '\\.css$'
 const IS_GLOBAL = new RegExp(isGlobal)
 const IS_CSS = new RegExp(cssExt)
-const IS_GLOBAL_CSS = new RegExp(`(${isGlobal}).+?${cssExt}`) 
+const IS_GLOBAL_CSS = new RegExp(`(${isGlobal}).+?${cssExt}`)
 
 module.exports = {
   target: 'web',

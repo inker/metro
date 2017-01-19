@@ -8,6 +8,6 @@ function execAndPipe(command) {
 }
 
 fs.removeSync('public')
-fs.unlinkSync('index.html')
+fs.removeSync('index.html')
 execAndPipe('webpack --colors --watch')
 execAndPipe('static-server')
