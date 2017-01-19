@@ -5,12 +5,12 @@
   "main": "bin/www",
   "dependencies": {
     "@types/hammerjs": "^2.0.34",
-    "@types/leaflet": "^0",
+    "@types/leaflet": "^0.7.29",
     "@types/lodash": "^4.14.50",
     "alertifyjs": "^1.8.0",
-    "bim": "^1.0.3",
+    "bim": "^1.0.14",
     "hammerjs": "^2.0.8",
-    "leaflet": "^0",
+    "leaflet": "^0.7.7",
     "lodash": "^4.17.4"
   },
   "devDependencies": {
@@ -21,7 +21,7 @@
     "es6-promise": "^4.0.5",
     "es6-set": "^0.1.4",
     "exports-loader": "^0.6.3",
-    "fs-extra": "^1.0.0",
+    "fs-extra": "^2.0.0",
     "html-webpack-plugin": "^2.26.0",
     "imports-loader": "^0.7.0",
     "postcss-loader": "^1.2.2",
@@ -31,7 +31,7 @@
     "tslint": "^4.3.1",
     "typescript": "^2.1.5",
     "url-loader": "^0.5.7",
-    "webpack": "^2.2.0-rc.4",
+    "webpack": "^2.2.0",
     "webpack-browser-plugin": "^1.0.20",
     "whatwg-fetch": "^2.0.1"
   },
