@@ -33,7 +33,7 @@
     "url-loader": "^0.5.7",
     "webpack": "^2.2.0",
     "webpack-browser-plugin": "^1.0.20",
-    "whatwg-fetch": "^2.0.1"
+    "whatwg-fetch": "^2.0.2"
   },
   "scripts": {
     "start": "node scripts/build"
