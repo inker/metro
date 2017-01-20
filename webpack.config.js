@@ -54,19 +54,26 @@ module.exports = {
       {
         enforce: 'pre',
         test: /\.js$/,
-        loader: 'source-map-loader',
+        use: 'source-map-loader',
       },
       {
         test: path => IS_CSS.test(path) && !IS_GLOBAL.test(path),
-        loaders: [
+        use: [
           'style-loader',
-          'css-loader?modules=true&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true,
+              importLoaders: 1,
+              localIdentName: '[path]___[name]__[local]___[hash:base64:5]',
+            },
+          },
           // 'postcss-loader',
         ],
       },
       {
         test: IS_GLOBAL_CSS,
-        loaders: [
+        use: [
           'style-loader',
           'css-loader',
         ],
@@ -82,7 +89,7 @@ module.exports = {
       },
       {
         test: /\.ts$/,
-        loader: 'awesome-typescript-loader',
+        use: 'awesome-typescript-loader',
       },
     ],
   },
