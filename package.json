@@ -19,6 +19,7 @@
     "awesome-typescript-loader": "^3.0.0-beta.18",
     "classlist-polyfill": "^1.0.3",
     "css-loader": "^0.26.1",
+    "cssnano": "^3.10.0",
     "es6-promise": "^4.0.5",
     "es6-set": "^0.1.4",
     "exports-loader": "^0.6.3",
