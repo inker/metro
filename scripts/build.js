@@ -1,13 +1,10 @@
 const fs = require('fs-extra')
-const { exec } = require('child_process')
+const execAndPipe = require('./exec-and-pipe')
 
-function execAndPipe(command) {
-  const { stdout, stderr } = exec(command)
-  stdout.pipe(process.stdout)
-  stderr.pipe(process.stderr)
-}
-
-fs.removeSync('public')
-fs.removeSync('index.html')
-execAndPipe('webpack --colors --watch')
-execAndPipe('static-server')
+fs.remove('docs', err => {
+  if (err) {
+    throw err
+  }
+  execAndPipe('webpack --colors --watch')
+  execAndPipe('static-server docs')
+})

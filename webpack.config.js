@@ -34,7 +34,7 @@ module.exports = {
     app: './main.ts',
   },
   output: {
-    path: path.join(__dirname, 'public'),
+    path: path.join(__dirname, 'docs'),
     filename: '[name].js',
     sourceMapFilename: '[file].map',
   },
@@ -122,7 +122,7 @@ module.exports = {
       sourceMap: true,
     }),
     new HtmlWebpackPlugin({
-      filename: '../index.html',
+      filename: 'index.html',
       template: 'template.html',
       hash: true,
       minify: {
