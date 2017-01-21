@@ -28,6 +28,8 @@ module.exports = {
       'hammerjs',
       'lodash',
       'bim',
+      'whatwg-fetch',
+      'es6-promise',
     ],
     app: './main.ts',
   },
