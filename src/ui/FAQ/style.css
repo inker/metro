@@ -37,14 +37,12 @@
     font-weight: bold;
     text-align: center;
     /* not selectabled */
-    -webkit-user-select: none;
     user-select: none;
     cursor: pointer;
 }
 
 .cross-ball:hover {
     filter: grayscale(0.1) opacity(0.8);
-    -webkit-filter: grayscale(0.1) opacity(0.8);
 }
 
 .question {
