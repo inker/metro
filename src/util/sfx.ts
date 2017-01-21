@@ -1,11 +1,16 @@
+import * as alertify from 'alertifyjs'
+
 import {
     Browser,
     point,
 } from 'leaflet'
-import * as alertify from 'alertifyjs'
-import { last } from 'lodash'
+
+import {
+    last,
+} from 'lodash'
 
 import pool from '../ObjectPool'
+
 import {
     Platform,
     Station,
@@ -13,9 +18,21 @@ import {
     Transfer,
     Span,
 } from '../network'
-import { Filters } from './svg'
-import { ShortestRouteObject } from './algorithm'
-import { tr, formatTime as ft } from '../i18n'
+
+import {
+    getLength,
+    Filters,
+} from './svg'
+
+import {
+    ShortestRouteObject,
+} from './algorithm'
+
+import {
+    tr,
+    formatTime as ft,
+} from '../i18n'
+
 import {
     tryGetFromMap,
     byId,
@@ -103,14 +120,7 @@ export namespace Animation {
     }
 
     function animatePathElement(path: SVGPathElement|SVGLineElement, speed: number, reverse = false) {
-        let length: number
-        if (path instanceof SVGPathElement) {
-            length = path.getTotalLength()
-        } else {
-            const from = point(+path.getAttribute('x1'), +path.getAttribute('y1'))
-            const to = point(+path.getAttribute('x2'), +path.getAttribute('y2'))
-            length = from.distanceTo(to)
-        }
+        const length = getLength(path)
         const initialOffset = reverse ? -length : length
         const duration = length / speed
 

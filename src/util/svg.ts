@@ -128,6 +128,15 @@ export function circleOffset(circle: SVGCircleElement): Point {
     return c.subtract(offset)
 }
 
+export function getLength(path: SVGPathElement|SVGLineElement) {
+    if (path instanceof SVGPathElement) {
+        return path.getTotalLength()
+    }
+    const from = point(+path.getAttribute('x1'), +path.getAttribute('y1'))
+    const to = point(+path.getAttribute('x2'), +path.getAttribute('y2'))
+    return from.distanceTo(to)
+}
+
 export namespace Filters {
     export function makeDrop(): SVGFilterElement {
         const filter = createSVGElement('filter')
