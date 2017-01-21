@@ -8,9 +8,13 @@ const {
 
 // const { CheckerPlugin } = require('awesome-typescript-loader')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const WebpackBrowserPlugin = require('webpack-browser-plugin')
 
+const CleanCSS = require('clean-css');
 const path = require('path')
+
+const minifier = new CleanCSS()
 
 const isGlobal = `src\\${path.sep}css|node_modules`
 const cssExt = '\\.css$'
@@ -132,6 +136,16 @@ module.exports = {
         collapseWhitespace: true,
       },
     }),
+    new CopyWebpackPlugin([
+      {
+        from: '../res',
+        to: 'res',
+        transform: (content, path) =>
+          IS_CSS.test(path) ? minifier.minify(content).styles :
+          path.endsWith('.json') ? JSON.stringify(JSON.parse(content)) :
+          content,
+      }
+    ]),
     new WebpackBrowserPlugin({
       url: 'http://localhost',
       port: 9080,

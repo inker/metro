@@ -18,6 +18,8 @@
     "autoprefixer": "^6.6.1",
     "awesome-typescript-loader": "^3.0.0-beta.18",
     "classlist-polyfill": "^1.0.3",
+    "clean-css": "^3.4.24",
+    "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.26.1",
     "cssnano": "^3.10.0",
     "es6-promise": "^4.0.5",

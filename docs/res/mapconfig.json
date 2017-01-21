@@ -1,0 +1,1 @@
+{"containerId":"map-container","minZoom":7,"maxZoom":18,"zoom":11,"detailedZoom":12,"url":{"dictionary":"res/dictionary.json","graph":"res/{city}/graph.json","hints":"res/{city}/hints.json","data":"res/data.json","scheme":"res/{city}/scheme.css"}}
