@@ -132,7 +132,7 @@ export default class implements L.ILayer {
             return
         }
         const index = this.items.findIndex(item => item.event === event)
-        if (index === undefined || index < 0) {
+        if (index < 0) {
             return
         }
         this.items.splice(index, 1)
