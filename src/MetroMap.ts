@@ -681,31 +681,31 @@ export default class {
             const t = Math.min(...neighborPositions.map(p => pos.distanceTo(p))) * c
             for (let i = 0; i < 2; ++i) {
                 // const t = pos.distanceTo(neighborPositions[i]) * c
-                const newEnd = wings[i].multiplyBy(t).add(pos)
-                whiskers.set(spans[i], newEnd)
+                const end = wings[i].multiplyBy(t).add(pos)
+                whiskers.set(spans[i], end)
             }
             return whiskers
         }
 
         const normals: L.Point[][] = [[], []]
-        const spanIds: Span[][] = [[], []]
-        const distances = new Map<Span, number>()
+        const sortedSpans: Span[][] = [[], []]
+        const distances = new WeakMap<Span, number>()
         for (const span of spans) {
             const neighbor = span.other(platform)
             const neighborPos = tryGetFromMap(this.platformsOnSVG, neighbor)
             const dirIdx = span.source === platform ? 0 : 1
             normals[dirIdx].push(math.normalize(neighborPos.subtract(pos)))
-            spanIds[dirIdx].push(span)
+            sortedSpans[dirIdx].push(span)
             distances.set(span, pos.distanceTo(neighborPos))
         }
         const [prevPos, nextPos] = normals.map(ns => mean(ns).add(pos))
         const wings = math.wings(prevPos, pos, nextPos, 1)
         for (let i = 0; i < 2; ++i) {
             const wing = wings[i]
-            for (const span of spanIds[i]) {
+            for (const span of sortedSpans[i]) {
                 const t = distances.get(span) * c
-                const newEnd = wing.multiplyBy(t).add(pos)
-                whiskers.set(span, newEnd)
+                const end = wing.multiplyBy(t).add(pos)
+                whiskers.set(span, end)
             }
         }
         return whiskers
