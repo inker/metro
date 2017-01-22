@@ -12,6 +12,7 @@ node_modules
 !gulpfile.js
 !webpack.*.js
 !js/script.js
+npm-debug*
 
 #################
 ## Eclipse

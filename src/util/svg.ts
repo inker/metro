@@ -2,6 +2,7 @@ import { Point, point } from 'leaflet'
 
 import {
     dot,
+    det,
     getCircumcenter,
 } from './math'
 
@@ -78,7 +79,7 @@ export function setCircularPath(el: Element, start: Point, end: Point, third: Po
     let large = diff <= Math.PI || diff > -Math.PI ? 0 : 1
     const u = start.subtract(center)
     const v = end.subtract(center)
-    let sweep = u.x * v.y - v.x * u.y < 0 ? 0 : 1
+    let sweep = det(u, v) < 0 ? 0 : 1
     const codir = dot(third.subtract(start), third.subtract(end))
     if (codir < 0) {
         sweep = 1 - sweep

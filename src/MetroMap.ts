@@ -49,7 +49,7 @@ const {
 } = ui.tileLayers
 
 const { Scale } = sfx
-const { getCenter } = math
+const { mean } = math
 const { findCycle } = algorithm
 
 const contextMenuArray = [{
@@ -675,26 +675,27 @@ export default class {
             if (platform.passingLines().size === 2) {
                 return whiskers.set(spans[0], pos).set(spans[1], pos)
             }
-            const getNeighborPos = (span: Span) => tryGetFromMap(this.platformsOnSVG, span.other(platform))
-            const midPts = spans.map(span => getNeighborPos(span).add(pos).divideBy(2))
-            const ends = midPointsToEnds(pos, midPts)
+            const [prevPos, nextPos] = spans.map(span => tryGetFromMap(this.platformsOnSVG, span.other(platform)))
+            const minDistance = Math.min(prevPos.distanceTo(pos), nextPos.distanceTo(pos))
+            const ends = math.wings(prevPos, pos, nextPos, minDistance / 2)
             return whiskers.set(spans[0], ends[0]).set(spans[1], ends[1])
         }
 
-        const points: L.Point[][] = [[], []]
+        const normals: L.Point[][] = [[], []]
         const spanIds: Span[][] = [[], []]
+        const distances = new Map<Span, number>()
         for (const span of spans) {
             const neighbor = span.other(platform)
             const neighborPos = tryGetFromMap(this.platformsOnSVG, neighbor)
             const dirIdx = span.source === platform ? 0 : 1
-            points[dirIdx].push(neighborPos)
+            normals[dirIdx].push(math.normalize(neighborPos.subtract(pos)))
             spanIds[dirIdx].push(span)
+            distances.set(span, pos.distanceTo(neighborPos))
         }
-        const avg = (pts: L.Point[]) => pts.length === 1 ? pts[0] : pts.length === 0 ? pos : getCenter(pts)
-        const midPts = points.map(pts => avg(pts).add(pos).divideBy(2))
-        const ends = midPointsToEnds(pos, midPts)
-        spanIds[0].forEach(i => whiskers.set(i, ends[0]))
-        spanIds[1].forEach(i => whiskers.set(i, ends[1]))
+        const [prevPos, nextPos] = normals.map(ns => mean(ns).add(pos))
+        const ends = math.wings(prevPos, pos, nextPos, 1)
+        spanIds[0].forEach(s => whiskers.set(s, ends[0].subtract(pos).multiplyBy(distances.get(s) / 2).add(ends[0])))
+        spanIds[1].forEach(s => whiskers.set(s, ends[1].subtract(pos).multiplyBy(distances.get(s) / 2).add(ends[1])))
         return whiskers
     }
 

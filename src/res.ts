@@ -44,11 +44,13 @@ export async function getLineRules() {
         if (!(rule instanceof CSSStyleRule)) {
             continue
         }
-        const tokens = rule.selectorText.match(/^.(M\d+|L|E)$/)
-        if (tokens && tokens[1]) {
-            lineRules.set(tokens[1], rule.style)
-        } else if (rule.selectorText === '#paths-outer > .L') {
-            lineRules.set('light-rail-path', rule.style)
+        for (const selector of rule.selectorText.split(',').map(t => t.trim())) {
+            const tokens = selector.match(/^.(M\d+|L|E)$/)
+            if (tokens && tokens[1]) {
+                lineRules.set(tokens[1], rule.style)
+            } else if (selector === '#paths-outer > .L') {
+                lineRules.set('light-rail-path', rule.style)
+            }
         }
     }
     console.log(lineRules)
