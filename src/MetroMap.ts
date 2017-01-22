@@ -662,6 +662,7 @@ export default class {
     }
 
     private makeWhiskers(platform: Platform): Map<Span, L.Point> {
+        const c = 0.5
         const pos = tryGetFromMap(this.platformsOnSVG, platform)
         const whiskers = new Map<Span, L.Point>()
         const { spans } = platform
@@ -675,10 +676,15 @@ export default class {
             if (platform.passingLines().size === 2) {
                 return whiskers.set(spans[0], pos).set(spans[1], pos)
             }
-            const [prevPos, nextPos] = spans.map(span => tryGetFromMap(this.platformsOnSVG, span.other(platform)))
-            const minDistance = Math.min(prevPos.distanceTo(pos), nextPos.distanceTo(pos))
-            const ends = math.wings(prevPos, pos, nextPos, minDistance / 2)
-            return whiskers.set(spans[0], ends[0]).set(spans[1], ends[1])
+            const neighborPositions = spans.map(span => tryGetFromMap(this.platformsOnSVG, span.other(platform)))
+            const wings = math.wings(neighborPositions[0], pos, neighborPositions[1], 1)
+            const t = Math.min(...neighborPositions.map(p => pos.distanceTo(p))) * c
+            for (let i = 0; i < 2; ++i) {
+                // const t = pos.distanceTo(neighborPositions[i]) * c
+                const newEnd = wings[i].multiplyBy(t).add(pos)
+                whiskers.set(spans[i], newEnd)
+            }
+            return whiskers
         }
 
         const normals: L.Point[][] = [[], []]
@@ -693,9 +699,15 @@ export default class {
             distances.set(span, pos.distanceTo(neighborPos))
         }
         const [prevPos, nextPos] = normals.map(ns => mean(ns).add(pos))
-        const ends = math.wings(prevPos, pos, nextPos, 1)
-        spanIds[0].forEach(s => whiskers.set(s, ends[0].subtract(pos).multiplyBy(distances.get(s) / 2).add(ends[0])))
-        spanIds[1].forEach(s => whiskers.set(s, ends[1].subtract(pos).multiplyBy(distances.get(s) / 2).add(ends[1])))
+        const wings = math.wings(prevPos, pos, nextPos, 1)
+        for (let i = 0; i < 2; ++i) {
+            const wing = wings[i]
+            for (const span of spanIds[i]) {
+                const t = distances.get(span) * c
+                const newEnd = wing.multiplyBy(t).add(pos)
+                whiskers.set(span, newEnd)
+            }
+        }
         return whiskers
     }
 

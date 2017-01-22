@@ -1,5 +1,9 @@
 import { Point, point } from 'leaflet'
 
+export function isArbitrarilySmall(v: Point): boolean {
+    return Math.abs(v.x) < Number.EPSILON || Math.abs(v.y) < Number.EPSILON
+}
+
 export function dot(v1: Point, v2: Point): number {
     return v1.x * v2.x + v1.y * v2.y
 }
@@ -12,32 +16,27 @@ export function normalize(v: Point): Point {
     return v.divideBy(Math.sqrt(dot(v, v)))
 }
 
-export function bisectrix(v1: Point, v2: Point): Point {
+export function bisect(v1: Point, v2: Point): Point {
     const v1n = normalize(v1)
     const v2n = normalize(v2)
-    return normalize(v1n.add(v2n))
+    const a = v1n.add(v2n)
+    return isArbitrarilySmall(a) ? point(0, 0) : normalize(a)
 }
 
 export function orthogonal(source: Point, target: Point): Point[] {
     const v = target.subtract(source)
     return [
-        point(-v.y, v.x).add(source),
-        point(v.y, -v.x).add(source),
+        point(v.y, -v.x),
+        point(-v.y, v.x),
     ]
 }
 
 export function wings(a: Point, b: Point, c: Point, length = 1): Point[] {
     const ba = a.subtract(b)
     const bc = c.subtract(b)
-    const s = det(ba, bc)
-    const bis = bisectrix(ba, bc).multiplyBy(s > 0 ? -length : length)
-    if (Number.isNaN(bis.x) || Number.isNaN(bis.y)) {
-        return [
-            b.add(a).divideBy(2),
-            b.add(c).divideBy(2),
-        ]
-    }
-    return orthogonal(b, b.add(bis))
+    const nBis = bisect(ba, bc)
+    const t = det(ba, bc) < 0 ? -length : length
+    return orthogonal(b, nBis.multiplyBy(t).add(b))
 }
 
 export function angle(v1: Point, v2: Point): number {
