@@ -144,7 +144,7 @@ module.exports = {
           IS_CSS.test(path) ? minifier.minify(content).styles :
           path.endsWith('.json') ? JSON.stringify(JSON.parse(content)) :
           content,
-      }
+      },
     ]),
     new WebpackBrowserPlugin({
       url: 'http://localhost',

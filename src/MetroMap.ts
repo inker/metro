@@ -664,25 +664,26 @@ export default class {
     private makeWhiskers(platform: Platform): Map<Span, L.Point> {
         const pos = tryGetFromMap(this.platformsOnSVG, platform)
         const whiskers = new Map<Span, L.Point>()
-        if (platform.spans.length === 0) {
+        const { spans } = platform
+        if (spans.length === 0) {
             return whiskers
         }
-        if (platform.spans.length === 1) {
-            return whiskers.set(platform.spans[0], pos)
+        if (spans.length === 1) {
+            return whiskers.set(spans[0], pos)
         }
-        if (platform.spans.length === 2) {
+        if (spans.length === 2) {
             if (platform.passingLines().size === 2) {
-                return whiskers.set(platform.spans[0], pos).set(platform.spans[1], pos)
+                return whiskers.set(spans[0], pos).set(spans[1], pos)
             }
             const getNeighborPos = (span: Span) => tryGetFromMap(this.platformsOnSVG, span.other(platform))
-            const midPts = platform.spans.map(span => getNeighborPos(span).add(pos).divideBy(2))
+            const midPts = spans.map(span => getNeighborPos(span).add(pos).divideBy(2))
             const ends = midPointsToEnds(pos, midPts)
-            return whiskers.set(platform.spans[0], ends[0]).set(platform.spans[1], ends[1])
+            return whiskers.set(spans[0], ends[0]).set(spans[1], ends[1])
         }
 
         const points: L.Point[][] = [[], []]
         const spanIds: Span[][] = [[], []]
-        for (const span of platform.spans) {
+        for (const span of spans) {
             const neighbor = span.other(platform)
             const neighborPos = tryGetFromMap(this.platformsOnSVG, neighbor)
             const dirIdx = span.source === platform ? 0 : 1
