@@ -23,14 +23,12 @@ a:hover {
 }
 
 .leaflet-dragging #map-container {
-    cursor: -webkit-grab;
     cursor: grab;
 }
 
 #map-container.dimmed {
-    -webkit-filter: brightness(0.75);
     filter: brightness(0.75);
-    transition-property: filter -webkit-filter;
+    transition-property: filter;
     transition-duration: 200ms;
 }
 
@@ -80,7 +78,6 @@ button {
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     cursor: pointer;
     transition: box-shadow 100ms;
-    -webkit-user-select: none;
     user-select: none;
     outline-width: 0;
 }
