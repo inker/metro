@@ -1,8 +1,11 @@
 import { tileLayer, Browser } from 'leaflet'
 
-export const mapbox = tileLayer('https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}.png', {
+const retina = Browser.retina && !Browser.mobile
+
+export const mapbox = tileLayer(`https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/{z}/{x}/{y}${retina ? '@2x' : ''}.png`, {
     // id: 'inker.mlo91c41',
     // reuseTiles: true,
+    detectRetina: retina,
     attribution: 'Map data &copy; <a href=\"https://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://mapbox.com\">Mapbox</a>',
 })
 
