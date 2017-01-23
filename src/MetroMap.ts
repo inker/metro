@@ -677,8 +677,9 @@ export default class {
                 return whiskers.set(spans[0], pos).set(spans[1], pos)
             }
             const neighborPositions = spans.map(span => tryGetFromMap(this.platformsOnSVG, span.other(platform)))
-            const wings = math.wings(neighborPositions[0], pos, neighborPositions[1], 1)
-            const t = Math.min(...neighborPositions.map(p => pos.distanceTo(p))) * c
+            const [prevPos, nextPos] = neighborPositions
+            const wings = math.wings(prevPos, pos, nextPos, 1)
+            const t = Math.min(pos.distanceTo(prevPos), pos.distanceTo(nextPos)) * c
             for (let i = 0; i < 2; ++i) {
                 // const t = pos.distanceTo(neighborPositions[i]) * c
                 const end = wings[i].multiplyBy(t).add(pos)

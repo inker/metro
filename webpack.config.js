@@ -103,8 +103,8 @@ module.exports = {
   plugins: [
     // new CheckerPlugin(),
     new CommonsChunkPlugin({
-      name: "vendor",
-      filename: "vendor.js",
+      name: 'vendor',
+      filename: 'vendor.js',
       minChunks: Infinity,
     }),
     new ProvidePlugin({
@@ -113,6 +113,7 @@ module.exports = {
     }),
     new UglifyJsPlugin({
       compress: {
+        screw_ie8: true,
         warnings: false,
         drop_debugger: false,
         dead_code: true,
