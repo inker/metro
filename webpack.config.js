@@ -54,15 +54,19 @@ module.exports = {
       'alertify-dist': path.join(__dirname, 'node_modules/alertifyjs/build'),
     },
   },
-  devtool: 'source-map',
+  devtool: 'source-map', // enables sourcemaps
   module: {
     rules: [
-      {
+      { // adds source maps for external modules (like bim)
         enforce: 'pre',
         test: /\.js$/,
         use: 'source-map-loader',
       },
       {
+        test: /\.ts$/,
+        use: 'awesome-typescript-loader',
+      },
+      { // non-global
         test: path => IS_CSS.test(path) && !IS_GLOBAL.test(path),
         use: [
           'style-loader',
@@ -77,7 +81,7 @@ module.exports = {
           'postcss-loader',
         ],
       },
-      {
+      { // global
         test: IS_GLOBAL_CSS,
         use: [
           'style-loader',
@@ -94,10 +98,6 @@ module.exports = {
           },
         },
       },
-      {
-        test: /\.ts$/,
-        use: 'awesome-typescript-loader',
-      },
     ],
   },
   plugins: [
@@ -108,8 +108,8 @@ module.exports = {
       minChunks: Infinity,
     }),
     new ProvidePlugin({
-      'Promise': 'es6-promise',
-      'fetch': 'imports-loader?this=>global!exports-loader?global.fetch!whatwg-fetch',
+      Promise: 'es6-promise',
+      fetch: 'imports-loader?this=>global!exports-loader?global.fetch!whatwg-fetch',
     }),
     new UglifyJsPlugin({
       compress: {
@@ -124,7 +124,7 @@ module.exports = {
       output: {
         comments: false,
       },
-      sourceMap: true,
+      sourceMap: true, // retains sourcemaps for typescript
     }),
     new HtmlWebpackPlugin({
       filename: 'index.html',

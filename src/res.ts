@@ -1,4 +1,4 @@
-import { tryGet } from './util'
+import { tryGet, generateId } from './util'
 
 export interface Config {
     containerId: string,
@@ -12,11 +12,15 @@ export interface Config {
     },
 }
 
-export const getJSON = (url: string) => fetch(url).then(data => data.json())
+const id = generateId()
 
-export const getContent = (url: string) => fetch(url).then(data => data.text())
+export const cachelessFetch = (url: string) => fetch(`${url}?${id}`)
 
-export const getConfig = () => fetch('res/mapconfig.json').then(data => data.json()) as any as Promise<Config>
+export const getJSON = (url: string) => cachelessFetch(url).then(data => data.json())
+
+export const getContent = (url: string) => cachelessFetch(url).then(data => data.text())
+
+export const getConfig = () => cachelessFetch('res/mapconfig.json').then(data => data.json()) as any as Promise<Config>
 
 export function getStyleRulesAsText(): string {
     let text = ''
