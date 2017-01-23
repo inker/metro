@@ -40,7 +40,7 @@ export async function getLineRules() {
     const link = document.getElementById('scheme') as HTMLLinkElement
     const styleSheet = await tryGet(() => link.sheet as CSSStyleSheet, sheet => sheet !== null)
     const lineRules = new Map<string, CSSStyleDeclaration>()
-    for (const rule of (styleSheet.cssRules as any as CSSStyleRule[])) {
+    for (const rule of (styleSheet.cssRules as any)) {
         if (!(rule instanceof CSSStyleRule)) {
             continue
         }
