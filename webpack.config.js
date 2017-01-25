@@ -32,6 +32,7 @@ module.exports = {
       'hammerjs',
       'lodash',
       'bim',
+      'svgio',
       'whatwg-fetch',
       'es6-promise',
     ],

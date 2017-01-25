@@ -5,8 +5,6 @@ type MetroMapEventListener<K extends keyof MetroMapEventMap> = (e: MetroMapEvent
 export default class {
     private eventListeners = new Map<keyof MetroMapEventMap, MetroMapEventListener<keyof MetroMapEventMap>[]>()
 
-    constructor() {}
-
     subscribe<K extends keyof MetroMapEventMap>(type: K, listener: MetroMapEventListener<K>) {
         // console.log('adding event listener ' + t);
         const listenerArr = this.eventListeners.get(type)

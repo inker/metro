@@ -22,24 +22,6 @@ export const getContent = (url: string) => cachelessFetch(url).then(data => data
 
 export const getConfig = () => cachelessFetch('res/mapconfig.json').then(data => data.json()) as any as Promise<Config>
 
-export function getStyleRulesAsText(): string {
-    let text = ''
-    for (const sheet of document.styleSheets as any as CSSStyleSheet[]) {
-        console.log(sheet.cssText)
-        const rules = sheet.cssRules
-        // cross-origin style sheets don't have rules
-        if (!rules) {
-            console.log(sheet)
-            continue
-        }
-        for (const rule of rules as any as CSSRule[]) {
-            text += rule.cssText
-        }
-    }
-    console.log('css text ready')
-    return text
-}
-
 export async function getLineRules() {
     const link = document.getElementById('scheme') as HTMLLinkElement
     const styleSheet = await tryGet(() => link.sheet as CSSStyleSheet, sheet => sheet !== null)

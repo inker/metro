@@ -32,7 +32,7 @@ import {
     fixFontRendering,
     removeAllChildren,
     byId,
-    midPointsToEnds,
+    // midPointsToEnds,
     generateId,
 } from './util'
 import * as res from './res'

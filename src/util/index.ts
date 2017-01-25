@@ -7,7 +7,6 @@ import {
 import { Platform } from '../network'
 
 import * as algorithm from './algorithm'
-import * as decorators from './decorators'
 import * as geo from './geo'
 import * as math from './math'
 import Mediator from './Mediator'
@@ -19,7 +18,6 @@ import MetroMapEventMap from './MetroMapEventMap'
 
 export {
     algorithm,
-    decorators,
     geo,
     math,
     Mediator,
@@ -37,19 +35,6 @@ const RESET_SELECTOR = [
     'transfers-outer',
     'station-circles',
 ].map(i => `#${i} > *`).join(', ')
-
-export function setsEqual<T>(a: Set<T>, b: Set<T>) {
-    const n = a.size
-    if (n !== b.size) {
-        return false
-    }
-    for (let vals = a.values(), el = vals.next(); !el.done; el = vals.next()) {
-        if (!b.has(el.value)) {
-            return false
-        }
-    }
-    return true
-}
 
 export function intersection<T>(a: Set<T>, b: Set<T>) {
     const isn = new Set<T>()
@@ -70,22 +55,8 @@ export function deleteFromArray<T>(arr: T[], el: T) {
     arr.pop()
 }
 
-export function formatInteger(integer: number): string {
-    const s = integer.toString()
-    const start = s.length % 3
-    const arr = start > 0 ? [s.slice(0, start)] : []
-    for (let i = s.length % 3; i < s.length; i += 3) {
-        arr.push(s.substr(i, 3))
-    }
-    return arr.join("'")
-}
-
 export function roundPoint(point: L.Point, precision: number): L.Point {
     return L.point(+point.x.toFixed(precision), +point.y.toFixed(precision))
-}
-
-export function getFraction(num: number, radix = 10): string {
-    return num.toString(radix).split('.')[1] || '0'
 }
 
 export function generateId(collision?: (temp: string) => boolean): string {
@@ -196,25 +167,6 @@ export function trim3d<T extends { style: CSSStyleDeclaration }>({ style }: T) {
 export function flashTitle(titles: string[], duration: number) {
     let i = 0
     setInterval(() => document.title = titles[++i % titles.length], duration)
-}
-
-export function scaleOverlay(
-    overlay: Element&{ style: CSSStyleDeclaration },
-    scaleFactor: number,
-    mousePos?: L.Point,
-) {
-    const box = overlay.getBoundingClientRect()
-    if (!mousePos) {
-        const el = document.documentElement
-        mousePos = L.point(el.clientWidth / 2, el.clientHeight / 2)
-    }
-    const clickOffset = L.point(mousePos.x - box.left, mousePos.y - box.top)
-    const ratio = L.point(clickOffset.x / box.width, clickOffset.y / box.height)
-    const overlayStyle = overlay.style
-    // overlayStyle.left = '0';
-    // overlayStyle.top = '0';
-    overlayStyle.transformOrigin = `${ratio.x * 100}% ${ratio.y * 100}%`
-    overlayStyle.transform = `scale(${scaleFactor})`
 }
 
 export const delay = (ms: number) => new Promise((resolve, reject) => setTimeout(resolve, ms))

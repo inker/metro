@@ -1,7 +1,6 @@
 import * as L from 'leaflet'
 import {
     fixFontRendering,
-    scaleOverlay,
 } from '../../util'
 
 type LeafletMouseEvent = L.LeafletMouseEvent
@@ -65,7 +64,7 @@ export default class MapOverlay<Container extends ElementWithStyle> implements L
             console.log('zoomanim', e)
             const { scale, origin } = e as any
             if (scale !== 1) {
-                scaleOverlay(this.overlayContainer, scale, mousePos || origin)
+                this.scaleOverlay(scale, mousePos || origin)
             }
             mousePos = null
         }).on('zoomend', e => {
@@ -124,6 +123,24 @@ export default class MapOverlay<Container extends ElementWithStyle> implements L
         const overlaySize = pixelBounds.getSize().add(margin).add(margin)
         style.width = overlaySize.x + 'px'
         style.height = overlaySize.y + 'px'
+    }
+
+    private scaleOverlay(
+        scaleFactor: number,
+        mousePos?: L.Point,
+    ) {
+        const box = this.overlayContainer.getBoundingClientRect()
+        if (!mousePos) {
+            const el = document.documentElement
+            mousePos = L.point(el.clientWidth / 2, el.clientHeight / 2)
+        }
+        const clickOffset = L.point(mousePos.x - box.left, mousePos.y - box.top)
+        const ratio = L.point(clickOffset.x / box.width, clickOffset.y / box.height)
+        const { style } = this.overlayContainer
+        // style.left = '0';
+        // style.top = '0';
+        style.transformOrigin = `${ratio.x * 100}% ${ratio.y * 100}%`
+        style.transform = `scale(${scaleFactor})`
     }
 
     extendBounds(point: L.LatLng) {
