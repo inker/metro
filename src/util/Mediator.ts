@@ -27,7 +27,7 @@ export default class {
         listenerArr.splice(pos, 1)
     }
 
-    publish = <K extends keyof MetroMapEventMap, Ev extends MetroMapEventMap[K]>(event: Ev): boolean => {
+    publish = <K extends keyof MetroMapEventMap>(event: MetroMapEventMap[K]): boolean => {
         console.log('event as seen from the dispatcher', event)
         const { type } = event as any
         const listenerArr = this.eventListeners.get(type)

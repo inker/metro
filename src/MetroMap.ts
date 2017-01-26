@@ -196,7 +196,7 @@ export default class {
     public subscribe<K extends keyof MetroMapEventMap>(type: K, listener: (e: MetroMapEventMap[K]) => void) {
         this.mediator.subscribe(type, listener)
         // forwarding map event to mediator
-        this.map.once(type, this.mediator.publish)
+        this.map.on(type, this.mediator.publish)
     }
 
     private addContextMenu() {
@@ -249,7 +249,7 @@ export default class {
             this.plate.show(svg.circleOffset(e.relatedTarget as SVGCircleElement), getPlatformNames(platform))
         })
         this.subscribe('platformadd', e => {
-            console.log(e)
+            console.log('add', e)
             const { detail } = e
             const location = mouseToLatLng(map, detail)
             const newPlatform = new Platform(tr`New station`, location, {})
