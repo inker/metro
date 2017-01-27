@@ -19,7 +19,6 @@
     "autoprefixer": "^6.7.0",
     "awesome-typescript-loader": "^3.0.0-beta.18",
     "classlist-polyfill": "^1.0.3",
-    "clean-css": "^4.0.2",
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.26.1",
     "cssnano": "^3.10.0",
