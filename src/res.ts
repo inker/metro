@@ -18,8 +18,6 @@ export const cachelessFetch = (url: string) => fetch(`${url}?${id}`)
 
 export const getJSON = (url: string) => cachelessFetch(url).then(data => data.json())
 
-export const getContent = (url: string) => cachelessFetch(url).then(data => data.text())
-
 export const getConfig = () => cachelessFetch('res/mapconfig.json').then(data => data.json()) as any as Promise<Config>
 
 export async function getLineRules() {

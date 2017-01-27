@@ -22,6 +22,7 @@ import {
     Mediator,
     color,
     file,
+    tryGetElement,
     tryGetFromMap,
     MetroMapEventMap,
     deleteFromArray,
@@ -99,10 +100,12 @@ export default class {
     }
 
     public async makeMap() {
-        const { config } = this;
-        (document.getElementById('scheme') as HTMLLinkElement).href = config.url['scheme']
+        const { config } = this
+        const lineRulesPromise = tryGetElement('#scheme').then((link: HTMLLinkElement) => {
+            link.href = config.url['scheme']
+            return res.getLineRules()
+        })
         const networkPromise = this.getGraph()
-        const lineRulesPromise = res.getLineRules()
         const tileLoadPromise = new Promise(resolve => mapbox.once('load', resolve))
 
         const faq = new ui.FAQ(config.url['data'])

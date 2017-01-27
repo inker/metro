@@ -1,1 +1,55 @@
-path{fill-opacity:0}#station-circles{fill:#fff;stroke:#000}#dummy-circles{opacity:0;stroke:#00f;stroke-width:.5px}#paths-inner,#paths-outer,#transfers-inner,#transfers-outer{fill:none}#transfers-outer{stroke:#404040}#transfers-inner{stroke:#fff}#paths-outer>.L{stroke-width:0}.M1{stroke:#f48026}.M2{stroke:#97015e}.M3{stroke:#069ddc}.M4{stroke:#00843d}.M5{stroke:#1b3f94}.M6{stroke:#b05f0f}.M7{stroke:#fed105}.M8{stroke:#959ca1}.M9{stroke:#ee2e22}.M10{stroke:#f386a0}.M11{stroke:#231f20}.M12{stroke:#79c142}.E{stroke:#604099}.L{stroke:#00b1b0}#paths-inner *{stroke:#fff}
+path {
+    fill-opacity: 0; /* so that no white stuff be visible */
+}
+
+#station-circles {
+    fill: white;
+    stroke: black;
+}
+
+#dummy-circles {
+    opacity: 0;
+    stroke: blue;
+    stroke-width: 0.5px;
+}
+
+#paths-outer, #paths-inner, #transfers-outer, #transfers-inner {
+    fill: none;
+}
+
+#transfers-outer {
+    stroke: #404040;
+    /*stroke-opacity: 1;*/
+    /*position: absolute;*/
+}
+
+#transfers-inner {
+    stroke: #FFFFFF;
+    /*stroke-opacity: 1;*/
+    /*position: absolute;*/
+}
+
+.M-line {
+    /*stroke-width: 2;*/
+}
+
+#paths-outer > .L {
+    stroke-width: 0px;
+}
+
+/* reverse engineered from the original map */
+.M1 { stroke: rgb(244,128,38); }
+.M2 { stroke: rgb(151,1,94); }
+.M3 { stroke: rgb(6,157,220); }
+.M4 { stroke: rgb(0,132,61); }
+.M5 { stroke: rgb(27,63,148); }
+.M6 { stroke: rgb(176,95,15); }
+.M7 { stroke: rgb(254,209,5); }
+.M8 { stroke: rgb(149,156,161); }
+.M9 { stroke: rgb(238,46,34); }
+.M10 { stroke: rgb(243,134,160); }
+.M11 { stroke: rgb(35,31,32); }
+.M12 { stroke: rgb(121,193,66); }
+.E { stroke:  rgb(96,64,153); }
+.L { stroke: rgb(0,177,176); }
+#paths-inner * { stroke: #FFFFFF; }

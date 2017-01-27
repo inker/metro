@@ -142,10 +142,10 @@ module.exports = {
       {
         from: '../res',
         to: 'res',
-        transform: (content, path) =>
-          IS_CSS.test(path) ? minifier.minify(content).styles :
-          path.endsWith('.json') ? JSON.stringify(JSON.parse(content)) :
-          content,
+        // transform: (content, path) =>
+        //   IS_CSS.test(path) ? minifier.minify(content).styles :
+        //   path.endsWith('.json') ? JSON.stringify(JSON.parse(content)) :
+        //   content,
       },
     ]),
     new WebpackBrowserPlugin({
