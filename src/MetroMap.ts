@@ -876,9 +876,11 @@ export default class {
                 }
             }
         }
-        const topPlatform = station.platforms.reduce((prev, cur) => prev.location.lat < cur.location.lat ? cur : prev)
-        const topCircle = tryGetFromMap(pool.platformBindings, topPlatform)
-        this.plate.show(svg.circleOffset(topCircle), namesOnPlate)
+        const topmostPlatform = station.platforms
+            .filter(p => filteredNames.includes(p.name))
+            .reduce((prev, cur) => prev.location.lat < cur.location.lat ? cur : prev)
+        const topmostCircle = tryGetFromMap(pool.platformBindings, topmostPlatform)
+        this.plate.show(svg.circleOffset(topmostCircle), namesOnPlate)
     }
 
     private platformToModel(platform: Platform, circles: Element[]) {
