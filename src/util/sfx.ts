@@ -46,26 +46,15 @@ export namespace Scale {
         circle.setAttribute('r', (+oldR * scaleFactor).toString())
     }
 
-    export function scaleStation(station: Station, scaleFactor: number, nwTransfers?: Transfer[]) {
+    export function scaleTransfer(transfer: Transfer, scaleFactor: number) {
         const transferOuterStrokeWidth = parseFloat(byId('transfers-outer').style.strokeWidth || '')
         const transferInnerStrokeWidth = parseFloat(byId('transfers-inner').style.strokeWidth || '')
-        for (const p of station.platforms) {
-            const circle = tryGetFromMap(pool.platformBindings, p)
-            scaleCircle(circle, scaleFactor, true)
-            if (!nwTransfers || station.platforms.length < 2) {
-                continue
-            }
-            for (const tr of nwTransfers) {
-                if (tr.has(p)) {
-                    const outer = pool.outerEdgeBindings.get(tr)
-                    const inner = pool.innerEdgeBindings.get(tr)
-                    initialTransfers.add(outer)
-                    initialTransfers.add(inner)
-                    outer.style.strokeWidth = transferOuterStrokeWidth * scaleFactor + 'px'
-                    inner.style.strokeWidth = transferInnerStrokeWidth * scaleFactor + 'px'
-                }
-            }
-        }
+        const outer = pool.outerEdgeBindings.get(transfer)
+        const inner = pool.innerEdgeBindings.get(transfer)
+        initialTransfers.add(outer)
+        initialTransfers.add(inner)
+        outer.style.strokeWidth = transferOuterStrokeWidth * scaleFactor + 'px'
+        inner.style.strokeWidth = transferInnerStrokeWidth * scaleFactor + 'px'
     }
 
     export function unscaleAll() {

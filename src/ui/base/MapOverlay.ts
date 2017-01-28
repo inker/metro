@@ -146,7 +146,7 @@ export default class MapOverlay<Container extends ElementWithStyle> implements L
         this.updateOverlayPositioning()
     }
 
-    latLngToSvgPoint(location: L.LatLng): L.Point {
+    latLngToOverlayPoint(location: L.LatLng): L.Point {
         return this.map
             .project(location)
             .round()

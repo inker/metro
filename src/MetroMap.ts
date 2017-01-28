@@ -625,12 +625,40 @@ export default class {
     }
 
     private updatePlatformsPositionOnOverlay(zoom = this.map.getZoom()) {
-        const detailed = zoom < this.config.detailedZoom
-        for (const station of this.network.stations) {
-            const center = detailed ? this.overlay.latLngToSvgPoint(station.getCenter()) : undefined
+        const { config, network, overlay, platformsOnSVG } = this
+        // all platforms are in their place
+        if (zoom >= config.detailedZoom) {
+            for (const station of network.stations) {
+                for (const platform of station.platforms) {
+                    platformsOnSVG.set(platform, overlay.latLngToOverlayPoint(platform.location))
+                }
+            }
+            return
+        }
+        for (const station of network.stations) {
+            const nameSet = new Set<string>()
+            const center = overlay.latLngToOverlayPoint(station.getCenter())
             for (const platform of station.platforms) {
-                const pos = center || this.overlay.latLngToSvgPoint(platform.location)
-                this.platformsOnSVG.set(platform, pos)
+                nameSet.add(platform.name)
+                platformsOnSVG.set(platform, center)
+            }
+            if (nameSet.size === 1) {
+                continue
+            }
+            // unless...
+            if (nameSet.size < 1) {
+                console.error(station)
+                throw new Error(`station has no names`)
+            }
+            const posByName = new Map<string, L.Point>()
+            nameSet.forEach(name => {
+                const locations = station.platforms.filter(p => p.name === name).map(p => p.location)
+                const geoCenter = geo.getCenter(locations)
+                posByName.set(name, overlay.latLngToOverlayPoint(geoCenter))
+            })
+            for (const platform of station.platforms) {
+                const foo = posByName.get(platform.name)
+                platformsOnSVG.set(platform, foo)
             }
         }
     }
@@ -811,17 +839,14 @@ export default class {
             const dummy = e.target as SVGCircleElement
             const platform = pool.dummyBindings.getKey(dummy)
             const { station } = platform
-            const names = this.map.getZoom() < this.config.detailedZoom && station.platforms.length > 1 ?
-                station.getNames() :
-                getPlatformNames(platform)
-            this.highlightStation(station, names)
+            this.highlightStation(station, getPlatformNames(platform), [platform.name])
         })
         dummyCircles.addEventListener('mouseout', onMouseOut)
         const onTransferOver = (e: MouseEvent) => {
             const el = e.target as SVGPathElement | SVGLineElement
             const transfer = pool.outerEdgeBindings.getKey(el) || pool.innerEdgeBindings.getKey(el)
             const names = getPlatformNamesZipped([transfer.source, transfer.target])
-            this.highlightStation(transfer.source.station, names)
+            this.highlightStation(transfer.source.station, names, [transfer.source.name, transfer.target.name])
         }
         const transfersOuter = byId('transfers-outer')
         const transfersInner = byId('transfers-inner')
@@ -831,21 +856,29 @@ export default class {
         transfersInner.addEventListener('mouseout', onMouseOut)
     }
 
-    private highlightStation(station: Station, names: string[]) {
+    private highlightStation(station: Station, namesOnPlate: string[], filteredNames: string[]) {
         const scaleFactor = 1.25
-        let circle: SVGCircleElement
-        let platform: Platform
-        if (station.platforms.length === 1) {
-            platform = station.platforms[0]
-            circle = tryGetFromMap(pool.platformBindings, platform)
+        for (const platform of station.platforms) {
+            if (!filteredNames.includes(platform.name)) {
+                continue
+            }
+            const circle = tryGetFromMap(pool.platformBindings, platform)
             Scale.scaleCircle(circle, scaleFactor, true)
-        } else {
-            const transfers = this.map.getZoom() < this.config.detailedZoom ? undefined : this.network.transfers
-            Scale.scaleStation(station, scaleFactor, transfers)
-            platform = station.platforms.reduce((prev, cur) => prev.location.lat < cur.location.lat ? cur : prev)
-            circle = tryGetFromMap(pool.platformBindings, platform)
         }
-        this.plate.show(svg.circleOffset(circle), names)
+        if (this.map.getZoom() >= this.config.detailedZoom) {
+            for (const transfer of this.network.transfers) {
+                if (
+                    station.platforms.some(p => transfer.has(p))
+                    && filteredNames.includes(transfer.source.name)
+                    && filteredNames.includes(transfer.target.name)
+                ) {
+                    Scale.scaleTransfer(transfer, scaleFactor)
+                }
+            }
+        }
+        const topPlatform = station.platforms.reduce((prev, cur) => prev.location.lat < cur.location.lat ? cur : prev)
+        const topCircle = tryGetFromMap(pool.platformBindings, topPlatform)
+        this.plate.show(svg.circleOffset(topCircle), namesOnPlate)
     }
 
     private platformToModel(platform: Platform, circles: Element[]) {
@@ -857,7 +890,7 @@ export default class {
                 const locForPos = this.map.getZoom() < this.config.detailedZoom
                     ? platform.station.getCenter()
                     : location
-                const pos = this.overlay.latLngToSvgPoint(locForPos)
+                const pos = this.overlay.latLngToOverlayPoint(locForPos)
                 // const nw = this.bounds.getNorthWest();
                 // const pos = this.map.latLngToContainerPoint(locForPos).subtract(this.map.latLngToContainerPoint(nw));
                 for (const c of circles) {
