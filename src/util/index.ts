@@ -1,8 +1,5 @@
 import * as L from 'leaflet'
-import {
-    last,
-    uniq,
-} from 'lodash'
+import { last, uniq, zip } from 'lodash'
 
 import { Platform } from '../network'
 
@@ -140,11 +137,9 @@ export function getPlatformNames(platform: Platform): string[] {
 }
 
 export function getPlatformNamesZipped(platforms: Platform[]) {
-    const platformNames = platforms.map(getPlatformNames)
-    return [0, 1, 2]
-        .map(no => platforms.map((p, i) => platformNames[i][no]))
+    return zip(...platforms.map(getPlatformNames))
         .map(arr => uniq(arr).reduce((prev, cur) => `${prev} / ${cur}`))
-        .filter(s => s !== undefined)
+        .filter(s => s)
 }
 
 export function midPointsToEnds(posOnSVG: L.Point, midPts: L.Point[]) {
