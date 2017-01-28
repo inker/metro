@@ -1,7 +1,4 @@
-import {
-    AltNames,
-    LatLng,
-} from './types'
+import { AltNames, LatLng } from './types'
 
 import Span from './Span'
 import Transfer from './Transfer'

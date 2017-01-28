@@ -1,9 +1,5 @@
 import { WeakBiMap } from 'bim'
-import {
-    Platform,
-    Transfer,
-    Span,
-} from './network'
+import { Platform, Transfer, Span } from './network'
 
 const store = {
     platformBindings: new WeakMap<Platform, SVGCircleElement>(),

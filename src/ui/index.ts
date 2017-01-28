@@ -1,10 +1,7 @@
 import * as L from 'leaflet'
 import * as alertify from 'alertifyjs'
 
-import Network, {
-    Platform,
-    Route,
-} from '../network'
+import Network, { Platform, Route } from '../network'
 import { getSecondLanguage } from '../util'
 import { calculateGeoMean } from '../util/geo'
 import { tr } from '../i18n'

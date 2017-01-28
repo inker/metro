@@ -2,8 +2,8 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "sourceMap": true,
-    "watch": true,
+    // "sourceMap": true, // not needed when assembled with webpack
+    // "watch": true, // not needed when assembled with webpack
     "pretty": true,
     "experimentalDecorators": true,
     "experimentalAsyncFunctions": true,

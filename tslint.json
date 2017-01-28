@@ -8,6 +8,9 @@
       "array"
     ],
     "arrow-parens": false,
+    "interface-name": [
+      false
+    ],
     "member-access": false,
     "member-ordering": [
       false

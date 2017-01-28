@@ -1,19 +1,12 @@
-import {
-    Marker,
-    marker,
-    LatLng,
-} from 'leaflet'
+import { Marker, marker, LatLng } from 'leaflet'
 import * as alertify from 'alertifyjs'
 
 import MetroMap from '../MetroMap'
 import * as util from '../util'
-import {
-    Icons,
-    cacheIcons,
-} from './index'
+import { Icons, cacheIcons } from './index'
 import { Widget } from './base/Widget'
 
-const { sfx } = util
+const { Animation, visualizeRoute } = util.sfx
 const { shortestRoute } = util.algorithm
 
 export default class implements Widget {
@@ -38,7 +31,7 @@ export default class implements Widget {
         mediator.subscribe('routefrom', this.onFromTo)
         mediator.subscribe('routeto', this.onFromTo)
         mediator.subscribe('clearroute', this.clearRoute)
-        map.on('zoomstart', sfx.Animation.terminateAnimations)
+        map.on('zoomstart', Animation.terminateAnimations)
         addEventListener('keydown', e => {
             if (e.keyCode !== 27) {
                 return
@@ -86,12 +79,12 @@ export default class implements Widget {
     private visualizeRouteBetween(from: LatLng, to: LatLng, animate = true) {
         util.resetStyle()
         alertify.dismissAll()
-        sfx.visualizeRoute(shortestRoute(this.metroMap.getNetwork().platforms, from, to), animate)
+        visualizeRoute(shortestRoute(this.metroMap.getNetwork().platforms, from, to), animate)
     }
 
     private clearRoute = () => {
         const map = this.metroMap.getMap()
-        const terminate = sfx.Animation.terminateAnimations()
+        const terminate = Animation.terminateAnimations()
         map.removeLayer(this.fromMarker).removeLayer(this.toMarker)
         this.fromMarker.off('drag').off('dragend')
         this.toMarker.off('drag').off('dragend')

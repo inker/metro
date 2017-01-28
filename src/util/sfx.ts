@@ -1,15 +1,12 @@
 import * as alertify from 'alertifyjs'
-
-import {
-    Browser,
-    point,
-} from 'leaflet'
-
-import {
-    last,
-} from 'lodash'
+import { Browser } from 'leaflet'
+import { last } from 'lodash'
 
 import pool from '../ObjectPool'
+import { getLength, Filters } from './svg'
+import { ShortestRouteObject } from './algorithm'
+import { tr, formatTime as ft } from '../i18n'
+import { tryGetFromMap, byId, transitionEnd } from './index'
 
 import {
     Platform,
@@ -18,26 +15,6 @@ import {
     Transfer,
     Span,
 } from '../network'
-
-import {
-    getLength,
-    Filters,
-} from './svg'
-
-import {
-    ShortestRouteObject,
-} from './algorithm'
-
-import {
-    tr,
-    formatTime as ft,
-} from '../i18n'
-
-import {
-    tryGetFromMap,
-    byId,
-    transitionEnd,
-} from './index'
 
 const ANIMATION_GREYING_SELECTOR = [
     'paths-inner',

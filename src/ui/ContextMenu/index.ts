@@ -1,10 +1,7 @@
 import * as L from 'leaflet'
 import { remove } from 'lodash'
 
-import {
-    MetroMapEventMap,
-    removeAllChildren,
-} from '../../util'
+import { MetroMapEventMap, removeAllChildren } from '../../util'
 import { translate } from '../../i18n'
 
 import * as style from './style.css'

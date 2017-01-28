@@ -1,8 +1,10 @@
 import * as L from 'leaflet'
-import {
-    get,
-    difference,
-} from 'lodash'
+import { get, difference } from 'lodash'
+
+import * as ui from './ui'
+import * as res from './res'
+import pool from './ObjectPool'
+import { tr } from './i18n'
 
 import Network, {
     Platform,
@@ -12,7 +14,6 @@ import Network, {
     GraphJSON,
 } from './network'
 
-import * as ui from './ui'
 import {
     geo,
     sfx,
@@ -36,9 +37,6 @@ import {
     // midPointsToEnds,
     generateId,
 } from './util'
-import * as res from './res'
-import pool from './ObjectPool'
-import { tr } from './i18n'
 
 const {
     mapbox,

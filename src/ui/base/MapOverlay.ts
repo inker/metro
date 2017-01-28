@@ -1,7 +1,5 @@
 import * as L from 'leaflet'
-import {
-    fixFontRendering,
-} from '../../util'
+import { fixFontRendering } from '../../util'
 
 type LeafletMouseEvent = L.LeafletMouseEvent
 
