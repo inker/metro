@@ -630,7 +630,8 @@ export default class {
         if (zoom >= config.detailedZoom) {
             for (const station of network.stations) {
                 for (const platform of station.platforms) {
-                    platformsOnSVG.set(platform, overlay.latLngToOverlayPoint(platform.location))
+                    const pos = overlay.latLngToOverlayPoint(platform.location)
+                    platformsOnSVG.set(platform, pos)
                 }
             }
             return
@@ -657,8 +658,8 @@ export default class {
                 posByName.set(name, overlay.latLngToOverlayPoint(geoCenter))
             })
             for (const platform of station.platforms) {
-                const foo = posByName.get(platform.name)
-                platformsOnSVG.set(platform, foo)
+                const pos = posByName.get(platform.name)
+                platformsOnSVG.set(platform, pos)
             }
         }
     }
@@ -858,17 +859,15 @@ export default class {
 
     private highlightStation(station: Station, namesOnPlate: string[], filteredNames: string[]) {
         const scaleFactor = 1.25
-        for (const platform of station.platforms) {
-            if (!filteredNames.includes(platform.name)) {
-                continue
-            }
+        const platforms = station.platforms.filter(p => filteredNames.includes(p.name))
+        for (const platform of platforms) {
             const circle = tryGetFromMap(pool.platformBindings, platform)
             Scale.scaleCircle(circle, scaleFactor, true)
         }
         if (this.map.getZoom() >= this.config.detailedZoom) {
             for (const transfer of this.network.transfers) {
                 if (
-                    station.platforms.some(p => transfer.has(p))
+                    platforms.some(p => transfer.has(p))
                     && filteredNames.includes(transfer.source.name)
                     && filteredNames.includes(transfer.target.name)
                 ) {
@@ -876,9 +875,7 @@ export default class {
                 }
             }
         }
-        const topmostPlatform = station.platforms
-            .filter(p => filteredNames.includes(p.name))
-            .reduce((prev, cur) => prev.location.lat < cur.location.lat ? cur : prev)
+        const topmostPlatform = platforms.reduce((p, c) => p.location.lat < c.location.lat ? c : p)
         const topmostCircle = tryGetFromMap(pool.platformBindings, topmostPlatform)
         this.plate.show(svg.circleOffset(topmostCircle), namesOnPlate)
     }
