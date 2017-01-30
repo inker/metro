@@ -9,7 +9,6 @@ import * as math from './math'
 import Mediator from './Mediator'
 import * as sfx from './sfx'
 import * as svg from './svg'
-import * as file from './file'
 import * as color from './color'
 import MetroMapEventMap from './MetroMapEventMap'
 
@@ -20,7 +19,6 @@ export {
     Mediator,
     sfx,
     svg,
-    file,
     color,
     MetroMapEventMap,
 }

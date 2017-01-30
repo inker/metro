@@ -30,6 +30,7 @@ module.exports = {
       'lodash',
       'bim',
       'svgio',
+      'download.js',
       'whatwg-fetch',
       'es6-promise',
     ],

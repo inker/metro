@@ -1,4 +1,5 @@
 import * as L from 'leaflet'
+import { downloadText } from 'download.js'
 import { get, difference } from 'lodash'
 
 import * as ui from './ui'
@@ -22,7 +23,6 @@ import {
     algorithm,
     Mediator,
     color,
-    file,
     tryGetElement,
     tryGetFromMap,
     MetroMapEventMap,
@@ -383,7 +383,7 @@ export default class {
             contextMenu.removeItem('transferdelete')
         })
         this.subscribe('mapsave', e => {
-            file.downloadText('graph.json', this.network.toJSON())
+            downloadText('graph.json', this.network.toJSON())
         })
     }
 
