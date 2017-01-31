@@ -1,4 +1,4 @@
-@import '/metro/res/colors.css';
+/*@import '/metro/res/colors.css';*/
 
 
 path {
@@ -58,21 +58,21 @@ path {
 #paths-inner * { stroke: #FFFFFF; }*/
 
 /* reverse engineered from the original map */
-.M1 { stroke: var(--red); }
-.M2 { stroke: var(--blue); }
-.M3 { stroke: var(--green); }
-.M4 { stroke: var(--orange); }
-.M5 { stroke: var(--purple); }
-.M6 { stroke: var(--brown); }
-.M7 { stroke: var(--yellow); }
-.M8 { stroke: var(--grey); }
-.M9 { stroke: var(--azure); }
-.M10 { stroke: var(--pink); }
-.M11 { stroke: var(--black); }
-.M12 { stroke: var(--lime); }
-.E { stroke:  var(--violet); }
-.L { stroke: var(--teal); }
-#paths-inner * { stroke: var(--white); }
+.M1 { stroke: rgb(238,46,34); }
+.M2 { stroke: rgb(27,63,148); }
+.M3 { stroke: rgb(0,132,61); }
+.M4 { stroke: rgb(244,128,38); }
+.M5 { stroke: rgb(151,1,94); }
+.M6 { stroke: rgb(176,95,15); }
+.M7 { stroke: rgb(254,209,5); }
+.M8 { stroke: rgb(149,156,161); }
+.M9 { stroke: rgb(6,157,220); }
+.M10 { stroke: rgb(243,134,160); }
+.M11 { stroke: rgb(35,31,32); }
+.M12 { stroke: rgb(121,193,66); }
+.E { stroke:  rgb(96,64,153); }
+.L { stroke: rgb(0,177,176); }
+#paths-inner * { stroke: #FFFFFF; }
 
 /* wikipedia */
 /*.M1 { stroke: #DC241F; }
