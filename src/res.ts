@@ -18,8 +18,6 @@ export const cachelessFetch = (url: string) => fetch(`${url}?${id}`)
 
 export const getJSON = (url: string) => cachelessFetch(url).then(data => data.json()) as Promise<any>
 
-export const getConfig = () => cachelessFetch('res/mapconfig.json').then(data => data.json()) as any as Promise<Config>
-
 export async function getLineRules() {
     const link = document.getElementById('scheme') as HTMLLinkElement
     const styleSheet = await tryGet(() => link.sheet as CSSStyleSheet, sheet => sheet !== null)

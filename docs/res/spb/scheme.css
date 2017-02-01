@@ -22,14 +22,10 @@ path {
 
 #transfers-outer {
     stroke: #404040;
-    /*stroke-opacity: 1;*/
-    /*position: absolute;*/
 }
 
 #transfers-inner {
     stroke: #FFFFFF;
-    /*stroke-opacity: 1;*/
-    /*position: absolute;*/
 }
 
 .M-line {

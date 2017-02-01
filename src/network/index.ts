@@ -1,21 +1,19 @@
 import { latLng } from 'leaflet'
 
-import {
-    deleteFromArray,
-} from '../util'
-
-import {
-    LatLngJSON,
-    GraphJSON,
-    SpanJSON,
-} from './types'
-
 import Platform from './Platform'
 import Station from './Station'
 import Edge from './Edge'
 import Span from './Span'
 import Transfer from './Transfer'
 import Route from './Route'
+
+import { deleteFromArray } from '../util'
+
+import {
+    LatLngJSON,
+    GraphJSON,
+    SpanJSON,
+} from './types'
 
 export {
     Platform,

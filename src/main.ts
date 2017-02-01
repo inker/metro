@@ -1,7 +1,7 @@
 'use strict'
 
 import { capitalize } from 'lodash'
-import { getConfig } from './res'
+import { getJSON } from './res'
 import { updateDictionary, translate } from './i18n'
 import MetroMap from './MetroMap'
 
@@ -20,7 +20,7 @@ const tokens = location.search.match(/city=(\w+)/)
 const city = tokens ? tokens[1] : 'spb'
 
 ; (async () => {
-    const config = await getConfig()
+    const config = await getJSON('res/mapconfig.json')
     const dictPromise = updateDictionary(config.url['dictionary'])
     for (const url of Object.keys(config.url)) {
         config.url[url] = config.url[url].replace(/\{city\}/g, city)
