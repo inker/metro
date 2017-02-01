@@ -28,6 +28,7 @@ module.exports = {
       'alertifyjs',
       'hammerjs',
       'lodash',
+      'localforage',
       'bim',
       'svgio',
       'download.js',

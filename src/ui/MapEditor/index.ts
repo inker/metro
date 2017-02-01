@@ -1,3 +1,6 @@
+import * as localForage from 'localforage'
+import { throttle } from 'lodash'
+
 import MetroMap from '../../MetroMap'
 import { tr } from '../../i18n'
 import Widget from '../base/Widget'
@@ -11,6 +14,8 @@ export default class MapEditor implements Widget {
     private metroMap: MetroMap
     private readonly button: HTMLButtonElement
     private _editMode: boolean
+    private mapEditorStore = localForage.createInstance({ name: 'mapEditor' })
+    private backupData = throttle(this.mapEditorStore.setItem, 1000)
 
     get editMode() {
         return this._editMode
@@ -61,13 +66,18 @@ export default class MapEditor implements Widget {
         return this
     }
 
+    private sendEvent(e: Event) {
+        this.backupData('map', this.metroMap.getNetwork().toJSON())
+        this.metroMap.mediator.publish(e)
+    }
+
     private editMapClick() {
         this.editMode = true
         this.addMapListeners()
     }
 
     private saveMapClick() {
-        this.metroMap.mediator.publish(new Event('mapsave'))
+        this.sendEvent(new Event('mapsave'))
         this.editMode = false
     }
 
@@ -81,24 +91,21 @@ export default class MapEditor implements Widget {
         let movingCircle: SVGCircleElement|null
         let type: string|undefined
         let fromCircle: SVGCircleElement|null
-        const { mediator } = this.metroMap
         dummyCircles.addEventListener('mousedown', e => {
             if (e.button !== 2 && fromCircle) {
                 const detail = {
                     source: fromCircle,
                     target: e.target as SVGCircleElement,
                 }
-                console.log(detail)
-                mediator.publish(new CustomEvent(type === 'span' ? 'spanend' : 'transferend', { detail }))
+                this.sendEvent(new CustomEvent(type === 'span' ? 'spanend' : 'transferend', { detail }))
                 fromCircle = null
                 type = undefined
             } else if (e.button === 0) {
                 map.dragging.disable()
                 movingCircle = e.target as SVGCircleElement
-                mediator.publish(new MouseEvent('platformmovestart', { relatedTarget: e.target }))
+                this.sendEvent(new MouseEvent('platformmovestart', { relatedTarget: e.target }))
             } else if (e.button === 1) {
-                console.log('foo', e.target)
-                mediator.publish(new MouseEvent('spanstart', { relatedTarget: e.target }))
+                this.sendEvent(new MouseEvent('spanstart', { relatedTarget: e.target }))
             }
         })
         map.on('mousemove', (e: LeafletMouseEvent) => {
@@ -107,14 +114,14 @@ export default class MapEditor implements Widget {
             }
             const { clientX, clientY } = e.originalEvent
             const dict = { relatedTarget: movingCircle as EventTarget, clientX, clientY }
-            mediator.publish(new MouseEvent('platformmove', dict))
+            this.sendEvent(new MouseEvent('platformmove', dict))
         }).on('mouseup', (e: LeafletMouseEvent) => {
             if (!movingCircle) {
                 return
             }
             map.dragging.enable()
             const dict = { relatedTarget: movingCircle as EventTarget }
-            mediator.publish(new MouseEvent('platformmoveend', dict))
+            this.sendEvent(new MouseEvent('platformmoveend', dict))
             // check if fell on path -> insert into the path
             movingCircle = null
         })
@@ -131,11 +138,11 @@ export default class MapEditor implements Widget {
 
         this.metroMap.subscribe('platformaddclick', e => {
             const { clientX, clientY } = e
-            mediator.publish(new CustomEvent('platformadd', { detail: { clientX, clientY }}))
+            this.sendEvent(new CustomEvent('platformadd', { detail: { clientX, clientY }}))
         })
 
         this.metroMap.subscribe('platformaddtolineclick', e => {
-            mediator.publish(new CustomEvent('platformadd', { detail: e }))
+            this.sendEvent(new CustomEvent('platformadd', { detail: e }))
         })
 
     }
