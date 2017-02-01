@@ -1,14 +1,9 @@
-import {
-    Map,
-    Browser,
-} from 'leaflet'
+import { Map, Browser } from 'leaflet'
 import * as Hammer from 'hammerjs'
 
-import { DeferredWidget } from '../base/Widget'
-import {
-    transitionEnd,
-    once,
-} from '../../util'
+import Widget from '../base/Widget'
+import MetroMap from '../../MetroMap'
+import { transitionEnd, once } from '../../util'
 
 import * as style from './style.css'
 
@@ -21,15 +16,12 @@ interface FAQData {
     faq: QA[],
 }
 
-export default class extends DeferredWidget {
+export default class implements Widget {
     private readonly button: HTMLButtonElement
     private readonly card: HTMLDivElement
     private map: Map
 
-    constructor(faqDataUrl: string) {
-        super()
-        const promise: Promise<FAQData> = fetch(faqDataUrl).then(data => data.json()) as any
-
+    constructor(faqData: string[]) {
         const btn = document.createElement('button')
         btn.textContent = 'FAQ'
         btn.classList.add('leaflet-control')
@@ -53,22 +45,18 @@ export default class extends DeferredWidget {
                 <span class="${answerClass}">${qa.a}</span>
             </div>
         `
-        this._whenAvailable = promise.then(data => {
-            this.card.innerHTML += data.faq.map(qa2html).join('').replace(urlRe, replacement)
-        })
+        this.card.innerHTML += faqData.map(qa2html).join('').replace(urlRe, replacement)
     }
 
-    addTo(map: Map) {
-        this.map = map
-        this.whenAvailable.then(faq => {
-            const leafletTopRight = document.querySelector('.leaflet-right.leaflet-top')
-            document.body.appendChild(this.card)
-            if (!leafletTopRight) {
-                console.error('cannot append to .leaflet-right.leaflet-top')
-                return
-            }
-            leafletTopRight.appendChild(this.button)
-        })
+    addTo(metroMap: MetroMap) {
+        this.map = metroMap.getMap()
+        const leafletTopRight = document.querySelector('.leaflet-right.leaflet-top')
+        document.body.appendChild(this.card)
+        if (!leafletTopRight) {
+            throw new Error('cannot append to .leaflet-right.leaflet-top')
+        }
+        leafletTopRight.appendChild(this.button)
+        return this
     }
 
     showFAQ() {

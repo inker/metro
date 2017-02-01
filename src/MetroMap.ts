@@ -105,8 +105,7 @@ export default class {
         })
         const networkPromise = this.getGraph()
         const tileLoadPromise = new Promise(resolve => mapbox.once('load', resolve))
-
-        const faq = new ui.FAQ(config.url['data'])
+        const dataPromise = res.getJSON(config.url['data'])
 
         // wait.textContent = 'making map...';
 
@@ -179,8 +178,7 @@ export default class {
             new ui.MapEditor(config.detailedZoom).addTo(this)
         }
 
-        await faq.whenAvailable
-        faq.addTo(this.map)
+        dataPromise.then(data => new ui.FAQ(data.faq).addTo(this))
         // wait.textContent = 'loading tiles...';
 
         await tileLoadPromise

@@ -4,7 +4,7 @@ import * as alertify from 'alertifyjs'
 import MetroMap from '../MetroMap'
 import * as util from '../util'
 import { Icons, cacheIcons } from './index'
-import { Widget } from './base/Widget'
+import Widget from './base/Widget'
 
 const { Animation, visualizeRoute } = util.sfx
 const { shortestRoute } = util.algorithm

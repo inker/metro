@@ -16,7 +16,7 @@ const id = generateId()
 
 export const cachelessFetch = (url: string) => fetch(`${url}?${id}`)
 
-export const getJSON = (url: string) => cachelessFetch(url).then(data => data.json())
+export const getJSON = (url: string) => cachelessFetch(url).then(data => data.json()) as Promise<any>
 
 export const getConfig = () => cachelessFetch('res/mapconfig.json').then(data => data.json()) as any as Promise<Config>
 

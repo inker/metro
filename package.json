@@ -1,6 +1,6 @@
 {
   "name": "metro-map",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "St Petersburg's future metro",
   "main": "bin/www",
   "dependencies": {
@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@types/whatwg-fetch": "0.0.33",
-    "autoprefixer": "^6.7.1",
+    "autoprefixer": "^6.7.2",
     "awesome-typescript-loader": "^3.0.0-beta.18",
     "classlist-polyfill": "^1.0.3",
     "copy-webpack-plugin": "^4.0.1",

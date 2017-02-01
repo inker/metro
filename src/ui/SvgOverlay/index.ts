@@ -1,7 +1,4 @@
-import {
-    LatLngBounds,
-    point,
-} from 'leaflet'
+import { LatLngBounds, point } from 'leaflet'
 
 import MapOverlay from '../base/MapOverlay'
 import { createSVGElement } from '../../util/svg'

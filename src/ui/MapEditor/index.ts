@@ -1,6 +1,6 @@
 import MetroMap from '../../MetroMap'
 import { tr } from '../../i18n'
-import { Widget } from '../base/Widget'
+import Widget from '../base/Widget'
 import { byId } from '../../util'
 
 import * as style from './style.css'
