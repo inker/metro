@@ -42,8 +42,8 @@ export namespace Scale {
         const oldR = circle.getAttribute('r')
         if (oldR) {
             circle.setAttribute('data-r', oldR)
+            circle.setAttribute('r', (+oldR * scaleFactor).toString())
         }
-        circle.setAttribute('r', (+oldR * scaleFactor).toString())
     }
 
     export function scaleTransfer(transfer: Transfer, scaleFactor: number) {

@@ -1,6 +1,6 @@
 {
   "name": "metro-map",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "St Petersburg's future metro",
   "main": "bin/www",
   "dependencies": {
@@ -36,7 +36,7 @@
     "static-server": "^2.0.4",
     "style-loader": "^0.13.1",
     "tslint": "^4.4.2",
-    "typescript": "^2.1.5",
+    "typescript": "^2.2.0",
     "url-loader": "^0.5.7",
     "webpack": "^2.2.1",
     "webpack-browser-plugin": "^1.0.20",

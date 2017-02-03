@@ -934,7 +934,8 @@ export default class {
                     transfer['_' + prop] = platform
                     const circle = tryGetFromMap(pool.platformBindings, platform)
                     const circleBorderWidth = parseFloat(getComputedStyle(circle).strokeWidth || '')
-                    const circleTotalRadius = +circle.getAttribute('r') / 2 + circleBorderWidth
+                    const r = +circle.getAttribute('r') || 0
+                    const circleTotalRadius = r / 2 + circleBorderWidth
                     const pos = tryGetFromMap(this.platformsOnSVG, platform)
                     if (tagName === 'line') {
                         const n = pi + 1

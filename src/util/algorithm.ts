@@ -21,7 +21,7 @@ export function findCycle(network: Network, station: Station): Platform[] {
     // TODO: if n=3, leave as it is; if n=4, metro has priority
     const stationPlatforms = station.platforms
     if (stationPlatforms.length === 3) {
-        for (const platform of station.platforms) {
+        for (const platform of stationPlatforms) {
             if (network.transfers.filter(t => t.has(platform)).length !== 2) {
                 return []
             }
@@ -137,8 +137,8 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
 
         for (let i = 0, nNeighbors = neighborNodes.length; i < nNeighbors; ++i) {
             const neighborNode = neighborNodes[i]
-            const alt = currentTime.get(currentNode) + timeToNeighbors[i]
-            if (alt < currentTime.get(neighborNode)) {
+            const alt = tryGetFromMap(currentTime, currentNode) + timeToNeighbors[i]
+            if (alt < tryGetFromMap(currentTime, neighborNode)) {
                 currentTime.set(neighborNode, alt)
                 prev.set(neighborNode, currentNode)
             }
@@ -148,7 +148,7 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
     // find the shortest time & the exit station
     let shortestTime = Infinity
     currentTime.forEach((t, p) => {
-        const alt = currentTime.get(p) + fromPlatformToDest.get(p)
+        const alt = tryGetFromMap(currentTime, p) + tryGetFromMap(fromPlatformToDest, p)
         if (alt < shortestTime) {
             shortestTime = alt
             currentNode = p
@@ -196,7 +196,7 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
     }
     platformPath.reverse()
     path.reverse()
-    const walkFrom = fromPlatformToDest.get(last(platformPath))
+    const walkFrom = tryGetFromMap(fromPlatformToDest, last(platformPath))
     const walkTo = tryGetFromMap(currentTime, platformPath[0])
     return {
         platforms: platformPath,
@@ -241,7 +241,7 @@ function shortestTransfer(p1: Platform, p2: Platform) {
             }
             const distance = distanceBetween(currentNode.location, neighborNode.location)
             const alt = dist.get(currentNode) + distance
-            if (alt < dist.get(neighborNode)) {
+            if (alt < tryGetFromMap(dist, neighborNode)) {
                 dist.set(neighborNode, alt)
                 prev.set(neighborNode, currentNode)
             }

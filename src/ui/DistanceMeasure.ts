@@ -14,7 +14,6 @@ export default class implements L.ILayer {
 
     onAdd(map: L.Map) {
         this.map = map
-        const measureListener = (e: MouseEvent) => this.measureDistance(util.mouseToLatLng(map, e))
         map.fireEvent('distancemeasureinit')
         map.on('measuredistance', (e: MouseEvent) => this.measureDistance(util.mouseToLatLng(map, e)))
         map.on('clearmeasurements', (e: MouseEvent) => this.clearMeasurements())

@@ -123,7 +123,9 @@ export function makeTransferLine(start: Point, end: Point): SVGLineElement[] {
 }
 
 export function circleOffset(circle: SVGCircleElement): Point {
-    const c = point(+circle.getAttribute('cx'), +circle.getAttribute('cy'))
+    const cx = +circle.getAttribute('cx')
+    const cy = +circle.getAttribute('cy')
+    const c = point(cx, cy)
     const iR = ~~circle.getAttribute('r')
     const offset = point(0 + iR, 4 + iR)
     return c.subtract(offset)
@@ -133,8 +135,12 @@ export function getLength(path: SVGPathElement|SVGLineElement) {
     if (path instanceof SVGPathElement) {
         return path.getTotalLength()
     }
-    const from = point(+path.getAttribute('x1'), +path.getAttribute('y1'))
-    const to = point(+path.getAttribute('x2'), +path.getAttribute('y2'))
+    const x1 = +path.getAttribute('x1')
+    const y1 = +path.getAttribute('y1')
+    const from = point(x1, y1)
+    const x2 = +path.getAttribute('x2')
+    const y2 = +path.getAttribute('y2')
+    const to = point(x2, y2)
     return from.distanceTo(to)
 }
 
