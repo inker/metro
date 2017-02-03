@@ -60,8 +60,8 @@ export function generateId(collision?: (temp: string) => boolean): string {
 }
 
 export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {
-    const rect = map.getContainer().getBoundingClientRect()
-    const containerPoint = L.point(event.clientX - rect.left, event.clientY - rect.top)
+    const { top, left } = map.getContainer().getBoundingClientRect()
+    const containerPoint = L.point(event.clientX - left, event.clientY - top)
     return map.containerPointToLatLng(containerPoint)
 }
 
@@ -235,4 +235,12 @@ export function byId(id: string) {
         throw new Error(`no element with id=${id} exists`)
     }
     return el
+}
+
+export function attr(el: Element, attributeName: string) {
+    const attribute = el.getAttribute(attributeName)
+    if (!attribute) {
+        throw new Error(`no attribute ${attributeName} on element with id=${el.id} exists`)
+    }
+    return attribute
 }

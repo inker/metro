@@ -36,6 +36,7 @@ import {
     byId,
     // midPointsToEnds,
     generateId,
+    attr,
 } from './util'
 
 const {
@@ -934,7 +935,7 @@ export default class {
                     transfer['_' + prop] = platform
                     const circle = tryGetFromMap(pool.platformBindings, platform)
                     const circleBorderWidth = parseFloat(getComputedStyle(circle).strokeWidth || '')
-                    const r = +circle.getAttribute('r') || 0
+                    const r = +attr(circle, 'r')
                     const circleTotalRadius = r / 2 + circleBorderWidth
                     const pos = tryGetFromMap(this.platformsOnSVG, platform)
                     if (tagName === 'line') {
@@ -979,7 +980,7 @@ export default class {
                             const thirdPos = difference(circumpoints, [pos1, pos2])[0]
                             if (thirdPos) {
                                 svg.setCircularPath(outer, pos1, pos2, thirdPos)
-                                inner.setAttribute('d', outer.getAttribute('d') as string)
+                                inner.setAttribute('d', attr(outer, 'd'))
                             }
                             const gradient = tryGetFromMap(pool.gradientBindings, tr)
                             svg.Gradients.setDirection(gradient, pos2.subtract(pos1))

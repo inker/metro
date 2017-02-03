@@ -60,12 +60,8 @@ export default class implements Widget {
     }
 
     showFAQ() {
-        const {
-            card,
-            map,
-            button,
-        } = this
-        const { style } = this.card
+        const { card, map, button } = this
+        const { style } = card
         style.display = 'inline'
         style.transform = 'scale(0.1)'
         style.opacity = '0'
@@ -86,18 +82,15 @@ export default class implements Widget {
     }
 
     hideFAQ() {
-        const {
-            card,
-            map,
-            button,
-        } = this
+        const { card, map, button } = this
+        const { style } = card
         card.getBoundingClientRect()
-        card.style.transform = 'scale(0.1)'
-        card.style.opacity = '0'
+        style.transform = 'scale(0.1)'
+        style.opacity = '0'
         if (!Browser.mobile) {
             map.getContainer().classList.remove('dimmed')
         }
-        transitionEnd(card).then(e => card.style.display = null)
+        transitionEnd(card).then(e => style.display = null)
         button.disabled = false
     }
 }

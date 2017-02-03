@@ -1,10 +1,7 @@
 import { Point, point } from 'leaflet'
 
-import {
-    dot,
-    det,
-    getCircumcenter,
-} from './math'
+import { dot, det, getCircumcenter } from './math'
+import { attr } from './index'
 
 export function createSVGElement<K extends keyof ElementTagNameMap>(tagName: K): ElementTagNameMap[K] {
     return document.createElementNS('http://www.w3.org/2000/svg', tagName) as any
@@ -38,7 +35,7 @@ export function getBezierPathPoints(path: Element) {
     const re = /\D([\d\.]+).*?,.*?([\d\.]+)/g
     const d = path.getAttribute('d')
     if (!d) {
-        return
+        return null
     }
     let m: RegExpExecArray|null
     while ((m = re.exec(d)) !== null) {
@@ -61,7 +58,7 @@ export function getCircularPath(path: Element) {
     const re = /\D([\d\.]+)/g
     const d = path.getAttribute('d')
     if (!d) {
-        return
+        return null
     }
     let m: RegExpExecArray|null
     while ((m = re.exec(d)) !== null) {
@@ -123,10 +120,8 @@ export function makeTransferLine(start: Point, end: Point): SVGLineElement[] {
 }
 
 export function circleOffset(circle: SVGCircleElement): Point {
-    const cx = +circle.getAttribute('cx')
-    const cy = +circle.getAttribute('cy')
-    const c = point(cx, cy)
-    const iR = ~~circle.getAttribute('r')
+    const c = point(+attr(circle, 'cx'), +attr(circle, 'cy'))
+    const iR = ~~attr(circle, 'r')
     const offset = point(0 + iR, 4 + iR)
     return c.subtract(offset)
 }
@@ -135,12 +130,8 @@ export function getLength(path: SVGPathElement|SVGLineElement) {
     if (path instanceof SVGPathElement) {
         return path.getTotalLength()
     }
-    const x1 = +path.getAttribute('x1')
-    const y1 = +path.getAttribute('y1')
-    const from = point(x1, y1)
-    const x2 = +path.getAttribute('x2')
-    const y2 = +path.getAttribute('y2')
-    const to = point(x2, y2)
+    const from = point(+attr(path, 'x1'), +attr(path, 'y1'))
+    const to = point(+attr(path, 'x2'), +attr(path, 'y2'))
     return from.distanceTo(to)
 }
 
