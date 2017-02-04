@@ -560,40 +560,26 @@ export default class {
 
         const transfersOuterFrag = tryGetFromMap(docFrags, 'transfers-outer')
         const transfersInnerFrag = tryGetFromMap(docFrags, 'transfers-inner')
-        const { defs } = this.overlay
         for (const transfer of this.network.transfers) {
             const pl1 = transfer.source
             const pl2 = transfer.target
-            if (zoom < detailedZoom && pl1.name === pl2.name) {
+            const detailed = zoom >= detailedZoom
+            if (!detailed && pl1.name === pl2.name) {
                 continue
             }
-            const pos1 = tryGetFromMap(this.platformsOnSVG, transfer.source)
-            const pos2 = tryGetFromMap(this.platformsOnSVG, transfer.target)
             const scp = stationCircumpoints.get(pl1.station)
-            const paths = scp !== undefined && scp.includes(pl1) && scp.includes(pl2)
-                ? this.makeTransferArc(transfer, scp)
-                : svg.makeTransferLine(pos1, pos2)
+            const paths = scp !== undefined
+                && scp.includes(pl1)
+                && scp.includes(pl2) ? this.makeTransferArc(
+                    transfer,
+                    scp,
+                ) : svg.makeTransferLine(
+                    tryGetFromMap(this.platformsOnSVG, pl1),
+                    tryGetFromMap(this.platformsOnSVG, pl2),
+                )
             pool.outerEdgeBindings.set(transfer, paths[0])
             pool.innerEdgeBindings.set(transfer, paths[1])
-            // paths[0].id = 'ot-' + transferIndex;
-            // paths[1].id = 'it-' + transferIndex;
-            const gradientColors = [pl1, pl2].map(p => this.getPlatformColor(p))
-            // const colors = [transfer.source, transfer.target].map(i => getComputedStyle(stationCirclesFrag.childNodes[i] as Element, null).stroke);
-            // console.log(colors);
-            const circlePortion = fullCircleRadius / pos1.distanceTo(pos2)
-            const gradientVector = pos2.subtract(pos1)
-            let gradient = pool.gradientBindings.get(transfer)
-            if (gradient === undefined) {
-                gradient = svg.Gradients.makeLinear(gradientVector, gradientColors, circlePortion)
-                gradient.id = generateId(id => document.getElementById(id) !== null)
-                pool.gradientBindings.set(transfer, gradient)
-                defs.appendChild(gradient)
-            } else {
-                svg.Gradients.setDirection(gradient, gradientVector)
-                svg.Gradients.setOffset(gradient, circlePortion)
-            }
-            paths[0].style.stroke = `url(#${gradient.id})`
-
+            paths[0].style.stroke = detailed ? this.makeGradient(transfer, fullCircleRadius) : '#000'
             transfersOuterFrag.appendChild(paths[0])
             transfersInnerFrag.appendChild(paths[1])
             // this.transferToModel(transfer, paths);
@@ -622,6 +608,33 @@ export default class {
         this.addBindings()
         console.timeEnd('appending')
 
+    }
+
+    private makeGradient(transfer: Transfer, fullCircleRadius: number) {
+        const { source, target } = transfer
+        const pos1 = tryGetFromMap(this.platformsOnSVG, source)
+        const pos2 = tryGetFromMap(this.platformsOnSVG, target)
+        // paths[0].id = 'ot-' + transferIndex;
+        // paths[1].id = 'it-' + transferIndex;
+        const gradientColors = [
+            this.getPlatformColor(source),
+            this.getPlatformColor(target),
+        ]
+        // const colors = [transfer.source, transfer.target].map(i => getComputedStyle(stationCirclesFrag.childNodes[i] as Element, null).stroke);
+        // console.log(colors);
+        const circlePortion = fullCircleRadius / pos1.distanceTo(pos2)
+        const gradientVector = pos2.subtract(pos1)
+        let gradient = pool.gradientBindings.get(transfer)
+        if (gradient === undefined) {
+            gradient = svg.Gradients.makeLinear(gradientVector, gradientColors, circlePortion)
+            gradient.id = generateId(id => document.getElementById(id) !== null)
+            pool.gradientBindings.set(transfer, gradient)
+            this.overlay.defs.appendChild(gradient)
+        } else {
+            svg.Gradients.setDirection(gradient, gradientVector)
+            svg.Gradients.setOffset(gradient, circlePortion)
+        }
+        return `url(#${gradient.id})`
     }
 
     private updatePlatformsPositionOnOverlay(zoom = this.map.getZoom()) {
