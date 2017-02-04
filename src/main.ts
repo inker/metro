@@ -1,18 +1,19 @@
 'use strict'
 
+import { Browser, Icon } from 'leaflet'
 import { capitalize } from 'lodash'
 import { getJSON } from './res'
 import { updateDictionary, translate } from './i18n'
 import MetroMap from './MetroMap'
 
-L.Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images'
+Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images'
 
 import 'leaflet-dist/leaflet.css'
 import 'alertify-dist/css/alertify.css'
 import 'alertify-dist/css/themes/default.css'
 import './css/index.css'
 
-if (L.Browser.ie) {
+if (Browser.ie) {
     alert('Does not work in IE (yet)')
 }
 

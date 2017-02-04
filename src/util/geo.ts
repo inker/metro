@@ -31,7 +31,10 @@ export function findObjectsWithinRadius<T extends Locatable>(
     const arr = objects
         .map(item => ({ item, distance: point.distanceTo(item.location) }))
         .filter(o => o.distance <= radius)
-    return (sortArray ? arr.sort((a, b) => a.distance - b.distance) : arr).map(o => o.item)
+    if (sortArray) {
+        arr.sort((a, b) => a.distance - b.distance)
+    }
+    return arr.map(o => o.item)
 }
 
 export function getCenter(points: LatLng[]): LatLng {

@@ -22,16 +22,22 @@ export default class MapEditor implements Widget {
     }
 
     set editMode(val: boolean) {
+        const {
+            button,
+            metroMap: {
+                mediator,
+            },
+        } = this
         if (val) {
             const dummyCircles = byId('dummy-circles')
-            this.button.textContent = tr`Save map`
-            this.button.onclick = e => this.saveMapClick()
+            button.textContent = tr`Save map`
+            button.onclick = e => this.saveMapClick()
             dummyCircles.onmousedown = dummyCircles.onclick = () => false
-            this.metroMap.mediator.publish(new Event('editmapstart'))
+            mediator.publish(new Event('editmapstart'))
         } else {
-            this.button.textContent = tr`Edit map`
-            this.button.onclick = e => this.editMapClick()
-            this.metroMap.mediator.publish(new Event('editmapend'))
+            button.textContent = tr`Edit map`
+            button.onclick = e => this.editMapClick()
+            mediator.publish(new Event('editmapend'))
         }
         this._editMode = val
     }
@@ -113,15 +119,17 @@ export default class MapEditor implements Widget {
                 return
             }
             const { clientX, clientY } = e.originalEvent
-            const dict = { relatedTarget: movingCircle as EventTarget, clientX, clientY }
-            this.sendEvent(new MouseEvent('platformmove', dict))
+            this.sendEvent(new MouseEvent('platformmove', {
+                relatedTarget: movingCircle,
+                clientX,
+                clientY,
+            }))
         }).on('mouseup', (e: LeafletMouseEvent) => {
             if (!movingCircle) {
                 return
             }
             map.dragging.enable()
-            const dict = { relatedTarget: movingCircle as EventTarget }
-            this.sendEvent(new MouseEvent('platformmoveend', dict))
+            this.sendEvent(new MouseEvent('platformmoveend', { relatedTarget: movingCircle }))
             // check if fell on path -> insert into the path
             movingCircle = null
         })
