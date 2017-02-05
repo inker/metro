@@ -1,42 +1,5 @@
 /*@import '/metro/res/colors.css';*/
 
-
-path {
-    fill-opacity: 0; /* so that no white stuff be visible */
-}
-
-#station-circles {
-    fill: white;
-    stroke: black;
-}
-
-#dummy-circles {
-    opacity: 0;
-    stroke: blue;
-    stroke-width: 0.5px;
-}
-
-#paths-outer, #paths-inner, #transfers-outer, #transfers-inner {
-    fill: none;
-}
-
-#transfers-outer {
-    stroke: #404040;
-}
-
-#transfers-inner {
-    stroke: #FFFFFF;
-}
-
-.M-line {
-    /*stroke-width: 2;*/
-}
-
-#paths-outer > .L {
-    stroke-width: 0px;
-}
-
-
 /*.M1 { stroke: #E32017; }
 .M2 { stroke: #003688; }
 .M3 { stroke: #00782A; }

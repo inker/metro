@@ -145,7 +145,7 @@ export default class {
         const center = geo.getCenter(this.network.platforms.map(p => p.location))
         config.center = [center.lat, center.lng]
         const bounds = L.latLngBounds(this.network.platforms.map(p => p.location))
-        this.overlay = new ui.SvgOverlay(bounds).addTo(this.map)
+        this.overlay = new ui.SvgOverlay(bounds, L.point(200, 200)).addTo(this.map)
         const { defs } = this.overlay
         svg.Filters.appendAll(defs)
         const { textContent } = defs
@@ -488,7 +488,7 @@ export default class {
             byId(id).style.strokeWidth = `${strokeWidths[id]}px`
         }
 
-        const lightRailPathStyle = tryGetFromMap(this.lineRules, 'light-rail-path')
+        const lightRailPathStyle = tryGetFromMap(this.lineRules, 'L')
         lightRailPathStyle.strokeWidth = `${lightLineWidth}px`
 
         // 11 - 11, 12 - 11.5, 13 - 12, 14 - 12.5
