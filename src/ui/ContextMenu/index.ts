@@ -24,8 +24,6 @@ export default class implements L.ILayer {
     private readonly container: HTMLDivElement
 
     constructor(items: ContextMenuItem<keyof MetroMapEventMap>[]) {
-        console.log('adding context menu')
-
         this.items = items
         // this._extraItems = new Map();
 
@@ -35,8 +33,6 @@ export default class implements L.ILayer {
             e.preventDefault();
             (e.target as HTMLElement).click()
         })
-
-        console.log('context menu ready')
     }
 
     addTo(map: L.Map) {
@@ -88,7 +84,6 @@ export default class implements L.ILayer {
 
         // defined here so that the marker gets set here (TODO: fix later)
         this.container.onclick = e => {
-            console.log(e)
             const cell = e.target as HTMLDivElement
             const eventType = cell.getAttribute('data-event')
             if (eventType) {

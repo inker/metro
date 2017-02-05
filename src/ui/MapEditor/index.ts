@@ -88,7 +88,6 @@ export default class MapEditor implements Widget {
     }
 
     private addMapListeners() {
-        console.log('adding edit map listeners')
         const map = this.metroMap.getMap()
         const dummyCircles = byId('dummy-circles')
         const pathsOuter = byId('paths-outer')

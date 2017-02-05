@@ -1,8 +1,9 @@
 import { LatLng } from 'leaflet'
-import {
-    isEqual,
-    last,
-} from 'lodash'
+import { isEqual, last } from 'lodash'
+
+import { timeToTravel } from './math'
+import { findClosestObject } from './geo'
+import { tryGetFromMap } from '../util'
 
 import Network, {
     Platform,
@@ -10,9 +11,6 @@ import Network, {
     Edge,
     Transfer,
 } from '../network'
-import { timeToTravel } from './math'
-import { findClosestObject } from './geo'
-import { tryGetFromMap } from '../util'
 
 export function findCycle(network: Network, station: Station): Platform[] {
     if (station.platforms.length < 3) {

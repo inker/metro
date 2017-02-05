@@ -249,7 +249,6 @@ export default class {
             this.plate.show(svg.circleOffset(e.relatedTarget as SVGCircleElement), getPlatformNames(platform))
         })
         this.subscribe('platformadd', e => {
-            console.log('add', e)
             const { detail } = e
             const location = mouseToLatLng(map, detail)
             const newPlatform = new Platform(tr`New station`, location, {})
@@ -289,7 +288,6 @@ export default class {
         this.subscribe('spanend', e => {
             const source = pool.dummyBindings.getKey(e.detail.source)
             const target = pool.dummyBindings.getKey(e.detail.target)
-            console.log(source, target)
             contextMenu.removeItem('spanend')
 
             const sourceRoutes = source.passingRoutes()
@@ -809,14 +807,14 @@ export default class {
         } else {
             console.error(span, 'span has no routes!')
         }
-        // console.log(span.source, span.target);
+
         const controlPoints = [
             tryGetFromMap(this.platformsOnSVG, span.source),
             tryGetFromMap(tryGetFromMap(this.whiskers, span.source), span),
             tryGetFromMap(tryGetFromMap(this.whiskers, span.target), span),
             tryGetFromMap(this.platformsOnSVG, span.target),
         ]
-        // console.log(span, this.whiskers.get(span.target), controlPoints);
+
         const bezier = svg.makeCubicBezier(controlPoints)
         // bezier.id = 'op-' + spanIndex;
         if (lineType === 'E') {

@@ -56,17 +56,17 @@ export default class MapOverlay<Container extends ElementWithStyle> implements L
         let mousePos: L.Point|null
         map.on('zoomstart', e => {
             classList.add('leaflet-zoom-animated')
-            console.log('zoomstart', e)
+            // console.log('zoomstart', e)
             map.dragging.disable()
         }).on('zoomanim', e => {
-            console.log('zoomanim', e)
+            // console.log('zoomanim', e)
             const { scale, origin } = e as any
             if (scale !== 1) {
                 this.scaleOverlay(scale, mousePos || origin)
             }
             mousePos = null
         }).on('zoomend', e => {
-            console.log('zoomend', e)
+            // console.log('zoomend', e)
             // console.log(map.project(this.network.platforms[69].location, map.getZoom()).divideBy(2 ** map.getZoom()))
 
             classList.remove('leaflet-zoom-animated')

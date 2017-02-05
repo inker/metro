@@ -1,4 +1,4 @@
-import * as L from 'leaflet'
+import { Point } from 'leaflet'
 
 import { svg } from '../../util'
 
@@ -46,7 +46,7 @@ export default class TextPlate {
         }
     }
 
-    show(bottomRight: L.Point, names: string[]) {
+    show(bottomRight: Point, names: string[]) {
         if (this.disabled || this.element.style.display !== 'none') {
             return
         }
@@ -60,8 +60,8 @@ export default class TextPlate {
         const { width, height } = div.getBoundingClientRect()
 
         foreign.setAttribute('transform', `translate(${-width}, ${-height})`)
-        console.log(foreign.getBoundingClientRect())
-        console.log(div.getBoundingClientRect())
+        // console.log(foreign.getBoundingClientRect())
+        // console.log(div.getBoundingClientRect())
     }
 
     hide() {

@@ -30,8 +30,6 @@ export async function getLineRules() {
             const tokens = selector.match(/^.(M\d+|L|E)$/)
             if (tokens && tokens[1]) {
                 lineRules.set(tokens[1], rule.style)
-            } else if (selector === '#paths-outer > .L') {
-                lineRules.set('light-rail-path', rule.style)
             }
         }
     }
