@@ -1,17 +1,32 @@
-function hexToArray(hex: string): number[] {
-    const tokens = hex.match(/[0-9a-f]{1,2}/ig)
-    return tokens ? tokens.map(s => parseInt(s, 16)) : []
+import * as _ from 'lodash'
+
+function parseColor(color: string): number[] {
+    let tokens: string[]|null = color.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i)
+    if (tokens) {
+        return tokens.slice(1).map(Number)
+    }
+    if (!color.startsWith('#')) {
+        throw new Error(`invalid css color: ${color}`)
+    }
+    if (color.length === 7) {
+        tokens = color.match(/[0-9a-f]{2}/ig)
+    } else if (color.length === 4) {
+        tokens = color.split('')
+    }
+    if (!tokens) {
+        throw new Error(`invalid css color: ${color}`)
+    }
+    return tokens.map(s => parseInt(s, 16))
 }
 
-function rgbToArray(rgb: string): number[] {
-    const tokens = rgb.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i)
-    return tokens ? tokens.slice(1).map(Number) : []
-}
-
-export function mean(rgb: string[]): string {
-    const reduceFunc = (prev: number[], cur: string) =>
-        (cur.startsWith('#') ? hexToArray : rgbToArray)(cur)
-            .map((it, i) => prev[i] + it)
-    const [r, g, b] = rgb.reduce(reduceFunc, [0, 0, 0]).map(i => Math.floor(i / rgb.length))
-    return `rgb(${r}, ${g}, ${b})`
+export function mean(colors: string[]): string {
+    const str = _(colors)
+        .map(parseColor)
+        .unzipWith((...arrays) => _.mean(arrays))
+        .map(avg => _.round(avg))
+        .map(num => num.toString(16))
+        .map(hexVal => _.padStart(hexVal, 2, '0'))
+        .value()
+        .join('')
+    return `#${str}`
 }

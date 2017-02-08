@@ -1,4 +1,5 @@
 import { LatLng, latLng } from 'leaflet'
+import { meanBy } from 'lodash'
 import { callMeMaybe } from './index'
 
 interface Locatable { location: LatLng };
@@ -38,13 +39,7 @@ export function findObjectsWithinRadius<T extends Locatable>(
 }
 
 export function getCenter(points: LatLng[]): LatLng {
-    let y = 0
-    let x = 0
-    for (const { lat, lng } of points) {
-        y += lat
-        x += lng
-    }
-    return latLng(y / points.length, x / points.length)
+    return latLng(meanBy(points, p => p.lat), meanBy(points, p => p.lng))
 }
 
 type FitnessFunc = (current: LatLng) => number
