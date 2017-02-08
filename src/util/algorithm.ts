@@ -238,7 +238,7 @@ function shortestTransfer(p1: Platform, p2: Platform) {
                 continue
             }
             const distance = distanceBetween(currentNode.location, neighborNode.location)
-            const alt = dist.get(currentNode) + distance
+            const alt = tryGetFromMap(dist, currentNode) + distance
             if (alt < tryGetFromMap(dist, neighborNode)) {
                 dist.set(neighborNode, alt)
                 prev.set(neighborNode, currentNode)

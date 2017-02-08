@@ -669,7 +669,7 @@ export default class {
                 posByName.set(name, overlay.latLngToOverlayPoint(geoCenter))
             })
             for (const platform of station.platforms) {
-                const pos = posByName.get(platform.name)
+                const pos = tryGetFromMap(posByName, platform.name)
                 platformsOnSVG.set(platform, pos)
             }
         }
@@ -745,7 +745,7 @@ export default class {
         for (let i = 0; i < 2; ++i) {
             const wing = wings[i]
             for (const span of sortedSpans[i]) {
-                const t = distances.get(span) * c
+                const t = tryGetFromMap(distances, span) * c
                 const end = wing.multiplyBy(t).add(pos)
                 whiskers.set(span, end)
             }
