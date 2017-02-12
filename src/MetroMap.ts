@@ -625,7 +625,7 @@ export default class {
         let gradient = pool.gradientBindings.get(transfer)
         if (gradient === undefined) {
             gradient = svg.Gradients.makeLinear(gradientVector, gradientColors, circlePortion)
-            gradient.id = generateId(id => document.getElementById(id) !== null)
+            gradient.id = generateId(id => document.getElementById(id) === null)
             pool.gradientBindings.set(transfer, gradient)
             this.overlay.defs.appendChild(gradient)
         } else {

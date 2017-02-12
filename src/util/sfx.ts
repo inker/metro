@@ -10,7 +10,6 @@ import { tryGetFromMap, byId, transitionEnd } from './index'
 
 import {
     Platform,
-    Station,
     Edge,
     Transfer,
     Span,

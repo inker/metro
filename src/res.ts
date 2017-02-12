@@ -1,4 +1,4 @@
-import { tryGet, generateId } from './util'
+import { tryGet } from './util'
 
 export interface Config {
     containerId: string,
@@ -12,9 +12,9 @@ export interface Config {
     },
 }
 
-const id = generateId()
+const now = Date.now()
 
-export const cachelessFetch = (url: string) => fetch(`${url}?${id}`)
+export const cachelessFetch = (url: string) => fetch(`${url}?${now}`)
 
 export const getJSON = (url: string) => cachelessFetch(url).then(data => data.json()) as Promise<any>
 

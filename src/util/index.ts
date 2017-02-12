@@ -59,9 +59,9 @@ export function roundPoint(point: L.Point, precision: number): L.Point {
     return L.point(+point.x.toFixed(precision), +point.y.toFixed(precision))
 }
 
-export function generateId(collision?: (temp: string) => boolean): string {
+export function generateId(validate?: (temp: string) => boolean): string {
     const id = Math.random().toString(36).slice(2)
-    return collision && collision(id) ? generateId(collision) : id
+    return !validate || validate(id) ? id : generateId(validate)
 }
 
 export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {

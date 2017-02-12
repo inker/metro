@@ -57,7 +57,7 @@ export function getCircumcenter(positions: Point[]): Point {
     const bb = dot(b, b)
     const cc = dot(c, c)
     return point((c.y * bb - b.y * cc), (b.x * cc - c.x * bb))
-        .divideBy(2.0 * (b.x * c.y - b.y * c.x))
+        .divideBy(2 * det(b, c))
         .add(a)
 }
 

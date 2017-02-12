@@ -96,12 +96,6 @@ export function makeCubicBezier(controlPoints: Point[]): SVGPathElement {
     return path
 }
 
-export function makeTransferRing(center: Point, radius: number) {
-    const outer = makeCircle(center, radius)
-    const inner: typeof outer = outer.cloneNode(true) as any
-    return [outer, inner]
-}
-
 export function makeTransferArc(start: Point, end: Point, third: Point) {
     const outer = makeArc(start, end, third)
     const inner: typeof outer = outer.cloneNode(true) as any
@@ -136,6 +130,8 @@ export function getLength(path: SVGPathElement|SVGLineElement) {
 }
 
 export namespace Filters {
+    const glowFilterId = 'black-glow'
+
     export function makeDrop(): SVGFilterElement {
         const filter = createSVGElement('filter')
         filter.id = 'shadow'
@@ -157,7 +153,7 @@ export namespace Filters {
 
     export function makeGlow(): SVGFilterElement {
         const filter = createSVGElement('filter')
-        filter.id = 'black-glow'
+        filter.id = glowFilterId
         filter.innerHTML = `<feColorMatrix type="matrix" values=
                 "0 0 0 0   0
                 0 0 0 0   0
@@ -204,7 +200,7 @@ export namespace Filters {
         const style = getComputedStyle(path)
         const strokeWidth = parseFloat(style.strokeWidth || path.style.strokeWidth || '0') * 2
         if (box.height >= strokeWidth && box.width >= strokeWidth) {
-            path.style.filter = 'url(#black-glow)'
+            path.style.filter = `url(#${glowFilterId})`
         }
     }
 }
