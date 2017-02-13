@@ -1,4 +1,4 @@
-import { tryGet } from './util'
+import { tryDo } from './util'
 
 export interface Config {
     containerId: string,
@@ -20,7 +20,7 @@ export const getJSON = (url: string) => cachelessFetch(url).then(data => data.js
 
 export async function getLineRules() {
     const link = document.getElementById('scheme') as HTMLLinkElement
-    const styleSheet = await tryGet(() => link.sheet as CSSStyleSheet, sheet => sheet !== null)
+    const styleSheet = await tryDo(() => link.sheet as CSSStyleSheet, sheet => sheet !== null)
     const lineRules = new Map<string, CSSStyleDeclaration>()
     for (const rule of (styleSheet.cssRules as any)) {
         if (!(rule instanceof CSSStyleRule)) {

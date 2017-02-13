@@ -26,7 +26,6 @@ export function mean(colors: string[]): string {
         .map(avg => _.round(avg))
         .map(num => num.toString(16))
         .map(hexVal => _.padStart(hexVal, 2, '0'))
-        .value()
         .join('')
     return `#${str}`
 }

@@ -59,11 +59,6 @@ export function roundPoint(point: L.Point, precision: number): L.Point {
     return L.point(+point.x.toFixed(precision), +point.y.toFixed(precision))
 }
 
-export function generateId(validate?: (temp: string) => boolean): string {
-    const id = Math.random().toString(36).slice(2)
-    return !validate || validate(id) ? id : generateId(validate)
-}
-
 export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {
     const { top, left } = map.getContainer().getBoundingClientRect()
     const containerPoint = L.point(event.clientX - left, event.clientY - top)
@@ -169,7 +164,7 @@ export function flashTitle(titles: string[], duration: number) {
 
 export const delay = (ms: number) => new Promise((resolve, reject) => setTimeout(resolve, ms))
 
-export async function tryGet<T>(
+export async function tryDo<T>(
     fetch: () => T,
     validate?: (val: T) => boolean,
     interval = 100,
@@ -187,8 +182,8 @@ export async function tryGet<T>(
 
 export function tryGetElement(query: string, interval = 100, ttl = 100): Promise<Element> {
     const rest = query.slice(1)
-    const foo = query[0] === '#' ? (() => document.getElementById(rest)) : () => document.querySelector(query)
-    return tryGet(foo, val => val !== null, interval, ttl)
+    const func = query[0] === '#' ? (() => document.getElementById(rest)) : () => document.querySelector(query)
+    return tryDo(func, val => val !== null, interval, ttl)
 }
 
 export function removeAllChildren(el: Node) {

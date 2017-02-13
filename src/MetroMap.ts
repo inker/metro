@@ -1,6 +1,6 @@
 import * as L from 'leaflet'
 import { downloadText } from 'download.js'
-import { get, difference } from 'lodash'
+import { get, difference, uniqueId } from 'lodash'
 
 import * as ui from './ui'
 import * as res from './res'
@@ -35,7 +35,6 @@ import {
     removeAllChildren,
     byId,
     // midPointsToEnds,
-    generateId,
     attr,
 } from './util'
 
@@ -625,7 +624,7 @@ export default class {
         let gradient = pool.gradientBindings.get(transfer)
         if (gradient === undefined) {
             gradient = svg.Gradients.makeLinear(gradientVector, gradientColors, circlePortion)
-            gradient.id = generateId(id => document.getElementById(id) === null)
+            gradient.id = uniqueId('gradient-')
             pool.gradientBindings.set(transfer, gradient)
             this.overlay.defs.appendChild(gradient)
         } else {
@@ -754,15 +753,14 @@ export default class {
     }
 
     private makeTransferArc(transfer: Transfer, cluster: Platform[]): SVGLineElement[] | SVGPathElement[] {
-        const pl1 = transfer.source
-        const pl2 = transfer.target
-        const pos1 = tryGetFromMap(this.platformsOnSVG, transfer.source)
-        const pos2 = tryGetFromMap(this.platformsOnSVG, transfer.target)
+        const { source, target } = transfer
+        const pos1 = tryGetFromMap(this.platformsOnSVG, source)
+        const pos2 = tryGetFromMap(this.platformsOnSVG, target)
         const makeArc = (third: Platform) => svg.makeTransferArc(pos1, pos2, tryGetFromMap(this.platformsOnSVG, third))
         if (cluster.length === 3) {
-            const third = difference(cluster, [pl1, pl2])[0]
+            const third = difference(cluster, [source, target])[0]
             return makeArc(third)
-        } else if (pl1 === cluster[2] && pl2 === cluster[3] || pl1 === cluster[3] && pl2 === cluster[2]) {
+        } else if (source === cluster[2] && target === cluster[3] || source === cluster[3] && target === cluster[2]) {
             return svg.makeTransferLine(pos1, pos2)
         }
         // const s = transfer.source;
