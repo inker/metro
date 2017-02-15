@@ -23,18 +23,6 @@ module.exports = {
   target: 'web',
   context: path.join(__dirname, 'src'),
   entry: {
-    vendor: [
-      'leaflet',
-      'alertifyjs',
-      'hammerjs',
-      'lodash',
-      'localforage',
-      'bim',
-      'svgio',
-      'download.js',
-      'whatwg-fetch',
-      'es6-promise',
-    ],
     app: './main.ts',
   },
   output: {
@@ -105,7 +93,7 @@ module.exports = {
     new CommonsChunkPlugin({
       name: 'vendor',
       filename: 'vendor.js',
-      minChunks: Infinity,
+      minChunks: module => module.context && module.context.includes('node_modules'),
     }),
     new ProvidePlugin({
       Promise: 'es6-promise',
