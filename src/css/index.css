@@ -60,16 +60,6 @@ a:hover {
     transition: opacity 2s linear;
 }
 
-circle {
-    transform-origin: 50% 50%;
-}
-
-@-moz-document url-prefix() {
-    circle {
-        transform-origin: 0% 0%;
-    }
-}
-
 button {
     background-color: white;
     border: none;

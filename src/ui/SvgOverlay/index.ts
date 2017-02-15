@@ -12,15 +12,17 @@ export default class extends MapOverlay<SVGSVGElement> {
     constructor(bounds: LatLngBounds, margin = point(100, 100)) {
         super(bounds, margin)
 
-        this.overlayContainer = createSVGElement('svg')
-        this.overlayContainer.classList.add(style.overlay)
-
         this.defs = createSVGElement('defs')
-        this.overlayContainer.appendChild(this.defs)
 
-        this.origin = createSVGElement('g')
-        this.origin.id = 'origin'
-        this.origin.setAttribute('transform', `translate(${this.margin.x}, ${this.margin.y})`)
-        this.overlayContainer.appendChild(this.origin)
+        const origin = createSVGElement('g')
+        origin.id = 'origin'
+        origin.setAttribute('transform', `translate(${this.margin.x}, ${this.margin.y})`)
+        this.origin = origin
+
+        const overlayContainer = createSVGElement('svg')
+        overlayContainer.classList.add(style.overlay)
+        overlayContainer.appendChild(this.defs)
+        overlayContainer.appendChild(origin)
+        this.overlayContainer = overlayContainer
     }
 }

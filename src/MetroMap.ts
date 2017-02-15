@@ -753,10 +753,11 @@ export default class {
     }
 
     private makeTransferArc(transfer: Transfer, cluster: Platform[]): SVGLineElement[] | SVGPathElement[] {
+        const { platformsOnSVG } = this
         const { source, target } = transfer
-        const pos1 = tryGetFromMap(this.platformsOnSVG, source)
-        const pos2 = tryGetFromMap(this.platformsOnSVG, target)
-        const makeArc = (third: Platform) => svg.makeTransferArc(pos1, pos2, tryGetFromMap(this.platformsOnSVG, third))
+        const pos1 = tryGetFromMap(platformsOnSVG, source)
+        const pos2 = tryGetFromMap(platformsOnSVG, target)
+        const makeArc = (third: Platform) => svg.makeTransferArc(pos1, pos2, tryGetFromMap(platformsOnSVG, third))
         if (cluster.length === 3) {
             const third = difference(cluster, [source, target])[0]
             return makeArc(third)
@@ -792,14 +793,14 @@ export default class {
     }
 
     private makePath(span: Span) {
-        const { routes } = span
+        const { routes, source, target } = span
         let lineId = ''
         let lineType = ''
         let lineNum = ''
         if (routes.length > 0) {
             const tokens = span.routes[0].line.match(/([MEL])(\d{0,2})/)
             if (!tokens) {
-                throw new Error(`match failed for ${span.source.name}-${span.target.name}`)
+                throw new Error(`match failed for ${source.name}-${target.name}`)
             }
             [lineId, lineType, lineNum] = tokens
         } else {
@@ -807,10 +808,10 @@ export default class {
         }
 
         const controlPoints = [
-            tryGetFromMap(this.platformsOnSVG, span.source),
-            tryGetFromMap(tryGetFromMap(this.whiskers, span.source), span),
-            tryGetFromMap(tryGetFromMap(this.whiskers, span.target), span),
-            tryGetFromMap(this.platformsOnSVG, span.target),
+            tryGetFromMap(this.platformsOnSVG, source),
+            tryGetFromMap(tryGetFromMap(this.whiskers, source), span),
+            tryGetFromMap(tryGetFromMap(this.whiskers, target), span),
+            tryGetFromMap(this.platformsOnSVG, target),
         ]
 
         const bezier = svg.makeCubicBezier(controlPoints)

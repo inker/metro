@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@types/whatwg-fetch": "0.0.33",
-    "autoprefixer": "^6.7.2",
+    "autoprefixer": "^6.7.3",
     "awesome-typescript-loader": "^3.0.4-rc.2",
     "classlist-polyfill": "^1.0.3",
     "copy-webpack-plugin": "^4.0.1",

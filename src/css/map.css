@@ -2,6 +2,16 @@ path {
     fill-opacity: 0; /* so that no white stuff be visible */
 }
 
+circle {
+    transform-origin: 50% 50%;
+}
+
+@-moz-document url-prefix() {
+    circle {
+        transform-origin: 0% 0%;
+    }
+}
+
 #station-circles {
     fill: white;
     stroke: black;
