@@ -1,11 +1,6 @@
 import * as L from 'leaflet'
-import { fixFontRendering } from '../../util'
 
 type LeafletMouseEvent = L.LeafletMouseEvent
-
-function fixFontDelayed(parent: Element, time = 250) {
-    setTimeout(() => fixFontRendering(parent), time)
-}
 
 type ElementWithStyle = Element&{ style: CSSStyleDeclaration }
 export default class MapOverlay<Container extends ElementWithStyle> implements L.ILayer {
@@ -76,13 +71,6 @@ export default class MapOverlay<Container extends ElementWithStyle> implements L
             this.updateOverlayPositioning()
             map.fireEvent('overlayupdate', this)
             map.dragging.enable()
-        }).on('moveend', e => {
-            fixFontRendering()
-            if (L.version[0] === '1') {
-                fixFontDelayed(tilePane.firstElementChild)
-            } else if (overlayPane.hasChildNodes()) {
-                fixFontDelayed(overlayPane, 0)
-            }
         })
 
         const onWheel = (e: WheelEvent) => mousePos = L.DomEvent.getMousePosition(e)

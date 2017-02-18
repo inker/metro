@@ -193,17 +193,6 @@ export function removeAllChildren(el: Node) {
     }
 }
 
-/**
- * Fixes blurry font due to 'transform3d' CSS property. Changes everything to 'transform' when the map is not moving
- */
-export function fixFontRendering(parent: { querySelectorAll } = document) {
-    const blurringStuff = parent.querySelectorAll('[style*="translate3d"]') as any as HTMLElement[]
-    console.log('fixing font', parent, blurringStuff)
-    for (const blurry of blurringStuff) {
-        trim3d(blurry)
-    }
-}
-
 export function getSecondLanguage() {
     const tokens = location.search.match(/city=(\w+)/)
     const city = tokens ? tokens[1] : 'spb'

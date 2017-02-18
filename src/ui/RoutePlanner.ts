@@ -51,8 +51,6 @@ export default class implements Widget {
         }
         const otherMarker = marker === this.fromMarker ? this.toMarker : this.fromMarker
         if (map.hasLayer(otherMarker)) {
-            // fixing font rendering here boosts the performance
-            util.fixFontRendering()
             this.visualizeRouteBetween(this.fromMarker.getLatLng(), this.toMarker.getLatLng())
             // this.map.once('zoomend', e => this.visualizeShortestRoute(latLngArr));
             // this.map.fitBounds(L.latLngBounds(latLngArr));
@@ -62,7 +60,6 @@ export default class implements Widget {
     private addMarkerListeners() {
         for (const marker of [this.fromMarker, this.toMarker]) {
             marker.on('drag', e => this.visualizeShortestRoute(false)).on('dragend', e => {
-                util.fixFontRendering()
                 this.visualizeShortestRoute()
             })
         }

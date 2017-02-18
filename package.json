@@ -15,7 +15,8 @@
     "leaflet": "^0.7.7",
     "localforage": "^1.4.3",
     "lodash": "^4.17.4",
-    "svgio": "^0.3.3"
+    "svgio": "^0.3.3",
+    "unblur": "0.0.2"
   },
   "devDependencies": {
     "@types/whatwg-fetch": "0.0.33",

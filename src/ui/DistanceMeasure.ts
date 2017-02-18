@@ -9,7 +9,7 @@ type LeafletMouseEvent = L.LeafletMouseEvent
 export default class implements L.ILayer {
     private map: L.Map
     private readonly polyline = L.polyline([], { color: 'red'})
-    private readonly markers = L.featureGroup().on('layeradd layerremove', e => util.fixFontRendering())
+    private readonly markers = L.featureGroup()
     private readonly dashedLine = L.polyline([], { color: 'red', opacity: 0.5, dashArray: '0,9' })
 
     onAdd(map: L.Map) {

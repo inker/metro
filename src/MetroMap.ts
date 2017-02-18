@@ -31,7 +31,6 @@ import {
     intersection,
     getPlatformNames,
     getPlatformNamesZipped,
-    fixFontRendering,
     removeAllChildren,
     byId,
     // midPointsToEnds,
@@ -183,8 +182,6 @@ export default class {
 
         await tileLoadPromise
         // wait.parentElement.removeChild(wait);
-        fixFontRendering()
-        this.map.on('layeradd layerremove', e => fixFontRendering())
         mapPaneStyle.visibility = ''
         // const img = file.svgToImg(document.getElementById('overlay') as any, true);
         // file.svgToCanvas(document.getElementById('overlay') as any)
