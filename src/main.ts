@@ -20,11 +20,9 @@ if (Browser.ie) {
     alert('Does not work in IE (yet)')
 }
 
-if (!Browser.mobile && Browser.webkit3d) {
-    unblur({
-        skipIf: () => document.querySelectorAll('[style*="transition"], [style*="scale"]').length > 0,
-    })
-}
+unblur({
+    skipIf: () => document.querySelectorAll('[style*="transition"], [style*="scale"]').length > 0,
+})
 
 const tokens = location.search.match(/city=(\w+)/)
 const city = tokens ? tokens[1] : 'spb'
