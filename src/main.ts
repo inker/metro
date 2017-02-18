@@ -22,6 +22,7 @@ if (Browser.ie) {
 
 unblur({
     skipIf: () => document.querySelectorAll('[style*="transition"], [style*="scale"]').length > 0,
+    interval: 250,
 })
 
 const tokens = location.search.match(/city=(\w+)/)

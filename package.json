@@ -1,6 +1,6 @@
 {
   "name": "metro-map",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "St Petersburg's future metro",
   "main": "bin/www",
   "dependencies": {
@@ -16,7 +16,7 @@
     "localforage": "^1.5.0",
     "lodash": "^4.17.4",
     "svgio": "^0.3.3",
-    "unblur": "^0.3.1"
+    "unblur": "^0.4.1"
   },
   "devDependencies": {
     "@types/whatwg-fetch": "0.0.33",
