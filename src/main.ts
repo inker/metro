@@ -22,7 +22,7 @@ if (Browser.ie) {
 
 if (!Browser.mobile && Browser.webkit3d) {
     unblur({
-        skipWhen: () => document.querySelectorAll('[style*="transition"], [style*="scale"]').length > 0,
+        skipIf: () => document.querySelectorAll('[style*="transition"], [style*="scale"]').length > 0,
     })
 }
 
