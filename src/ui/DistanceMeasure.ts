@@ -39,7 +39,7 @@ export default class implements L.ILayer {
             latlngs[i] = currentLatLng
             distance += markers[i - 1].getLatLng().distanceTo(currentLatLng)
             const d = Math.round(distance)
-            const str = d < 1000 ? d + ' m' : (d < 10000 ? d / 1000 : Math.round(d / 10) / 100) + ' km'
+            const str = d < 1000 ? `${d} m` : `${d < 10000 ? d / 1000 : Math.round(d / 10) / 100} km`
             markers[i].setPopupContent(str)
         }
         if (latlngs.length > nMarkers) {

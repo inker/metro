@@ -150,13 +150,6 @@ export function midPointsToEnds(posOnSVG: L.Point, midPts: L.Point[]) {
     return midPts.map(v => roundPoint(v.add(offset), 2))
 }
 
-export function trim3d<T extends { style: CSSStyleDeclaration }>({ style }: T) {
-    const { transform } = style
-    if (transform) {
-        style.transform = transform.replace(/translate3d\s*\((.+?,\s*.+?),\s*.+?\s*\)/i, 'translate($1)')
-    }
-}
-
 export function flashTitle(titles: string[], duration: number) {
     let i = 0
     setInterval(() => document.title = titles[++i % titles.length], duration)

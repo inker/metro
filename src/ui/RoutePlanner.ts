@@ -51,7 +51,7 @@ export default class implements Widget {
         }
         const otherMarker = marker === this.fromMarker ? this.toMarker : this.fromMarker
         if (map.hasLayer(otherMarker)) {
-            this.visualizeRouteBetween(this.fromMarker.getLatLng(), this.toMarker.getLatLng())
+            this.visualizeShortestRoute(true)
             // this.map.once('zoomend', e => this.visualizeShortestRoute(latLngArr));
             // this.map.fitBounds(L.latLngBounds(latLngArr));
         }
@@ -60,12 +60,12 @@ export default class implements Widget {
     private addMarkerListeners() {
         for (const marker of [this.fromMarker, this.toMarker]) {
             marker.on('drag', e => this.visualizeShortestRoute(false)).on('dragend', e => {
-                this.visualizeShortestRoute()
+                this.visualizeShortestRoute(true)
             })
         }
     }
 
-    private visualizeShortestRoute(animate = true) {
+    private visualizeShortestRoute(animate: boolean) {
         const map = this.metroMap.getMap()
         if (!map.hasLayer(this.fromMarker) || !map.hasLayer(this.toMarker)) {
             return
@@ -73,7 +73,7 @@ export default class implements Widget {
         this.visualizeRouteBetween(this.fromMarker.getLatLng(), this.toMarker.getLatLng(), animate)
     }
 
-    private visualizeRouteBetween(from: LatLng, to: LatLng, animate = true) {
+    private visualizeRouteBetween(from: LatLng, to: LatLng, animate: boolean) {
         util.resetStyle()
         alertify.dismissAll()
         visualizeRoute(shortestRoute(this.metroMap.getNetwork().platforms, from, to), animate)
