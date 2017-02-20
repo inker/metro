@@ -22,8 +22,9 @@ if (Browser.ie) {
 
 const unBlurSelector = '.leaflet-drag-target, .leaflet-zoom-anim, [style*="transition"]'
 unblur({
-    skipIf: () => !!document.querySelector(unBlurSelector),
+    skipIf: () => document.querySelector(unBlurSelector) !== null,
     interval: 250,
+    log: true,
 })
 
 const tokens = location.search.match(/city=(\w+)/)
