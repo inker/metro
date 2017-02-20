@@ -20,8 +20,9 @@ if (Browser.ie) {
     alert('Does not work in IE (yet)')
 }
 
+const unBlurSelector = '.leaflet-drag-target, .leaflet-zoom-anim, [style*="transition"]'
 unblur({
-    skipIf: () => document.querySelectorAll('[style*="transition"], [style*="scale"]').length > 0,
+    skipIf: () => document.querySelectorAll(unBlurSelector).length > 0,
     interval: 250,
 })
 
