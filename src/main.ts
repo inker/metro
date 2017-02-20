@@ -22,7 +22,7 @@ if (Browser.ie) {
 
 const unBlurSelector = '.leaflet-drag-target, .leaflet-zoom-anim, [style*="transition"]'
 unblur({
-    skipIf: () => document.querySelectorAll(unBlurSelector).length > 0,
+    skipIf: () => !!document.querySelector(unBlurSelector),
     interval: 250,
 })
 
