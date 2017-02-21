@@ -15,7 +15,6 @@ export default class extends MapOverlay<SVGSVGElement> {
         this.defs = createSVGElement('defs')
 
         const origin = createSVGElement('g')
-        origin.id = 'origin'
         origin.setAttribute('transform', `translate(${this.margin.x}, ${this.margin.y})`)
         this.origin = origin
 

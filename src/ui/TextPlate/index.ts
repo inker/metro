@@ -19,7 +19,6 @@ export default class TextPlate {
         foreign.setAttribute('height', '100%')
         foreign.appendChild(div)
         const { element } = this
-        element.id = 'station-plate'
         element.style.display = 'none'
         element.appendChild(foreign)
     }
