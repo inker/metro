@@ -97,96 +97,100 @@ export default class {
     }
 
     public async makeMap() {
-        const { config } = this
-        const lineRulesPromise = tryGetElement('#scheme').then((link: HTMLLinkElement) => {
-            link.href = config.url['scheme']
-            return res.getLineRules()
-        })
-        const networkPromise = this.getGraph()
-        const tileLoadPromise = new Promise(resolve => mapbox.once('load', resolve))
-        const dataPromise = res.getJSON(config.url['data'])
+        try {
+            const { config } = this
+            const lineRulesPromise = tryGetElement('#scheme').then((link: HTMLLinkElement) => {
+                link.href = config.url['scheme']
+                return res.getLineRules()
+            })
+            const networkPromise = this.getGraph()
+            const tileLoadPromise = new Promise(resolve => mapbox.once('load', resolve))
+            const dataPromise = res.getJSON(config.url['data'])
 
-        // wait.textContent = 'making map...';
+            // wait.textContent = 'making map...';
 
-        config.center = [0, 0]
-        const mapOptions = Object.assign({}, config)
-        if (L.version[0] === '1') {
-            mapOptions['wheelPxPerZoomLevel'] = 75
-            mapOptions['inertiaMaxSpeed'] = 1500
-            mapOptions['fadeAnimation'] = false
-        }
-        this.map = L.map(config.containerId, mapOptions).addControl(L.control.scale({
-            imperial: false,
-        }))
-        const mapPaneStyle = this.map.getPanes().mapPane.style
-        mapPaneStyle.visibility = 'hidden'
-
-        ui.addLayerSwitcher(this.map, [
-            mapbox,
-            mapnik,
-            osmFrance,
-            openMapSurfer,
-            cartoDBNoLabels,
-            wikimapia,
-        ])
-
-        addEventListener('keydown', e => {
-            if (e.shiftKey && e.ctrlKey && e.keyCode === 82) {
-                this.getGraph().then(nw => this.resetNetwork(nw))
+            config.center = [0, 0]
+            const mapOptions = Object.assign({}, config)
+            if (L.version[0] === '1') {
+                mapOptions['wheelPxPerZoomLevel'] = 75
+                mapOptions['inertiaMaxSpeed'] = 1500
+                mapOptions['fadeAnimation'] = false
             }
-        })
-        // wait.textContent = 'loading graph...';
-        this.addContextMenu()
+            this.map = L.map(config.containerId, mapOptions).addControl(L.control.scale({
+                imperial: false,
+            }))
+            const mapPaneStyle = this.map.getPanes().mapPane.style
+            mapPaneStyle.visibility = 'hidden'
 
-        const json = await networkPromise
-        this.network = new Network(json)
-        const center = geo.getCenter(this.network.platforms.map(p => p.location))
-        config.center = [center.lat, center.lng]
-        const bounds = L.latLngBounds(this.network.platforms.map(p => p.location))
-        this.overlay = new ui.SvgOverlay(bounds, L.point(200, 200)).addTo(this.map)
-        const { defs } = this.overlay
-        svg.Filters.appendAll(defs)
-        const { textContent } = defs
-        if ((textContent || '').length === 0) {
-            alert(tr`Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience.`)
+            ui.addLayerSwitcher(this.map, [
+                mapbox,
+                mapnik,
+                osmFrance,
+                openMapSurfer,
+                cartoDBNoLabels,
+                wikimapia,
+            ])
+
+            addEventListener('keydown', e => {
+                if (e.shiftKey && e.ctrlKey && e.keyCode === 82) {
+                    this.getGraph().then(nw => this.resetNetwork(nw))
+                }
+            })
+            // wait.textContent = 'loading graph...';
+            this.addContextMenu()
+
+            const json = await networkPromise
+            this.network = new Network(json)
+            const center = geo.getCenter(this.network.platforms.map(p => p.location))
+            config.center = [center.lat, center.lng]
+            const bounds = L.latLngBounds(this.network.platforms.map(p => p.location))
+            this.overlay = new ui.SvgOverlay(bounds, L.point(200, 200)).addTo(this.map)
+            const { defs } = this.overlay
+            svg.Filters.appendAll(defs)
+            const { textContent } = defs
+            if ((textContent || '').length === 0) {
+                alert(tr`Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience.`)
+            }
+
+            const lineRules = await lineRulesPromise
+            this.lineRules = lineRules
+            // wait.textContent = 'adding content...';
+            this.resetMapView()
+            this.map.addLayer(mapbox)
+            this.map.on('overlayupdate', overlay => {
+                this.redrawNetwork()
+                // console.time('conversion');
+                // file.svgToPicture(document.getElementById('overlay') as any).then(img => {
+                //     document.body.appendChild(img);
+                //     console.timeEnd('conversion');
+                // });
+            })
+            this.initNetwork()
+            // TODO: fix the kludge making the grey area disappear
+            this.map.invalidateSize(false)
+            this.addMapListeners()
+            new ui.RoutePlanner().addTo(this)
+            new ui.DistanceMeasure().addTo(this.map)
+            // this.routeWorker.postMessage(this.network);
+            // ui.drawZones(this.map, this.network.platforms);
+
+            if (!L.Browser.mobile) {
+                new ui.MapEditor(config.detailedZoom).addTo(this)
+            }
+
+            dataPromise.then(data => new ui.FAQ(data.faq).addTo(this))
+            // wait.textContent = 'loading tiles...';
+
+            await tileLoadPromise
+            // wait.parentElement.removeChild(wait);
+            mapPaneStyle.visibility = ''
+            // const img = file.svgToImg(document.getElementById('overlay') as any, true);
+            // file.svgToCanvas(document.getElementById('overlay') as any)
+            //     .then(canvas => fFile.downloadText('svg.txt', canvas.toDataURL('image/png')));
+            // file.downloadText('img.txt', img.src);
+        } catch (e) {
+            console.error(e)
         }
-
-        const lineRules = await lineRulesPromise
-        this.lineRules = lineRules
-        // wait.textContent = 'adding content...';
-        this.resetMapView()
-        this.map.addLayer(mapbox)
-        this.map.on('overlayupdate', overlay => {
-            this.redrawNetwork()
-            // console.time('conversion');
-            // file.svgToPicture(document.getElementById('overlay') as any).then(img => {
-            //     document.body.appendChild(img);
-            //     console.timeEnd('conversion');
-            // });
-        })
-        this.initNetwork()
-        // TODO: fix the kludge making the grey area disappear
-        this.map.invalidateSize(false)
-        this.addMapListeners()
-        new ui.RoutePlanner().addTo(this)
-        new ui.DistanceMeasure().addTo(this.map)
-        // this.routeWorker.postMessage(this.network);
-        // ui.drawZones(this.map, this.network.platforms);
-
-        if (!L.Browser.mobile) {
-            new ui.MapEditor(config.detailedZoom).addTo(this)
-        }
-
-        dataPromise.then(data => new ui.FAQ(data.faq).addTo(this))
-        // wait.textContent = 'loading tiles...';
-
-        await tileLoadPromise
-        // wait.parentElement.removeChild(wait);
-        mapPaneStyle.visibility = ''
-        // const img = file.svgToImg(document.getElementById('overlay') as any, true);
-        // file.svgToCanvas(document.getElementById('overlay') as any)
-        //     .then(canvas => fFile.downloadText('svg.txt', canvas.toDataURL('image/png')));
-        // file.downloadText('img.txt', img.src);
     }
 
     public subscribe<K extends keyof MetroMapEventMap>(type: K, listener: (e: MetroMapEventMap[K]) => void) {

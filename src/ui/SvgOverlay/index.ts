@@ -5,12 +5,12 @@ import { createSVGElement } from '../../util/svg'
 
 import * as style from './style.css'
 
-export default class extends MapOverlay<SVGSVGElement> {
+export default class extends MapOverlay<'svg'> {
     readonly defs: SVGDefsElement
     readonly origin: SVGGElement
 
     constructor(bounds: LatLngBounds, margin = point(100, 100)) {
-        super(bounds, margin)
+        super('svg', bounds, margin)
 
         this.defs = createSVGElement('defs')
 
@@ -18,10 +18,9 @@ export default class extends MapOverlay<SVGSVGElement> {
         origin.setAttribute('transform', `translate(${this.margin.x}, ${this.margin.y})`)
         this.origin = origin
 
-        const overlayContainer = createSVGElement('svg')
+        const { overlayContainer } = this
         overlayContainer.classList.add(style.overlay)
         overlayContainer.appendChild(this.defs)
         overlayContainer.appendChild(origin)
-        this.overlayContainer = overlayContainer
     }
 }

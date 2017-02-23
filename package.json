@@ -12,6 +12,7 @@
     "bim": "^1.0.15",
     "download.js": "0.0.3",
     "hammerjs": "^2.0.8",
+    "html-tags": "^1.1.1",
     "leaflet": "^0.7.7",
     "localforage": "^1.5.0",
     "lodash": "^4.17.4",

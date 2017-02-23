@@ -1,12 +1,12 @@
 import * as L from 'leaflet'
 import { get } from 'lodash'
+import * as htmlTags from 'html-tags'
 
 type LeafletMouseEvent = L.LeafletMouseEvent
 
-type ElementWithStyle = Element&{ style: CSSStyleDeclaration }
-export default class MapOverlay<Container extends ElementWithStyle> implements L.ILayer {
+export default class MapOverlay<TagName extends keyof ElementTagNameMap> implements L.ILayer {
     private map: L.Map
-    protected overlayContainer: Container
+    protected overlayContainer: ElementTagNameMap[TagName]
 
     private readonly bounds: L.LatLngBounds
     private topLeft: L.Point
@@ -15,7 +15,9 @@ export default class MapOverlay<Container extends ElementWithStyle> implements L
     private minZoom: number
     private maxZoom: number
 
-    constructor(bounds: L.LatLngBounds, margin = L.point(100, 100)) {
+    constructor(tagName: TagName, bounds: L.LatLngBounds, margin = L.point(100, 100)) {
+        const ns = htmlTags.includes(tagName) && tagName !== 'svg' ? 'http://www.w3.org/1999/xhtml' : 'http://www.w3.org/2000/svg'
+        this.overlayContainer = document.createElementNS(ns, tagName) as any
         this.margin = margin.round()
         this.bounds = bounds
     }
@@ -33,7 +35,7 @@ export default class MapOverlay<Container extends ElementWithStyle> implements L
         this.updateOverlayPositioning()
 
         const { objectsPane, markerPane, mapPane } = map.getPanes();
-        (L.version[0] === '1' ? mapPane : objectsPane).insertBefore(this.overlayContainer, markerPane)
+        (L.version[0] === '1' ? mapPane : objectsPane).insertBefore(this.overlayContainer as any, markerPane)
 
         this.addMapMovementListeners()
     }
@@ -41,13 +43,13 @@ export default class MapOverlay<Container extends ElementWithStyle> implements L
     onRemove(map: L.Map) {
         // this.map = this.minZoom = this.maxZoom = undefined
         const { objectsPane, mapPane } = map.getPanes();
-        (L.version[0] === '1' ? mapPane : objectsPane).removeChild(this.overlayContainer)
+        (L.version[0] === '1' ? mapPane : objectsPane).removeChild(this.overlayContainer as any)
         this.map.clearAllEventListeners() // fix later
     }
 
     private addMapMovementListeners() {
         const { map } = this
-        const { style, classList } = this.overlayContainer
+        const { style, classList } = this.overlayContainer as any as HTMLElement
         let mousePos: L.Point|null
         classList.add('leaflet-zoom-animated')
         map.on('zoomanim', e => {
@@ -83,7 +85,7 @@ export default class MapOverlay<Container extends ElementWithStyle> implements L
         this.topLeft = map.project(nw).round()
 
         const pixelBounds = L.bounds(map.latLngToLayerPoint(nw), map.latLngToLayerPoint(se))
-        const { style } = this.overlayContainer
+        const { style } = this.overlayContainer as any as HTMLElement
         const topLeft = pixelBounds.min.subtract(margin)
         style.left = topLeft.x + 'px'
         style.top = topLeft.y + 'px'
@@ -94,12 +96,12 @@ export default class MapOverlay<Container extends ElementWithStyle> implements L
     }
 
     private scaleOverlay(scaleFactor: number, mousePos?: L.Point) {
-        const { left, top } = this.overlayContainer.getBoundingClientRect()
+        const { left, top } = (this.overlayContainer as any).getBoundingClientRect()
         if (!mousePos) {
             const el = document.documentElement
             mousePos = L.point(el.clientWidth / 2, el.clientHeight / 2)
         }
-        const { style } = this.overlayContainer
+        const { style } = this.overlayContainer as any as  HTMLElement
         // style.left = '0';
         // style.top = '0';
         style.transformOrigin = `${mousePos.x - left}px ${mousePos.y - top}px`
