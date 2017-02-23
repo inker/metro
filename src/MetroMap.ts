@@ -434,8 +434,10 @@ export default class {
     }
 
     private cleanElements() {
-        for (const child of (this.overlay.origin.childNodes as any)) {
-            if (child !== this.plate.element) {
+        const { overlay, plate } = this
+        const { element } = plate
+        for (const child of (overlay.origin.childNodes as any)) {
+            if (child !== element) {
                 removeAllChildren(child)
             }
         }
@@ -447,7 +449,7 @@ export default class {
         for (const platform of platforms) {
             this.platformToModel(platform, [
                 tryGetFromMap(platformBindings, platform),
-                tryGetFromMap(dummyBindings, platform) as SVGCircleElement,
+                tryGetFromMap(dummyBindings, platform),
             ])
         }
     }

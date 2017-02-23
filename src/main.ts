@@ -22,17 +22,17 @@ if (Browser.ie) {
     alert('Does not work in IE (yet)')
 }
 
+const configPromise = getJSON('res/mapconfig.json')
+
+unblur({
+    skipIf: () => document.querySelector(UNBLUR_SELECTOR) !== null,
+    interval: 250,
+})
+
+const tokens = location.search.match(/city=(\w+)/)
+const city = tokens ? tokens[1] : 'spb'
+
 ; (async () => {
-    const configPromise = getJSON('res/mapconfig.json')
-
-    unblur({
-        skipIf: () => document.querySelector(UNBLUR_SELECTOR) !== null,
-        interval: 250,
-    })
-
-    const tokens = location.search.match(/city=(\w+)/)
-    const city = tokens ? tokens[1] : 'spb'
-
     const config = await configPromise
     const dictPromise = updateDictionary(config.url['dictionary'])
     for (const url of Object.keys(config.url)) {
