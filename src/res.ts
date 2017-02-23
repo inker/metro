@@ -10,6 +10,7 @@ export interface Config {
     url: {
         [resource: string]: string,
     },
+    [option: string]: any,
 }
 
 const now = Date.now()
