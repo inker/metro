@@ -1,5 +1,6 @@
 import * as L from 'leaflet'
 import { downloadText } from 'download.js'
+import unblur from 'unblur'
 import { get, difference, uniqueId } from 'lodash'
 
 import * as ui from './ui'
@@ -49,6 +50,8 @@ const {
 const { Scale } = sfx
 const { mean } = math
 const { findCycle } = algorithm
+
+const UNBLUR_SELECTOR = '.leaflet-drag-target, .leaflet-zoom-anim, [style*="transition"]'
 
 const contextMenuArray = [{
     event: 'routefrom',
@@ -188,6 +191,10 @@ export default class {
             // file.svgToCanvas(document.getElementById('overlay') as any)
             //     .then(canvas => fFile.downloadText('svg.txt', canvas.toDataURL('image/png')));
             // file.downloadText('img.txt', img.src);
+            unblur({
+                skipIf: () => document.querySelector(UNBLUR_SELECTOR) !== null,
+                interval: 250,
+            })
         } catch (e) {
             console.error(e)
         }

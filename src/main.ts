@@ -2,7 +2,6 @@
 
 import { Browser, Icon } from 'leaflet'
 import { capitalize } from 'lodash'
-import unblur from 'unblur'
 
 import { getJSON } from './res'
 import { updateDictionary, translate } from './i18n'
@@ -16,18 +15,11 @@ import './css/map.css'
 
 Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images'
 
-const UNBLUR_SELECTOR = '.leaflet-drag-target, .leaflet-zoom-anim, [style*="transition"]'
-
 if (Browser.ie) {
     alert('Does not work in IE (yet)')
 }
 
 const configPromise = getJSON('res/mapconfig.json')
-
-unblur({
-    skipIf: () => document.querySelector(UNBLUR_SELECTOR) !== null,
-    interval: 250,
-})
 
 const tokens = location.search.match(/city=(\w+)/)
 const city = tokens ? tokens[1] : 'spb'
