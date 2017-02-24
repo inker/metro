@@ -5,7 +5,6 @@ import { capitalize } from 'lodash'
 
 import { getJSON } from './res'
 import { updateDictionary, translate } from './i18n'
-import MetroMap from './MetroMap'
 
 import 'leaflet-dist/leaflet.css'
 import 'alertify-dist/css/alertify.css'
@@ -20,6 +19,7 @@ if (Browser.ie) {
 }
 
 const configPromise = getJSON('res/mapconfig.json')
+const mapPromise = L.Browser.mobile ? System.import('./MetroMap') : System.import('./EditableMetroMap')
 
 const tokens = location.search.match(/city=(\w+)/)
 const city = tokens ? tokens[1] : 'spb'
@@ -34,5 +34,7 @@ const city = tokens ? tokens[1] : 'spb'
 
     await dictPromise
     document.title = translate(document.title)
-    new MetroMap(config)
+
+    const Map = await mapPromise
+    new Map.default(config)
 })()

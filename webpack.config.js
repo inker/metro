@@ -27,7 +27,7 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, 'docs'),
-    filename: '[name].js',
+    filename: '[name].[hash].js',
     sourceMapFilename: '[file].map',
   },
   resolve: {
