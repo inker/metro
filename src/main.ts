@@ -14,8 +14,13 @@ import './css/map.css'
 
 Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images'
 
-if (Browser.ie || navigator.userAgent.includes('Firefox')) {
+if (Browser.ie) {
     alert('Does not work in your browser (yet)')
+    throw new Error('shitty browser')
+}
+
+if (navigator.userAgent.includes('Firefox')) {
+    alert('There seems to be a problem with CORS in Firefox. Use Chrome')
     throw new Error('shitty browser')
 }
 
