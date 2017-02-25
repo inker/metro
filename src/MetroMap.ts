@@ -3,7 +3,7 @@ import unblur from 'unblur'
 import { get, difference, uniqueId } from 'lodash'
 
 import * as ui from './ui'
-import * as res from './res'
+import { Config, getLineRules, getJSON } from './res'
 import pool from './ObjectPool'
 import { tr } from './i18n'
 
@@ -67,7 +67,7 @@ const contextMenuArray = [{
 
 export default class {
     readonly mediator = new Mediator()
-    protected readonly config: res.Config
+    protected readonly config: Config
     protected map: L.Map
     protected overlay: ui.SvgOverlay
     protected readonly contextMenu = new ui.ContextMenu(contextMenuArray as any)
@@ -89,21 +89,21 @@ export default class {
         return this.network
     }
 
-    constructor(config: res.Config) {
+    constructor(config: Config) {
         this.config = config
         this.makeMap()
     }
 
-    async makeMap() {
+    protected async makeMap() {
         try {
             const { config } = this
             const lineRulesPromise = tryGetElement('#scheme').then((link: HTMLLinkElement) => {
                 link.href = config.url['scheme']
-                return res.getLineRules()
+                return getLineRules()
             })
             const networkPromise = this.getGraph()
             const tileLoadPromise = new Promise(resolve => mapbox.once('load', resolve))
-            const dataPromise = res.getJSON(config.url['data'])
+            const dataPromise = getJSON(config.url['data'])
 
             // wait.textContent = 'making map...';
 
@@ -190,7 +190,7 @@ export default class {
         }
     }
 
-    public subscribe<K extends keyof MetroMapEventMap>(type: K, listener: (e: MetroMapEventMap[K]) => void) {
+    subscribe<K extends keyof MetroMapEventMap>(type: K, listener: (e: MetroMapEventMap[K]) => void) {
         this.mediator.subscribe(type, listener)
         // forwarding map event to mediator
         this.map.on(type, this.mediator.publish)
@@ -262,7 +262,7 @@ export default class {
     }
 
     private getGraph(): Promise<GraphJSON> {
-        return res.getJSON(this.config.url['graph']) as any
+        return getJSON(this.config.url['graph']) as any
     }
 
     protected resetNetwork(json: GraphJSON) {

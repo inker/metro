@@ -14,8 +14,9 @@ import './css/map.css'
 
 Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images'
 
-if (Browser.ie) {
-    alert('Does not work in IE (yet)')
+if (Browser.ie || navigator.userAgent.includes('Firefox')) {
+    alert('Does not work in your browser (yet)')
+    throw new Error('shitty browser')
 }
 
 const configPromise = getJSON('res/mapconfig.json')

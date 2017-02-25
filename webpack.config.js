@@ -92,7 +92,6 @@ module.exports = {
     // new CheckerPlugin(),
     new CommonsChunkPlugin({
       name: 'vendor',
-      filename: 'vendor.js',
       minChunks: module => module.context && module.context.includes('node_modules'),
     }),
     new ProvidePlugin({

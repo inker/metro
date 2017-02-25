@@ -3,8 +3,8 @@ import { difference } from 'lodash'
 
 import MetroMap from './MetroMap'
 
-import * as ui from './ui'
-import * as res from './res'
+import { Config } from './res'
+import { MapEditor, askRoutes, platformRenameDialog } from './ui'
 import pool from './ObjectPool'
 import { tr } from './i18n'
 
@@ -25,13 +25,13 @@ import {
 } from './util'
 
 export default class extends MetroMap {
-    constructor(config: res.Config) {
+    constructor(config: Config) {
         super(config)
     }
 
-    async makeMap() {
+    protected async makeMap() {
         await super.makeMap()
-        new ui.MapEditor(this.config.detailedZoom).addTo(this)
+        new MapEditor(this.config.detailedZoom).addTo(this)
     }
 
     protected addMapListeners() {
@@ -49,7 +49,7 @@ export default class extends MetroMap {
         this.subscribe('platformrename', e => {
             const platform = relatedTargetToPlatform(e.relatedTarget)
             this.plate.show(svg.circleOffset(e.relatedTarget as SVGCircleElement), getPlatformNames(platform))
-            ui.platformRenameDialog(platform)
+            platformRenameDialog(platform)
         })
         this.subscribe('platformmovestart', e => {
             this.plate.disabled = true
@@ -88,7 +88,7 @@ export default class extends MetroMap {
                 return
             }
             const span = relatedTargetToSpan(e.relatedTarget)
-            const routeSet = ui.askRoutes(this.network, new Set(span.routes))
+            const routeSet = askRoutes(this.network, new Set(span.routes))
             span.routes = Array.from(routeSet)
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
@@ -110,9 +110,9 @@ export default class extends MetroMap {
             const sn = sourceRoutes.size
             const tn = targetRoutes.size
 
-            const routeSet = sn > 0 && tn === 0 ? (sn === 1 ? sourceRoutes : ui.askRoutes(this.network, sourceRoutes)) :
-                tn > 0 && sn === 0 ? (tn === 1 ? targetRoutes : ui.askRoutes(this.network, targetRoutes)) :
-                    ui.askRoutes(this.network, intersection(sourceRoutes, targetRoutes))
+            const routeSet = sn > 0 && tn === 0 ? (sn === 1 ? sourceRoutes : askRoutes(this.network, sourceRoutes)) :
+                tn > 0 && sn === 0 ? (tn === 1 ? targetRoutes : askRoutes(this.network, targetRoutes)) :
+                    askRoutes(this.network, intersection(sourceRoutes, targetRoutes))
 
             this.network.spans.push(new Span(source, target, Array.from(routeSet)))
             this.resetNetwork(JSON.parse(this.network.toJSON()))
