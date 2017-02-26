@@ -1,6 +1,6 @@
 import * as L from 'leaflet'
 import unblur from 'unblur'
-import { get, difference, uniqueId } from 'lodash'
+import { get, difference, uniqueId, maxBy } from 'lodash'
 
 import * as ui from './ui'
 import { Config, getLineRules, getJSON } from './res'
@@ -476,7 +476,8 @@ export default class {
         for (const station of network.stations) {
             const nameSet = new Set<string>()
             const center = overlay.latLngToOverlayPoint(station.getCenter())
-            for (const platform of station.platforms) {
+            const { platforms } = station
+            for (const platform of platforms) {
                 nameSet.add(platform.name)
                 platformsOnSVG.set(platform, center)
             }
@@ -490,11 +491,11 @@ export default class {
             }
             const posByName = new Map<string, L.Point>()
             nameSet.forEach(name => {
-                const locations = station.platforms.filter(p => p.name === name).map(p => p.location)
+                const locations = platforms.filter(p => p.name === name).map(p => p.location)
                 const geoCenter = geo.getCenter(locations)
                 posByName.set(name, overlay.latLngToOverlayPoint(geoCenter))
             })
-            for (const platform of station.platforms) {
+            for (const platform of platforms) {
                 const pos = tryGetFromMap(posByName, platform.name)
                 platformsOnSVG.set(platform, pos)
             }
@@ -703,16 +704,15 @@ export default class {
         }
         if (this.map.getZoom() >= this.config.detailedZoom) {
             for (const transfer of this.network.transfers) {
-                if (
-                    platforms.some(p => transfer.has(p))
+                const shouldScale = platforms.some(p => transfer.has(p))
                     && filteredNames.includes(transfer.source.name)
                     && filteredNames.includes(transfer.target.name)
-                ) {
+                if (shouldScale) {
                     Scale.scaleTransfer(transfer, scaleFactor)
                 }
             }
         }
-        const topmostPlatform = platforms.reduce((p, c) => p.location.lat < c.location.lat ? c : p)
+        const topmostPlatform = maxBy(platforms, p => p.location.lat)
         const topmostCircle = tryGetFromMap(pool.platformBindings, topmostPlatform)
         this.plate.show(svg.circleOffset(topmostCircle), namesOnPlate)
     }

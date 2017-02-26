@@ -1,6 +1,5 @@
 import { LatLng, latLng } from 'leaflet'
 import { meanBy } from 'lodash'
-import { callMeMaybe } from './index'
 
 interface Locatable { location: LatLng };
 
@@ -53,7 +52,9 @@ export function calculateGeoMean(
 ): LatLng {
     let point = getCenter(points)
     let fitness = fitnessFunc(point)
-    callMeMaybe(onClimb, point)
+    if (onClimb) {
+        onClimb(point)
+    }
     for (let step = 10; step > minStep; step *= 0.61803398875) {
         const max = step
         for (let lat = -max; lat <= max; lat += step) {
@@ -63,7 +64,9 @@ export function calculateGeoMean(
                 if (total < fitness) {
                     point = pt
                     fitness = total
-                    callMeMaybe(onClimb, point)
+                    if (onClimb) {
+                        onClimb(point)
+                    }
                 }
             }
         }

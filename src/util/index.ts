@@ -65,10 +65,6 @@ export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {
     return map.containerPointToLatLng(containerPoint)
 }
 
-export function callMeMaybe<ReturnType>(func: ((...params: any[]) => ReturnType)|undefined, ...params: any[]) {
-    return func ? func(...params) : undefined
-}
-
 export const once = <K extends keyof HTMLElementEventMap>(
     el: EventTarget,
     eventType: K,
@@ -148,11 +144,6 @@ export function midPointsToEnds(posOnSVG: L.Point, midPts: L.Point[]) {
         .add(midPts[0])
     const offset = posOnSVG.subtract(midOfMidsWeighted)
     return midPts.map(v => roundPoint(v.add(offset), 2))
-}
-
-export function flashTitle(titles: string[], duration: number) {
-    let i = 0
-    setInterval(() => document.title = titles[++i % titles.length], duration)
 }
 
 export const delay = (ms: number) => new Promise((resolve, reject) => setTimeout(resolve, ms))
