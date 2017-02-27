@@ -46,8 +46,6 @@ const { Scale } = sfx
 const { mean } = math
 const { findCycle } = algorithm
 
-const UNBLUR_SELECTOR = '.leaflet-drag-target, .leaflet-zoom-anim, [style*="transition"]'
-
 const contextMenuArray = [{
     event: 'routefrom',
     text: 'Route from here',
@@ -181,13 +179,22 @@ export default class {
             // file.svgToCanvas(document.getElementById('overlay') as any)
             //     .then(canvas => fFile.downloadText('svg.txt', canvas.toDataURL('image/png')));
             // file.downloadText('img.txt', img.src);
-            unblur({
-                skipIf: () => document.querySelector(UNBLUR_SELECTOR) !== null,
-                interval: 250,
-            })
+            this.runUnblur()
         } catch (e) {
             console.error(e)
         }
+    }
+
+    runUnblur() {
+        const UNBLUR_SELECTOR = '[style*="transition"]'
+        let moving = false
+        this.map
+            .on('movestart', e => moving = true)
+            .on('moveend', e => moving = false)
+        unblur({
+            skipIf: () => moving || document.querySelector(UNBLUR_SELECTOR) !== null,
+            interval: 250,
+        })
     }
 
     subscribe<K extends keyof MetroMapEventMap>(type: K, listener: (e: MetroMapEventMap[K]) => void) {
