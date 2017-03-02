@@ -1,9 +1,10 @@
 import * as alertify from 'alertifyjs'
 import { Browser } from 'leaflet'
+import animateSvg from 'animate-svg'
 import { last } from 'lodash'
 
 import pool from '../ObjectPool'
-import { getLength, Filters } from './svg'
+import { Filters } from './svg'
 import { ShortestRouteObject } from './algorithm'
 import { tr, formatTime as ft } from '../i18n'
 import { tryGetFromMap, byId, transitionEnd } from './index'
@@ -84,24 +85,6 @@ export namespace Animation {
         return currentAnimation
     }
 
-    function animatePathElement(path: SVGPathElement|SVGLineElement, speed: number, reverse = false) {
-        const length = getLength(path)
-        const initialOffset = reverse ? -length : length
-        const duration = length / speed
-
-        const transitionEndPromise = transitionEnd(path)
-
-        const { style } = path
-        style.transition = null
-        style.opacity = null
-        style.strokeDasharray = `${length} ${length}`
-        style.strokeDashoffset = initialOffset.toString()
-        path.getBoundingClientRect()
-        style.transition = `stroke-dashoffset ${duration}ms linear`
-        style.strokeDashoffset = '0'
-        return transitionEndPromise
-    }
-
     async function animateCurrentRoute(platforms: Platform[], edges: Edge<Platform>[], speed = 1) {
         const nEdges = edges.length
         for (let i = 0; i < nEdges; ++i) {
@@ -132,9 +115,9 @@ export namespace Animation {
 
             Filters.applyDrop(outer)
             const reverse = edge.source !== platforms[i]
-            const animations = [animatePathElement(outer, speed, reverse)]
+            const animations = [animateSvg(outer, speed, reverse)]
             if (inner) {
-                animations.push(animatePathElement(inner, speed, reverse))
+                animations.push(animateSvg(inner, speed, reverse))
             }
 
             await Promise.all(animations)

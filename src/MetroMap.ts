@@ -633,7 +633,7 @@ export default class {
         let lineType = ''
         let lineNum = ''
         if (routes.length > 0) {
-            const tokens = span.routes[0].line.match(/([MEL])(\d{0,2})/)
+            const tokens = routes[0].line.match(/([MEL])(\d{0,2})/)
             if (!tokens) {
                 throw new Error(`match failed for ${source.name}-${target.name}`)
             }

@@ -120,15 +120,6 @@ export function circleOffset(circle: SVGCircleElement): Point {
     return c.subtract(offset)
 }
 
-export function getLength(path: SVGPathElement|SVGLineElement) {
-    if (path instanceof SVGPathElement) {
-        return path.getTotalLength()
-    }
-    const from = point(+attr(path, 'x1'), +attr(path, 'y1'))
-    const to = point(+attr(path, 'x2'), +attr(path, 'y2'))
-    return from.distanceTo(to)
-}
-
 export namespace Filters {
     const glowFilterId = 'black-glow'
 
