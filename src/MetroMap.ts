@@ -67,6 +67,7 @@ export default class {
     readonly mediator = new Mediator()
     protected readonly config: Config
     protected map: L.Map
+    private moving = false
     protected overlay: ui.SvgOverlay
     protected readonly contextMenu = new ui.ContextMenu(contextMenuArray as any)
 
@@ -153,7 +154,9 @@ export default class {
             this.resetMapView()
             this.map.addLayer(mapbox)
             this.map.on('overlayupdate', overlay => {
+                this.moving = true
                 this.redrawNetwork()
+                this.moving = false
                 // console.time('conversion');
                 // file.svgToPicture(document.getElementById('overlay') as any).then(img => {
                 //     document.body.appendChild(img);
@@ -187,12 +190,11 @@ export default class {
 
     runUnblur() {
         const UNBLUR_SELECTOR = '[style*="transition"]'
-        let moving = false
         this.map
-            .on('movestart', e => moving = true)
-            .on('moveend', e => moving = false)
+            .on('movestart', e => this.moving = true)
+            .on('moveend', e => this.moving = false)
         unblur({
-            skipIf: () => moving || document.querySelector(UNBLUR_SELECTOR) !== null,
+            skipIf: () => this.moving || document.querySelector(UNBLUR_SELECTOR) !== null,
             interval: 250,
         })
     }
