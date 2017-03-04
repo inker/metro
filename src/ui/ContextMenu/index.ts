@@ -65,15 +65,16 @@ export default class implements L.ILayer {
 
     private handler(event: MouseEvent) {
         event.preventDefault()
-        console.log('target', event.target, event.target['parentNode'])
+        const { target } = event as any as { target: Node }
+        console.log('target', target, target.parentNode)
         dom.removeAllChildren(this.container)
         for (const item of this.items) {
-            if (item.trigger !== undefined && !item.trigger(event.target)) {
-                console.log(item.trigger(event.target))
+            if (item.trigger && !item.trigger(target)) {
+                console.log(item.trigger(target))
                 continue
             }
             const cell = document.createElement('div')
-            if (item.extra !== undefined && item.extra.disabled) {
+            if (item.extra && item.extra.disabled) {
                 cell.setAttribute('disabled', '')
             } else {
                 cell.setAttribute('data-event', item.event)

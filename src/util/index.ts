@@ -92,8 +92,8 @@ export function getPlatformNames(platform: Platform): string[] {
     if (second && altNames[second]) {
         names.push(altNames[second])
     }
-    if (altNames['en']) {
-        names.push(altNames['en'])
+    if (altNames.en) {
+        names.push(altNames.en)
     }
     return names
 }

@@ -95,21 +95,21 @@ export default class {
         try {
             const { config } = this
             const lineRulesPromise = dom.tryGetElement('#scheme').then((link: HTMLLinkElement) => {
-                link.href = config.url['scheme']
+                link.href = config.url.scheme
                 return getLineRules()
             })
             const networkPromise = this.getGraph()
             const tileLoadPromise = new Promise(resolve => mapbox.once('load', resolve))
-            const dataPromise = getJSON(config.url['data'])
+            const dataPromise = getJSON(config.url.data)
 
             // wait.textContent = 'making map...';
 
             config.center = [0, 0]
             const mapOptions = Object.assign({}, config)
             if (L.version[0] === '1') {
-                mapOptions['wheelPxPerZoomLevel'] = 75
-                mapOptions['inertiaMaxSpeed'] = 1500
-                mapOptions['fadeAnimation'] = false
+                mapOptions.wheelPxPerZoomLevel = 75
+                mapOptions.inertiaMaxSpeed = 1500
+                mapOptions.fadeAnimation = false
             }
             this.map = L.map(config.containerId, mapOptions).addControl(L.control.scale({
                 imperial: false,
@@ -269,7 +269,7 @@ export default class {
     }
 
     private getGraph(): Promise<GraphJSON> {
-        return getJSON(this.config.url['graph']) as any
+        return getJSON(this.config.url.graph) as any
     }
 
     protected resetNetwork(json: GraphJSON) {

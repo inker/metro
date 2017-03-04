@@ -32,9 +32,9 @@ function assignNames(platform: Platform, newNames: string[]) {
     const second = getSecondLanguage()
     const { altNames } = platform
     if (second) {
-        [platform.name, altNames[second], altNames['en']] = newNames
+        [platform.name, altNames[second], altNames.en] = newNames
     } else {
-        [platform.name, altNames['en']] = newNames
+        [platform.name, altNames.en] = newNames
     }
 }
 
