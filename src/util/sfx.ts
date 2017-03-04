@@ -4,7 +4,7 @@ import animateSvg from 'animate-svg'
 import { last } from 'lodash'
 
 import pool from '../ObjectPool'
-import { Filters } from './svg'
+import { filters } from './svg'
 import { ShortestRouteObject } from './algorithm'
 import { tryGetFromMap } from './index'
 import { byId } from './dom'
@@ -116,7 +116,7 @@ export namespace Animation {
                 pathsInner.appendChild(inner)
             }
 
-            Filters.applyDrop(outer)
+            filters.applyDrop(outer)
             const reverse = edge.source !== platforms[i]
             const animations = [animateSvg(outer, speed, reverse)]
             if (inner) {
@@ -126,7 +126,7 @@ export namespace Animation {
             await Promise.all(animations)
             outerOld.style.opacity = null
             if (outer.id.charAt(1) !== 't') {
-                Filters.applyDrop(outerOld)
+                filters.applyDrop(outerOld)
             }
             pathsOuter.removeChild(outer)
             if (inner) {
@@ -202,7 +202,7 @@ export function rehighlightEdges(edges: Edge<Platform>[]) {
             inner.style.opacity = null
         }
         if (edge instanceof Span) {
-            Filters.applyDrop(outer)
+            filters.applyDrop(outer)
         }
     }
 }

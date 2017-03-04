@@ -124,7 +124,7 @@ export async function repeatUntil<ReturnValueType>(
 ) {
     for (let i = 0; i < ttl; ++i) {
         const val = func()
-        if (!validate || validate(val)) {
+        if (validate(val)) {
             return val
         }
         await delay(interval)

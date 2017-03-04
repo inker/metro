@@ -24,6 +24,8 @@ import {
     dom,
 } from './util'
 
+const { gradients } = svg
+
 export default class extends MetroMap {
     constructor(config: Config) {
         super(config)
@@ -284,9 +286,9 @@ export default class extends MetroMap {
                         const gradient = tryGetFromMap(pool.gradientBindings, transfer)
                         const otherPos = tryGetFromMap(this.platformsOnSVG, other)
                         const dir = prop === 'source' ? otherPos.subtract(pos) : pos.subtract(otherPos)
-                        svg.Gradients.setDirection(gradient, dir)
+                        gradients.setDirection(gradient, dir)
                         const circlePortion = circleTotalRadius / pos.distanceTo(otherPos)
-                        svg.Gradients.setOffset(gradient, circlePortion)
+                        gradients.setOffset(gradient, circlePortion)
                     } else if (tagName === 'path') {
                         const transfers: Transfer[] = []
                         for (const t of this.network.transfers) {
@@ -319,9 +321,9 @@ export default class extends MetroMap {
                                 inner.setAttribute('d', dom.attr(outer, 'd'))
                             }
                             const gradient = tryGetFromMap(pool.gradientBindings, tr)
-                            svg.Gradients.setDirection(gradient, pos2.subtract(pos1))
+                            gradients.setDirection(gradient, pos2.subtract(pos1))
                             const circlePortion = circleTotalRadius / pos1.distanceTo(pos2)
-                            svg.Gradients.setOffset(gradient, circlePortion)
+                            gradients.setOffset(gradient, circlePortion)
                         }
                     } else {
                         throw new TypeError('wrong element type for transfer')

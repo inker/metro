@@ -141,7 +141,7 @@ export default class {
             const bounds = L.latLngBounds(this.network.platforms.map(p => p.location))
             this.overlay = new ui.SvgOverlay(bounds, L.point(200, 200)).addTo(this.map)
             const { defs } = this.overlay
-            svg.Filters.appendAll(defs)
+            svg.filters.appendAll(defs)
             const { textContent } = defs
             if ((textContent || '').length === 0) {
                 alert(tr`Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience.`)
@@ -457,13 +457,13 @@ export default class {
         const gradientVector = pos2.subtract(pos1)
         let gradient = pool.gradientBindings.get(transfer)
         if (gradient === undefined) {
-            gradient = svg.Gradients.makeLinear(gradientVector, gradientColors, circlePortion)
+            gradient = svg.gradients.makeLinear(gradientVector, gradientColors, circlePortion)
             gradient.id = uniqueId('gradient-')
             pool.gradientBindings.set(transfer, gradient)
             this.overlay.defs.appendChild(gradient)
         } else {
-            svg.Gradients.setDirection(gradient, gradientVector)
-            svg.Gradients.setOffset(gradient, circlePortion)
+            svg.gradients.setDirection(gradient, gradientVector)
+            svg.gradients.setOffset(gradient, circlePortion)
         }
         return `url(#${gradient.id})`
     }
