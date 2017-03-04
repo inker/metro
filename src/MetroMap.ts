@@ -23,13 +23,11 @@ import {
     algorithm,
     Mediator,
     color,
-    tryGetElement,
+    dom,
     tryGetFromMap,
     MetroMapEventMap,
     getPlatformNames,
     getPlatformNamesZipped,
-    removeAllChildren,
-    byId,
     // midPointsToEnds,
 } from './util'
 
@@ -96,7 +94,7 @@ export default class {
     protected async makeMap() {
         try {
             const { config } = this
-            const lineRulesPromise = tryGetElement('#scheme').then((link: HTMLLinkElement) => {
+            const lineRulesPromise = dom.tryGetElement('#scheme').then((link: HTMLLinkElement) => {
                 link.href = config.url['scheme']
                 return getLineRules()
             })
@@ -284,7 +282,7 @@ export default class {
         const { element } = plate
         for (const child of (overlay.origin.childNodes as any)) {
             if (child !== element) {
-                removeAllChildren(child)
+                dom.removeAllChildren(child)
             }
         }
     }
@@ -320,7 +318,7 @@ export default class {
         const docFrags = new Map<string, DocumentFragment>()
         for (const id of Object.keys(strokeWidths)) {
             docFrags.set(id, document.createDocumentFragment())
-            byId(id).style.strokeWidth = `${strokeWidths[id]}px`
+            dom.byId(id).style.strokeWidth = `${strokeWidths[id]}px`
         }
 
         const lightRailPathStyle = tryGetFromMap(this.lineRules, 'L')
@@ -438,7 +436,7 @@ export default class {
 
         console.time('appending')
 
-        docFrags.forEach((val, key) => byId(key).appendChild(val))
+        docFrags.forEach((val, key) => dom.byId(key).appendChild(val))
         console.timeEnd('appending')
 
     }
@@ -682,7 +680,7 @@ export default class {
             this.plate.hide()
             Scale.unscaleAll()
         }
-        const dummyCircles = byId('dummy-circles')
+        const dummyCircles = dom.byId('dummy-circles')
         dummyCircles.addEventListener('mouseover', e => {
             const dummy = e.target as SVGCircleElement
             const platform = pool.dummyBindings.getKey(dummy)
@@ -696,8 +694,8 @@ export default class {
             const names = getPlatformNamesZipped([transfer.source, transfer.target])
             this.highlightStation(transfer.source.station, names, [transfer.source.name, transfer.target.name])
         }
-        const transfersOuter = byId('transfers-outer')
-        const transfersInner = byId('transfers-inner')
+        const transfersOuter = dom.byId('transfers-outer')
+        const transfersInner = dom.byId('transfers-inner')
         transfersOuter.addEventListener('mouseover', onTransferOver)
         transfersInner.addEventListener('mouseover', onTransferOver)
         transfersOuter.addEventListener('mouseout', onMouseOut)

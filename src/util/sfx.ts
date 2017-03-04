@@ -6,8 +6,11 @@ import { last } from 'lodash'
 import pool from '../ObjectPool'
 import { Filters } from './svg'
 import { ShortestRouteObject } from './algorithm'
+import { tryGetFromMap } from './index'
+import { byId } from './dom'
+import { transitionEnd } from './events'
+
 import { tr, formatTime as ft } from '../i18n'
-import { tryGetFromMap, byId, transitionEnd } from './index'
 
 import {
     Platform,

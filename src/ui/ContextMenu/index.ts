@@ -1,7 +1,7 @@
 import * as L from 'leaflet'
 import { remove } from 'lodash'
 
-import { MetroMapEventMap, removeAllChildren } from '../../util'
+import { MetroMapEventMap, dom } from '../../util'
 import { translate } from '../../i18n'
 
 import * as style from './style.css'
@@ -66,7 +66,7 @@ export default class implements L.ILayer {
     private handler(event: MouseEvent) {
         event.preventDefault()
         console.log('target', event.target, event.target['parentNode'])
-        removeAllChildren(this.container)
+        dom.removeAllChildren(this.container)
         for (const item of this.items) {
             if (item.trigger !== undefined && !item.trigger(event.target)) {
                 console.log(item.trigger(event.target))

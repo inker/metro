@@ -1,7 +1,7 @@
 import { Point, point } from 'leaflet'
 
 import { dot, det, getCircumcenter } from './math'
-import { attr } from './index'
+import { attr } from './dom'
 
 export function createSVGElement<K extends keyof ElementTagNameMap>(tagName: K): ElementTagNameMap[K] {
     return document.createElementNS('http://www.w3.org/2000/svg', tagName) as any
@@ -185,7 +185,7 @@ export namespace Filters {
         defs.appendChild(makeGray())
     }
 
-    export function applyDrop(path: Element & SVGStylable) {
+    export function applyDrop(path: SVGPathElement|SVGLineElement) {
         // fixing disappearing lines
         const box = path.getBoundingClientRect()
         const style = getComputedStyle(path)

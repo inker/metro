@@ -4,7 +4,7 @@ import { throttle } from 'lodash'
 import MetroMap from '../../MetroMap'
 import { tr } from '../../i18n'
 import Widget from '../base/Widget'
-import { byId } from '../../util'
+import { byId } from '../../util/dom'
 
 import * as style from './style.css'
 

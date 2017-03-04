@@ -1,7 +1,7 @@
 import * as L from 'leaflet'
 import { last } from 'lodash'
 
-import * as util from '../util'
+import { events, mouseToLatLng } from '../util'
 import { RedCircle } from './Icons'
 
 type LeafletMouseEvent = L.LeafletMouseEvent
@@ -15,7 +15,7 @@ export default class implements L.ILayer {
     onAdd(map: L.Map) {
         this.map = map
         map.fireEvent('distancemeasureinit')
-        map.on('measuredistance', (e: MouseEvent) => this.measureDistance(util.mouseToLatLng(map, e)))
+        map.on('measuredistance', (e: MouseEvent) => this.measureDistance(mouseToLatLng(map, e)))
         map.on('clearmeasurements', (e: MouseEvent) => this.clearMeasurements())
         return this
     }
@@ -110,7 +110,7 @@ export default class implements L.ILayer {
             .on('click', this.makeMarker)
             .on('mousemove', this.resetDashedLine)
             .fire('click', { latlng: initialCoordinate, originalEvent: { button: 0 } })
-        util.onceEscapePress(e => this.map.fire('clearmeasurements'))
+        events.onceEscapePress(e => this.map.fire('clearmeasurements'))
     }
 
     private clearMeasurements() {

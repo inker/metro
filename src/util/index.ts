@@ -15,6 +15,8 @@ import Mediator from './Mediator'
 import * as sfx from './sfx'
 import * as svg from './svg'
 import * as color from './color'
+import * as dom from './dom'
+import * as events from './events'
 import MetroMapEventMap from './MetroMapEventMap'
 
 export {
@@ -25,6 +27,8 @@ export {
     sfx,
     svg,
     color,
+    dom,
+    events,
     MetroMapEventMap,
 }
 
@@ -64,42 +68,6 @@ export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {
     const containerPoint = L.point(event.clientX - left, event.clientY - top)
     return map.containerPointToLatLng(containerPoint)
 }
-
-export const once = <K extends keyof HTMLElementEventMap>(
-    el: EventTarget,
-    eventType: K,
-) => new Promise<HTMLElementEventMap[K]>(resolve => {
-    el.addEventListener(eventType, function handler(e) {
-        el.removeEventListener(eventType, handler)
-        resolve(e as any)
-    })
-})
-
-export function onceEscapePress(handler: (ev: KeyboardEvent) => any) {
-    const keydownListener = (e: KeyboardEvent) => {
-        if (e.keyCode !== 27) {
-            return
-        }
-        removeListener()
-        handler(e)
-    }
-    const backbuttonListener = e => {
-        removeListener()
-        handler(e)
-    }
-    function removeListener() {
-        removeEventListener('keydown', keydownListener)
-        removeEventListener('backbutton', backbuttonListener)
-    }
-
-    addEventListener('keydown', keydownListener)
-    addEventListener('backbutton', backbuttonListener)
-    // once(window, 'keydown', (e: KeyboardEvent) => {
-    //     if (e.keyCode === 27) handler(e);
-    // });
-}
-
-export const transitionEnd = (el: Element) => once(el, 'transitionend') as Promise<Event>
 
 export function resetStyle() {
     const els = document.querySelectorAll(RESET_SELECTOR) as any as HTMLElement[]
@@ -148,33 +116,20 @@ export function midPointsToEnds(posOnSVG: L.Point, midPts: L.Point[]) {
 
 export const delay = (ms: number) => new Promise((resolve, reject) => setTimeout(resolve, ms))
 
-export async function tryDo<T>(
-    fetch: () => T,
-    validate?: (val: T) => boolean,
+export async function repeatUntil<ReturnValueType>(
+    func: () => ReturnValueType,
+    validate: (val: ReturnValueType) => boolean,
     interval = 100,
     ttl = 100,
 ) {
     for (let i = 0; i < ttl; ++i) {
-        const val = fetch()
+        const val = func()
         if (!validate || validate(val)) {
             return val
         }
         await delay(interval)
     }
     throw new Error('rejected')
-}
-
-export function tryGetElement(query: string, interval = 100, ttl = 100): Promise<Element> {
-    const rest = query.slice(1)
-    const func = query[0] === '#' ? (() => document.getElementById(rest)) : () => document.querySelector(query)
-    return tryDo(func, val => val !== null, interval, ttl)
-}
-
-export function removeAllChildren(el: Node) {
-    let child: Node|null
-    while (child = el.firstChild) {
-        el.removeChild(child)
-    }
 }
 
 export function getSecondLanguage() {
@@ -200,20 +155,4 @@ export function tryGetFromMap<K, V>(map: IMap<K, V>, key: K): V {
         throw new Error('key or val is undefined')
     }
     return val
-}
-
-export function byId(id: string) {
-    const el = document.getElementById(id)
-    if (!el) {
-        throw new Error(`no element with id=${id} exists`)
-    }
-    return el
-}
-
-export function attr(el: Element, attributeName: string) {
-    const attribute = el.getAttribute(attributeName)
-    if (!attribute) {
-        throw new Error(`no attribute ${attributeName} on element with id=${el.id} exists`)
-    }
-    return attribute
 }

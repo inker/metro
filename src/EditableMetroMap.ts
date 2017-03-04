@@ -21,7 +21,7 @@ import {
     intersection,
     getPlatformNames,
     tryGetFromMap,
-    attr,
+    dom,
 } from './util'
 
 export default class extends MetroMap {
@@ -271,7 +271,7 @@ export default class extends MetroMap {
                     transfer['_' + prop] = platform
                     const circle = tryGetFromMap(pool.platformBindings, platform)
                     const circleBorderWidth = parseFloat(getComputedStyle(circle).strokeWidth || '')
-                    const r = +attr(circle, 'r')
+                    const r = +dom.attr(circle, 'r')
                     const circleTotalRadius = r / 2 + circleBorderWidth
                     const pos = tryGetFromMap(this.platformsOnSVG, platform)
                     if (tagName === 'line') {
@@ -316,7 +316,7 @@ export default class extends MetroMap {
                             const thirdPos = difference(circumpoints, [pos1, pos2])[0]
                             if (thirdPos) {
                                 svg.setCircularPath(outer, pos1, pos2, thirdPos)
-                                inner.setAttribute('d', attr(outer, 'd'))
+                                inner.setAttribute('d', dom.attr(outer, 'd'))
                             }
                             const gradient = tryGetFromMap(pool.gradientBindings, tr)
                             svg.Gradients.setDirection(gradient, pos2.subtract(pos1))

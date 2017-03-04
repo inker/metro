@@ -3,7 +3,7 @@ import * as Hammer from 'hammerjs'
 
 import Widget from '../base/Widget'
 import MetroMap from '../../MetroMap'
-import { transitionEnd, once } from '../../util'
+import { transitionEnd, once } from '../../util/events'
 
 import * as style from './style.css'
 
