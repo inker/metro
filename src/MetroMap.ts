@@ -187,12 +187,11 @@ export default class {
     }
 
     runUnblur() {
-        const UNBLUR_SELECTOR = '[style*="transition"]'
         this.map
             .on('movestart', e => this.moving = true)
             .on('moveend', e => this.moving = false)
         unblur({
-            skipIf: () => this.moving || document.querySelector(UNBLUR_SELECTOR) !== null,
+            skipIf: () => this.moving,
             interval: 250,
         })
     }
