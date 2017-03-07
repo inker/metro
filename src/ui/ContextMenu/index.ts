@@ -6,24 +6,26 @@ import { translate } from '../../i18n'
 
 import * as style from './style.css'
 
+type EventName = keyof MetroMapEventMap
+
 // TODO: merge items & extra items, introduce item index
 interface Extra {
     icon?: string,
     disabled?: boolean,
 }
-interface ContextMenuItem<K extends keyof MetroMapEventMap> {
+interface ContextMenuItem<EventName> {
     text: string,
-    event: K,
+    event: EventName,
     trigger?: (target: EventTarget) => boolean,
     extra?: Extra,
 }
 
 export default class implements L.ILayer {
     private map: L.Map
-    private readonly items: ContextMenuItem<keyof MetroMapEventMap>[]
+    private readonly items: ContextMenuItem<EventName>[]
     private readonly container: HTMLDivElement
 
-    constructor(items: ContextMenuItem<keyof MetroMapEventMap>[]) {
+    constructor(items: ContextMenuItem<EventName>[]) {
         this.items = items
         // this._extraItems = new Map();
 
@@ -101,8 +103,8 @@ export default class implements L.ILayer {
         this.show()
     }
 
-    insertItem<K extends keyof MetroMapEventMap>(
-        event: K,
+    insertItem(
+        event: EventName,
         text: string,
         trigger?: (target: EventTarget) => boolean,
         extra?: Extra,
@@ -116,8 +118,8 @@ export default class implements L.ILayer {
         }
     }
 
-    removeItem<K extends keyof MetroMapEventMap>(
-        event: K,
+    removeItem(
+        event: EventName,
         all = false,
     ) {
         if (all) {
