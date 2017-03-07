@@ -8,7 +8,7 @@ import { tryGetFromMap } from '../index'
 import { byId } from '../dom'
 import { transitionEnd } from '../events'
 
-import { Platform, Edge } from '../../network'
+import { Platform, Edge, Transfer } from '../../network'
 
 import { scaleCircle } from './scale'
 
@@ -16,6 +16,13 @@ const canPulsate = Browser.webkit && !Browser.mobile
 
 let animationsAllowed = true
 let currentAnimation: Promise<boolean>|null = null
+
+const BASE_SPEED = 1
+const TRANSFER_SPEED = 0.25
+
+const CIRCLE_SCALE = 1.5
+const LAST_CIRCLE_SCALE = 3
+const CIRCLE_SCALE_DURATION = 200
 
 export function terminateAnimations() {
     if (currentAnimation === null) {
@@ -25,8 +32,9 @@ export function terminateAnimations() {
     return currentAnimation
 }
 
-async function animateCurrentRoute(platforms: Platform[], edges: Edge<Platform>[], speed = 1) {
+async function animateCurrentRoute(platforms: Platform[], edges: Edge<Platform>[]) {
     const nEdges = edges.length
+    const transfersOuter = document.getElementById('transfers-outer')
     for (let i = 0; i < nEdges; ++i) {
         if (!animationsAllowed) {
             return false
@@ -35,12 +43,13 @@ async function animateCurrentRoute(platforms: Platform[], edges: Edge<Platform>[
         const circle = tryGetFromMap(pool.platformBindings, platforms[i])
         circle.style.opacity = null
         if (canPulsate) {
-            pulsateCircle(circle, 1.5, 200)
+            pulsateCircle(circle, CIRCLE_SCALE, CIRCLE_SCALE_DURATION)
         }
 
         const edge = edges[i]
+        const isTransfer = edge instanceof Transfer
         const outerOld = pool.outerEdgeBindings.get(edges[i]) as SVGPathElement|SVGLineElement|undefined
-        if (!outerOld) {
+        if (!outerOld || isTransfer && outerOld.parentNode !== transfersOuter) {
             continue
         }
         const innerOld = pool.innerEdgeBindings.get(edges[i])
@@ -54,6 +63,7 @@ async function animateCurrentRoute(platforms: Platform[], edges: Edge<Platform>[
         }
 
         filters.applyDrop(outer)
+        const speed = isTransfer ? TRANSFER_SPEED : BASE_SPEED
         const reverse = edge.source !== platforms[i]
         const animations = [animateSvg(outer, speed, reverse)]
         if (inner) {
@@ -62,9 +72,9 @@ async function animateCurrentRoute(platforms: Platform[], edges: Edge<Platform>[
 
         await Promise.all(animations)
         outerOld.style.opacity = null
-        if (outer.id.charAt(1) !== 't') {
-            filters.applyDrop(outerOld)
-        }
+        // if (!isTransfer) {
+        //     filters.applyDrop(outerOld)
+        // }
         pathsOuter.removeChild(outer)
         if (inner) {
             innerOld.style.opacity = null
@@ -74,13 +84,13 @@ async function animateCurrentRoute(platforms: Platform[], edges: Edge<Platform>[
     const lastCircle = tryGetFromMap(pool.platformBindings, last(platforms))
     lastCircle.style.opacity = null
     if (canPulsate) {
-        pulsateCircle(lastCircle, 3, 200)
+        pulsateCircle(lastCircle, LAST_CIRCLE_SCALE, CIRCLE_SCALE_DURATION)
     }
     return true
 }
 
-export function animateRoute(platforms: Platform[], edges: Edge<Platform>[], speed = 1) {
-    currentAnimation = animateCurrentRoute(platforms, edges, speed).then(finished => {
+export function animateRoute(platforms: Platform[], edges: Edge<Platform>[]) {
+    currentAnimation = animateCurrentRoute(platforms, edges).then(finished => {
         currentAnimation = null
         animationsAllowed = true
         return finished

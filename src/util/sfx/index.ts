@@ -41,7 +41,7 @@ export async function visualizeRoute(obj: ShortestRouteObject<Platform>, animate
         return
     }
 
-    const finished = await animation.animateRoute(platforms, edges, 1)
+    const finished = await animation.animateRoute(platforms, edges)
     // finished is undefined if not animated, false if animation is still running or true if otherwise
     if (finished) {
         alertify.message(tr`TIME:<br>${walkTo} on foot<br>${ft(time.metro)} by metro<br>${ft(time.walkFrom)} on foot<br>TOTAL: ${ft(time.total)}`, 10)
