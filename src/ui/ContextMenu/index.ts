@@ -118,10 +118,7 @@ export default class implements L.ILayer {
         }
     }
 
-    removeItem(
-        event: EventName,
-        all = false,
-    ) {
+    removeItem(event: EventName, all = false) {
         if (all) {
             remove(this.items, item => item.event === event)
             return

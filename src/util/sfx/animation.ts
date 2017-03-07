@@ -72,9 +72,7 @@ async function animateCurrentRoute(platforms: Platform[], edges: Edge<Platform>[
 
         await Promise.all(animations)
         outerOld.style.opacity = null
-        // if (!isTransfer) {
-        //     filters.applyDrop(outerOld)
-        // }
+        filters.applyDrop(outerOld)
         pathsOuter.removeChild(outer)
         if (inner) {
             innerOld.style.opacity = null
@@ -99,9 +97,9 @@ export function animateRoute(platforms: Platform[], edges: Edge<Platform>[]) {
 }
 
 export async function pulsateCircle(circle: SVGCircleElement, scaleFactor: number, duration: number) {
-    circle.getBoundingClientRect()
     const { style } = circle
     style.transition = `transform ${duration / 2}ms linear`
+    circle.getBoundingClientRect()
     scaleCircle(circle, scaleFactor)
     await transitionEnd(circle)
     style.transform = 'scale(1)'
