@@ -6,7 +6,7 @@ import * as util from '../util'
 import { Icons, cacheIcons } from './index'
 import Widget from './base/Widget'
 
-const { Animation, visualizeRoute } = util.sfx
+const { animation, visualizeRoute } = util.sfx
 const { shortestRoute } = util.algorithm
 
 export default class implements Widget {
@@ -31,7 +31,7 @@ export default class implements Widget {
         mediator.subscribe('routefrom', this.onFromTo)
         mediator.subscribe('routeto', this.onFromTo)
         mediator.subscribe('clearroute', this.clearRoute)
-        map.on('zoomstart', Animation.terminateAnimations)
+        map.on('zoomstart', animation.terminateAnimations)
         addEventListener('keydown', e => {
             if (e.keyCode !== 27) {
                 return
@@ -81,7 +81,7 @@ export default class implements Widget {
 
     private clearRoute = () => {
         const map = this.metroMap.getMap()
-        const terminate = Animation.terminateAnimations()
+        const terminate = animation.terminateAnimations()
         map.removeLayer(this.fromMarker).removeLayer(this.toMarker)
         this.fromMarker.off('drag').off('dragend')
         this.toMarker.off('drag').off('dragend')

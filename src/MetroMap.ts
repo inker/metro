@@ -40,7 +40,7 @@ const {
     wikimapia,
 } = ui.tileLayers
 
-const { Scale } = sfx
+const { scale } = sfx
 const { mean } = math
 const { findCycle } = algorithm
 
@@ -677,7 +677,7 @@ export default class {
     private addStationListeners() {
         const onMouseOut = (e: MouseEvent) => {
             this.plate.hide()
-            Scale.unscaleAll()
+            scale.unscaleAll()
         }
         const dummyCircles = dom.byId('dummy-circles')
         dummyCircles.addEventListener('mouseover', e => {
@@ -706,7 +706,7 @@ export default class {
         const platforms = station.platforms.filter(p => filteredNames.includes(p.name))
         for (const platform of platforms) {
             const circle = tryGetFromMap(pool.platformBindings, platform)
-            Scale.scaleCircle(circle, scaleFactor, true)
+            scale.scaleCircle(circle, scaleFactor, true)
         }
         if (this.map.getZoom() >= this.config.detailedZoom) {
             for (const transfer of this.network.transfers) {
@@ -714,7 +714,7 @@ export default class {
                     && filteredNames.includes(transfer.source.name)
                     && filteredNames.includes(transfer.target.name)
                 if (shouldScale) {
-                    Scale.scaleTransfer(transfer, scaleFactor)
+                    scale.scaleTransfer(transfer, scaleFactor)
                 }
             }
         }
