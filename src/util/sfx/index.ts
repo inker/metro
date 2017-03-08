@@ -22,7 +22,7 @@ const ANIMATION_GREYING_SELECTOR = [
     'station-circles',
 ].map(s => `#${s} *`).join(', ')
 
-export async function visualizeRoute(obj: ShortestRouteObject<Platform>, animate = true) {
+export async function visualizeRoute(obj: ShortestRouteObject<Platform>, shouldAnimate = true) {
     const { platforms = [], edges, time } = obj
     const walkTo = ft(time.walkTo)
     if (edges === undefined) {
@@ -35,7 +35,7 @@ export async function visualizeRoute(obj: ShortestRouteObject<Platform>, animate
         style.filter = null
         style.opacity = '0.25'
     }
-    if (!animate) {
+    if (!shouldAnimate) {
         rehighlightEdges(edges)
         rehighlightPlatforms(platforms)
         return

@@ -20,6 +20,14 @@ export default class implements Widget {
         this.addMarkerListeners()
     }
 
+    private addMarkerListeners() {
+        for (const marker of [this.fromMarker, this.toMarker]) {
+            marker
+                .on('drag', e => this.visualizeShortestRoute(false))
+                .on('dragend', e => this.visualizeShortestRoute(true))
+        }
+    }
+
     addTo(metroMap: MetroMap) {
         this.metroMap = metroMap
         const { mediator } = metroMap
@@ -57,34 +65,29 @@ export default class implements Widget {
         }
     }
 
-    private addMarkerListeners() {
-        for (const marker of [this.fromMarker, this.toMarker]) {
-            marker.on('drag', e => this.visualizeShortestRoute(false)).on('dragend', e => {
-                this.visualizeShortestRoute(true)
-            })
-        }
-    }
-
-    private visualizeShortestRoute(animate: boolean) {
+    private visualizeShortestRoute(shouldAnimate: boolean) {
         const map = this.metroMap.getMap()
         if (!map.hasLayer(this.fromMarker) || !map.hasLayer(this.toMarker)) {
             return
         }
-        this.visualizeRouteBetween(this.fromMarker.getLatLng(), this.toMarker.getLatLng(), animate)
+        this.visualizeRouteBetween(
+            this.fromMarker.getLatLng(),
+            this.toMarker.getLatLng(),
+            shouldAnimate,
+        )
     }
 
-    private visualizeRouteBetween(from: LatLng, to: LatLng, animate: boolean) {
+    private visualizeRouteBetween(from: LatLng, to: LatLng, shouldAnimate: boolean) {
         util.resetStyle()
         alertify.dismissAll()
-        visualizeRoute(shortestRoute(this.metroMap.getNetwork().platforms, from, to), animate)
+        const route = shortestRoute(this.metroMap.getNetwork().platforms, from, to)
+        visualizeRoute(route, shouldAnimate)
     }
 
     private clearRoute = () => {
         const map = this.metroMap.getMap()
         const terminate = animation.terminateAnimations()
         map.removeLayer(this.fromMarker).removeLayer(this.toMarker)
-        this.fromMarker.off('drag').off('dragend')
-        this.toMarker.off('drag').off('dragend')
         alertify.dismissAll()
         terminate.then(util.resetStyle)
     }
