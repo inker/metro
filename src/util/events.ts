@@ -1,4 +1,3 @@
-
 export const once = <K extends keyof HTMLElementEventMap>(
     el: EventTarget,
     eventType: K,
