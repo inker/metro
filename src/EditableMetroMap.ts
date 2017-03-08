@@ -21,6 +21,7 @@ import {
     intersection,
     getPlatformNames,
     tryGetFromMap,
+    tryGetKeyFromBiMap,
     dom,
 } from './util'
 
@@ -44,7 +45,8 @@ export default class extends MetroMap {
             return (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as Span
         }
 
-        const relatedTargetToPlatform = (rt: EventTarget) => pool.dummyBindings.getKey(rt as SVGCircleElement)
+        const relatedTargetToPlatform = (rt: EventTarget) =>
+            tryGetKeyFromBiMap(pool.dummyBindings, rt as SVGCircleElement)
 
         const { map, contextMenu } = this
 
@@ -103,8 +105,8 @@ export default class extends MetroMap {
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
         this.subscribe('spanend', e => {
-            const source = pool.dummyBindings.getKey(e.detail.source)
-            const target = pool.dummyBindings.getKey(e.detail.target)
+            const source = tryGetKeyFromBiMap(pool.dummyBindings, e.detail.source)
+            const target = tryGetKeyFromBiMap(pool.dummyBindings, e.detail.target)
             contextMenu.removeItem('spanend')
 
             const sourceRoutes = source.passingRoutes()
@@ -128,8 +130,8 @@ export default class extends MetroMap {
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
         this.subscribe('transferend', e => {
-            const source = pool.dummyBindings.getKey(e.detail.source)
-            const target = pool.dummyBindings.getKey(e.detail.target)
+            const source = tryGetKeyFromBiMap(pool.dummyBindings, e.detail.source)
+            const target = tryGetKeyFromBiMap(pool.dummyBindings, e.detail.target)
             console.log(source, target)
             contextMenu.removeItem('transferend')
             this.network.transfers.push(new Transfer(source, target))
@@ -248,7 +250,7 @@ export default class extends MetroMap {
                         tryGetFromMap(tryGetFromMap(this.whiskers, span.target), span),
                         tryGetFromMap(this.platformsOnSVG, span.target),
                     ]
-                    const outer = pool.outerEdgeBindings.get(span)
+                    const outer = tryGetFromMap(pool.outerEdgeBindings, span)
                     const inner = pool.innerEdgeBindings.get(span)
                     svg.setBezierPath(outer, controlPoints)
                     if (inner) {
@@ -307,8 +309,8 @@ export default class extends MetroMap {
 
                         const circumpoints = Array.from(circular).map(i => this.platformsOnSVG.get(i))
                         circular.forEach(i => circumpoints.push(this.platformsOnSVG.get(i)))
-                        const outerArcs = transfers.map(t => pool.outerEdgeBindings.get(t))
-                        const innerArcs = transfers.map(t => pool.innerEdgeBindings.get(t))
+                        const outerArcs = transfers.map(t => tryGetFromMap(pool.outerEdgeBindings, t))
+                        const innerArcs = transfers.map(t => tryGetFromMap(pool.innerEdgeBindings, t))
                         for (let i = 0; i < 3; ++i) {
                             const tr = transfers[i]
                             const outer = outerArcs[i]

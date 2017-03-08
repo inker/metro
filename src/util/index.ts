@@ -146,7 +146,7 @@ export function getSecondLanguage() {
 }
 
 interface IMap<K, V> {
-    get: (K) => V|undefined,
+    get: (key: K) => V|undefined,
 }
 export function tryGetFromMap<K, V>(map: IMap<K, V>, key: K): V {
     const val = map.get(key)
@@ -155,4 +155,16 @@ export function tryGetFromMap<K, V>(map: IMap<K, V>, key: K): V {
         throw new Error('key or val is undefined')
     }
     return val
+}
+
+interface IBiMap<K, V> {
+    getKey: (val: V) => K|undefined,
+}
+export function tryGetKeyFromBiMap<K, V>(map: IBiMap<K, V>, val: V): K {
+    const key = map.getKey(val)
+    if (key === undefined) {
+        console.error('in map', map, ':', val, '->', key)
+        throw new Error('key or val is undefined')
+    }
+    return key
 }

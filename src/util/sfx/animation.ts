@@ -74,8 +74,10 @@ async function animateCurrentRoute(platforms: Platform[], edges: Edge<Platform>[
         outerOld.style.opacity = null
         filters.applyDrop(outerOld)
         pathsOuter.removeChild(outer)
-        if (inner) {
+        if (innerOld) {
             innerOld.style.opacity = null
+        }
+        if (inner) {
             pathsInner.removeChild(inner)
         }
     }

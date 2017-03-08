@@ -25,6 +25,7 @@ import {
     color,
     dom,
     tryGetFromMap,
+    tryGetKeyFromBiMap,
     MetroMapEventMap,
     getPlatformNames,
     getPlatformNamesZipped,
@@ -682,16 +683,17 @@ export default class {
         const dummyCircles = dom.byId('dummy-circles')
         dummyCircles.addEventListener('mouseover', e => {
             const dummy = e.target as SVGCircleElement
-            const platform = pool.dummyBindings.getKey(dummy)
+            const platform = tryGetKeyFromBiMap(pool.dummyBindings, dummy)
             const { station } = platform
             this.highlightStation(station, getPlatformNames(platform), [platform.name])
         })
         dummyCircles.addEventListener('mouseout', onMouseOut)
         const onTransferOver = (e: MouseEvent) => {
             const el = e.target as SVGPathElement | SVGLineElement
-            const transfer = pool.outerEdgeBindings.getKey(el) || pool.innerEdgeBindings.getKey(el)
-            const names = getPlatformNamesZipped([transfer.source, transfer.target])
-            this.highlightStation(transfer.source.station, names, [transfer.source.name, transfer.target.name])
+            const { source, target } = pool.outerEdgeBindings.getKey(el)
+                || tryGetKeyFromBiMap(pool.innerEdgeBindings, el)
+            const names = getPlatformNamesZipped([source, target])
+            this.highlightStation(source.station, names, [source.name, target.name])
         }
         const transfersOuter = dom.byId('transfers-outer')
         const transfersInner = dom.byId('transfers-inner')

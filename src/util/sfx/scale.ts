@@ -1,5 +1,6 @@
 import pool from '../../ObjectPool'
 import { byId } from '../dom'
+import { tryGetFromMap } from '../index'
 
 import { Transfer } from '../../network'
 
@@ -26,8 +27,8 @@ export function scaleCircle(circle: SVGCircleElement, scaleFactor: number, asAtt
 export function scaleTransfer(transfer: Transfer, scaleFactor: number) {
     const transferOuterStrokeWidth = parseFloat(byId('transfers-outer').style.strokeWidth || '')
     const transferInnerStrokeWidth = parseFloat(byId('transfers-inner').style.strokeWidth || '')
-    const outer = pool.outerEdgeBindings.get(transfer)
-    const inner = pool.innerEdgeBindings.get(transfer)
+    const outer = tryGetFromMap(pool.outerEdgeBindings, transfer)
+    const inner = tryGetFromMap(pool.innerEdgeBindings, transfer)
     initialTransfers.add(outer)
     initialTransfers.add(inner)
     outer.style.strokeWidth = transferOuterStrokeWidth * scaleFactor + 'px'
