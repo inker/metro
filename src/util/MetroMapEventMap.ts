@@ -5,7 +5,7 @@ interface MetroMapEventMap {
     'clearmeasurements': LeafletEvent,
     'zoomstart': LeafletEvent,
 
-    'measuredistance': Event,
+    'measuredistance': MouseEvent,
     'platformrename': MouseEvent,
     'platformmovestart': MouseEvent,
     'platformmove': MouseEvent,

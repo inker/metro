@@ -152,7 +152,7 @@ export default class {
             // wait.textContent = 'adding content...';
             this.resetMapView()
             this.map.addLayer(mapbox)
-            this.map.on('overlayupdate', overlay => {
+            this.map.on('overlayupdate', e => {
                 this.moving = true
                 this.redrawNetwork()
                 this.moving = false
@@ -213,19 +213,22 @@ export default class {
     protected addMapListeners() {
         const { map, contextMenu } = this
 
-        map.on('distancemeasureinit', e => {
-            contextMenu.insertItem('measuredistance', 'Measure distance')
-        })
-        map.on('clearmeasurements', e => {
-            contextMenu.removeItem('clearmeasurements')
-            contextMenu.insertItem('measuredistance', 'Measure distance')
-        })
         map.on('zoomstart', e => {
             this.plate.hide()
         })
-        this.subscribe('measuredistance', e => {
-            contextMenu.removeItem('measuredistance')
-            contextMenu.insertItem('clearmeasurements', 'Clear measurements')
+
+        map.on('distancemeasureinit', e => {
+            contextMenu.insertItem('measuredistance', 'Measure distance')
+
+            map.on('clearmeasurements', () => {
+                contextMenu.removeItem('clearmeasurements')
+                contextMenu.insertItem('measuredistance', 'Measure distance')
+            })
+
+            this.subscribe('measuredistance', () => {
+                contextMenu.removeItem('measuredistance')
+                contextMenu.insertItem('clearmeasurements', 'Clear measurements')
+            })
         })
     }
 
@@ -684,8 +687,7 @@ export default class {
         dummyCircles.addEventListener('mouseover', e => {
             const dummy = e.target as SVGCircleElement
             const platform = tryGetKeyFromBiMap(pool.dummyBindings, dummy)
-            const { station } = platform
-            this.highlightStation(station, getPlatformNames(platform), [platform.name])
+            this.highlightStation(platform.station, getPlatformNames(platform), [platform.name])
         })
         dummyCircles.addEventListener('mouseout', onMouseOut)
         const onTransferOver = (e: MouseEvent) => {

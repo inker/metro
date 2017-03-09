@@ -102,7 +102,8 @@ export default class implements L.ILayer {
     }
 
     private measureDistance(initialCoordinate: L.LatLng) {
-        this.dashedLine.addLatLng(initialCoordinate).addLatLng(initialCoordinate)
+        this.map.getPanes().overlayPane.style.zIndex = ''
+        // this.dashedLine.addLatLng(initialCoordinate).addLatLng(initialCoordinate)
         this.map
             .addLayer(this.polyline.setLatLngs([]))
             .addLayer(this.markers)
@@ -114,6 +115,7 @@ export default class implements L.ILayer {
     }
 
     private clearMeasurements() {
+        this.map.getPanes().overlayPane.style.zIndex = '-1000'
         this.map
             .removeLayer(this.polyline)
             .removeLayer(this.markers.clearLayers())
