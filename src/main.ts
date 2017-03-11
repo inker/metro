@@ -1,5 +1,7 @@
 'use strict'
 
+declare const System
+
 import { Browser, Icon } from 'leaflet'
 import { capitalize } from 'lodash'
 
