@@ -5,7 +5,7 @@ import Widget from '../base/Widget'
 import MetroMap from '../../MetroMap'
 import { transitionEnd, once } from '../../util/events'
 
-import * as style from './style.css'
+import * as styles from './styles.css'
 
 interface QA {
     q: string,
@@ -25,11 +25,11 @@ export default class implements Widget {
         const btn = document.createElement('button')
         btn.textContent = 'FAQ'
         btn.classList.add('leaflet-control')
-        btn.classList.add(style['faq-button'])
+        btn.classList.add(styles['faq-button'])
         btn.addEventListener('click', e => this.showFAQ())
         this.button = btn
         this.card = document.createElement('div')
-        this.card.classList.add(style['faq-card'])
+        this.card.classList.add(styles['faq-card'])
 
         if (Browser.mobile) {
             new Hammer(this.card).on('swipeleft swiperight', e => this.hideFAQ())
@@ -37,8 +37,8 @@ export default class implements Widget {
 
         const urlRe = /\[\[(.+?)\|(.*?)\]\]/g
         const replacement = '<a href=\"$1\" target=\"_blank\">$2</a>'
-        const questionClass = style.question
-        const answerClass = style.answer
+        const questionClass = styles.question
+        const answerClass = styles.answer
         const qa2html = qa => `
             <div>
                 <span class="${questionClass}">${qa.q}</span>

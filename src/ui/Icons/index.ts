@@ -1,21 +1,11 @@
 import { icon } from 'leaflet'
 import RedCircle from './RedCircle'
+import Marker from './Marker'
 
 export {
     RedCircle,
+    Marker,
 }
-
-export const start = icon({
-    iconUrl: 'https://proxy-antonv.rhcloud.com/?url=http://map.project-osrm.org/images/marker-start-icon-2x.png',
-    iconSize: [20, 56],
-    iconAnchor: [10, 28],
-})
-
-export const end = icon({
-    iconUrl: 'https://proxy-antonv.rhcloud.com/?url=http://map.project-osrm.org/images/marker-end-icon-2x.png',
-    iconSize: [20, 56],
-    iconAnchor: [10, 28],
-})
 
 export const red = icon({
     iconUrl: 'https://proxy-antonv.rhcloud.com/?url=http://harrywood.co.uk/maps/examples/leaflet/marker-icon-red.png',

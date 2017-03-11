@@ -15,11 +15,18 @@ export function createSVGElement<K extends keyof ElementTagNameMap>(tagName: K):
     return document.createElementNS('http://www.w3.org/2000/svg', tagName) as any
 }
 
-export function makeCircle(position: Point, radius: number): SVGCircleElement {
+export function makePolygon(points: Point[]): SVGPolygonElement {
+    const polygon = createSVGElement('polygon')
+    const pointsString = points.map(pt => `${pt.x},${pt.y}`).join(' ')
+    polygon.setAttribute('points', pointsString)
+    return polygon
+}
+
+export function makeCircle(center: Point, radius: number): SVGCircleElement {
     const circle = createSVGElement('circle')
     circle.setAttribute('r', radius.toString())
-    circle.setAttribute('cy', position.y.toString())
-    circle.setAttribute('cx', position.x.toString())
+    circle.setAttribute('cy', center.y.toString())
+    circle.setAttribute('cx', center.x.toString())
     return circle
 }
 

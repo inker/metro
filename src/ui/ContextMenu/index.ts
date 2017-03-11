@@ -4,7 +4,7 @@ import { remove } from 'lodash'
 import { MetroMapEventMap, dom } from '../../util'
 import { translate } from '../../i18n'
 
-import * as style from './style.css'
+import * as styles from './styles.css'
 
 type EventName = keyof MetroMapEventMap
 
@@ -30,7 +30,7 @@ export default class implements L.ILayer {
         // this._extraItems = new Map();
 
         this.container = document.createElement('div')
-        this.container.classList.add(style.contextmenu)
+        this.container.classList.add(styles.contextmenu)
         this.container.addEventListener('contextmenu', e => {
             e.preventDefault();
             (e.target as HTMLElement).click()

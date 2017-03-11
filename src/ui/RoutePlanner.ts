@@ -15,8 +15,8 @@ export default class implements Widget {
     private readonly toMarker: Marker
 
     constructor() {
-        this.fromMarker = marker([0, 0], { draggable: true, icon: Icons.start })
-        this.toMarker = marker([0, 0], { draggable: true, icon: Icons.end })
+        this.fromMarker = marker([0, 0], { draggable: true, icon: Icons.Marker('#228822', 'A') })
+        this.toMarker = marker([0, 0], { draggable: true, icon: Icons.Marker('#dd2222', 'B') })
         this.addMarkerListeners()
     }
 

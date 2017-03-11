@@ -3,7 +3,7 @@ import { LatLngBounds, point } from 'leaflet'
 import MapOverlay from '../base/MapOverlay'
 import { createSVGElement } from '../../util/svg'
 
-import * as style from './style.css'
+import * as styles from './styles.css'
 
 export default class extends MapOverlay<'svg'> {
     readonly defs: SVGDefsElement
@@ -19,7 +19,7 @@ export default class extends MapOverlay<'svg'> {
         this.origin = origin
 
         const { overlayContainer } = this
-        overlayContainer.classList.add(style.overlay)
+        overlayContainer.classList.add(styles.overlay)
         overlayContainer.appendChild(this.defs)
         overlayContainer.appendChild(origin)
     }
