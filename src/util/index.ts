@@ -71,11 +71,9 @@ export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {
 
 export function resetStyle() {
     const els = document.querySelectorAll(RESET_SELECTOR) as any as HTMLElement[]
-    for (const el of els) {
-        el.style.opacity = null
-        if (el.id[1] !== 't') {
-            el.style.filter = null
-        }
+    for (const { style } of els) {
+        style.opacity = null
+        style.filter = null
     }
 }
 
@@ -114,7 +112,7 @@ export function midPointsToEnds(posOnSVG: L.Point, midPts: L.Point[]) {
     return midPts.map(v => roundPoint(v.add(offset), 2))
 }
 
-export const delay = (ms: number) => new Promise((resolve, reject) => setTimeout(resolve, ms))
+export const delay = (ms: number) => new Promise<void>((resolve, reject) => setTimeout(resolve, ms))
 
 export async function repeatUntil<ReturnValueType>(
     func: () => ReturnValueType,

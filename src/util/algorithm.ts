@@ -74,12 +74,11 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
         const hasE = o.spans.some(s => s.routes[0].line.startsWith('E'))
         let distance = distanceBetween(p1, o.location)
         let time = distance / walkingWithObstacles
-        currentTime.set(o, time + (hasE ? eLineWaitingTime : metroWaitingTime))
-        // currentTime.push(time + (hasE ? eLineWaitingTime : metroWaitingTime));
+        const waitingTime = hasE ? eLineWaitingTime : metroWaitingTime
+        currentTime.set(o, time + waitingTime)
         distance = distanceBetween(o.location, p2)
         time = distance / walkingWithObstacles
         fromPlatformToDest.set(o, time)
-        // fromPlatformToDest.push(time);
     }
     // pick the closest one so far
     let currentNode = findClosestObject(p1, objects)
@@ -212,8 +211,7 @@ function shortestTransfer(p1: Platform, p2: Platform) {
     if (p1.station !== p2.station) {
         throw new Error(`platforms (${p1.name} & ${p2.name} must be on the same station`)
     }
-    const station = p1.station
-    const platforms = station.platforms
+    const { platforms } = p1.station
     const platformSet = new Set<Platform>(platforms)
     const dist = new Map<Platform, number>()
     const prev = new Map<Platform, Platform>()

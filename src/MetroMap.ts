@@ -397,21 +397,20 @@ export default class {
         const transfersOuterFrag = tryGetFromMap(docFrags, 'transfers-outer')
         const transfersInnerFrag = tryGetFromMap(docFrags, 'transfers-inner')
         for (const transfer of this.network.transfers) {
-            const pl1 = transfer.source
-            const pl2 = transfer.target
+            const { source, target } = transfer
             const detailed = zoom >= detailedZoom
-            if (!detailed && pl1.name === pl2.name) {
+            if (!detailed && source.name === target.name) {
                 continue
             }
-            const scp = stationCircumpoints.get(pl1.station)
+            const scp = stationCircumpoints.get(source.station)
             const paths = scp !== undefined
-                && scp.includes(pl1)
-                && scp.includes(pl2) ? this.makeTransferArc(
+                && scp.includes(source)
+                && scp.includes(target) ? this.makeTransferArc(
                     transfer,
                     scp,
                 ) : svg.makeTransferLine(
-                    tryGetFromMap(this.platformsOnSVG, pl1),
-                    tryGetFromMap(this.platformsOnSVG, pl2),
+                    tryGetFromMap(this.platformsOnSVG, source),
+                    tryGetFromMap(this.platformsOnSVG, target),
                 )
             pool.outerEdgeBindings.set(transfer, paths[0])
             pool.innerEdgeBindings.set(transfer, paths[1])
@@ -454,7 +453,7 @@ export default class {
             this.getPlatformColor(source),
             this.getPlatformColor(target),
         ]
-        // const colors = [transfer.source, transfer.target].map(i => getComputedStyle(stationCirclesFrag.childNodes[i] as Element, null).stroke);
+        // const colors = [source, target].map(i => getComputedStyle(stationCirclesFrag.childNodes[i] as Element, null).stroke)
         // console.log(colors);
         const circlePortion = fullCircleRadius / pos1.distanceTo(pos2)
         const gradientVector = pos2.subtract(pos1)

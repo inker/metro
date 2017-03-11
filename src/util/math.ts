@@ -61,10 +61,6 @@ export function getCircumcenter(positions: Point[]): Point {
         .add(a)
 }
 
-export function polarToCartesian(center: Point, radius: number, angle: number) {
-    return point(center.x + radius * Math.cos(angle), center.y + radius * Math.sin(angle))
-}
-
 export function vectorToGradCoordinates(vector: Point) {
     const x = Math.abs(vector.x)
     const y = Math.abs(vector.y)
