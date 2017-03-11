@@ -1,6 +1,8 @@
 'use strict'
 
-declare const System
+declare const System: {
+    import: (path: string) => Promise<any>,
+}
 
 import { Browser, Icon } from 'leaflet'
 import { capitalize } from 'lodash'
