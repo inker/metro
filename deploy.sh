@@ -29,21 +29,18 @@ rm -rf out/**/* || exit 0
 # Run our compile script
 npm run build
 
+# safeguard files
+mkdir -p safe/.git
+cp -R docs/* safe/
+cp -R out/.git/* safe/.git
+rm -rf out
+# copy built stuff with git to out
+cp -R safe/* out/
+
 # Now let's go have some fun with the cloned repo
 cd out
 git config user.name "Travis CI"
 git config user.email "$COMMIT_AUTHOR_EMAIL"
-
-echo "in out:"
-ls -la
-echo "in docs"
-ls ../docs -la
-echo 
-
-mkdir -p ../safe/.git
-cp -R ../docs/* ../safe/
-cp -R .git/* ../safe/.git
-cp -R ../safe/* ./
 
 echo "in out:"
 ls -la
