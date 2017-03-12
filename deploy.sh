@@ -49,8 +49,6 @@ git config user.email "$COMMIT_AUTHOR_EMAIL"
 
 echo "in out:"
 ls -la
-echo "in prev"
-ls .. -la
 
 # If there are no changes (e.g. this is a README update) then just bail.
 if [ $(git status --porcelain | wc -l) -lt 1 ]; then
