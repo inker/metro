@@ -48,8 +48,8 @@ git commit -m "Deploy to GitHub Pages: ${SHA}"
 # Get the deploy key by using Travis's stored variables to decrypt deploy_key.enc
 ENCRYPTED_KEY_VAR="encrypted_${ENCRYPTION_LABEL}_key"
 ENCRYPTED_IV_VAR="4444${ENCRYPTION_LABEL}5555"
-ENCRYPTED_KEY=${!ENCRYPTED_KEY_VAR}
-ENCRYPTED_IV=${!ENCRYPTED_IV_VAR}
+ENCRYPTED_KEY=${ENCRYPTED_KEY_VAR}
+ENCRYPTED_IV=${ENCRYPTED_IV_VAR}
 echo "label: $ENCRYPTION_LABEL"
 echo "iv: $ENCRYPTED_IV"
 openssl aes-256-cbc -K $ENCRYPTED_KEY -iv $ENCRYPTED_IV -in ../deploy_key.enc -out deploy_key -d
