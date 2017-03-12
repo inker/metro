@@ -26,22 +26,21 @@ cd ..
 # Clean out existing contents
 rm -rf out/**/* || exit 0
 
-# Now let's go have some fun with the cloned repo
-cd out
-
 # Run our compile script
 npm run build
 
+# Now let's go have some fun with the cloned repo
+cd out
 git config user.name "Travis CI"
 git config user.email "$COMMIT_AUTHOR_EMAIL"
 
 echo "in out:"
 ls -la
 echo "in docs"
-ls docs -la
+ls ../docs -la
 echo 
 
-cp -R docs/* ./
+cp -R ../docs/* ./
 
 echo "in out:"
 ls -la
