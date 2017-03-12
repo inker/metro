@@ -27,7 +27,7 @@ cd ..
 rm -rf out/**/* || exit 0
 
 # Run our compile script
-npm run build 
+npm run build
 
 # Now let's go have some fun with the cloned repo
 cd out
@@ -46,13 +46,11 @@ git add .
 git commit -m "Deploy to GitHub Pages: ${SHA}"
 
 # Get the deploy key by using Travis's stored variables to decrypt deploy_key.enc
-ENCRYPTED_KEY_VAR="00${ENCRYPTION_LABEL}00"
-ENCRYPTED_IV_VAR="44${ENCRYPTION_LABEL}5544${ENCRYPTION_LABEL}55"
-ENCRYPTED_KEY=${ENCRYPTED_KEY_VAR}
-ENCRYPTED_IV=${ENCRYPTED_IV_VAR}
-echo "label: $ENCRYPTION_LABEL"
-echo "iv: $ENCRYPTED_IV"
-openssl aes-256-cbc -K $ENCRYPTED_KEY -iv $ENCRYPTED_IV -in ../deploy_key.enc -out deploy_key -d
+ENCRYPTED_KEY_VAR="encrypted_${ENCRYPTION_LABEL}_key"
+ENCRYPTED_IV_VAR="encrypted_${ENCRYPTION_LABEL}_iv"
+ENCRYPTED_KEY=${!ENCRYPTED_KEY_VAR}
+ENCRYPTED_IV=${!ENCRYPTED_IV_VAR}
+openssl aes-256-cbc -K $encrypted_199b8511517f_key -iv $encrypted_199b8511517f_iv -in deploy_key.enc -out deploy_key -d
 chmod 600 deploy_key
 eval `ssh-agent -s`
 ssh-add deploy_key
