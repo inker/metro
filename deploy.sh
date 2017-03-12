@@ -33,7 +33,11 @@ npm run build
 mkdir -p safe/.git
 cp -R docs/* safe/
 cp -R out/.git/* safe/.git
-rm -rf out/**/*
+rm -r out/* out/.*
+
+echo "in out so far:"
+ls out -la
+
 # copy built stuff with git to out
 echo "copying back"
 cp -R safe/* out/
