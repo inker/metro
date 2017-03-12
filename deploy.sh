@@ -34,6 +34,11 @@ cd out
 git config user.name "Travis CI"
 git config user.email "$COMMIT_AUTHOR_EMAIL"
 
+echo "in out:"
+ls -la
+echo "in prev"
+ls .. -la
+
 cp -R ./docs/* ./
 
 echo "in out:"
