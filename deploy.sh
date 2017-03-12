@@ -36,10 +36,11 @@ git config user.email "$COMMIT_AUTHOR_EMAIL"
 
 echo "in out:"
 ls -la
-echo "in prev"
-ls .. -la
+echo "in docs"
+ls docs -la
+echo 
 
-cp -R ./docs/* ./
+cp -R docs/* ./
 
 echo "in out:"
 ls -la
