@@ -5,5 +5,5 @@ node_js:
 script: chmod a+x deploy.sh && bash ./deploy.sh
 env:
   global:
-  - ENCRYPTION_LABEL: "someshit"
-  - COMMIT_AUTHOR_EMAIL: "anton.veselyev@gmail.com"
+  - ENCRYPTION_LABEL: 5ebd09854806
+  - COMMIT_AUTHOR_EMAIL: anton.veselyev@gmail.com
