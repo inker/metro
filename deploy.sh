@@ -27,7 +27,6 @@ cd ..
 rm -rf out/**/* || exit 0
 
 # Run our compile script
-npm i
 npm run build 
 
 # Now let's go have some fun with the cloned repo
