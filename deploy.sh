@@ -34,6 +34,9 @@ cd out
 git config user.name "Travis CI"
 git config user.email "$COMMIT_AUTHOR_EMAIL"
 
+echo "in out:"
+ls -la
+
 # If there are no changes (e.g. this is a README update) then just bail.
 if [ $(git status --porcelain | wc -l) -lt 1 ]; then
     echo "No changes to the spec on this push; exiting."
@@ -44,9 +47,6 @@ fi
 # The delta will show diffs between new and old versions.
 git add .
 git commit -m "Deploy to GitHub Pages: ${SHA}"
-
-echo "in out:"
-ls -la
 
 # Get the deploy key by using Travis's stored variables to decrypt deploy_key.enc
 # ENCRYPTED_KEY_VAR="encrypted_${ENCRYPTION_LABEL}_key"
