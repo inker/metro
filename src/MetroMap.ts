@@ -194,7 +194,6 @@ export default class {
         unblur({
             skipIf: () => this.moving,
             interval: 250,
-            log: true,
         })
     }
 
