@@ -40,7 +40,10 @@ echo "in docs"
 ls ../docs -la
 echo 
 
-cp -R ../docs/* ./
+mkdir -p ../safe/.git
+cp -R ../docs/* ../safe/
+cp -R .git/* ../safe/.git
+cp -R ../safe/* ./
 
 echo "in out:"
 ls -la
