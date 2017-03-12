@@ -33,7 +33,7 @@ npm run build
 mkdir -p safe/.git
 cp -R docs/* safe/
 cp -R out/.git/* safe/.git
-rm -r out/* out/.*
+rm -r out/*
 
 echo "in out so far:"
 ls out -la
