@@ -2,7 +2,7 @@ language: node_js
 node_js:
 - stable
 
-script: chmod a+x deploy.sh && bash ./deploy.sh
+script: bash ./deploy.sh
 env:
   global:
   - ENCRYPTION_LABEL: 199b8511517f
