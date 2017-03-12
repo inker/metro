@@ -34,7 +34,7 @@ cd out
 git config user.name "Travis CI"
 git config user.email "$COMMIT_AUTHOR_EMAIL"
 
-cp -R docs .
+cp -R docs/* .
 
 echo "in out:"
 ls -la
