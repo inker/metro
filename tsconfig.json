@@ -11,10 +11,11 @@
     "strictNullChecks": true,
     "noImplicitThis": true,
     "lib": [
-      "dom", "es7"
+      "dom", "es7", "es2017"
     ]
   },
   "awesomeTypescriptLoaderOptions": {
+    "ignoreDiagnostics": [2403, 2300, 2451, 2307, 2345]
     /* ... */
   },
   "exclude": [

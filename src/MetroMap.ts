@@ -319,9 +319,9 @@ export default class {
         const fullCircleRadius = circleRadius + circleBorder / 2
 
         const docFrags = new Map<string, DocumentFragment>()
-        for (const id of Object.keys(strokeWidths)) {
+        for (const [id, width] of Object.entries(strokeWidths)) {
             docFrags.set(id, document.createDocumentFragment())
-            dom.byId(id).style.strokeWidth = `${strokeWidths[id]}px`
+            dom.byId(id).style.strokeWidth = `${width}px`
         }
 
         const lightRailPathStyle = tryGetFromMap(this.lineRules, 'L')
