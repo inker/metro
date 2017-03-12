@@ -46,7 +46,7 @@
     "whatwg-fetch": "^2.0.3"
   },
   "scripts": {
-    "build": "webpack --colors",
+    "build": "webpack --colors --config webpack.prod.js",
     "start": "node scripts/build"
   },
   "author": "Anton Veselyev",
