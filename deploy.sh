@@ -33,8 +33,9 @@ npm run build
 mkdir -p safe/.git
 cp -R docs/* safe/
 cp -R out/.git/* safe/.git
-rm -rf out
+rm -rf out/**/*
 # copy built stuff with git to out
+echo "copying back"
 cp -R safe/* out/
 
 # Now let's go have some fun with the cloned repo
