@@ -15,7 +15,6 @@
     ]
   },
   "awesomeTypescriptLoaderOptions": {
-    "ignoreDiagnostics": [2403, 2300, 2451, 2307, 2345]
     /* ... */
   },
   "exclude": [
