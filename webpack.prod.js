@@ -14,6 +14,7 @@ mod.rules.find(rule => rule.use === 'awesome-typescript-loader').use = {
 
 module.exports = Object.assign({}, base, {
   output,
+  devtool: 'eval',
   module: mod,
 })
 
