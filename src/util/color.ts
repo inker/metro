@@ -11,7 +11,7 @@ function parseColor(color: string): number[] {
     if (color.length === 7) {
         tokens = color.match(/[0-9a-f]{2}/ig)
     } else if (color.length === 4) {
-        tokens = color.split('')
+        tokens = color.slice(1).split('').map(t => t + t)
     }
     if (!tokens) {
         throw new Error(`invalid css color: ${color}`)

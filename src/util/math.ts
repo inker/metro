@@ -1,5 +1,7 @@
 import { Point, point } from 'leaflet'
 
+export type Ray = [Point, Point]
+
 export function isArbitrarilySmall(v: Point): boolean {
     return Math.abs(v.x) < Number.EPSILON || Math.abs(v.y) < Number.EPSILON
 }
@@ -37,6 +39,49 @@ export function wings(a: Point, b: Point, c: Point, length = 1): Point[] {
     const nBis = bisect(ba, bc)
     const t = det(ba, bc) < 0 ? -length : length
     return orthogonal(b, nBis.multiplyBy(t).add(b))
+}
+
+export function intersection([a, u]: Ray, [b, v]: Ray): Point|null {
+    const div = det(v, u)
+    if (div === 0) {
+        return null
+    }
+    const s = (det(a, v) - det(b, v)) / div
+    return u.multiplyBy(s).add(a)
+}
+
+export function offsetLine(points: Point[], d: number): Point[] {
+    if (points.length !== 2) {
+        throw new Error('line must have 2 points')
+    }
+    if (points[0].equals(points[1])) {
+        throw new Error('points are overlapped')
+    }
+    const o = orthogonal(points[0], points[1])[0]
+    const normal = normalize(o)
+    const offsetVec = normal.multiplyBy(d)
+    return points.map(p => p.add(offsetVec))
+}
+
+export function offsetPath(controlPoints: Point[], d: number): Point[] {
+    if (controlPoints.length < 2) {
+        throw new Error('there should be at least 2 control points for an offset')
+    }
+    return controlPoints.map((cp, i) => {
+        const prev = controlPoints[i - 1]
+        const next = controlPoints[i + 1]
+        if (!prev) {
+            return offsetLine([cp, next], d)[0]
+        }
+        if (!next) {
+            return offsetLine([prev, cp], d)[1]
+        }
+        const [prevO, cpO] = offsetLine([prev, cp], d)
+        const [nextO] = offsetLine([next, cp], -d)
+        const ba = prev.subtract(cp)
+        const bc = next.subtract(cp)
+        return intersection([prevO, ba], [nextO, bc]) || cpO
+    })
 }
 
 export function angle(v1: Point, v2: Point): number {

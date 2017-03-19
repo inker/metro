@@ -1,6 +1,6 @@
 import * as L from 'leaflet'
 import unblur from 'unblur'
-import { get, difference, uniqueId, maxBy } from 'lodash'
+import { get, difference, intersection, uniqueId, maxBy } from 'lodash'
 
 import * as ui from './ui'
 import { Config, getLineRules, getJSON } from './res'
@@ -73,6 +73,7 @@ export default class {
     protected network: Network
     private lineRules: Map<string, CSSStyleDeclaration>
     protected readonly whiskers = new WeakMap<Platform, Map<Span, L.Point>>()
+    private readonly platformOffsets = new Map<Span, Map<Platform, number>>()
     protected readonly platformsOnSVG = new WeakMap<Platform, L.Point>()
 
     protected readonly plate = new ui.TextPlate()
@@ -329,7 +330,7 @@ export default class {
 
         // 11 - 11, 12 - 11.5, 13 - 12, 14 - 12.5
         const fontSize = Math.max((zoom + 10) * 0.5, 11)
-        const plateStyle = get(this.plate, 'element.firstChild.firstChild.style') as any
+        const plateStyle = get(this.plate, 'element.firstChild.firstChild.style') as CSSStyleDeclaration
         if (plateStyle) {
             plateStyle.fontSize = fontSize + 'px'
         }
@@ -426,6 +427,27 @@ export default class {
 
         const pathsOuterFrag = tryGetFromMap(docFrags, 'paths-outer')
         const pathsInnerFrag = tryGetFromMap(docFrags, 'paths-inner')
+
+        this.platformOffsets.clear()
+        for (const span of this.network.spans) {
+            const parallel = this.network.spans.filter(s => s.isOf(span.source, span.target))
+            if (parallel.length > 1) {
+                const o = (parallel.indexOf(span) + (1 - parallel.length) / 2) * lineWidth
+                for (const p of [span.source, span.target]) {
+                    const spanRouteSpans = p.spans.filter(s => intersection(s.routes, span.routes).length > 0)
+                    for (const s of spanRouteSpans) {
+                        let map = this.platformOffsets.get(s)
+                        if (!map) {
+                            map = new Map<Platform, number>()
+                            this.platformOffsets.set(s, map)
+                        }
+                        map.set(p, o)
+                    }
+                }
+
+            }
+        }
+
         for (const span of this.network.spans) {
             const [outer, inner] = this.makePath(span)
             pathsOuterFrag.appendChild(outer)
@@ -644,13 +666,52 @@ export default class {
             console.error(span, 'span has no routes!')
         }
 
-        const controlPoints = [
+
+        let controlPoints = [
             tryGetFromMap(this.platformsOnSVG, source),
             tryGetFromMap(tryGetFromMap(this.whiskers, source), span),
             tryGetFromMap(tryGetFromMap(this.whiskers, target), span),
             tryGetFromMap(this.platformsOnSVG, target),
         ]
 
+        const map = this.platformOffsets.get(span)
+        if (map) {
+            const sourceOffsetNum = map.get(source)
+            const targetOffsetNum = map.get(target)
+            if (sourceOffsetNum !== undefined) {
+                if (targetOffsetNum !== undefined) {
+                    console.log(sourceOffsetNum, targetOffsetNum)
+                    controlPoints = math.offsetPath(controlPoints, sourceOffsetNum)
+                } else {
+                    const lineO = math.offsetLine(controlPoints.slice(0, 2), sourceOffsetNum)
+                    controlPoints[0] = lineO[0]
+                    controlPoints[1] = lineO[1]
+                }
+            } else if (targetOffsetNum !== undefined) {
+                const lineO = math.offsetLine(controlPoints.slice(2, 4), targetOffsetNum)
+                controlPoints[2] = lineO[0]
+                controlPoints[3] = lineO[1]
+            }
+        }
+
+
+
+        // for (let i = 1; i < controlPoints.length; ++i) {
+        //     const line = svg.createSVGElement('line')
+        //     line.setAttribute('x1', controlPoints[i - 1].x.toString())
+        //     line.setAttribute('y1', controlPoints[i - 1].y.toString())
+        //     line.setAttribute('x2', controlPoints[i].x.toString())
+        //     line.setAttribute('y2', controlPoints[i].y.toString())
+        //     const css = this.lineRules.get(lineId)
+        //     const arr = ['#000']
+        //     if (css && css.stroke) {
+        //         arr.push(css.stroke)
+        //     }
+        //     line.style.stroke = color.mean(arr)
+        //     line.style.strokeOpacity = '0.75'
+        //     line.style.strokeWidth = '1px'
+        //     this.overlay.origin.appendChild(line)
+        // }
         const bezier = svg.makeCubicBezier(controlPoints)
         // bezier.id = 'op-' + spanIndex;
         if (lineType === 'E') {
