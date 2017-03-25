@@ -29,6 +29,7 @@ import {
     getPlatformNames,
     getPlatformNamesZipped,
     // midPointsToEnds,
+    drawBezierHints,
 } from './util'
 
 const {
@@ -118,9 +119,10 @@ export default class {
                 mapOptions.inertiaMaxSpeed = 1500
                 mapOptions.fadeAnimation = false
             }
-            this.map = L.map(config.containerId, mapOptions).addControl(L.control.scale({
+            const scaleControl = L.control.scale({
                 imperial: false,
-            }))
+            })
+            this.map = L.map(config.containerId, mapOptions).addControl(scaleControl)
             const mapPaneStyle = this.map.getPanes().mapPane.style
             mapPaneStyle.visibility = 'hidden'
 
@@ -625,7 +627,7 @@ export default class {
     }
 
     private makeTransferArc(transfer: Transfer, cluster: Platform[]): SVGLineElement[] | SVGPathElement[] {
-        const { platformsOnSVG } = this
+        const { network, platformsOnSVG } = this
         const { source, target } = transfer
         const pos1 = tryGetFromMap(platformsOnSVG, source)
         const pos2 = tryGetFromMap(platformsOnSVG, target)
@@ -633,14 +635,15 @@ export default class {
         if (cluster.length === 3) {
             const third = difference(cluster, [source, target])[0]
             return makeArc(third)
-        } else if (source === cluster[2] && target === cluster[3] || source === cluster[3] && target === cluster[2]) {
+        }
+        if (source === cluster[2] && target === cluster[3] || source === cluster[3] && target === cluster[2]) {
             return svg.makeTransferLine(pos1, pos2)
         }
         // const s = transfer.source;
-        // const pl1neighbors = this.network.transfers.filter(t => t.source === s || t.target === s);
+        // const pl1neighbors = network.transfers.filter(t => t.source === s || t.target === s);
         // const pl1deg = pl1neighbors.length;
         const rarr: Platform[] = []
-        for (const t of this.network.transfers) {
+        for (const t of network.transfers) {
             if (t === transfer) {
                 continue
             }
@@ -681,22 +684,8 @@ export default class {
 
         const controlPoints = this.getControlPoints(span)
 
-        // for (let i = 1; i < controlPoints.length; ++i) {
-        //     const line = svg.createSVGElement('line')
-        //     line.setAttribute('x1', controlPoints[i - 1].x.toString())
-        //     line.setAttribute('y1', controlPoints[i - 1].y.toString())
-        //     line.setAttribute('x2', controlPoints[i].x.toString())
-        //     line.setAttribute('y2', controlPoints[i].y.toString())
-        //     const css = this.lineRules.get(lineId)
-        //     const arr = ['#000']
-        //     if (css && css.stroke) {
-        //         arr.push(css.stroke)
-        //     }
-        //     line.style.stroke = color.mean(arr)
-        //     line.style.strokeOpacity = '0.75'
-        //     line.style.strokeWidth = '1px'
-        //     this.overlay.origin.appendChild(line)
-        // }
+        // drawBezierHints(this.overlay.origin, controlPoints, get(this.lineRules.get(lineId), 'stroke') as string)
+
         const bezier = svg.makeCubicBezier(controlPoints)
         // bezier.id = 'op-' + spanIndex;
         if (lineType === 'E') {
