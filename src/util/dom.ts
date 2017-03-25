@@ -1,9 +1,10 @@
+import { identity } from 'lodash'
 import { repeatUntil } from './index'
 
 export function tryGetElement(query: string, interval = 100, ttl = 100): Promise<Element> {
     const rest = query.slice(1)
     const func = query[0] === '#' ? (() => document.getElementById(rest)) : () => document.querySelector(query)
-    return repeatUntil(func, val => val !== null, interval, ttl)
+    return repeatUntil(func, identity, interval, ttl)
 }
 
 export function removeAllChildren(el: Node) {
