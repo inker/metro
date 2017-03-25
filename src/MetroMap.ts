@@ -78,7 +78,7 @@ export default class {
     protected network: Network
     private lineRules: Map<string, CSSStyleDeclaration>
     protected readonly whiskers = new WeakMap<Platform, Map<Span, L.Point>>()
-    private readonly platformOffsets = new Map<Span, Map<Platform, number>>()
+    private readonly platformOffsets = new Map<L.Point, Map<Span, number>>()
     protected readonly platformsOnSVG = new WeakMap<Platform, L.Point>()
 
     protected readonly plate = new ui.TextPlate()
@@ -446,16 +446,17 @@ export default class {
                 throw new Error(`some error with span ${source.name}-${target.name}: it probably does not exist`)
             }
 
-            const pos = parallel.indexOf(span)
-            if (pos === -1) {
+            const i = parallel.indexOf(span)
+            if (i === -1) {
                 throw new Error(`some error with span ${source.name}-${target.name}`)
             }
-            const o = (pos + (1 - parallel.length) / 2) * offset
+            const o = (i + (1 - parallel.length) / 2) * offset
             for (const p of [source, target]) {
+                const pos = tryGetFromMap(this.platformsOnSVG, p)
                 const spanRouteSpans = p.spans.filter(s => intersection(s.routes, routes).length > 0)
                 for (const s of spanRouteSpans) {
-                    const map = getOrMakeInMap(this.platformOffsets, s, () => new Map<Platform, number>())
-                    map.set(p, o)
+                    const map = getOrMakeInMap(this.platformOffsets, pos, () => new Map<Span, number>())
+                    map.set(s, o)
                 }
             }
         }
@@ -678,35 +679,7 @@ export default class {
             console.error(span, 'span has no routes!')
         }
 
-
-        let controlPoints = [
-            tryGetFromMap(this.platformsOnSVG, source),
-            tryGetFromMap(tryGetFromMap(this.whiskers, source), span),
-            tryGetFromMap(tryGetFromMap(this.whiskers, target), span),
-            tryGetFromMap(this.platformsOnSVG, target),
-        ]
-
-        const map = this.platformOffsets.get(span)
-        if (map) {
-            const sourceOffsetNum = map.get(source)
-            const targetOffsetNum = map.get(target)
-            if (sourceOffsetNum !== undefined) {
-                if (targetOffsetNum !== undefined) {
-                    console.log(sourceOffsetNum, targetOffsetNum)
-                    controlPoints = math.offsetPath(controlPoints, sourceOffsetNum)
-                } else {
-                    const lineO = math.offsetLine(controlPoints.slice(0, 2), sourceOffsetNum)
-                    controlPoints[0] = lineO[0]
-                    controlPoints[1] = lineO[1]
-                }
-            } else if (targetOffsetNum !== undefined) {
-                const lineO = math.offsetLine(controlPoints.slice(2, 4), targetOffsetNum)
-                controlPoints[2] = lineO[0]
-                controlPoints[3] = lineO[1]
-            }
-        }
-
-
+        const controlPoints = this.getControlPoints(span)
 
         // for (let i = 1; i < controlPoints.length; ++i) {
         //     const line = svg.createSVGElement('line')
@@ -748,6 +721,45 @@ export default class {
         }
         pool.outerEdgeBindings.set(span, bezier)
         return [bezier]
+    }
+
+    private getControlPoints(span: Span) {
+        const { source, target } = span
+        const sourcePos = tryGetFromMap(this.platformsOnSVG, source)
+        const targetPos = tryGetFromMap(this.platformsOnSVG, target)
+
+        const controlPoints = [
+            sourcePos,
+            tryGetFromMap(tryGetFromMap(this.whiskers, source), span),
+            tryGetFromMap(tryGetFromMap(this.whiskers, target), span),
+            targetPos,
+        ]
+
+        const sourceMap = this.platformOffsets.get(sourcePos)
+        const targetMap = this.platformOffsets.get(targetPos)
+        if (sourceMap) {
+            const offset = sourceMap.get(span)
+            if (!offset) {
+                return controlPoints
+            }
+            if (targetMap && offset) {
+                return math.offsetPath(controlPoints, offset)
+            }
+            const lineO = math.offsetLine(controlPoints.slice(0, 2), offset)
+            controlPoints[0] = lineO[0]
+            controlPoints[1] = lineO[1]
+            return controlPoints
+        }
+        if (targetMap) {
+            const offset = targetMap.get(span)
+            if (!offset) {
+                return controlPoints
+            }
+            const lineO = math.offsetLine(controlPoints.slice(2, 4), offset)
+            controlPoints[2] = lineO[0]
+            controlPoints[3] = lineO[1]
+        }
+        return controlPoints
     }
 
     private addStationListeners() {
