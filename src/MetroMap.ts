@@ -24,8 +24,7 @@ import {
     Mediator,
     color,
     dom,
-    tryGetFromMap,
-    tryGetKeyFromBiMap,
+    collections,
     MetroMapEventMap,
     getPlatformNames,
     getPlatformNamesZipped,
@@ -40,6 +39,12 @@ const {
     cartoDBNoLabels,
     wikimapia,
 } = ui.tileLayers
+
+const {
+    tryGetFromMap,
+    tryGetKeyFromBiMap,
+    getOrMakeInMap,
+} = collections
 
 const { scale } = sfx
 const { mean } = math
@@ -346,6 +351,8 @@ export default class {
         const stationCirclesFrag = tryGetFromMap(docFrags, 'station-circles')
         const dummyCirclesFrag = tryGetFromMap(docFrags, 'dummy-circles')
 
+        const isDetailed = zoom >= detailedZoom
+
         for (const station of this.network.stations) {
             const circumpoints: L.Point[] = []
             // const stationMeanColor: string
@@ -359,7 +366,7 @@ export default class {
                     const ci = svg.makeCircle(posOnSVG, circleRadius)
                     // ci.id = 'p-' + platformIndex;
 
-                    if (zoom >= detailedZoom) {
+                    if (isDetailed) {
                         this.colorizePlatformCircle(ci, platform.passingLines())
                     }
                     // else {
@@ -399,8 +406,7 @@ export default class {
         const transfersInnerFrag = tryGetFromMap(docFrags, 'transfers-inner')
         for (const transfer of this.network.transfers) {
             const { source, target } = transfer
-            const detailed = zoom >= detailedZoom
-            if (!detailed && source.name === target.name) {
+            if (!isDetailed && source.name === target.name) {
                 continue
             }
             const scp = stationCircumpoints.get(source.station)
@@ -415,7 +421,7 @@ export default class {
                 )
             pool.outerEdgeBindings.set(transfer, paths[0])
             pool.innerEdgeBindings.set(transfer, paths[1])
-            paths[0].style.stroke = detailed ? this.makeGradient(transfer, fullCircleRadius) : '#000'
+            paths[0].style.stroke = isDetailed ? this.makeGradient(transfer, fullCircleRadius) : '#000'
             transfersOuterFrag.appendChild(paths[0])
             transfersInnerFrag.appendChild(paths[1])
             // this.transferToModel(transfer, paths);
@@ -431,21 +437,26 @@ export default class {
         this.platformOffsets.clear()
         const offset = lineWidth
         for (const span of this.network.spans) {
-            const parallel = this.network.spans.filter(s => s.isOf(span.source, span.target))
-            if (parallel.length > 1) {
-                const o = (parallel.indexOf(span) + (1 - parallel.length) / 2) * offset
-                for (const p of [span.source, span.target]) {
-                    const spanRouteSpans = p.spans.filter(s => intersection(s.routes, span.routes).length > 0)
-                    for (const s of spanRouteSpans) {
-                        let map = this.platformOffsets.get(s)
-                        if (!map) {
-                            map = new Map<Platform, number>()
-                            this.platformOffsets.set(s, map)
-                        }
-                        map.set(p, o)
-                    }
-                }
+            const { source, target, routes } = span
+            const parallel = this.network.spans.filter(s => s.isOf(source, target))
+            if (parallel.length === 1) {
+                continue
+            }
+            if (parallel.length === 0) {
+                throw new Error(`some error with span ${source.name}-${target.name}: it probably does not exist`)
+            }
 
+            const pos = parallel.indexOf(span)
+            if (pos === -1) {
+                throw new Error(`some error with span ${source.name}-${target.name}`)
+            }
+            const o = (pos + (1 - parallel.length) / 2) * offset
+            for (const p of [source, target]) {
+                const spanRouteSpans = p.spans.filter(s => intersection(s.routes, routes).length > 0)
+                for (const s of spanRouteSpans) {
+                    const map = getOrMakeInMap(this.platformOffsets, s, () => new Map<Platform, number>())
+                    map.set(p, o)
+                }
             }
         }
 

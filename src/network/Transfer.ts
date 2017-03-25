@@ -1,4 +1,4 @@
-import { deleteFromArray } from '../util'
+import { deleteFromArray } from '../util/collections'
 
 import Platform from './Platform'
 import Edge from './Edge'

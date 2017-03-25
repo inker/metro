@@ -1,6 +1,6 @@
 import pool from '../../ObjectPool'
 import { byId } from '../dom'
-import { tryGetFromMap } from '../index'
+import { tryGetFromMap } from '../collections'
 
 import { Transfer } from '../../network'
 

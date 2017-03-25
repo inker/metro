@@ -1,10 +1,5 @@
 import * as L from 'leaflet'
-import {
-    last,
-    uniq,
-    zip,
-    identity,
-} from 'lodash'
+import { uniq, zip, identity } from 'lodash'
 
 import { Platform } from '../network'
 
@@ -17,6 +12,7 @@ import * as svg from './svg'
 import * as color from './color'
 import * as dom from './dom'
 import * as events from './events'
+import * as collections from './collections'
 import MetroMapEventMap from './MetroMapEventMap'
 
 export {
@@ -29,6 +25,7 @@ export {
     color,
     dom,
     events,
+    collections,
     MetroMapEventMap,
 }
 
@@ -39,25 +36,6 @@ const RESET_SELECTOR = [
     'transfers-outer',
     'station-circles',
 ].map(i => `#${i} > *`).join(', ')
-
-export function intersection<T>(a: Set<T>, b: Set<T>) {
-    const isn = new Set<T>()
-    a.forEach(item => {
-        if (b.has(item)) {
-            isn.add(item)
-        }
-    })
-    return isn
-}
-
-export function deleteFromArray<T>(arr: T[], el: T) {
-    const pos = arr.indexOf(el)
-    if (pos < 0) {
-        return
-    }
-    arr[pos] = last(arr)
-    arr.pop()
-}
 
 export function roundPoint(point: L.Point, precision: number): L.Point {
     return L.point(+point.x.toFixed(precision), +point.y.toFixed(precision))
@@ -75,12 +53,6 @@ export function resetStyle() {
         style.opacity = null
         style.filter = null
     }
-}
-
-export function triggerMouseEvent(target: Node, eventType: string) {
-    const e = document.createEvent('MouseEvents')
-    e.initEvent(eventType, true, true)
-    target.dispatchEvent(e)
 }
 
 export function getPlatformNames(platform: Platform): string[] {
@@ -141,28 +113,4 @@ export function getSecondLanguage() {
         [city: string]: string|undefined,
     }
     return obj[city]
-}
-
-interface IMap<K, V> {
-    get: (key: K) => V|undefined,
-}
-export function tryGetFromMap<K, V>(map: IMap<K, V>, key: K): V {
-    const val = map.get(key)
-    if (val === undefined) {
-        console.error('in map', map, ':', key, '->', val)
-        throw new Error('key or val is undefined')
-    }
-    return val
-}
-
-interface IBiMap<K, V> {
-    getKey: (val: V) => K|undefined,
-}
-export function tryGetKeyFromBiMap<K, V>(map: IBiMap<K, V>, val: V): K {
-    const key = map.getKey(val)
-    if (key === undefined) {
-        console.error('in map', map, ':', val, '->', key)
-        throw new Error('key or val is undefined')
-    }
-    return key
 }

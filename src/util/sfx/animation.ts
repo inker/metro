@@ -4,7 +4,7 @@ import { last } from 'lodash'
 
 import pool from '../../ObjectPool'
 import { filters } from '../svg'
-import { tryGetFromMap } from '../index'
+import { tryGetFromMap } from '../collections'
 import { byId } from '../dom'
 import { transitionEnd } from '../events'
 

@@ -7,7 +7,7 @@ import Span from './Span'
 import Transfer from './Transfer'
 import Route from './Route'
 
-import { deleteFromArray } from '../util'
+import { deleteFromArray } from '../util/collections'
 
 import {
     LatLngJSON,

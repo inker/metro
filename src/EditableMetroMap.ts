@@ -16,14 +16,18 @@ import {
 
 import {
     svg,
-    deleteFromArray,
+    collections,
     mouseToLatLng,
-    intersection,
     getPlatformNames,
-    tryGetFromMap,
-    tryGetKeyFromBiMap,
     dom,
 } from './util'
+
+const {
+    deleteFromArray,
+    intersection,
+    tryGetFromMap,
+    tryGetKeyFromBiMap,
+} = collections
 
 const { gradients } = svg
 

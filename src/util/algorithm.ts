@@ -3,7 +3,7 @@ import { isEqual, last } from 'lodash'
 
 import { timeToTravel } from './math'
 import { findClosestObject } from './geo'
-import { tryGetFromMap } from '../util'
+import { tryGetFromMap } from './collections'
 
 import Network, {
     Platform,
