@@ -731,7 +731,7 @@ export default class {
             if (!offset) {
                 return controlPoints
             }
-            if (targetMap && offset) {
+            if (targetMap) {
                 return math.offsetPath(controlPoints, offset)
             }
             const lineO = math.offsetLine(controlPoints.slice(0, 2), offset)
