@@ -48,7 +48,7 @@ const {
 } = collections
 
 const { scale } = sfx
-const { mean } = math
+const { mean, normalize } = math.vector
 const { findCycle } = algorithm
 
 const contextMenuArray = [{
@@ -609,7 +609,7 @@ export default class {
             const neighbor = span.other(platform)
             const neighborPos = tryGetFromMap(this.platformsOnSVG, neighbor)
             const dirIdx = span.source === platform ? 0 : 1
-            normals[dirIdx].push(math.normalize(neighborPos.subtract(pos)))
+            normals[dirIdx].push(normalize(neighborPos.subtract(pos)))
             sortedSpans[dirIdx].push(span)
             distances.set(span, pos.distanceTo(neighborPos))
         }

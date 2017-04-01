@@ -66,10 +66,13 @@ export function platformRenameDialog(platform: Platform) {
     }, () => alertify.warning(tr`Name change cancelled`))
 }
 
-export function askRoutes(network: Network, defSet?: Set<Route>) {
+export function askRoutes(network: Network, defSet = new Set<Route>()) {
     const def = defSet === undefined ? undefined : Array.from(defSet).map(r => r.line + r.branch).join('|')
     const routeSet = new Set<Route>()
-    const routeString = prompt('routes', def) || ''
+    const routeString = prompt('routes', def)
+    if (routeString === null) {
+        return defSet
+    }
     for (const s of routeString.split('|')) {
         const tokens = s[0] === 'M' ? s.match(/(M\d{0,2})(\w?)/) : s.match(/([EL])(.{0,2})/)
         if (!tokens) {

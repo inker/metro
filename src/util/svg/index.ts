@@ -1,6 +1,6 @@
 import { Point, point } from 'leaflet'
 
-import { dot, det, getCircumcenter } from '../math'
+import { vector, getCircumcenter } from '../math'
 import { attr } from '../dom'
 
 import * as filters from './filters'
@@ -82,25 +82,39 @@ export function getCircularPath(path: Element) {
     return points
 }
 
-export function setCircularPath(el: Element, start: Point, end: Point, third: Point) {
+const xor = (a: boolean, b: boolean) => a && !b || b && !a
+
+interface ArcArgs {
+    radius: number,
+    large?: number,
+    sweep?: number,
+}
+
+function getArcArgs(start: Point, end: Point, third: Point): ArcArgs {
     const center = getCircumcenter([start, end, third])
-    const startAngle = Math.atan2(start.y - center.y, start.x - center.x)
-    const endAngle = Math.atan2(end.y - center.y, end.x - center.x)
-    // const thirdAngle = Math.atan2(third.y - center.y, third.x - center.x);
-    const diff = endAngle - startAngle
-    let large = diff <= Math.PI || diff > -Math.PI ? 0 : 1
+    if (center === null) {
+        return {
+            radius: Infinity,
+        }
+    }
+    const a = start.subtract(third)
+    const b = end.subtract(third)
+    const codir = vector.dot(a, b) > 0
     const u = start.subtract(center)
     const v = end.subtract(center)
-    let sweep = det(u, v) < 0 ? 0 : 1
-    const codir = dot(third.subtract(start), third.subtract(end))
-    if (codir < 0) {
-        sweep = 1 - sweep
-        large = 1 - large
+    return {
+        radius: center.distanceTo(start),
+        large: codir ? 0 : 1,
+        sweep: xor(vector.det(u, v) <= 0, codir) ? 1 : 0,
     }
-    const radius = center.distanceTo(start)
+}
+
+export function setCircularPath(el: Element, start: Point, end: Point, third: Point) {
+    const { radius, large, sweep } = getArcArgs(start, end, third)
     const d = [
         'M', start.x, start.y,
-        'A', radius, radius, 0, large, sweep, end.x, end.y,
+        ...(radius === Infinity ? ['L'] : ['A', radius, radius, 0, large, sweep]),
+        end.x, end.y,
     ].join(' ')
     el.setAttribute('d', d)
 }

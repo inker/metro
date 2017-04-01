@@ -37,10 +37,6 @@ const RESET_SELECTOR = [
     'station-circles',
 ].map(i => `#${i} > *`).join(', ')
 
-export function roundPoint(point: L.Point, precision: number): L.Point {
-    return L.point(+point.x.toFixed(precision), +point.y.toFixed(precision))
-}
-
 export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {
     const { top, left } = map.getContainer().getBoundingClientRect()
     const containerPoint = L.point(event.clientX - left, event.clientY - top)
@@ -74,14 +70,14 @@ export function getPlatformNamesZipped(platforms: Platform[]) {
         .filter(identity)
 }
 
-export function midPointsToEnds(posOnSVG: L.Point, midPts: L.Point[]) {
-    const lens = midPts.map(midPt => posOnSVG.distanceTo(midPt))
+export function midPointsToEnds(pos: L.Point, midPts: L.Point[]) {
+    const lens = midPts.map(midPt => pos.distanceTo(midPt))
     const midOfMidsWeighted = midPts[1]
         .subtract(midPts[0])
         .multiplyBy(lens[0] / (lens[0] + lens[1]))
         .add(midPts[0])
-    const offset = posOnSVG.subtract(midOfMidsWeighted)
-    return midPts.map(v => roundPoint(v.add(offset), 2))
+    const offset = pos.subtract(midOfMidsWeighted)
+    return midPts.map(v => math.vector.round(v.add(offset), 2))
 }
 
 export const delay = (ms: number) => new Promise<void>((resolve, reject) => setTimeout(resolve, ms))
