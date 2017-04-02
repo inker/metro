@@ -8,9 +8,11 @@
     "@types/leaflet": "^0.7.30",
     "@types/localforage": "^0.0.34",
     "@types/lodash": "^4.14.61",
+    "@types/whatwg-fetch": "0.0.33",
     "alertifyjs": "^1.9.0",
     "animate-svg": "^1.0.1",
     "bim": "^1.1.1",
+    "core-js": "^2.4.1",
     "download.js": "0.0.3",
     "hammerjs": "^2.0.8",
     "html-tags": "^1.1.1",
@@ -21,7 +23,6 @@
     "unblur": "^0.5.5"
   },
   "devDependencies": {
-    "@types/whatwg-fetch": "0.0.33",
     "autoprefixer": "^6.7.7",
     "awesome-typescript-loader": "^3.1.2",
     "classlist-polyfill": "^1.0.3",

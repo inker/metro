@@ -73,23 +73,25 @@ export default class {
     }
 
     toJSON(): string {
+        const { platforms, transfers, lines, spans, routes } = this
         return JSON.stringify({
-            platforms: this.platforms.map(p => ({
+            version: Date.now(),
+            platforms: platforms.map(p => ({
                 name: p.name,
                 altNames: p.altNames,
                 location: p.location,
             })),
-            transfers: this.transfers.map(t => ({
-                source: this.platforms.indexOf(t.source),
-                target: this.platforms.indexOf(t.target),
+            transfers: transfers.map(t => ({
+                source: platforms.indexOf(t.source),
+                target: platforms.indexOf(t.target),
             })),
-            lines: this.lines,
-            spans: this.spans.map(s => ({
-                source: this.platforms.indexOf(s.source),
-                target: this.platforms.indexOf(s.target),
-                routes: s.routes.map(r => this.routes.indexOf(r)),
+            lines,
+            spans: spans.map(s => ({
+                source: platforms.indexOf(s.source),
+                target: platforms.indexOf(s.target),
+                routes: s.routes.map(r =>routes.indexOf(r)),
             })),
-            routes: this.routes,
+            routes,
         }, (k, v) => k.startsWith('_') ? undefined : v)
     }
 

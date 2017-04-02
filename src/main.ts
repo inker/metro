@@ -7,7 +7,7 @@ declare const System: {
 import { Browser, Icon } from 'leaflet'
 import { capitalize } from 'lodash'
 
-import { getJSON } from './res'
+import { getJSON, Config } from './res'
 import { updateDictionary, translate } from './i18n'
 
 import 'leaflet-dist/leaflet.css'
@@ -15,6 +15,8 @@ import 'alertify-dist/css/alertify.css'
 import 'alertify-dist/css/themes/default.css'
 import './css/index.css'
 import './css/map.css'
+
+import 'core-js/fn/object/entries'
 
 Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images'
 
@@ -28,13 +30,14 @@ if (navigator.userAgent.includes('Firefox')) {
     throw new Error('shitty browser')
 }
 
-const configPromise = getJSON('res/mapconfig.json')
+const configPromise = getJSON('res/mapconfig.json') as Promise<Config>
 const mapPromise = L.Browser.mobile ? System.import('./MetroMap') : System.import('./EditableMetroMap')
 
 const tokens = location.search.match(/city=(\w+)/)
 const city = tokens ? tokens[1] : 'spb'
 
-; (async () => {
+;
+(async () => {
     const config = await configPromise
     const dictPromise = updateDictionary(config.url.dictionary)
     for (const url of Object.keys(config.url)) {
