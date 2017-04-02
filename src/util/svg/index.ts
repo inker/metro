@@ -60,12 +60,18 @@ export function getBezierPathPoints(path: Element) {
 }
 
 export function setBezierPath(el: Element, controlPoints: Point[]) {
-    if (controlPoints.length !== 4) {
-        throw new Error('there should be 4 points')
+    if (controlPoints.length === 4) {
+        const s = ['M'].concat(controlPoints.map(pt => `${pt.x},${pt.y}`))
+        s.splice(2, 0, 'C')
+        el.setAttribute('d', s.join(' '))
+        return
     }
-    const s = ['M'].concat(controlPoints.map(pt => `${pt.x},${pt.y}`))
-    s.splice(2, 0, 'C')
-    el.setAttribute('d', s.join(' '))
+    if (controlPoints.length === 3) {
+        const [a, b, c] = controlPoints
+        el.setAttribute('d', `M ${a.x} ${a.y} Q ${b.x} ${b.y} ${c.x} ${c.y}`)
+        return
+    }
+    throw new Error('there should be 3 or 4 points')
 }
 
 export function getCircularPath(path: Element) {
@@ -87,7 +93,7 @@ const xor = (a: boolean, b: boolean) => a && !b || b && !a
 interface ArcArgs {
     radius: number,
     large?: number,
-    sweep?: number,
+    clockwise?: number,
 }
 
 function getArcArgs(start: Point, end: Point, third: Point): ArcArgs {
@@ -99,21 +105,22 @@ function getArcArgs(start: Point, end: Point, third: Point): ArcArgs {
     }
     const a = start.subtract(third)
     const b = end.subtract(third)
-    const codir = vector.dot(a, b) > 0
+    const isOpposite = vector.dot(a, b) < 0
     const u = start.subtract(center)
     const v = end.subtract(center)
+    const isRight = vector.det(u, v) >= 0
     return {
         radius: center.distanceTo(start),
-        large: codir ? 0 : 1,
-        sweep: xor(vector.det(u, v) <= 0, codir) ? 1 : 0,
+        large: isOpposite ? 1 : 0,
+        clockwise: xor(isRight, isOpposite) ? 1 : 0,
     }
 }
 
 export function setCircularPath(el: Element, start: Point, end: Point, third: Point) {
-    const { radius, large, sweep } = getArcArgs(start, end, third)
+    const { radius, large, clockwise } = getArcArgs(start, end, third)
     const d = [
         'M', start.x, start.y,
-        ...(radius === Infinity ? ['L'] : ['A', radius, radius, 0, large, sweep]),
+        ...(radius === Infinity ? ['L'] : ['A', radius, radius, 0, large, clockwise]),
         end.x, end.y,
     ].join(' ')
     el.setAttribute('d', d)
