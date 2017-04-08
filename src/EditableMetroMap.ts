@@ -56,7 +56,7 @@ export default class extends MetroMap {
 
         this.subscribe('platformrename', e => {
             const platform = relatedTargetToPlatform(e.relatedTarget)
-            this.plate.show(svg.circleOffset(e.relatedTarget as SVGCircleElement), getPlatformNames(platform))
+            this.plate.show(svg.getCircleOffset(e.relatedTarget as SVGCircleElement), getPlatformNames(platform))
             platformRenameDialog(platform)
         })
         this.subscribe('platformmovestart', e => {
@@ -69,7 +69,7 @@ export default class extends MetroMap {
         this.subscribe('platformmoveend', e => {
             const platform = relatedTargetToPlatform(e.relatedTarget)
             this.plate.disabled = false
-            this.plate.show(svg.circleOffset(e.relatedTarget as SVGCircleElement), getPlatformNames(platform))
+            this.plate.show(svg.getCircleOffset(e.relatedTarget as SVGCircleElement), getPlatformNames(platform))
         })
         this.subscribe('platformadd', e => {
             const { detail } = e
@@ -256,9 +256,9 @@ export default class extends MetroMap {
                     ]
                     const outer = tryGetFromMap(pool.outerEdgeBindings, span)
                     const inner = pool.innerEdgeBindings.get(span)
-                    svg.setBezierPath(outer, controlPoints)
+                    svg.bezier.setPath(outer, controlPoints)
                     if (inner) {
-                        svg.setBezierPath(inner, controlPoints)
+                        svg.bezier.setPath(inner, controlPoints)
                     }
                 })
                 for (const tr of platform.transfers) {
@@ -323,7 +323,7 @@ export default class extends MetroMap {
                             const pos2 = tryGetFromMap(this.platformsOnSVG, tr.target)
                             const thirdPos = difference(circumpoints, [pos1, pos2])[0]
                             if (thirdPos) {
-                                svg.setCircularPath(outer, pos1, pos2, thirdPos)
+                                svg.arc.setPath(outer, pos1, pos2, thirdPos)
                                 inner.setAttribute('d', dom.attr(outer, 'd'))
                             }
                             const gradient = tryGetFromMap(pool.gradientBindings, tr)

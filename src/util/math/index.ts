@@ -1,4 +1,5 @@
 import { Point, point } from 'leaflet'
+import { head, last } from 'lodash'
 
 import * as vector from './vector'
 import * as phys from './phys'
@@ -17,12 +18,42 @@ const {
   normalize,
 } = vector
 
-export function wings(a: Point, b: Point, c: Point, length = 1): Point[] {
-    const ba = a.subtract(b)
-    const bc = c.subtract(b)
-    const bis = bisect(ba, bc)
-    const t = det(ba, bc) < 0 ? -length : length
-    return orthogonal(bis.multiplyBy(t))
+export const isNatural = (n: number) => n > 0 && Number.isInteger(n)
+
+const getMidPoint = (a: Point, b: Point, part: number) =>
+    b.subtract(a).multiplyBy(part).add(a)
+
+const getMidPoints = (points: Point[], part: number) =>
+    points.slice(1).map((p, i) => getMidPoint(points[i], p, part))
+
+const getMidVertices = (points: Point[], part: number) =>
+    getVertices(getMidPoints(points, part), part)
+
+const getVertices = (points: Point[], part: number): Point[] =>
+    points.length < 2 ? points : [
+        head(points),
+        ...getMidVertices(points, part),
+        last(points),
+    ]
+
+export function splitInTwo(points: Point[], part: number): [Point[], Point[]] {
+    const cps = getVertices(points, part)
+    const mid = cps.length >> 1
+    return [
+        cps.slice(0, mid + 1),
+        cps.slice(mid),
+    ]
+}
+
+export function split(points: Point[], k: number): Point[][] {
+    if (!isNatural(k)) {
+        throw new Error(`k must be a natural number, got ${k} instead`)
+    }
+    if (k === 1) {
+        return [points]
+    }
+    const [first, rest] = splitInTwo(points, 1 / k)
+    return [first, ...split(rest, k - 1)]
 }
 
 export function offsetLine(points: Point[], d: number): Point[] {
@@ -58,6 +89,14 @@ export function offsetPath(controlPoints: Point[], d: number): Point[] {
         const bc = next.subtract(cp)
         return intersection([prevO, ba], [nextO, bc]) || cpO
     })
+}
+
+export function wings(a: Point, b: Point, c: Point, length = 1): Point[] {
+    const ba = a.subtract(b)
+    const bc = c.subtract(b)
+    const bis = bisect(ba, bc)
+    const t = det(ba, bc) < 0 ? -length : length
+    return orthogonal(bis.multiplyBy(t))
 }
 
 export function getCircumcenter(positions: Point[]): Point|null {

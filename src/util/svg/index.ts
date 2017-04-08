@@ -1,14 +1,17 @@
 import { Point, point } from 'leaflet'
 
-import { vector, getCircumcenter } from '../math'
 import { attr } from '../dom'
 
 import * as filters from './filters'
 import * as gradients from './gradients'
+import * as arc from './arc'
+import * as bezier from './bezier'
 
 export {
     filters,
     gradients,
+    arc,
+    bezier,
 }
 
 export function createSVGElement<K extends keyof ElementTagNameMap>(tagName: K): ElementTagNameMap[K] {
@@ -39,101 +42,8 @@ export function makeLine(start: Point, end: Point): SVGLineElement {
     return line
 }
 
-export function makeArc(start: Point, end: Point, third: Point): SVGPathElement {
-    const path = createSVGElement('path')
-    setCircularPath(path, start, end, third)
-    return path
-}
-
-export function getBezierPathPoints(path: Element) {
-    const points: Point[] = []
-    const re = /\D([\d\.]+).*?,.*?([\d\.]+)/g
-    const d = path.getAttribute('d')
-    if (!d) {
-        return null
-    }
-    let m: RegExpExecArray|null
-    while ((m = re.exec(d)) !== null) {
-        points.push(point(Number(m[1]), Number(m[2])))
-    }
-    return points
-}
-
-export function setBezierPath(el: Element, controlPoints: Point[]) {
-    if (controlPoints.length === 4) {
-        const s = ['M'].concat(controlPoints.map(pt => `${pt.x},${pt.y}`))
-        s.splice(2, 0, 'C')
-        el.setAttribute('d', s.join(' '))
-        return
-    }
-    if (controlPoints.length === 3) {
-        const [a, b, c] = controlPoints
-        el.setAttribute('d', `M ${a.x} ${a.y} Q ${b.x} ${b.y} ${c.x} ${c.y}`)
-        return
-    }
-    throw new Error('there should be 3 or 4 points')
-}
-
-export function getCircularPath(path: Element) {
-    const points: number[] = []
-    const re = /\D([\d\.]+)/g
-    const d = path.getAttribute('d')
-    if (!d) {
-        return null
-    }
-    let m: RegExpExecArray|null
-    while ((m = re.exec(d)) !== null) {
-        points.push(Number(m[1]))
-    }
-    return points
-}
-
-const xor = (a: boolean, b: boolean) => a && !b || b && !a
-
-interface ArcArgs {
-    radius: number,
-    large?: number,
-    clockwise?: number,
-}
-
-function getArcArgs(start: Point, end: Point, third: Point): ArcArgs {
-    const center = getCircumcenter([start, end, third])
-    if (center === null) {
-        return {
-            radius: Infinity,
-        }
-    }
-    const a = start.subtract(third)
-    const b = end.subtract(third)
-    const isOpposite = vector.dot(a, b) < 0
-    const u = start.subtract(center)
-    const v = end.subtract(center)
-    const isRight = vector.det(u, v) >= 0
-    return {
-        radius: center.distanceTo(start),
-        large: isOpposite ? 1 : 0,
-        clockwise: xor(isRight, isOpposite) ? 1 : 0,
-    }
-}
-
-export function setCircularPath(el: Element, start: Point, end: Point, third: Point) {
-    const { radius, large, clockwise } = getArcArgs(start, end, third)
-    const d = [
-        'M', start.x, start.y,
-        ...(radius === Infinity ? ['L'] : ['A', radius, radius, 0, large, clockwise]),
-        end.x, end.y,
-    ].join(' ')
-    el.setAttribute('d', d)
-}
-
-export function makeCubicBezier(controlPoints: Point[]): SVGPathElement {
-    const path = createSVGElement('path')
-    setBezierPath(path, controlPoints)
-    return path
-}
-
 export function makeTransferArc(start: Point, end: Point, third: Point) {
-    const outer = makeArc(start, end, third)
+    const outer = arc.create(start, end, third)
     const inner: typeof outer = outer.cloneNode(true) as any
     return [outer, inner]
 }
@@ -149,7 +59,7 @@ export function makeTransferLine(start: Point, end: Point): SVGLineElement[] {
     return [makeLine(start, tg), makeLine(start, tg)]
 }
 
-export function circleOffset(circle: SVGCircleElement): Point {
+export function getCircleOffset(circle: SVGCircleElement): Point {
     const c = point(+attr(circle, 'cx'), +attr(circle, 'cy'))
     const iR = ~~attr(circle, 'r')
     const offset = point(0 + iR, 4 + iR)

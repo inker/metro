@@ -686,7 +686,7 @@ export default class {
 
         // drawBezierHints(this.overlay.origin, controlPoints, get(this.lineRules.get(lineId), 'stroke') as string)
 
-        const bezier = svg.makeCubicBezier(controlPoints)
+        const bezier = svg.bezier.create(controlPoints[0], ...controlPoints.slice(1))
         // bezier.id = 'op-' + spanIndex;
         if (lineType === 'E') {
             bezier.classList.add('E')
@@ -729,26 +729,28 @@ export default class {
         if (sourceMap) {
             const offset = sourceMap.get(span)
             if (!offset) {
-                return controlPoints
+                return [controlPoints]
             }
             if (targetMap) {
-                return math.offsetPath(controlPoints, offset)
+                const curves = math.split(controlPoints, 10)
+                const [head, ...tail] = curves.map(pa => math.offsetPath(pa, offset))
+                return [head, ...tail.map(arr => arr.slice(1))]
             }
             const lineO = math.offsetLine(controlPoints.slice(0, 2), offset)
             controlPoints[0] = lineO[0]
             controlPoints[1] = lineO[1]
-            return controlPoints
+            return [controlPoints]
         }
         if (targetMap) {
             const offset = targetMap.get(span)
             if (!offset) {
-                return controlPoints
+                return [controlPoints]
             }
             const lineO = math.offsetLine(controlPoints.slice(2, 4), offset)
             controlPoints[2] = lineO[0]
             controlPoints[3] = lineO[1]
         }
-        return controlPoints
+        return [controlPoints]
     }
 
     private addStationListeners() {
@@ -797,7 +799,7 @@ export default class {
         }
         const topmostPlatform = maxBy(platforms, p => p.location.lat)
         const topmostCircle = tryGetFromMap(pool.platformBindings, topmostPlatform)
-        this.plate.show(svg.circleOffset(topmostCircle), namesOnPlate)
+        this.plate.show(svg.getCircleOffset(topmostCircle), namesOnPlate)
     }
 
 }
