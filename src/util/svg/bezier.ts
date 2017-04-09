@@ -1,4 +1,3 @@
-import { flatten } from 'lodash'
 import { Point, point } from 'leaflet'
 import { createSVGElement } from './index'
 
@@ -18,25 +17,23 @@ export function getPathPoints(path: Element) {
 
 const curveTypeLetters = ['', 'L', 'Q', 'C']
 
-function tailsToStrings(tails: Point[][]) {
-    const deepArray = tails.map(t => {
-        if (t.length > 3) {
-            throw new Error('the tail should consist of 1-3 elements')
-        }
-        return [curveTypeLetters[t.length], ...t.map(p => `${p.x} ${p.y}`)]
-    })
-    return flatten(deepArray)
+function tailToString(tail: Point[]) {
+    if (tail.length > 3) {
+        throw new Error(`the tail should consist of 1-3 elements, but got ${tail.length} instead`)
+    }
+    const letter = curveTypeLetters[tail.length]
+    const coords = tail.map(pt => `${pt.x} ${pt.y}`).join(' ')
+    return `${letter} ${coords}`
 }
 
 export function setPath(el: Element, controlPoints: Point[], ...tails: Point[][]) {
+    if (controlPoints.length < 2) {
+        throw new Error(`there should be at least 2 control points, but got ${controlPoints.length} instead`)
+    }
     const [start, ...tail] = controlPoints
-    const str = [
-        'M',
-        start.x,
-        start.y,
-        ...tailsToStrings([tail, ...tails]),
-    ]
-    el.setAttribute('d', str.join(' '))
+    tails.unshift(tail) // tails can be mutable
+    const tailStr = tails.map(tailToString).join(' ')
+    el.setAttribute('d', `M ${start.x} ${start.y} ${tailStr}`)
 }
 
 export function create(controlPoints: Point[], ...tails: Point[][]): SVGPathElement {

@@ -437,7 +437,7 @@ export default class {
         const pathsInnerFrag = tryGetFromMap(docFrags, 'paths-inner')
 
         this.platformOffsets.clear()
-        const offset = lineWidth
+        const offset = lineWidth * 1
         for (const span of this.network.spans) {
             const { source, target, routes } = span
             const parallel = this.network.spans.filter(s => s.isOf(source, target))
