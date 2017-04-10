@@ -2,6 +2,8 @@ import { Point, point } from 'leaflet'
 
 export type Ray = [Point, Point]
 
+export const unit = point(1, 0)
+
 export const isArbitrarilySmall = (v: Point) =>
     Math.abs(v.x) < Number.EPSILON && Math.abs(v.y) < Number.EPSILON
 

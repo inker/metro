@@ -1,6 +1,7 @@
 import { Point, point } from 'leaflet'
 
 import { attr } from '../dom'
+import { vector } from '../math'
 
 import * as filters from './filters'
 import * as gradients from './gradients'
@@ -40,6 +41,54 @@ export function makeLine(start: Point, end: Point): SVGLineElement {
     line.setAttribute('x2', end.x.toString())
     line.setAttribute('y2', end.y.toString())
     return line
+}
+
+export function makeOval(center: Point, width: number, radius: number) {
+    const halfWidth = width * 0.5
+    const vec = point(halfWidth, 0)
+    const rect = createSVGElement('rect')
+    rect.setAttribute('x', (center.x - halfWidth).toString())
+    rect.setAttribute('y', (center.y - radius).toString())
+    rect.setAttribute('width', width.toString())
+    rect.setAttribute('height', (radius + radius).toString())
+    rect.setAttribute('rx', radius.toString())
+    rect.setAttribute('ry', radius.toString())
+    rect.style.transformOrigin = '50% 50%'
+    return rect
+}
+
+export function makeOvalStartEnd(start: Point, end: Point, radius: number): SVGPathElement {
+    const vec = end.subtract(start)
+    const startPoints = vector.orthogonal(vec.multiplyBy(-1)).map(i => i.add(start))
+    const endPoints = vector.orthogonal(vec).map(i => i.add(end))
+    const arr = [
+        'M',
+        startPoints[0].x,
+        startPoints[0].y,
+        'A',
+        radius,
+        radius,
+        '0 0 1',
+        startPoints[1].x,
+        startPoints[1].y,
+        'L',
+        endPoints[0].x,
+        endPoints[0].y,
+        'A',
+        radius,
+        radius,
+        '0 0 1',
+        endPoints[1].x,
+        endPoints[1].y,
+        'L',
+        startPoints[0].x,
+        startPoints[0].y,
+        'Z',
+    ]
+    const path = createSVGElement('path')
+    path.setAttribute('d', arr.join(' '))
+    path.style.fillOpacity = '1'
+    return path
 }
 
 export function makeTransferArc(start: Point, end: Point, third: Point) {
