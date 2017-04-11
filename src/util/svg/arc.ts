@@ -17,14 +17,15 @@ function getArgs(start: Point, end: Point, third: Point): ArcArgs {
     }
     const a = start.subtract(third)
     const b = end.subtract(third)
-    const isOpposite = vector.dot(a, b) < 0
+    const thirdIsBetween = vector.dot(a, b) < 0
     const u = start.subtract(center)
     const v = end.subtract(center)
-    const isLeft = vector.det(u, v) <= 0
+    // the distance is shorter when moving from start to end clockwise
+    const isClockwise = vector.det(u, v) >= 0
     return {
         radius: center.distanceTo(start),
-        large: isOpposite ? 1 : 0,
-        clockwise: isLeft === isOpposite ? 1 : 0,
+        large: thirdIsBetween ? 1 : 0,
+        clockwise: isClockwise && !thirdIsBetween || thirdIsBetween && !isClockwise ? 1 : 0,
     }
 }
 

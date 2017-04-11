@@ -47,9 +47,18 @@ const {
     getOrMakeInMap,
 } = collections
 
+const {
+    mean,
+    normalize,
+    unit,
+    angle,
+} = math.vector
+
 const { scale } = sfx
-const { mean, normalize } = math.vector
 const { findCycle } = algorithm
+
+const GAP_BETWEEN_PARALLEL = 0 // 0 - none, 1 - line width
+const CURVE_SPLIT_NUM = 10
 
 const contextMenuArray = [{
     event: 'routefrom',
@@ -355,6 +364,34 @@ export default class {
 
         const isDetailed = zoom >= detailedZoom
 
+        this.platformOffsets.clear()
+        const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * lineWidth
+        for (const span of this.network.spans) {
+            const { source, target, routes } = span
+            const parallel = this.network.spans.filter(s => s.isOf(source, target))
+            if (parallel.length === 1) {
+                continue
+            }
+            if (parallel.length === 0) {
+                throw new Error(`some error with span ${source.name}-${target.name}: it probably does not exist`)
+            }
+
+            const i = parallel.indexOf(span)
+            if (i === -1) {
+                throw new Error(`some error with span ${source.name}-${target.name}`)
+            }
+            const leftShift = (parallel.length - 1) / 2
+            const totalOffset = (i - leftShift) * lineWidthPlusGapPx
+            for (const p of [source, target]) {
+                const pos = tryGetFromMap(this.platformsOnSVG, p)
+                const spanRouteSpans = p.spans.filter(s => intersection(s.routes, routes).length > 0)
+                for (const s of spanRouteSpans) {
+                    const map = getOrMakeInMap(this.platformOffsets, pos, () => new Map<Span, number>())
+                    map.set(s, totalOffset)
+                }
+            }
+        }
+
         for (const station of this.network.stations) {
             const circumpoints: L.Point[] = []
             // const stationMeanColor: string
@@ -362,19 +399,25 @@ export default class {
             //     stationMeanColor = color.mean(this.linesToColors(this.passingLinesStation(station)));
             // }
             for (const platform of station.platforms) {
-                const posOnSVG = tryGetFromMap(this.platformsOnSVG, platform)
+                const pos = tryGetFromMap(this.platformsOnSVG, platform)
                 // const posOnSVG = this.overlay.latLngToSvgPoint(platform.location);
+                const whiskers = this.makeWhiskers(platform)
+                this.whiskers.set(platform, whiskers)
+
                 if (zoom > 9) {
-                    const ci = svg.makeCircle(posOnSVG, circleRadius)
+                    const offsets = this.platformOffsets.get(pos)
+                    const ci = offsets
+                        ? this.makeStadium(platform, circleRadius)
+                        : svg.makeCircle(pos, circleRadius)
                     // ci.id = 'p-' + platformIndex;
 
                     if (isDetailed) {
-                        this.colorizePlatformCircle(ci, platform.passingLines())
+                        this.colorizePlatformElement(ci, platform.passingLines())
                     }
                     // else {
                     //     ci.style.stroke = stationMeanColor;
                     // }
-                    const dummyCircle = svg.makeCircle(posOnSVG, dummyCircleRadius)
+                    const dummyCircle = svg.makeCircle(pos, dummyCircleRadius)
                     // dummyCircle.id = 'd-' + platformIndex;
 
                     stationCirclesFrag.appendChild(ci)
@@ -383,7 +426,6 @@ export default class {
                     pool.dummyBindings.set(platform, dummyCircle)
                 }
 
-                this.whiskers.set(platform, this.makeWhiskers(platform))
             }
 
             const circular = findCycle(this.network, station)
@@ -436,33 +478,6 @@ export default class {
         const pathsOuterFrag = tryGetFromMap(docFrags, 'paths-outer')
         const pathsInnerFrag = tryGetFromMap(docFrags, 'paths-inner')
 
-        this.platformOffsets.clear()
-        const offset = lineWidth * 1
-        for (const span of this.network.spans) {
-            const { source, target, routes } = span
-            const parallel = this.network.spans.filter(s => s.isOf(source, target))
-            if (parallel.length === 1) {
-                continue
-            }
-            if (parallel.length === 0) {
-                throw new Error(`some error with span ${source.name}-${target.name}: it probably does not exist`)
-            }
-
-            const i = parallel.indexOf(span)
-            if (i === -1) {
-                throw new Error(`some error with span ${source.name}-${target.name}`)
-            }
-            const o = (i + (1 - parallel.length) / 2) * offset
-            for (const p of [source, target]) {
-                const pos = tryGetFromMap(this.platformsOnSVG, p)
-                const spanRouteSpans = p.spans.filter(s => intersection(s.routes, routes).length > 0)
-                for (const s of spanRouteSpans) {
-                    const map = getOrMakeInMap(this.platformOffsets, pos, () => new Map<Span, number>())
-                    map.set(s, o)
-                }
-            }
-        }
-
         for (const span of this.network.spans) {
             const [outer, inner] = this.makePath(span)
             pathsOuterFrag.appendChild(outer)
@@ -478,6 +493,18 @@ export default class {
         docFrags.forEach((val, key) => dom.byId(key).appendChild(val))
         console.timeEnd('appending')
 
+    }
+
+    private makeStadium(platform: Platform, circleRadius: number) {
+        const pos = tryGetFromMap(this.platformsOnSVG, platform)
+        const offsetsMap = tryGetFromMap(this.platformOffsets, pos)
+        const offsets = Array.from(offsetsMap).map(([k, v]) => v)
+        const width = Math.max(...offsets) - Math.min(...offsets)
+        const stadium = svg.makeStadium(pos, width, circleRadius)
+        const { value } = tryGetFromMap(this.whiskers, platform).values().next()
+        const rotationAngle = angle(value.subtract(pos), unit)
+        stadium.style.transform = `rotate(${rotationAngle}rad)`
+        return stadium
     }
 
     private makeGradient(transfer: Transfer, fullCircleRadius: number) {
@@ -563,7 +590,7 @@ export default class {
         return rgbs
     }
 
-    private colorizePlatformCircle(ci: SVGCircleElement, lines: Set<string>) {
+    private colorizePlatformElement(ci: SVGElement, lines: Set<string>) {
         if (lines.size === 0) {
             return
         }
@@ -732,7 +759,7 @@ export default class {
                 return [controlPoints]
             }
             if (targetMap) {
-                const curves = math.split(controlPoints, 10)
+                const curves = math.split(controlPoints, CURVE_SPLIT_NUM)
                 const [head, ...tail] = curves.map(pa => math.offsetPath(pa, offset))
                 return [head, ...tail.map(arr => arr.slice(1))]
             }
@@ -785,7 +812,8 @@ export default class {
         const platforms = station.platforms.filter(p => filteredNames.includes(p.name))
         for (const platform of platforms) {
             const circle = tryGetFromMap(pool.platformBindings, platform)
-            scale.scaleCircle(circle, scaleFactor, true)
+            const scaleElement = circle instanceof SVGCircleElement ? scale.scaleCircle : scale.scaleStadium
+            scaleElement(circle, scaleFactor, true)
         }
         if (this.map.getZoom() >= this.config.detailedZoom) {
             for (const transfer of this.network.transfers) {
@@ -799,7 +827,7 @@ export default class {
         }
         const topmostPlatform = maxBy(platforms, p => p.location.lat)
         const topmostCircle = tryGetFromMap(pool.platformBindings, topmostPlatform)
-        this.plate.show(svg.getCircleOffset(topmostCircle), namesOnPlate)
+        this.plate.show(svg.getElementOffset(topmostCircle), namesOnPlate)
     }
 
 }

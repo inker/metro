@@ -3,8 +3,10 @@ import { byId } from '../dom'
 import { tryGetFromMap } from '../collections'
 
 import { Transfer } from '../../network'
+import { attr } from '../dom'
 
 const initialCircles = new Set<SVGCircleElement>()
+const initialStadiums = new Set<SVGRectElement>()
 const initialTransfers = new Set<SVGPathElement | SVGLineElement>()
 
 export function scaleCircle(circle: SVGCircleElement, scaleFactor: number, asAttribute = false) {
@@ -22,6 +24,10 @@ export function scaleCircle(circle: SVGCircleElement, scaleFactor: number, asAtt
         circle.setAttribute('data-r', oldR)
         circle.setAttribute('r', (+oldR * scaleFactor).toString())
     }
+}
+
+export function scaleStadium(stadium: SVGRectElement, scaleFactor: number, asAttribute = false) {
+    // TODO
 }
 
 export function scaleTransfer(transfer: Transfer, scaleFactor: number) {
@@ -46,4 +52,5 @@ export function unscaleAll() {
     initialTransfers.forEach(tr => tr.style.strokeWidth = null)
     initialTransfers.clear()
     initialCircles.clear()
+    initialStadiums.clear()
 }
