@@ -412,7 +412,7 @@ export default class {
                     // ci.id = 'p-' + platformIndex;
 
                     if (isDetailed) {
-                        this.colorizePlatformCircle(ci, platform.passingLines())
+                        this.colorizePlatformElement(ci, platform.passingLines())
                     }
                     // else {
                     //     ci.style.stroke = stationMeanColor;
@@ -590,7 +590,7 @@ export default class {
         return rgbs
     }
 
-    private colorizePlatformCircle(ci: SVGCircleElement, lines: Set<string>) {
+    private colorizePlatformElement(ci: SVGElement, lines: Set<string>) {
         if (lines.size === 0) {
             return
         }
@@ -812,8 +812,8 @@ export default class {
         const platforms = station.platforms.filter(p => filteredNames.includes(p.name))
         for (const platform of platforms) {
             const circle = tryGetFromMap(pool.platformBindings, platform)
-            const func = circle instanceof SVGCircleElement ? scale.scaleCircle : scale.scaleStadium
-            func(circle, scaleFactor, true)
+            const scaleElement = circle instanceof SVGCircleElement ? scale.scaleCircle : scale.scaleStadium
+            scaleElement(circle, scaleFactor, true)
         }
         if (this.map.getZoom() >= this.config.detailedZoom) {
             for (const transfer of this.network.transfers) {
@@ -827,7 +827,7 @@ export default class {
         }
         const topmostPlatform = maxBy(platforms, p => p.location.lat)
         const topmostCircle = tryGetFromMap(pool.platformBindings, topmostPlatform)
-        this.plate.show(svg.getCircleOffset(topmostCircle), namesOnPlate)
+        this.plate.show(svg.getElementOffset(topmostCircle), namesOnPlate)
     }
 
 }

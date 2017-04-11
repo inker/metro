@@ -56,7 +56,7 @@ export default class extends MetroMap {
 
         this.subscribe('platformrename', e => {
             const platform = relatedTargetToPlatform(e.relatedTarget)
-            this.plate.show(svg.getCircleOffset(e.relatedTarget as SVGCircleElement), getPlatformNames(platform))
+            this.plate.show(svg.getElementOffset(e.relatedTarget as SVGCircleElement), getPlatformNames(platform))
             platformRenameDialog(platform)
         })
         this.subscribe('platformmovestart', e => {
@@ -69,7 +69,7 @@ export default class extends MetroMap {
         this.subscribe('platformmoveend', e => {
             const platform = relatedTargetToPlatform(e.relatedTarget)
             this.plate.disabled = false
-            this.plate.show(svg.getCircleOffset(e.relatedTarget as SVGCircleElement), getPlatformNames(platform))
+            this.plate.show(svg.getElementOffset(e.relatedTarget as SVGCircleElement), getPlatformNames(platform))
         })
         this.subscribe('platformadd', e => {
             const { detail } = e
