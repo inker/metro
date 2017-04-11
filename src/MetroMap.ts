@@ -812,8 +812,7 @@ export default class {
         const platforms = station.platforms.filter(p => filteredNames.includes(p.name))
         for (const platform of platforms) {
             const circle = tryGetFromMap(pool.platformBindings, platform)
-            const scaleElement = circle instanceof SVGCircleElement ? scale.scaleCircle : scale.scaleStadium
-            scaleElement(circle, scaleFactor, true)
+            scale.scaleElement(circle, scaleFactor, true)
         }
         if (this.map.getZoom() >= this.config.detailedZoom) {
             for (const transfer of this.network.transfers) {

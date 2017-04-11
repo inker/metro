@@ -9,6 +9,14 @@ const initialCircles = new Set<SVGCircleElement>()
 const initialStadiums = new Set<SVGRectElement>()
 const initialTransfers = new Set<SVGPathElement | SVGLineElement>()
 
+export function scaleElement(el: SVGElement, scaleFactor: number, asAttribute = false) {
+    if (el instanceof SVGCircleElement) {
+        scaleCircle(el, scaleFactor, asAttribute)
+    } else if (el instanceof SVGRectElement) {
+        scaleStadium(el, scaleFactor, asAttribute)
+    }
+}
+
 export function scaleCircle(circle: SVGCircleElement, scaleFactor: number, asAttribute = false) {
     if (!asAttribute) {
         circle.style.transform = `scale(${scaleFactor})`
