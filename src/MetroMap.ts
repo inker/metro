@@ -399,16 +399,16 @@ export default class {
             //     stationMeanColor = color.mean(this.linesToColors(this.passingLinesStation(station)));
             // }
             for (const platform of station.platforms) {
-                const posOnSVG = tryGetFromMap(this.platformsOnSVG, platform)
+                const pos = tryGetFromMap(this.platformsOnSVG, platform)
                 // const posOnSVG = this.overlay.latLngToSvgPoint(platform.location);
                 const whiskers = this.makeWhiskers(platform)
                 this.whiskers.set(platform, whiskers)
 
                 if (zoom > 9) {
-                    const offsets = this.platformOffsets.get(posOnSVG)
+                    const offsets = this.platformOffsets.get(pos)
                     const ci = offsets
-                        ? this.makeOval(platform, circleRadius, lineWidth)
-                        : svg.makeCircle(posOnSVG, circleRadius)
+                        ? this.makeStadium(platform, circleRadius)
+                        : svg.makeCircle(pos, circleRadius)
                     // ci.id = 'p-' + platformIndex;
 
                     if (isDetailed) {
@@ -417,7 +417,7 @@ export default class {
                     // else {
                     //     ci.style.stroke = stationMeanColor;
                     // }
-                    const dummyCircle = svg.makeCircle(posOnSVG, dummyCircleRadius)
+                    const dummyCircle = svg.makeCircle(pos, dummyCircleRadius)
                     // dummyCircle.id = 'd-' + platformIndex;
 
                     stationCirclesFrag.appendChild(ci)
@@ -495,16 +495,16 @@ export default class {
 
     }
 
-    private makeOval(platform: Platform, circleRadius: number, lineWidth: number) {
-        const posOnSVG = tryGetFromMap(this.platformsOnSVG, platform)
-        const foo = tryGetFromMap(this.platformOffsets, posOnSVG)
-        const arr = Array.from(foo).map(([k, v]) => v)
-        const width = Math.max(...arr) - Math.min(...arr) + lineWidth * 2
-        const oval = svg.makeOval(posOnSVG, width, circleRadius)
+    private makeStadium(platform: Platform, circleRadius: number) {
+        const pos = tryGetFromMap(this.platformsOnSVG, platform)
+        const offsetsMap = tryGetFromMap(this.platformOffsets, pos)
+        const offsets = Array.from(offsetsMap).map(([k, v]) => v)
+        const width = Math.max(...offsets) - Math.min(...offsets)
+        const stadium = svg.makeStadium(pos, width, circleRadius)
         const { value } = tryGetFromMap(this.whiskers, platform).values().next()
-        const ang = angle(value.subtract(posOnSVG), unit)
-        oval.style.transform = `rotate(${ang}rad)`
-        return oval
+        const rotationAngle = angle(value.subtract(pos), unit)
+        stadium.style.transform = `rotate(${rotationAngle}rad)`
+        return stadium
     }
 
     private makeGradient(transfer: Transfer, fullCircleRadius: number) {
@@ -812,7 +812,8 @@ export default class {
         const platforms = station.platforms.filter(p => filteredNames.includes(p.name))
         for (const platform of platforms) {
             const circle = tryGetFromMap(pool.platformBindings, platform)
-            scale.scaleCircle(circle, scaleFactor, true)
+            const func = circle instanceof SVGCircleElement ? scale.scaleCircle : scale.scaleStadium
+            func(circle, scaleFactor, true)
         }
         if (this.map.getZoom() >= this.config.detailedZoom) {
             for (const transfer of this.network.transfers) {

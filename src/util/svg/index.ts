@@ -43,14 +43,13 @@ export function makeLine(start: Point, end: Point): SVGLineElement {
     return line
 }
 
-export function makeOval(center: Point, width: number, radius: number) {
-    const halfWidth = width * 0.5
-    const vec = point(halfWidth, 0)
+export function makeStadium(center: Point, distance: number, radius: number) {
     const rect = createSVGElement('rect')
-    rect.setAttribute('x', (center.x - halfWidth).toString())
+    rect.setAttribute('x', (center.x - distance * 0.5 - radius).toString())
     rect.setAttribute('y', (center.y - radius).toString())
-    rect.setAttribute('width', width.toString())
-    rect.setAttribute('height', (radius + radius).toString())
+    const diameter = radius * 2
+    rect.setAttribute('width', (distance + diameter).toString())
+    rect.setAttribute('height', diameter.toString())
     rect.setAttribute('rx', radius.toString())
     rect.setAttribute('ry', radius.toString())
     rect.style.transformOrigin = '50% 50%'
@@ -109,7 +108,16 @@ export function makeTransferLine(start: Point, end: Point): SVGLineElement[] {
 }
 
 export function getCircleOffset(circle: SVGCircleElement): Point {
-    const c = point(+attr(circle, 'cx'), +attr(circle, 'cy'))
+    const cx = circle.getAttribute('cx')
+    if (cx === null) {
+        const x = +attr(circle, 'x') + +attr(circle, 'width') / 2
+        const y = +attr(circle, 'y') + +attr(circle, 'height') / 2
+        const c = point(x, y)
+        const r = ~~attr(circle, 'rx')
+        const offset = point(0 + r, 4 + r)
+        return c.subtract(offset)
+    }
+    const c = point(+cx, +attr(circle, 'cy'))
     const iR = ~~attr(circle, 'r')
     const offset = point(0 + iR, 4 + iR)
     return c.subtract(offset)
