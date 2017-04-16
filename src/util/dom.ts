@@ -29,3 +29,25 @@ export function attr(el: Element, attributeName: string) {
     }
     return attribute
 }
+
+
+type NewValOrNewValFunc = string|((oldVal: string) => any)
+export function newAttributeValue(el: Element, attr: string, newValOrFunc: NewValOrNewValFunc) {
+    const oldVal = el.getAttribute(attr)
+    if (oldVal === null) {
+        return
+    }
+    el.setAttribute(`data-${attr}`, oldVal)
+    const val = typeof newValOrFunc === 'string' ? newValOrFunc : newValOrFunc(oldVal)
+    el.setAttribute(attr, val)
+}
+
+export function restoreAttribute(el: Element, attr: string) {
+    const dataAttr = `data-${attr}`
+    const oldVal = el.getAttribute(dataAttr)
+    if (oldVal === null) {
+        return
+    }
+    el.removeAttribute(dataAttr)
+    el.setAttribute(attr, oldVal)
+}

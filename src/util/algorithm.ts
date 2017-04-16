@@ -29,7 +29,7 @@ export function findCycle(network: Network, station: Station): Platform[] {
     if (stationPlatforms.length === 4) {
         const gTrs = network.transfers
         const psAndDegs = stationPlatforms
-            .map(p => ({platform: p, degree: gTrs.filter(t => t.has(p)).length }))
+            .map(p => ({ platform: p, degree: gTrs.filter(t => t.has(p)).length }))
             .sort((a, b) => a.degree - b.degree)
         const degs = psAndDegs.map(i => i.degree)
         const ps = psAndDegs.map(i => i.platform)
