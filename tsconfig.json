@@ -10,6 +10,7 @@
     // "allowSyntheticDefaultImports": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
+    "downlevelIteration": true,
     "lib": [
       "dom", "es7", "es2017"
     ]

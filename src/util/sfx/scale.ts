@@ -46,9 +46,13 @@ export function scaleTransfer(transfer: Transfer, scaleFactor: number) {
 }
 
 export function unscaleAll() {
-    initialCircles.forEach(circle => restoreAttribute(circle, 'r'))
+    for (const circle of initialCircles) {
+        restoreAttribute(circle, 'r')
+    }
+    for (const transfer of initialTransfers) {
+        transfer.style.strokeWidth = null
+    }
     // initialCircles.forEach(circle => circle.removeAttribute('transform'));
-    initialTransfers.forEach(tr => tr.style.strokeWidth = null)
     initialTransfers.clear()
     initialCircles.clear()
     initialStadiums.clear()

@@ -88,13 +88,13 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
 
     while (objectSet.size > 0) {
         let minDist = Infinity
-        objectSet.forEach(o => {
+        for (const o of objectSet) {
             const time = tryGetFromMap(currentTime, o)
             if (time < minDist) {
                 currentNode = o
                 minDist = time
             }
-        })
+        }
         objectSet.delete(currentNode)
 
         // // getting his previous
@@ -144,13 +144,13 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
     }
     // find the shortest time & the exit station
     let shortestTime = Infinity
-    currentTime.forEach((t, p) => {
+    for (const [p, t] of currentTime) {
         const alt = tryGetFromMap(currentTime, p) + tryGetFromMap(fromPlatformToDest, p)
         if (alt < shortestTime) {
             shortestTime = alt
             currentNode = p
         }
-    })
+    }
     // if walking on foot is faster, then why take the underground?
     const onFoot = distanceBetween(p1, p2) / walkingWithObstacles
     if (onFoot < shortestTime) {
@@ -222,13 +222,13 @@ function shortestTransfer(p1: Platform, p2: Platform) {
     let currentNode = p1
     while (platformSet.size > 0) {
         let minDist = Infinity
-        platformSet.forEach(p => {
-            const time = tryGetFromMap(dist, p)
+        for (const platform of platformSet) {
+            const time = tryGetFromMap(dist, platform)
             if (time < minDist) {
-                currentNode = p
+                currentNode = platform
                 minDist = time
             }
-        })
+        }
         platformSet.delete(currentNode)
         const neighborNodes = currentNode.transfers.map(t => t.other(currentNode))
         for (const neighborNode of neighborNodes) {

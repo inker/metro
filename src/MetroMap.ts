@@ -489,10 +489,10 @@ export default class {
         console.timeEnd('span preparation')
 
         console.time('appending')
-
-        docFrags.forEach((val, key) => dom.byId(key).appendChild(val))
+        for (const [key, val] of docFrags) {
+            dom.byId(key).appendChild(val)
+        }
         console.timeEnd('appending')
-
     }
 
     private makeStadium(platform: Platform, circleRadius: number) {
@@ -563,11 +563,11 @@ export default class {
                 throw new Error(`station has no names`)
             }
             const posByName = new Map<string, L.Point>()
-            nameSet.forEach(name => {
+            for (const name of nameSet) {
                 const locations = platforms.filter(p => p.name === name).map(p => p.location)
                 const geoCenter = geo.getCenter(locations)
                 posByName.set(name, overlay.latLngToOverlayPoint(geoCenter))
-            })
+            }
             for (const platform of platforms) {
                 const pos = tryGetFromMap(posByName, platform.name)
                 platformsOnSVG.set(platform, pos)
@@ -581,12 +581,12 @@ export default class {
 
     private linesToColors(lines: Set<string>): string[] {
         const rgbs: string[] = []
-        lines.forEach(line => {
+        for (const line of lines) {
             const { stroke } = tryGetFromMap(this.lineRules, line[0] === 'M' ? line : line[0])
             if (stroke) {
                 rgbs.push(stroke)
             }
-        })
+        }
         return rgbs
     }
 

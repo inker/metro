@@ -62,13 +62,17 @@ export default class {
                         forDeletion.add(t)
                     }
                 }
-                forDeletion.forEach(t => transferSet.delete(t))
+                for (const transfer of forDeletion) {
+                    transferSet.delete(transfer)
+                }
                 platformsCopy.delete(p)
             }
             const station = new Station(Array.from(pls))
             this.stations.push(station)
         }
-        platformsCopy.forEach(pl => this.stations.push(new Station([pl])))
+        for (const platform of platformsCopy) {
+            this.stations.push(new Station([platform]))
+        }
         console.timeEnd('restore')
     }
 

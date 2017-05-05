@@ -245,9 +245,11 @@ export default class extends MetroMap {
                 for (const span of platform.spans) {
                     const neighbor = span.other(platform)
                     this.whiskers.set(neighbor, this.makeWhiskers(neighbor))
-                    neighbor.spans.forEach(si => spansToChange.add(si))
+                    for (const si of neighbor.spans) {
+                        spansToChange.add(si)
+                    }
                 }
-                spansToChange.forEach(span => {
+                for (const span of spansToChange) {
                     const controlPoints = [
                         tryGetFromMap(this.platformsOnSVG, span.source),
                         tryGetFromMap(tryGetFromMap(this.whiskers, span.source), span),
@@ -260,7 +262,7 @@ export default class extends MetroMap {
                     if (inner) {
                         svg.bezier.setPath(inner, controlPoints)
                     }
-                })
+                }
                 for (const tr of platform.transfers) {
                     tr[tr.source === platform ? 'source' : 'target'] = platform
                 }
@@ -312,7 +314,9 @@ export default class extends MetroMap {
                         }
 
                         const circumpoints = Array.from(circular).map(i => this.platformsOnSVG.get(i))
-                        circular.forEach(i => circumpoints.push(this.platformsOnSVG.get(i)))
+                        for (const i of circular) {
+                            circumpoints.push(this.platformsOnSVG.get(i))
+                        }
                         const outerArcs = transfers.map(t => tryGetFromMap(pool.outerEdgeBindings, t))
                         const innerArcs = transfers.map(t => tryGetFromMap(pool.innerEdgeBindings, t))
                         for (let i = 0; i < 3; ++i) {

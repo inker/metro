@@ -2,11 +2,11 @@ import { last } from 'lodash'
 
 export function intersection<T>(a: Set<T>, b: Set<T>) {
     const isn = new Set<T>()
-    a.forEach(item => {
+    for (const item of a) {
         if (b.has(item)) {
             isn.add(item)
         }
-    })
+    }
     return isn
 }
 
