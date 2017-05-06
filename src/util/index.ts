@@ -98,15 +98,16 @@ export async function repeatUntil<ReturnValueType>(
     throw new Error('rejected')
 }
 
+interface CityLang {
+    [city: string]: string | undefined,
+}
 export function getSecondLanguage() {
     const tokens = location.search.match(/city=(\w+)/)
     const city = tokens ? tokens[1] : 'spb'
-    const obj = {
+    const obj: CityLang = {
         spb: 'fi',
         qazan: 'tt',
         helsinki: 'se',
-    } as {
-        [city: string]: string|undefined,
     }
     return obj[city]
 }

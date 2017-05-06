@@ -30,8 +30,8 @@ export function attr(el: Element, attributeName: string) {
     return attribute
 }
 
-
-type NewValOrNewValFunc = string|((oldVal: string) => any)
+type NewValFunc = (oldVal: string) => any
+type NewValOrNewValFunc = string | NewValFunc
 export function newAttributeValue(el: Element, attr: string, newValOrFunc: NewValOrNewValFunc) {
     const oldVal = el.getAttribute(attr)
     if (oldVal === null) {

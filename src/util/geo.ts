@@ -1,9 +1,11 @@
 import { LatLng, latLng } from 'leaflet'
 import { meanBy } from 'lodash'
 
-interface Locatable { location: LatLng };
+interface Locatable {
+    location: LatLng,
+}
 
-export function findClosestObject<T extends Locatable|LatLng>(point: LatLng, objects: T[]): T {
+export function findClosestObject<T extends Locatable | LatLng>(point: LatLng, objects: T[]): T {
     const { length } = objects
     if (length < 1) {
         throw new Error('an objects array must contain at least 1 object')

@@ -4,6 +4,9 @@ import * as htmlTags from 'html-tags'
 
 type LeafletMouseEvent = L.LeafletMouseEvent
 
+const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
+const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
+
 export default class MapOverlay<TagName extends keyof ElementTagNameMap> implements L.ILayer {
     private map: L.Map
     protected overlayContainer: ElementTagNameMap[TagName]
@@ -16,7 +19,7 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> impleme
     private maxZoom: number
 
     constructor(tagName: TagName, bounds: L.LatLngBounds, margin = L.point(100, 100)) {
-        const ns = htmlTags.includes(tagName) && tagName !== 'svg' ? 'http://www.w3.org/1999/xhtml' : 'http://www.w3.org/2000/svg'
+        const ns = htmlTags.includes(tagName) && tagName !== 'svg' ? HTML_NAMESPACE : SVG_NAMESPACE
         this.overlayContainer = document.createElementNS(ns, tagName) as any
         this.margin = margin.round()
         this.bounds = bounds

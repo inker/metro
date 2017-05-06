@@ -166,7 +166,7 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
             break
         }
         // console.log('prev', objects[prevIndex].name);
-        let p: Edge<Platform>|undefined
+        let p: Edge<Platform> | undefined
         for (const s of currentNode.spans) {
             if (s.has(prevNode)) {
                 p = s

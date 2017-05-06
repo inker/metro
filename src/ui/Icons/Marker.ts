@@ -4,7 +4,7 @@ import { svgToDataUrl } from 'svgio'
 import {
     createSVGElement,
     makePolygon,
-    makeCircle
+    makeCircle,
 } from '../../util/svg'
 
 function makeTextLabel(text: string) {

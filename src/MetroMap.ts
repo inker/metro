@@ -60,6 +60,15 @@ const { findCycle } = algorithm
 const GAP_BETWEEN_PARALLEL = 0 // 0 - none, 1 - line width
 const CURVE_SPLIT_NUM = 10
 
+const groupIds = [
+    'paths-outer',
+    'paths-inner',
+    'transfers-outer',
+    'station-circles',
+    'transfers-inner',
+    'dummy-circles',
+]
+
 const contextMenuArray = [{
     event: 'routefrom',
     text: 'Route from here',
@@ -252,14 +261,6 @@ export default class {
     /** call only once! */
     private initNetwork() {
         const { origin } = this.overlay
-        const groupIds = [
-            'paths-outer',
-            'paths-inner',
-            'transfers-outer',
-            'station-circles',
-            'transfers-inner',
-            'dummy-circles',
-        ]
 
         for (const groupId of groupIds) {
             const g = svg.createSVGElement('g')

@@ -1,3 +1,4 @@
+import { LeafletMouseEvent } from 'leaflet'
 import * as localForage from 'localforage'
 import { throttle } from 'lodash'
 
@@ -8,7 +9,6 @@ import { byId } from '../../util/dom'
 
 import * as styles from './styles.css'
 
-type LeafletMouseEvent = L.LeafletMouseEvent
 
 export default class MapEditor implements Widget {
     private metroMap: MetroMap
