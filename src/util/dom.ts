@@ -1,5 +1,6 @@
 import { identity } from 'lodash'
 import { repeatUntil } from './index'
+import { getOrMakeInMap } from './collections'
 
 export function tryGetElement(query: string, interval = 100, ttl = 100): Promise<Element> {
     const rest = query.slice(1)
@@ -30,24 +31,61 @@ export function attr(el: Element, attributeName: string) {
     return attribute
 }
 
+interface StringToString {
+    [attr: string]: string,
+}
+
+const oldAttrs = new WeakMap<Element, StringToString>()
+
 type NewValFunc = (oldVal: string) => any
 type NewValOrNewValFunc = string | NewValFunc
-export function newAttributeValue(el: Element, attr: string, newValOrFunc: NewValOrNewValFunc) {
+function newAttributeValue(el: Element, attr: string, newValOrFunc: NewValOrNewValFunc) {
     const oldVal = el.getAttribute(attr)
     if (oldVal === null) {
+        if (typeof newValOrFunc === 'function') {
+            throw new Error('cannot invoke on null')
+        }
+        el.setAttribute(attr, newValOrFunc)
         return
     }
-    el.setAttribute(`data-${attr}`, oldVal)
-    const val = typeof newValOrFunc === 'string' ? newValOrFunc : newValOrFunc(oldVal)
+    const o = getOrMakeInMap(oldAttrs, el, {})
+    o[attr] = oldVal
+    if (typeof newValOrFunc === 'string') {
+        el.setAttribute(attr, newValOrFunc)
+        return
+    }
+    const val = newValOrFunc(oldVal)
     el.setAttribute(attr, val)
 }
 
-export function restoreAttribute(el: Element, attr: string) {
-    const dataAttr = `data-${attr}`
-    const oldVal = el.getAttribute(dataAttr)
-    if (oldVal === null) {
+export function newAttributeValues(el: Element, newValsFunc: (o: StringToString) => StringToString) {
+    const { attributes } = el
+    const o: StringToString = {}
+    for (let i = 0, n = attributes.length; i < n; i++) {
+        const { name, value } = attributes[i]
+        o[name] = value
+    }
+    const newVals = newValsFunc(o)
+    for (const [attr, val] of Object.entries(newVals)) {
+        newAttributeValue(el, attr, val)
+    }
+}
+
+function restoreAttribute(el: Element, attr: string) {
+    const o = oldAttrs.get(el)
+    if (o === undefined) {
         return
     }
-    el.removeAttribute(dataAttr)
+    const oldVal = o[attr]
+    if (oldVal === undefined) {
+        return
+    }
+    o[attr] = undefined as any
     el.setAttribute(attr, oldVal)
+}
+
+export function restoreAttributes(el: Element, ...attrs: string[]) {
+    for (const attr of attrs) {
+        restoreAttribute(el, attr)
+    }
 }

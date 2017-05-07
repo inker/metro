@@ -10,7 +10,7 @@ import { transitionEnd } from '../events'
 
 import { Platform, Edge, Transfer } from '../../network'
 
-import { scaleCircle } from './scale'
+import { scaleElement } from './scale'
 
 const canPulsate = Browser.webkit && !Browser.mobile
 
@@ -98,11 +98,11 @@ export function animateRoute(platforms: Platform[], edges: Edge<Platform>[]) {
     return currentAnimation
 }
 
-export async function pulsateCircle(circle: SVGCircleElement, scaleFactor: number, duration: number) {
+export async function pulsateCircle(circle: SVGCircleElement | SVGRectElement, scaleFactor: number, duration: number) {
     const { style } = circle
     style.transition = `transform ${duration / 2}ms linear`
     circle.getBoundingClientRect()
-    scaleCircle(circle, scaleFactor)
+    scaleElement(circle, scaleFactor)
     await transitionEnd(circle)
     style.transform = 'scale(1)'
     await transitionEnd(circle)

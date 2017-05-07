@@ -1,6 +1,6 @@
 {
   "name": "metro-map",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "St Petersburg's future metro",
   "main": "bin/www",
   "dependencies": {
@@ -23,7 +23,7 @@
     "@types/localforage": "^0.0.34",
     "@types/lodash": "^4.14.64",
     "@types/whatwg-fetch": "0.0.33",
-    "autoprefixer": "^6.7.7",
+    "autoprefixer": "^7.0.0",
     "awesome-typescript-loader": "^3.1.3",
     "classlist-polyfill": "^1.2.0",
     "copy-webpack-plugin": "^4.0.1",
@@ -42,7 +42,7 @@
     "tslint": "^5.2.0",
     "typescript": "^2.3.2",
     "url-loader": "^0.5.8",
-    "webpack": "^2.5.0",
+    "webpack": "^2.5.1",
     "webpack-browser-plugin": "^1.0.20",
     "whatwg-fetch": "^2.0.3"
   },

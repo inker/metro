@@ -3,35 +3,49 @@ import { byId } from '../dom'
 import { tryGetFromMap } from '../collections'
 
 import { Transfer } from '../../network'
-import { attr, newAttributeValue, restoreAttribute } from '../dom'
+import { attr, newAttributeValues, restoreAttributes } from '../dom'
 
 const initialCircles = new Set<SVGCircleElement>()
 const initialStadiums = new Set<SVGRectElement>()
 const initialTransfers = new Set<SVGPathElement | SVGLineElement>()
 
 export function scaleElement(el: SVGElement, scaleFactor: number, asAttribute = false) {
+    if (!asAttribute) {
+        el.style.transform = `scale(${scaleFactor})`
+        return
+    }
     if (el instanceof SVGCircleElement) {
-        scaleCircle(el, scaleFactor, asAttribute)
+        scaleCircleAsAttribute(el, scaleFactor)
     } else if (el instanceof SVGRectElement) {
-        scaleStadium(el, scaleFactor, asAttribute)
+        scaleStadiumAsAttribute(el, scaleFactor)
     }
 }
 
-export function scaleCircle(circle: SVGCircleElement, scaleFactor: number, asAttribute = false) {
-    if (!asAttribute) {
-        circle.style.transform = `scale(${scaleFactor})`
-        return
-    }
+export function scaleCircleAsAttribute(circle: SVGCircleElement, scaleFactor: number) {
     initialCircles.add(circle)
     // const t = scaleFactor - 1,
     //     tx = -circle.getAttribute('cx') * t,
     //     ty = -circle.getAttribute('cy') * t;
     // circle.setAttribute('transform', `matrix(${scaleFactor}, 0, 0, ${scaleFactor}, ${tx}, ${ty})`);
-    newAttributeValue(circle, 'r', oldR => +oldR * scaleFactor)
+    newAttributeValues(circle, ({ r }) => ({
+        r: (+r * scaleFactor).toString(),
+    }))
 }
 
-export function scaleStadium(stadium: SVGRectElement, scaleFactor: number, asAttribute = false) {
-    // TODO
+export function scaleStadiumAsAttribute(stadium: SVGRectElement, scaleFactor: number) {
+    initialStadiums.add(stadium)
+    newAttributeValues(stadium, ({ x, y, width, height, rx, ry }) => {
+        const diff = +height * (scaleFactor - 1)
+        const offset = diff / 2
+        return {
+            x: (+x - offset).toString(),
+            y: (+y - offset).toString(),
+            width: (+width + diff).toString(),
+            height: (+height * scaleFactor).toString(),
+            rx: (+rx * scaleFactor).toString(),
+            ry: (+ry * scaleFactor).toString(),
+        }
+    })
 }
 
 export function scaleTransfer(transfer: Transfer, scaleFactor: number) {
@@ -47,7 +61,10 @@ export function scaleTransfer(transfer: Transfer, scaleFactor: number) {
 
 export function unscaleAll() {
     for (const circle of initialCircles) {
-        restoreAttribute(circle, 'r')
+        restoreAttributes(circle, 'r')
+    }
+    for (const stadium of initialStadiums) {
+        restoreAttributes(stadium, 'x', 'y', 'width', 'height', 'rx', 'ry')
     }
     for (const transfer of initialTransfers) {
         transfer.style.strokeWidth = null
@@ -55,5 +72,6 @@ export function unscaleAll() {
     // initialCircles.forEach(circle => circle.removeAttribute('transform'));
     initialTransfers.clear()
     initialCircles.clear()
+    initialStadiums.clear()
     initialStadiums.clear()
 }

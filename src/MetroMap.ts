@@ -1,6 +1,13 @@
 import * as L from 'leaflet'
 import unblur from 'unblur'
-import { get, difference, intersection, uniqueId, maxBy } from 'lodash'
+import {
+    get,
+    difference,
+    intersection,
+    uniqueId,
+    memoize,
+    maxBy,
+} from 'lodash'
 
 import * as ui from './ui'
 import { Config, getLineRules, getJSON } from './res'
@@ -85,6 +92,31 @@ const contextMenuArray = [{
         disabled: true,
     },
 }]
+
+function getSvgSizesByZoom(zoom: number, detailedZoom: number) {
+    const coef = zoom > 9 ? zoom : zoom > 8 ? 9.5 : 9
+    // const lineWidth = 2 ** (zoom / 4 - 1.75);
+    const lineWidth = (coef - 7) * 0.5
+    const lightLineWidth = lineWidth * 0.75
+    const circleRadius = coef < detailedZoom ? lineWidth * 1.25 : lineWidth
+    const circleBorder = coef < detailedZoom ? circleRadius * 0.4 : circleRadius * 0.6
+    const dummyCircleRadius = circleRadius * 2
+    const transferWidth = lineWidth * 0.9
+    const transferBorder = circleBorder * 1.25
+    const fullCircleRadius = circleRadius + circleBorder / 2
+    return {
+        lineWidth,
+        lightLineWidth,
+        circleRadius,
+        circleBorder,
+        dummyCircleRadius,
+        transferWidth,
+        transferBorder,
+        fullCircleRadius,
+    }
+}
+
+const getSvgSizesByZoomMemoized = memoize(getSvgSizesByZoom)
 
 export default class {
     readonly mediator = new Mediator()
@@ -318,13 +350,16 @@ export default class {
         const zoom = this.map.getZoom()
         const coef = zoom > 9 ? zoom : zoom > 8 ? 9.5 : 9
         // const lineWidth = 2 ** (zoom / 4 - 1.75);
-        const lineWidth = (coef - 7) * 0.5
-        const lightLineWidth = lineWidth * 0.75
-        const circleRadius = coef < detailedZoom ? lineWidth * 1.25 : lineWidth
-        const circleBorder = coef < detailedZoom ? circleRadius * 0.4 : circleRadius * 0.6
-        const dummyCircleRadius = circleRadius * 2
-        const transferWidth = lineWidth * 0.9
-        const transferBorder = circleBorder * 1.25
+        const {
+            lineWidth,
+            lightLineWidth,
+            circleRadius,
+            circleBorder,
+            dummyCircleRadius,
+            transferWidth,
+            transferBorder,
+            fullCircleRadius,
+        } = this.getSvgSizes()
 
         const strokeWidths = {
             'station-circles': circleBorder,
@@ -334,7 +369,6 @@ export default class {
             'paths-outer': lineWidth,
             'paths-inner': lineWidth / 2,
         }
-        const fullCircleRadius = circleRadius + circleBorder / 2
 
         const docFrags = new Map<string, DocumentFragment>()
         for (const [id, width] of Object.entries(strokeWidths)) {
@@ -408,7 +442,7 @@ export default class {
                 if (zoom > 9) {
                     const offsets = this.platformOffsets.get(pos)
                     const ci = offsets
-                        ? this.makeStadium(platform, circleRadius)
+                        ? this.makeStadium(platform)
                         : svg.makeCircle(pos, circleRadius)
                     // ci.id = 'p-' + platformIndex;
 
@@ -466,7 +500,7 @@ export default class {
                 )
             pool.outerEdgeBindings.set(transfer, paths[0])
             pool.innerEdgeBindings.set(transfer, paths[1])
-            paths[0].style.stroke = isDetailed ? this.makeGradient(transfer, fullCircleRadius) : '#000'
+            paths[0].style.stroke = isDetailed ? this.makeGradient(transfer) : '#000'
             transfersOuterFrag.appendChild(paths[0])
             transfersInnerFrag.appendChild(paths[1])
             // this.transferToModel(transfer, paths);
@@ -496,19 +530,25 @@ export default class {
         console.timeEnd('appending')
     }
 
-    private makeStadium(platform: Platform, circleRadius: number) {
+    private getSvgSizes() {
+        return getSvgSizesByZoomMemoized(this.map.getZoom(), this.config.detailedZoom)
+    }
+
+    private makeStadium(platform: Platform) {
         const pos = tryGetFromMap(this.platformsOnSVG, platform)
         const offsetsMap = tryGetFromMap(this.platformOffsets, pos)
         const offsets = Array.from(offsetsMap).map(([k, v]) => v)
         const width = Math.max(...offsets) - Math.min(...offsets)
+        const { circleRadius } = this.getSvgSizes()
         const stadium = svg.makeStadium(pos, width, circleRadius)
         const { value } = tryGetFromMap(this.whiskers, platform).values().next()
         const rotationAngle = angle(value.subtract(pos), unit)
-        stadium.style.transform = `rotate(${rotationAngle}rad)`
+        const deg = rotationAngle * 180 / Math.PI
+        stadium.setAttribute('transform', `rotate(${deg})`)
         return stadium
     }
 
-    private makeGradient(transfer: Transfer, fullCircleRadius: number) {
+    private makeGradient(transfer: Transfer) {
         const { source, target } = transfer
         const pos1 = tryGetFromMap(this.platformsOnSVG, source)
         const pos2 = tryGetFromMap(this.platformsOnSVG, target)
@@ -520,6 +560,7 @@ export default class {
         ]
         // const colors = [source, target].map(i => getComputedStyle(stationCirclesFrag.childNodes[i] as Element, null).stroke)
         // console.log(colors);
+        const { fullCircleRadius } = this.getSvgSizes()
         const circlePortion = fullCircleRadius / pos1.distanceTo(pos2)
         const gradientVector = pos2.subtract(pos1)
         let gradient = pool.gradientBindings.get(transfer)
