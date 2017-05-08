@@ -1,5 +1,5 @@
 import * as L from 'leaflet'
-import { get } from 'lodash'
+import { get } from 'lodash-es'
 import * as htmlTags from 'html-tags'
 
 type LeafletMouseEvent = L.LeafletMouseEvent

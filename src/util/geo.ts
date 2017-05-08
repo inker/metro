@@ -1,5 +1,5 @@
 import { LatLng, latLng } from 'leaflet'
-import { meanBy } from 'lodash'
+import { meanBy } from 'lodash-es'
 
 interface Locatable {
     location: LatLng,

@@ -1,4 +1,4 @@
-const { cloneDeep }= require('lodash')
+const { cloneDeep }= require('lodash-es')
 const base = require('./webpack.config')
 
 const TS_LOADER = 'awesome-typescript-loader'

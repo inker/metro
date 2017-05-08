@@ -7,7 +7,7 @@ import {
     uniqueId,
     memoize,
     maxBy,
-} from 'lodash'
+} from 'lodash-es'
 
 import * as ui from './ui'
 import { Config, getLineRules, getJSON } from './res'

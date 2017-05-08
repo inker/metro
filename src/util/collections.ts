@@ -1,4 +1,4 @@
-import { last } from 'lodash'
+import { last } from 'lodash-es'
 
 export function intersection<T>(a: Set<T>, b: Set<T>) {
     const isn = new Set<T>()

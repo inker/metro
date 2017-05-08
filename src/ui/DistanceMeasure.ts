@@ -1,5 +1,5 @@
 import * as L from 'leaflet'
-import { last } from 'lodash'
+import { last } from 'lodash-es'
 
 import { events, mouseToLatLng } from '../util'
 import { RedCircle } from './Icons'

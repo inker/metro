@@ -2,12 +2,18 @@ import { Marker, marker, LatLng } from 'leaflet'
 import * as alertify from 'alertifyjs'
 
 import MetroMap from '../MetroMap'
-import * as util from '../util'
 import { Icons, cacheIcons } from './index'
 import Widget from './base/Widget'
 
-const { animation, visualizeRoute } = util.sfx
-const { shortestRoute } = util.algorithm
+import {
+    sfx,
+    algorithm,
+    mouseToLatLng,
+    resetStyle,
+} from '../util'
+
+const { animation, visualizeRoute } = sfx
+const { shortestRoute } = algorithm
 
 export default class implements Widget {
     private metroMap: MetroMap
@@ -51,7 +57,7 @@ export default class implements Widget {
 
     private onFromTo = (e: MouseEvent) => {
         const map = this.metroMap.getMap()
-        const coors = util.mouseToLatLng(map, e)
+        const coors = mouseToLatLng(map, e)
         const marker = e.type === 'routefrom' ? this.fromMarker : this.toMarker
         marker.setLatLng(coors)
         if (!map.hasLayer(marker)) {
@@ -78,7 +84,7 @@ export default class implements Widget {
     }
 
     private visualizeRouteBetween(from: LatLng, to: LatLng, shouldAnimate: boolean) {
-        util.resetStyle()
+        resetStyle()
         alertify.dismissAll()
         const route = shortestRoute(this.metroMap.getNetwork().platforms, from, to)
         visualizeRoute(route, shouldAnimate)
@@ -89,7 +95,7 @@ export default class implements Widget {
         const terminate = animation.terminateAnimations()
         map.removeLayer(this.fromMarker).removeLayer(this.toMarker)
         alertify.dismissAll()
-        terminate.then(util.resetStyle)
+        terminate.then(resetStyle)
     }
 
 }

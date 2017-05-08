@@ -1,5 +1,5 @@
 import { LatLng } from 'leaflet'
-import { isEqual, last } from 'lodash'
+import { isEqual, last } from 'lodash-es'
 
 import { timeToTravel } from './math/phys'
 import { findClosestObject } from './geo'

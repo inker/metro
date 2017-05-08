@@ -93,7 +93,7 @@ export default class {
             spans: spans.map(s => ({
                 source: platforms.indexOf(s.source),
                 target: platforms.indexOf(s.target),
-                routes: s.routes.map(r =>routes.indexOf(r)),
+                routes: s.routes.map(r => routes.indexOf(r)),
             })),
             routes,
         }, (k, v) => k.startsWith('_') ? undefined : v)

@@ -13,7 +13,7 @@
     "html-tags": "^1.1.1",
     "leaflet": "^0.7.7",
     "localforage": "^1.5.0",
-    "lodash": "^4.17.4",
+    "lodash-es": "^4.17.4",
     "svgio": "^0.3.3",
     "unblur": "^0.5.6"
   },
@@ -21,7 +21,7 @@
     "@types/hammerjs": "^2.0.34",
     "@types/leaflet": "^0.7.30",
     "@types/localforage": "^0.0.34",
-    "@types/lodash": "^4.14.64",
+    "@types/lodash-es": "^4.14.5",
     "@types/whatwg-fetch": "0.0.33",
     "autoprefixer": "^7.0.1",
     "awesome-typescript-loader": "^3.1.3",

@@ -12,7 +12,7 @@ export default class {
     readonly spans: Span[] = []
     readonly transfers: Transfer[] = []
     private _station: Station
-    elevation: number|undefined
+    elevation?: number
 
     get station() {
         return this._station

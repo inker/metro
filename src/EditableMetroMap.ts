@@ -1,5 +1,5 @@
 import { downloadText } from 'download.js'
-import { difference } from 'lodash'
+import { difference } from 'lodash-es'
 
 import MetroMap from './MetroMap'
 

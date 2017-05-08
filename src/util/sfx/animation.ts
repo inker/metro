@@ -1,6 +1,6 @@
 import { Browser } from 'leaflet'
 import animateSvg from 'animate-svg'
-import { last } from 'lodash'
+import { last } from 'lodash-es'
 
 import pool from '../../ObjectPool'
 import { filters } from '../svg'
