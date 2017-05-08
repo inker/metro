@@ -51,9 +51,9 @@ export default class {
                 .add(firstTransfer.source)
                 .add(firstTransfer.target)
             transferSet.delete(firstTransfer)
-            for (let it = pls.values(), p = it.next().value; p !== undefined; p = it.next().value) {
+            for (const p of pls) {
                 const forDeletion = new Set<Transfer>()
-                for (let tit = transferSet.values(), t = tit.next().value; t !== undefined; t = tit.next().value) {
+                for (const t of transferSet) {
                     if (t.source === p) {
                         pls.add(t.target)
                         forDeletion.add(t)
