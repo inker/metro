@@ -6,7 +6,6 @@
     // "watch": true, // not needed when assembled with webpack
     "pretty": true,
     "experimentalDecorators": true,
-    "experimentalAsyncFunctions": true,
     // "allowSyntheticDefaultImports": true,
     "strictNullChecks": true,
     "noImplicitThis": true,

@@ -1,6 +1,6 @@
 {
   "name": "metro-map",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "St Petersburg's future metro",
   "main": "bin/www",
   "dependencies": {

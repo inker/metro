@@ -1,12 +1,11 @@
-const { cloneDeep }= require('lodash-es')
 const base = require('./webpack.config')
 
 const TS_LOADER = 'awesome-typescript-loader'
 
-const output = cloneDeep(base.output)
+const { output } = base
 output.filename = '[name].[hash].js'
 
-const mod = cloneDeep(base.module)
+const mod = base.module
 mod.rules.find(rule => rule.use === TS_LOADER).use = {
   loader: TS_LOADER,
   options: {
