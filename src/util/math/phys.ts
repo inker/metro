@@ -1,5 +1,4 @@
 /**
- * 
  * @param distance
  * @param maxSpeed - m/s
  * @param acceleration - m/s²

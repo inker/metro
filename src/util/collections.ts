@@ -12,7 +12,7 @@ export function intersection<T>(a: Set<T>, b: Set<T>) {
 
 export function deleteFromArray<T>(arr: T[], el: T) {
     const pos = arr.indexOf(el)
-    if (pos < 0) {
+    if (pos === -1) {
         return
     }
     arr[pos] = last(arr)
@@ -24,7 +24,8 @@ interface IMap<K, V> {
     set: (key: K, val: V) => IMap<K, V>,
 }
 
-type NewVal<V> = V|(() => V)
+type NewValFunc<V> = () => V
+type NewVal<V> = V|NewValFunc<V>
 export function getOrMakeInMap<K, V>(map: IMap<K, V>, key: K, newVal: NewVal<V>): V {
     let val = map.get(key)
     if (val === undefined) {

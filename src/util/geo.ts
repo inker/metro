@@ -11,10 +11,11 @@ export function findClosestObject<T extends Locatable | LatLng>(point: LatLng, o
         throw new Error('an objects array must contain at least 1 object')
     }
     let closest = objects[0]
-    let closestDistance = point.distanceTo(closest['location'] || closest)
+    const loc = (o: T) => (o.location || o) as LatLng
+    let closestDistance = point.distanceTo(loc(closest))
     for (let i = 1; i < length; ++i) {
         const obj = objects[i]
-        const tempDist = point.distanceTo(obj['location'] || obj)
+        const tempDist = point.distanceTo(loc(obj))
         if (tempDist < closestDistance) {
             closest = obj
             closestDistance = tempDist

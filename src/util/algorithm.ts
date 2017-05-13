@@ -12,24 +12,25 @@ import Network, {
     Transfer,
 } from '../network'
 
+const incidentEdges = <T>(edges: Edge<T>[], platform: T) =>
+    edges.filter(edge => edge.has(platform))
+
 export function findCycle(network: Network, station: Station): Platform[] {
-    if (station.platforms.length < 3) {
+    const { platforms } = station
+    if (platforms.length < 3) {
         return []
     }
     // TODO: if n=3, leave as it is; if n=4, metro has priority
-    const stationPlatforms = station.platforms
-    if (stationPlatforms.length === 3) {
-        for (const platform of stationPlatforms) {
-            if (network.transfers.filter(t => t.has(platform)).length !== 2) {
-                return []
-            }
-        }
-        return stationPlatforms
+    const { transfers } = network
+    if (platforms.length === 3) {
+        return platforms.every(p => incidentEdges(transfers, p).length === 2) ? platforms : []
     }
-    if (stationPlatforms.length === 4) {
-        const gTrs = network.transfers
-        const psAndDegs = stationPlatforms
-            .map(p => ({ platform: p, degree: gTrs.filter(t => t.has(p)).length }))
+    if (platforms.length === 4) {
+        const psAndDegs = platforms
+            .map(platform => ({
+                platform,
+                degree: transfers.filter(t => t.has(platform)).length,
+            }))
             .sort((a, b) => a.degree - b.degree)
         const degs = psAndDegs.map(i => i.degree)
         const ps = psAndDegs.map(i => i.platform)

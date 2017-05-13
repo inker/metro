@@ -9,7 +9,7 @@ export function tryGetElement(query: string, interval = 100, ttl = 100): Promise
 }
 
 export function removeAllChildren(el: Node) {
-    let child: Node|null
+    let child: Node | null
     while (child = el.firstChild) {
         el.removeChild(child)
     }
