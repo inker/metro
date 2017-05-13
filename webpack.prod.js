@@ -9,7 +9,7 @@ const mod = base.module
 mod.rules.find(rule => rule.use === TS_LOADER).use = {
   loader: TS_LOADER,
   options: {
-    ignoreDiagnostics: [2403, 2300, 2451, 2307, 2345, 2305], // 2305 is temporary
+    ignoreDiagnostics: [2403, 2300, 2451, 2307, 2345, 2339, 2305], // 2305 is temporary
   },
 }
 
