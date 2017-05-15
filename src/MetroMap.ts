@@ -163,7 +163,7 @@ export default class {
             // wait.textContent = 'making map...';
 
             config.center = [0, 0]
-            const mapOptions = Object.assign({}, config)
+            const mapOptions = { ...config }
             if (L.version[0] === '1') {
                 mapOptions.wheelPxPerZoomLevel = 75
                 mapOptions.inertiaMaxSpeed = 1500

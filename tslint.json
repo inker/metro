@@ -18,7 +18,6 @@
     "no-angle-bracket-type-assertion": true,
     "no-bitwise": false,
     "no-duplicate-variable": true,
-    "no-namespace": false,
     "no-unused-variable": true,
     "object-literal-key-quotes": [
       true,
@@ -35,7 +34,6 @@
       "jsx-double",
       "avoid-escape"
     ],
-    "radix": false,
     "semicolon": [
       true,
       "never"

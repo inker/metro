@@ -6,7 +6,7 @@ import {
 } from 'lodash-es'
 
 function parseColor(color: string): number[] {
-    let tokens: string[]|null = color.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i)
+    let tokens = color.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i)
     if (tokens) {
         return tokens.slice(1).map(Number)
     }

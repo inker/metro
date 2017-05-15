@@ -99,21 +99,22 @@ export function wings(a: Point, b: Point, c: Point, length = 1): Point[] {
     return orthogonal(bis.multiplyBy(t))
 }
 
-export function getCircumcenter(positions: Point[]): Point|null {
-    if (positions.length !== 3) {
+export function getCircumcenter(pts: Point[]): Point|null {
+    if (pts.length !== 3) {
         throw new Error('must have 3 vertices')
     }
-    const a = positions[0]
-    const b = positions[1].subtract(a)
-    const c = positions[2].subtract(a)
+    const a = pts[0]
+    const b = pts[1].subtract(a)
+    const c = pts[2].subtract(a)
     const bb = dot(b, b)
     const cc = dot(c, c)
     const bxc = det(b, c)
     if (Math.abs(bxc) < Number.EPSILON) {
-      return null
+        // points are placed on a straight line
+        return null
     }
     return point(c.y * bb - b.y * cc, b.x * cc - c.x * bb)
-        .divideBy(2 * det(b, c))
+        .divideBy(2 * bxc)
         .add(a)
 }
 
