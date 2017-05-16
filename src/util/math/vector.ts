@@ -20,8 +20,11 @@ export const dot = (v1: Point, v2: Point) =>
 export const det = (v1: Point, v2: Point) =>
     v1.x * v2.y - v2.x * v1.y
 
+export const hypot = (v: Point) =>
+    Math.sqrt(dot(v, v))
+
 export const normalize = (v: Point) =>
-    v.divideBy(Math.sqrt(dot(v, v)))
+    v.divideBy(hypot(v))
 
 export const angle = (v1: Point, v2: Point) =>
     dot(v1, v2) / v1.distanceTo(v2)

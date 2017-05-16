@@ -104,7 +104,7 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> impleme
             const el = document.documentElement
             mousePos = L.point(el.clientWidth / 2, el.clientHeight / 2)
         }
-        const { style } = this.overlayContainer as any as  HTMLElement
+        const { style } = this.overlayContainer as any as HTMLElement
         // style.left = '0';
         // style.top = '0';
         style.transformOrigin = `${mousePos.x - left}px ${mousePos.y - top}px`

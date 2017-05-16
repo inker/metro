@@ -36,7 +36,7 @@ export function getPath(path: Element) {
     if (!d) {
         return null
     }
-    let m: RegExpExecArray|null
+    let m: RegExpExecArray | null
     while ((m = re.exec(d)) !== null) {
         points.push(Number(m[1]))
     }
