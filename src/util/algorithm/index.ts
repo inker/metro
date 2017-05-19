@@ -6,7 +6,10 @@ import Network, {
     Edge,
 } from '../../network'
 
-export { default as shortestRoute } from './shortestRoute'
+export {
+    default as shortestRoute,
+    ShortestRouteObject,
+} from './shortestRoute'
 
 const incidentEdges = <T>(edges: Edge<T>[], platform: T) =>
     edges.filter(edge => edge.has(platform))
