@@ -1,60 +1,27 @@
 import { LatLng } from 'leaflet'
-import { isEqual, last } from 'lodash-es'
+import { last } from 'lodash-es'
 
-import { timeToTravel } from './math/phys'
-import { findClosestObject } from './geo'
-import { tryGetFromMap } from './collections'
+import { timeToTravel } from '../math/phys'
+import { findClosestObject } from '../geo'
+import { tryGetFromMap } from '../collections'
 
 import Network, {
     Platform,
-    Station,
     Edge,
     Transfer,
-} from '../network'
-
-const incidentEdges = <T>(edges: Edge<T>[], platform: T) =>
-    edges.filter(edge => edge.has(platform))
-
-export function findCycle(network: Network, station: Station): Platform[] {
-    const { platforms } = station
-    if (platforms.length < 3) {
-        return []
-    }
-    // TODO: if n=3, leave as it is; if n=4, metro has priority
-    const { transfers } = network
-    if (platforms.length === 3) {
-        return platforms.every(p => incidentEdges(transfers, p).length === 2) ? platforms : []
-    }
-    if (platforms.length === 4) {
-        const psAndDegs = platforms
-            .map(platform => ({
-                platform,
-                degree: transfers.filter(t => t.has(platform)).length,
-            }))
-            .sort((a, b) => a.degree - b.degree)
-        const degs = psAndDegs.map(i => i.degree)
-        const ps = psAndDegs.map(i => i.platform)
-        if (isEqual(degs, [2, 2, 3, 3])) {
-            return ps
-        }
-        if (isEqual(degs, [1, 2, 2, 3])) {
-            return ps.slice(1)
-        }
-    }
-    return []
-}
+} from '../../network'
 
 const distanceBetween = (a: LatLng, b: LatLng) => LatLng.prototype.distanceTo.call(a, b) as number
 
-const walkingSpeed = 1.4
-const walkingWithObstacles = 1
-const maxTrainSpeed = 20
-const trainAcceleration = 0.7
-const metroStopTime = 25
-const eLineStopTime = 40
+const WALKING_SPEED = 1.4
+const WALKING_WITH_OBSTACLES = 1
+const MAX_TRAIN_SPEED = 20
+const TRAIN_ACCELERATION = 0.7
+const METRO_STOP_TIME = 25
+const E_LINE_STOP_TIME = 40
 // includes escalators
-const metroWaitingTime = 240
-const eLineWaitingTime = 360
+const METRO_WAITING_TIME = 240
+const E_LINE_WAITING_TIME = 360
 
 export interface ShortestRouteObject<V> {
     platforms?: V[],
@@ -67,18 +34,18 @@ export interface ShortestRouteObject<V> {
     },
 }
 
-export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): ShortestRouteObject<Platform> {
+export default (objects: Platform[], p1: LatLng, p2: LatLng): ShortestRouteObject<Platform> => {
     // time to travel from station to the p1 location
     const currentTime = new Map<Platform, number>()
     const fromPlatformToDest = new Map<Platform, number>()
     for (const o of objects) {
         const hasE = o.spans.some(s => s.routes[0].line.startsWith('E'))
         let distance = distanceBetween(p1, o.location)
-        let time = distance / walkingWithObstacles
-        const waitingTime = hasE ? eLineWaitingTime : metroWaitingTime
+        let time = distance / WALKING_WITH_OBSTACLES
+        const waitingTime = hasE ? E_LINE_WAITING_TIME : METRO_WAITING_TIME
         currentTime.set(o, time + waitingTime)
         distance = distanceBetween(o.location, p2)
-        time = distance / walkingWithObstacles
+        time = distance / WALKING_WITH_OBSTACLES
         fromPlatformToDest.set(o, time)
     }
     // pick the closest one so far
@@ -117,8 +84,8 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
             //     // lineChangePenalty = metroWaitingTime;
             // }
             // TODO: lower priority for E-lines
-            const callTime = s.routes[0].line.startsWith('E') ? eLineStopTime : metroStopTime
-            const travelTime = timeToTravel(distance, maxTrainSpeed, trainAcceleration)
+            const callTime = s.routes[0].line.startsWith('E') ? E_LINE_STOP_TIME : METRO_STOP_TIME
+            const travelTime = timeToTravel(distance, MAX_TRAIN_SPEED, TRAIN_ACCELERATION)
             timeToNeighbors.push(travelTime + callTime + lineChangePenalty)
         }
         // TODO: if transferring to an E-line, wait more
@@ -130,7 +97,7 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
             neighborNodes.push(neighborNode)
             const hasE = neighborNode.spans.some(s => s.routes[0].line.startsWith('E'))
             const distance = distanceBetween(currentNode.location, neighborNode.location) / 2
-            timeToNeighbors.push(distance / walkingWithObstacles + (hasE ? eLineWaitingTime : metroWaitingTime))
+            timeToNeighbors.push(distance / WALKING_WITH_OBSTACLES + (hasE ? E_LINE_WAITING_TIME : METRO_WAITING_TIME))
         }
 
         for (let i = 0, nNeighbors = neighborNodes.length; i < nNeighbors; ++i) {
@@ -153,7 +120,7 @@ export function shortestRoute(objects: Platform[], p1: LatLng, p2: LatLng): Shor
         }
     }
     // if walking on foot is faster, then why take the underground?
-    const onFoot = distanceBetween(p1, p2) / walkingWithObstacles
+    const onFoot = distanceBetween(p1, p2) / WALKING_WITH_OBSTACLES
     if (onFoot < shortestTime) {
         return { time: { walkTo: onFoot } }
     }

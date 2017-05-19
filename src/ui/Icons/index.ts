@@ -1,11 +1,7 @@
 import { icon } from 'leaflet'
-import RedCircle from './RedCircle'
-import Marker from './Marker'
 
-export {
-    RedCircle,
-    Marker,
-}
+export { default as RedCircle } from './RedCircle'
+export { default as Marker } from './Marker'
 
 const PROXY = 'https://proxy-antonv.rhcloud.com/?url='
 
