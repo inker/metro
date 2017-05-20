@@ -50,7 +50,7 @@ export default (objects: Platform[], p1: LatLng, p2: LatLng): ShortestRouteObjec
     }
     // pick the closest one so far
     let currentNode = findClosestObject(p1, objects)
-    const objectSet = new Set<Platform>(objects)
+    const objectSet = new Set(objects)
     const prev = new Map<Platform, Platform>()
     // time on foot between locations
 
@@ -180,7 +180,7 @@ function shortestTransfer(p1: Platform, p2: Platform) {
         throw new Error(`platforms (${p1.name} & ${p2.name} must be on the same station`)
     }
     const { platforms } = p1.station
-    const platformSet = new Set<Platform>(platforms)
+    const platformSet = new Set(platforms)
     const dist = new Map<Platform, number>()
     const prev = new Map<Platform, Platform>()
     for (const p of platforms) {

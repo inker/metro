@@ -20,7 +20,7 @@ export function deleteFromArray<T>(arr: T[], el: T) {
 }
 
 interface IMap<K, V> {
-    get: (key: K) => V|undefined,
+    get: (key: K) => V | undefined,
     set: (key: K, val: V) => IMap<K, V>,
 }
 

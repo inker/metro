@@ -4,10 +4,12 @@ set -e # Exit with nonzero exit code if anything fails
 SOURCE_BRANCH="master"
 TARGET_BRANCH="gh-pages"
 
+BUILD_PROD="build:prod"
+
 # Pull requests and commits to other branches shouldn't try to deploy, just build to verify
 if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]; then
     echo "Skipping deploy; just doing a build."
-    npm run build:prod
+    npm run $BUILD_PROD
     exit 0
 fi
 
@@ -27,7 +29,7 @@ cd ..
 rm -rf out/**/* || exit 0
 
 # Run our compile script
-npm run build:prod
+npm run $BUILD_PROD
 
 # safeguard files
 mkdir -p safe/.git

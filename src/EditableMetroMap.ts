@@ -241,7 +241,7 @@ export default class extends MetroMap {
                 }
                 this.whiskers.set(platform, this.makeWhiskers(platform))
                 this.platformsOnSVG.set(platform, pos)
-                const spansToChange = new Set<Span>(platform.spans)
+                const spansToChange = new Set(platform.spans)
                 for (const span of platform.spans) {
                     const neighbor = span.other(platform)
                     this.whiskers.set(neighbor, this.makeWhiskers(neighbor))

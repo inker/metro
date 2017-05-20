@@ -47,9 +47,10 @@ export default class {
         const platformsCopy = new Set(this.platforms)
         while (transferSet.size > 0) {
             const firstTransfer = transferSet.values().next().value
-            const pls = new Set<Platform>()
-                .add(firstTransfer.source)
-                .add(firstTransfer.target)
+            const pls = new Set([
+                firstTransfer.source,
+                firstTransfer.target,
+            ])
             transferSet.delete(firstTransfer)
             for (const p of pls) {
                 const forDeletion = new Set<Transfer>()
