@@ -1,5 +1,11 @@
-import { LatLng, latLng } from 'leaflet'
+import { LatLng, latLng, latLngBounds } from 'leaflet'
 import { meanBy } from 'lodash-es'
+
+
+const getCenter = (points: LatLng[]) => latLng(
+    meanBy(points, p => p.lat),
+    meanBy(points, p => p.lng),
+)
 
 interface Locatable {
     location: LatLng,
@@ -40,38 +46,42 @@ export function findObjectsWithinRadius<T extends Locatable>(
     return arr.map(o => o.item)
 }
 
-export function getCenter(points: LatLng[]): LatLng {
-    return latLng(meanBy(points, p => p.lat), meanBy(points, p => p.lng))
-}
+const DECREASE_RATE = 0.61803398875
 
-type FitnessFunc = (current: LatLng) => number
-type OnClimb = (coordinate: LatLng) => void
-
-export function calculateGeoMean(
+export function calculateGeoMedian(
     points: LatLng[],
-    fitnessFunc: FitnessFunc,
+    fitnessFunc: (current: LatLng) => number,
     minStep = 0.00001,
-    onClimb?: OnClimb,
+    onClimb?: (coordinate: LatLng) => void,
 ): LatLng {
     let point = getCenter(points)
     let fitness = fitnessFunc(point)
+    const bounds = latLngBounds(points)
+    const initialStep = Math.max(
+        bounds.getEast() - bounds.getWest(),
+        bounds.getNorth() - bounds.getSouth(),
+    )
     if (onClimb) {
         onClimb(point)
     }
-    for (let step = 10; step > minStep; step *= 0.61803398875) {
+    for (let step = initialStep; step > minStep; step *= DECREASE_RATE) {
         const max = step
-        for (let lat = -max; lat <= max; lat += step) {
-            for (let lng = -max; lng <= max; lng += step) {
-                const pt = latLng(point.lat + lat, point.lng + lng)
-                const total = fitnessFunc(pt)
-                if (total < fitness) {
-                    point = pt
-                    fitness = total
-                    if (onClimb) {
-                        onClimb(point)
-                    }
+        let candidatePoint = point
+        let candidateFitness = fitness
+        for (let y = -max; y <= max; y += step) {
+            for (let x = -max; x <= max; x += step) {
+                const pt = latLng(point.lat + y, point.lng + x)
+                const ft = fitnessFunc(pt)
+                if (ft < candidateFitness) {
+                    candidatePoint = pt
+                    candidateFitness = ft
                 }
             }
+        }
+        point = candidatePoint
+        fitness = candidateFitness
+        if (onClimb) {
+            onClimb(point)
         }
     }
     return point

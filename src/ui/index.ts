@@ -3,7 +3,7 @@ import * as alertify from 'alertifyjs'
 
 import Network, { Platform, Route } from '../network'
 import { getSecondLanguage } from '../util'
-import { calculateGeoMean } from '../util/geo'
+import { calculateGeoMedian } from '../util/geo'
 import { tr } from '../i18n'
 
 import MapEditor from './MapEditor'
@@ -114,7 +114,7 @@ export function drawZones(map: L.Map, platforms: Platform[]) {
     const metroPoints = platforms.filter(p => p.spans[0].routes[0].line.startsWith('M')).map(p => p.location)
     const fitnessFunc = pt => metroPoints.reduce((prev, cur) => prev + pt.distanceTo(cur), 0)
     const poly = L.polyline([], { color: 'red'})
-    const metroMean = calculateGeoMean(metroPoints, fitnessFunc, 1, cur => poly.addLatLng(cur))
+    const metroMean = calculateGeoMedian(metroPoints, fitnessFunc, 1, cur => poly.addLatLng(cur))
     map.addLayer(poly)
     for (let i = 5000; i < 20000; i += 5000) {
         L.circle(metroMean, i - 250, { weight: 1 }).addTo(map)
