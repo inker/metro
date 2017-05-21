@@ -1,6 +1,5 @@
 const {
   optimize: {
-    UglifyJsPlugin,
     CommonsChunkPlugin,
   },
   ProvidePlugin,

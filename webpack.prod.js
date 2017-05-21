@@ -1,3 +1,5 @@
+const { optimize } = require('webpack')
+
 const base = require('./webpack.config')
 
 const TS_LOADER = 'awesome-typescript-loader'
@@ -13,7 +15,7 @@ mod.rules.find(rule => rule.use === TS_LOADER).use = {
   },
 }
 
-base.plugins.push(new UglifyJsPlugin({
+base.plugins.push(new optimize.UglifyJsPlugin({
   compress: {
     screw_ie8: true,
     warnings: false,
