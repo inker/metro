@@ -13,6 +13,22 @@ mod.rules.find(rule => rule.use === TS_LOADER).use = {
   },
 }
 
+base.plugins.push(new UglifyJsPlugin({
+  compress: {
+    screw_ie8: true,
+    warnings: false,
+    drop_debugger: false,
+    dead_code: true,
+    properties: true,
+    unused: true,
+    join_vars: true,
+  },
+  output: {
+    comments: false,
+  },
+  sourceMap: true, // retains sourcemaps for typescript
+}))
+
 module.exports = Object.assign({}, base, {
   output,
   devtool: 'eval',

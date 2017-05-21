@@ -99,21 +99,6 @@ module.exports = {
       Promise: 'es6-promise',
       fetch: 'imports-loader?this=>global!exports-loader?global.fetch!whatwg-fetch',
     }),
-    new UglifyJsPlugin({
-      compress: {
-        screw_ie8: true,
-        warnings: false,
-        drop_debugger: false,
-        dead_code: true,
-        properties: true,
-        unused: true,
-        join_vars: true,
-      },
-      output: {
-        comments: false,
-      },
-      sourceMap: true, // retains sourcemaps for typescript
-    }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'template.html',
