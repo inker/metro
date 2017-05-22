@@ -31,7 +31,7 @@ if (navigator.userAgent.includes('Firefox')) {
 }
 
 const configPromise = getJSON('res/mapconfig.json') as Promise<Config>
-const mapPromise = L.Browser.mobile ? System.import('./MetroMap') : System.import('./EditableMetroMap')
+const mapPromise = Browser.mobile ? System.import('./MetroMap') : System.import('./EditableMetroMap')
 
 const tokens = location.search.match(/city=(\w+)/)
 const city = tokens ? tokens[1] : 'spb'
