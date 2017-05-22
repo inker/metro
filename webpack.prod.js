@@ -28,12 +28,12 @@ base.plugins.push(new optimize.UglifyJsPlugin({
   output: {
     comments: false,
   },
-  sourceMap: true, // retains sourcemaps for typescript
+  // sourceMap: true, // retains sourcemaps for typescript
 }))
 
 module.exports = Object.assign({}, base, {
   output,
-  devtool: 'eval',
+  devtool: undefined,
   module: mod,
 })
 

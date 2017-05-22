@@ -25,7 +25,7 @@ interface IMap<K, V> {
 }
 
 type NewValFunc<V> = () => V
-type NewVal<V> = V|NewValFunc<V>
+type NewVal<V> = V | NewValFunc<V>
 export function getOrMakeInMap<K, V>(map: IMap<K, V>, key: K, newVal: NewVal<V>): V {
     let val = map.get(key)
     if (val === undefined) {
@@ -45,7 +45,7 @@ export function tryGetFromMap<K, V>(map: IMap<K, V>, key: K): V {
 }
 
 interface IBiMap<K, V> {
-    getKey: (val: V) => K|undefined,
+    getKey: (val: V) => K | undefined,
 }
 export function tryGetKeyFromBiMap<K, V>(map: IBiMap<K, V>, val: V): K {
     const key = map.getKey(val)
