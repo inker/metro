@@ -1,5 +1,5 @@
 import * as L from 'leaflet'
-import { remove } from 'lodash-es'
+import { remove } from 'lodash'
 
 import { MetroMapEventMap, dom } from '../../util'
 import { translate } from '../../i18n'

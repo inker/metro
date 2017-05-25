@@ -1,6 +1,7 @@
 const {
   optimize: {
     CommonsChunkPlugin,
+    OccurrenceOrderPlugin,
   },
   ProvidePlugin,
 } = require('webpack')
@@ -9,6 +10,7 @@ const {
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const WebpackBrowserPlugin = require('webpack-browser-plugin')
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
 const path = require('path')
 
@@ -44,11 +46,11 @@ module.exports = {
   devtool: 'source-map', // enables sourcemaps
   module: {
     rules: [
-      { // adds source maps for external modules (like bim)
-        enforce: 'pre',
-        test: /\.js$/,
-        use: 'source-map-loader',
-      },
+      // { // adds source maps for external modules (like bim)
+      //   enforce: 'pre',
+      //   test: /\.js$/,
+      //   use: 'source-map-loader',
+      // },
       {
         test: /\.ts$/,
         use: 'awesome-typescript-loader',
@@ -89,10 +91,11 @@ module.exports = {
   },
   plugins: [
     // new CheckerPlugin(),
+    // new OccurrenceOrderPlugin(),
     new CommonsChunkPlugin({
       name: 'vendor',
       filename: 'vendor.js',
-      minChunks: module => module.context && module.context.includes('node_modules'),
+      minChunks: module => module.resource && module.resource.includes('node_modules'),
     }),
     new ProvidePlugin({
       Promise: 'es6-promise',
@@ -119,5 +122,6 @@ module.exports = {
       url: 'http://localhost',
       port: 9080,
     }),
+    new BundleAnalyzerPlugin(),
   ],
 }

@@ -5,7 +5,7 @@ declare const System: {
 }
 
 import { Browser, Icon } from 'leaflet'
-import { capitalize } from 'lodash-es'
+import { capitalize } from 'lodash'
 
 import { getJSON, Config } from './res'
 import { updateDictionary, translate } from './i18n'

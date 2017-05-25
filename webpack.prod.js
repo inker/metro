@@ -15,6 +15,8 @@ mod.rules.find(rule => rule.use === TS_LOADER).use = {
   },
 }
 
+base.plugins.pop() // remove webpack-bundle-analyzer
+
 base.plugins.push(new optimize.UglifyJsPlugin({
   compress: {
     screw_ie8: true,

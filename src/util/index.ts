@@ -1,10 +1,5 @@
 import * as L from 'leaflet'
-import {
-    wrapperLodash,
-    zip,
-    uniq,
-    identity,
-} from 'lodash-es'
+import * as _ from 'lodash'
 
 import { Platform } from '../network'
 
@@ -74,11 +69,11 @@ export function getPlatformNames(platform: Platform): string[] {
 }
 
 export function getPlatformNamesZipped(platforms: Platform[]) {
-    return wrapperLodash(platforms)
+    return _(platforms)
         .map(getPlatformNames)
-        .thru(arr => zip(...arr))
-        .map(arr => uniq(arr).join(' / '))
-        .filter(identity)
+        .thru(arr => _.zip(...arr))
+        .map(arr => _.uniq(arr).join(' / '))
+        .filter(_.identity)
         .value()
 }
 

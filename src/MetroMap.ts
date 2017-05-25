@@ -7,7 +7,7 @@ import {
     uniqueId,
     memoize,
     maxBy,
-} from 'lodash-es'
+} from 'lodash'
 
 import * as ui from './ui'
 import { Config, getLineRules, getJSON } from './res'
@@ -738,18 +738,15 @@ export default class {
 
     private makePath(span: Span) {
         const { routes, source, target } = span
-        let lineId = ''
-        let lineType = ''
-        let lineNum = ''
-        if (routes.length > 0) {
-            const tokens = routes[0].line.match(/([MEL])(\d{0,2})/)
-            if (!tokens) {
-                throw new Error(`match failed for ${source.name}-${target.name}`)
-            }
-            [lineId, lineType, lineNum] = tokens
-        } else {
+        if (routes.length === 0) {
             console.error(span, 'span has no routes!')
+            throw new Error('span has no routes!')
         }
+        const tokens = routes[0].line.match(/([MEL])(\d{0,2})/)
+        if (!tokens) {
+            throw new Error(`match failed for ${source.name}-${target.name}`)
+        }
+        const [lineId, lineType, lineNum] = tokens
 
         const controlPoints = this.getControlPoints(span)
 

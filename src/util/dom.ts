@@ -1,4 +1,4 @@
-import { identity } from 'lodash-es'
+import { identity } from 'lodash'
 import { repeatUntil } from './index'
 import { getOrMakeInMap } from './collections'
 
@@ -61,7 +61,7 @@ function newAttributeValue(el: Element, attr: string, newValOrFunc: NewValOrNewV
 export function newAttributeValues(el: Element, newValsFunc: (o: StringToString) => StringToString) {
     const { attributes } = el
     const o: StringToString = {}
-    for (let i = 0, n = attributes.length; i < n; i++) {
+    for (let i = 0, n = attributes.length; i < n; ++i) {
         const { name, value } = attributes[i]
         o[name] = value
     }

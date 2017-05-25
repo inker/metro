@@ -1,5 +1,5 @@
 import { Point, point } from 'leaflet'
-import { head, last } from 'lodash-es'
+import { head, last } from 'lodash'
 
 import * as vector from './vector'
 import * as phys from './phys'

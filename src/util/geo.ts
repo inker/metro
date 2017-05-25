@@ -1,5 +1,5 @@
 import { LatLng, latLng, latLngBounds } from 'leaflet'
-import { meanBy } from 'lodash-es'
+import { meanBy } from 'lodash'
 
 
 export const getCenter = (points: LatLng[]) => latLng(

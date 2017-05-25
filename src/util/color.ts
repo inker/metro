@@ -1,9 +1,4 @@
-import {
-    wrapperLodash,
-    round,
-    padStart,
-    mean as lodashMean,
-} from 'lodash-es'
+import * as _ from 'lodash'
 
 function parseColor(color: string): number[] {
     let tokens = color.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i)
@@ -25,12 +20,12 @@ function parseColor(color: string): number[] {
 }
 
 export function mean(colors: string[]): string {
-    const str = wrapperLodash(colors)
+    const str = _(colors)
         .map(parseColor)
-        .unzipWith((...arrays) => lodashMean(arrays))
-        .map(avg => round(avg))
+        .unzipWith((...arrays) => _.mean(arrays))
+        .map(avg => _.round(avg))
         .map(num => num.toString(16))
-        .map(hexVal => padStart(hexVal, 2, '0'))
+        .map(hexVal => _.padStart(hexVal, 2, '0'))
         .join('')
     return `#${str}`
 }
