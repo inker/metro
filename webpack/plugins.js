@@ -45,7 +45,6 @@ module.exports = env => [
     compress: {
       screw_ie8: true,
       warnings: false,
-      drop_debugger: false,
       dead_code: true,
       properties: true,
       unused: true,

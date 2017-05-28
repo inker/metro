@@ -18,7 +18,11 @@ const {
   normalize,
 } = vector
 
-export const isNatural = (n: number) => n > 0 && Number.isInteger(n)
+export const isNatural = (n: number) =>
+    n > 0 && Number.isInteger(n)
+
+export const isArbitrarilySmall = (n: number) =>
+    Math.abs(n) <= Number.EPSILON
 
 const getMidPoint = (a: Point, b: Point, part: number) =>
     b.subtract(a).multiplyBy(part).add(a)

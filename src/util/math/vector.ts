@@ -1,11 +1,12 @@
 import { Point, point } from 'leaflet'
+import { isArbitrarilySmall as isNumberSmall } from './index'
 
 export type Ray = [Point, Point]
 
-export const unit = point(1, 0)
+export const unit = Object.freeze(point(1, 0))
 
 export const isArbitrarilySmall = (v: Point) =>
-    Math.abs(v.x) < Number.EPSILON && Math.abs(v.y) < Number.EPSILON
+    isNumberSmall(v.x) && isNumberSmall(v.y)
 
 export const round = (p: Point, precision: number) =>
     point(+p.x.toFixed(precision), +p.y.toFixed(precision))
