@@ -380,11 +380,7 @@ export default class {
         lightRailPathStyle.strokeWidth = `${lightLineWidth}px`
 
         // 11 - 11, 12 - 11.5, 13 - 12, 14 - 12.5
-        const fontSize = Math.max((zoom + 10) * 0.5, 11)
-        const plateStyle = get(this.plate, 'element.firstChild.firstChild.style') as CSSStyleDeclaration
-        if (plateStyle) {
-            plateStyle.fontSize = fontSize + 'px'
-        }
+        this.plate.setFontSize(Math.max((zoom + 10) * 0.5, 11))
 
         const stationCircumpoints = new Map<Station, Platform[]>()
 

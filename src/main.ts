@@ -25,11 +25,6 @@ if (Browser.ie) {
     throw new Error('shitty browser')
 }
 
-if (navigator.userAgent.includes('Firefox')) {
-    alert('There seems to be a problem with CORS in Firefox. Use Chrome')
-    throw new Error('shitty browser')
-}
-
 const configPromise = getJSON('res/mapconfig.json') as Promise<Config>
 const mapPromise = Browser.mobile ? System.import('./MetroMap') : System.import('./EditableMetroMap')
 

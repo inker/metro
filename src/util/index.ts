@@ -105,6 +105,21 @@ export async function repeatUntil<ReturnValueType>(
     throw new Error('rejected')
 }
 
+export async function tryRun<ReturnValueType>(
+    func: () => ReturnValueType,
+    interval = 100,
+    ttl = 100,
+) {
+    for (let i = 0; i < ttl; ++i) {
+        try {
+            return func()
+        } catch (e) {
+            await delay(interval)
+        }
+    }
+    throw new Error('rejected')
+}
+
 interface CityLang {
     [city: string]: string | undefined,
 }

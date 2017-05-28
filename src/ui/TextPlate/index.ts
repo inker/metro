@@ -8,19 +8,21 @@ export default class TextPlate {
     readonly element = svg.createSVGElement('g')
     private _disabled = false
     private _editable = false
+    private _fontSize: number
 
     constructor() {
-        const div = document.createElement('div')
-        div.classList.add(styles['plate-box'])
-        const foreign = svg.createSVGElement('foreignObject')
-        foreign.setAttribute('x', '0')
-        foreign.setAttribute('y', '0')
-        foreign.setAttribute('width', '100%')
-        foreign.setAttribute('height', '100%')
-        foreign.appendChild(div)
         const { element } = this
         element.style.display = 'none'
-        element.appendChild(foreign)
+        element.innerHTML = `
+            <foreignObject
+                x="0"
+                y="0"
+                width="100%"
+                height="100%"
+            >
+                <div class=${styles['plate-box']} />
+            </foreignObject>
+        `
     }
 
     get disabled() {
@@ -45,13 +47,19 @@ export default class TextPlate {
         }
     }
 
+    setFontSize(size: number) {
+        const foreign = this.element.firstElementChild as SVGForeignObjectElement
+        const div = foreign.firstElementChild as HTMLDivElement
+        div.style.fontSize = `${size}px`
+    }
+
     show(bottomRight: Point, names: string[]) {
         if (this.disabled || this.element.style.display !== 'none') {
             return
         }
 
-        const foreign = this.element.firstChild as SVGForeignObjectElement
-        const div = foreign.firstChild as HTMLDivElement
+        const foreign = this.element.firstElementChild as SVGForeignObjectElement
+        const div = foreign.firstElementChild as HTMLDivElement
 
         div.innerHTML = names.join('<br>')
         this.element.setAttribute('transform', `translate(${bottomRight.x}, ${bottomRight.y})`)

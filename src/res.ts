@@ -1,4 +1,4 @@
-import { repeatUntil } from './util'
+import { tryRun } from './util'
 
 export interface Config {
     containerId: string,
@@ -20,10 +20,10 @@ export const cachelessFetch = (url: string) => fetch(`${url}?${now}`)
 export const getJSON = (url: string) => cachelessFetch(url).then(data => data.json()) as Promise<any>
 
 export async function getLineRules() {
-    const link = document.getElementById('scheme') as HTMLLinkElement
-    const styleSheet = await repeatUntil(() => link.sheet as CSSStyleSheet, sheet => sheet !== null)
     const lineRules = new Map<string, CSSStyleDeclaration>()
-    for (const rule of (styleSheet.cssRules as any)) {
+    const link = document.getElementById('scheme') as HTMLLinkElement
+    const cssRules = await tryRun(() => (link.sheet as CSSStyleSheet).cssRules)
+    for (const rule of (cssRules as any)) {
         if (!(rule instanceof CSSStyleRule)) {
             continue
         }
