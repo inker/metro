@@ -68,14 +68,13 @@ export function getPlatformNames(platform: Platform): string[] {
     return names
 }
 
-export function getPlatformNamesZipped(platforms: Platform[]) {
-    return _(platforms)
+export const getPlatformNamesZipped = (platforms: Platform[]) =>
+    _(platforms)
         .map(getPlatformNames)
         .thru(arr => _.zip(...arr))
         .map(arr => _.uniq(arr).join(' / '))
         .filter(_.identity)
         .value()
-}
 
 export function midPointsToEnds(pos: L.Point, midPts: L.Point[]) {
     const lens = midPts.map(midPt => pos.distanceTo(midPt))

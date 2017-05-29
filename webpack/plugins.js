@@ -14,16 +14,20 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
 module.exports = env => [
   // new CheckerPlugin(),
+
   // new OccurrenceOrderPlugin(),
+
   new CommonsChunkPlugin({
     name: 'vendor',
     filename: 'vendor.js',
     minChunks: module => module.resource && module.resource.includes('node_modules'),
   }),
+
   new ProvidePlugin({
     Promise: 'es6-promise',
     fetch: 'imports-loader?this=>global!exports-loader?global.fetch!whatwg-fetch',
   }),
+
   new HtmlWebpackPlugin({
     filename: 'index.html',
     template: 'template.html',
@@ -35,12 +39,14 @@ module.exports = env => [
       collapseWhitespace: true,
     },
   }),
+
   new CopyWebpackPlugin([
     {
       from: '../res',
       to: 'res',
     },
   ]),
+
   env !== 'dev' && new UglifyJsPlugin({
     compress: {
       screw_ie8: true,
@@ -55,5 +61,6 @@ module.exports = env => [
     },
     // sourceMap: true, // retains sourcemaps for typescript
   }),
+
   env === 'test' && new BundleAnalyzerPlugin(),
 ].filter(item => item)

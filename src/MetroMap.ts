@@ -436,10 +436,7 @@ export default class {
                 this.whiskers.set(platform, whiskers)
 
                 if (zoom > 9) {
-                    const offsets = this.platformOffsets.get(pos)
-                    const ci = offsets
-                        ? this.makeStadium(platform)
-                        : svg.makeCircle(pos, circleRadius)
+                    const ci = this.makePlatformElement(platform)
                     // ci.id = 'p-' + platformIndex;
 
                     if (isDetailed) {
@@ -530,12 +527,17 @@ export default class {
         return getSvgSizesByZoomMemoized(this.map.getZoom(), this.config.detailedZoom)
     }
 
-    private makeStadium(platform: Platform) {
+    private makePlatformElement(platform: Platform) {
         const pos = tryGetFromMap(this.platformsOnSVG, platform)
-        const offsetsMap = tryGetFromMap(this.platformOffsets, pos)
+        const { circleRadius } = this.getSvgSizes()
+        const offsetsMap = this.platformOffsets.get(pos)
+        if (!offsetsMap) {
+            return svg.makeCircle(pos, circleRadius)
+        }
+
         const offsets = Array.from(offsetsMap).map(([k, v]) => v)
         const width = Math.max(...offsets) - Math.min(...offsets)
-        const { circleRadius } = this.getSvgSizes()
+
         const stadium = svg.makeStadium(pos, width, circleRadius)
         const { value } = tryGetFromMap(this.whiskers, platform).values().next()
         const rotationAngle = angle(value.subtract(pos), unit)
@@ -641,7 +643,7 @@ export default class {
     }
 
     protected makeWhiskers(platform: Platform): Map<Span, L.Point> {
-        const c = 0.5
+        const PART = 0.5
         const pos = tryGetFromMap(this.platformsOnSVG, platform)
         const whiskers = new Map<Span, L.Point>()
         const { spans } = platform
@@ -658,9 +660,9 @@ export default class {
             const neighborPositions = spans.map(span => tryGetFromMap(this.platformsOnSVG, span.other(platform)))
             const [prevPos, nextPos] = neighborPositions
             const wings = math.wings(prevPos, pos, nextPos, 1)
-            const t = Math.min(pos.distanceTo(prevPos), pos.distanceTo(nextPos)) * c
+            const t = Math.min(pos.distanceTo(prevPos), pos.distanceTo(nextPos)) * PART
             for (let i = 0; i < 2; ++i) {
-                // const t = pos.distanceTo(neighborPositions[i]) * c
+                // const t = pos.distanceTo(neighborPositions[i]) * PART
                 const end = wings[i].multiplyBy(t).add(pos)
                 whiskers.set(spans[i], end)
             }
@@ -683,7 +685,7 @@ export default class {
         for (let i = 0; i < 2; ++i) {
             const wing = wings[i]
             for (const span of sortedSpans[i]) {
-                const t = tryGetFromMap(distances, span) * c
+                const t = tryGetFromMap(distances, span) * PART
                 const end = wing.multiplyBy(t).add(pos)
                 whiskers.set(span, end)
             }
@@ -696,7 +698,8 @@ export default class {
         const { source, target } = transfer
         const pos1 = tryGetFromMap(platformsOnSVG, source)
         const pos2 = tryGetFromMap(platformsOnSVG, target)
-        const makeArc = (third: Platform) => svg.makeTransferArc(pos1, pos2, tryGetFromMap(platformsOnSVG, third))
+        const makeArc = (third: Platform) =>
+            svg.makeTransferArc(pos1, pos2, tryGetFromMap(platformsOnSVG, third))
         if (cluster.length === 3) {
             const third = difference(cluster, [source, target])[0]
             return makeArc(third)
