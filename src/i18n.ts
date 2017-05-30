@@ -12,7 +12,7 @@ const dictionary: LanguageDictionary = new Map<string, string>()
 let regexDict = new RegExp(Object.keys(dictionary).join('|'), 'ig')
 
 export async function updateDictionary(url: string) {
-    const dict = await getJSON(url) as any as Dictionary
+    const dict = await getJSON(url) as Dictionary
     const keys = Object.keys(dict)
     for (const key of keys) {
         const translations = dict[key]

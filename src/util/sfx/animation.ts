@@ -48,13 +48,13 @@ async function animateCurrentRoute(platforms: Platform[], edges: Edge<Platform>[
 
         const edge = edges[i]
         const isTransfer = edge instanceof Transfer
-        const outerOld = pool.outerEdgeBindings.get(edges[i]) as SVGPathElement|SVGLineElement|undefined
+        const outerOld = pool.outerEdgeBindings.get(edges[i])
         if (!outerOld || isTransfer && outerOld.parentNode !== transfersOuter) {
             continue
         }
         const innerOld = pool.innerEdgeBindings.get(edges[i])
-        const outer: typeof outerOld = outerOld.cloneNode(true) as any
-        const inner: typeof outer = innerOld === undefined ? undefined : innerOld.cloneNode(true) as any
+        const outer = outerOld.cloneNode(true) as typeof outerOld
+        const inner = innerOld === undefined ? undefined : innerOld.cloneNode(true) as typeof outer
         const pathsOuter = byId('paths-outer')
         pathsOuter.appendChild(outer)
         const pathsInner = byId('paths-inner')

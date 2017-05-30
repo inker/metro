@@ -38,7 +38,7 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> impleme
         this.updateOverlayPositioning()
 
         const { objectsPane, markerPane, mapPane } = map.getPanes();
-        (L.version[0] === '1' ? mapPane : objectsPane).insertBefore(this.overlayContainer as any, markerPane)
+        (L.version[0] === '1' ? mapPane : objectsPane).insertBefore(this.overlayContainer, markerPane)
 
         this.addMapMovementListeners()
     }
@@ -46,13 +46,13 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> impleme
     onRemove(map: L.Map) {
         // this.map = this.minZoom = this.maxZoom = undefined
         const { objectsPane, mapPane } = map.getPanes();
-        (L.version[0] === '1' ? mapPane : objectsPane).removeChild(this.overlayContainer as any)
+        (L.version[0] === '1' ? mapPane : objectsPane).removeChild(this.overlayContainer)
         this.map.clearAllEventListeners() // fix later
     }
 
     private addMapMovementListeners() {
         const { map } = this
-        const { style, classList } = this.overlayContainer as any as HTMLElement
+        const { style, classList } = this.overlayContainer
         let mousePos: L.Point|null
         classList.add('leaflet-zoom-animated')
         map.on('zoomanim', e => {
@@ -88,7 +88,7 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> impleme
         this.topLeft = map.project(nw).round()
 
         const pixelBounds = L.bounds(map.latLngToLayerPoint(nw), map.latLngToLayerPoint(se))
-        const { style } = this.overlayContainer as any as HTMLElement
+        const { style } = this.overlayContainer
         const topLeft = pixelBounds.min.subtract(margin)
         style.left = topLeft.x + 'px'
         style.top = topLeft.y + 'px'
@@ -99,12 +99,12 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> impleme
     }
 
     private scaleOverlay(scaleFactor: number, mousePos?: L.Point) {
-        const { left, top } = (this.overlayContainer as any).getBoundingClientRect()
+        const { left, top } = this.overlayContainer.getBoundingClientRect()
         if (!mousePos) {
             const el = document.documentElement
             mousePos = L.point(el.clientWidth / 2, el.clientHeight / 2)
         }
-        const { style } = this.overlayContainer as any as HTMLElement
+        const { style } = this.overlayContainer
         // style.left = '0';
         // style.top = '0';
         style.transformOrigin = `${mousePos.x - left}px ${mousePos.y - top}px`

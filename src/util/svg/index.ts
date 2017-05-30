@@ -16,7 +16,7 @@ export {
 }
 
 export function createSVGElement<K extends keyof ElementTagNameMap>(tagName: K): ElementTagNameMap[K] {
-    return document.createElementNS('http://www.w3.org/2000/svg', tagName) as any
+    return document.createElementNS('http://www.w3.org/2000/svg', tagName)
 }
 
 export function makePolygon(points: Point[]): SVGPolygonElement {
@@ -92,7 +92,7 @@ export function makeOvalStartEnd(start: Point, end: Point, radius: number): SVGP
 
 export function makeTransferArc(start: Point, end: Point, third: Point) {
     const outer = arc.create(start, end, third)
-    const inner: typeof outer = outer.cloneNode(true) as any
+    const inner = outer.cloneNode(true) as typeof outer
     return [outer, inner]
 }
 
