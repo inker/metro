@@ -195,9 +195,10 @@ export default class {
 
             const json = await networkPromise
             this.network = new Network(json)
-            const center = geo.getCenter(this.network.platforms.map(p => p.location))
+            const platformLocations = this.network.platforms.map(p => p.location)
+            const center = geo.getCenter(platformLocations)
             config.center = [center.lat, center.lng]
-            const bounds = L.latLngBounds(this.network.platforms.map(p => p.location))
+            const bounds = L.latLngBounds(platformLocations)
             this.overlay = new ui.SvgOverlay(bounds, L.point(200, 200)).addTo(this.map)
             const { defs } = this.overlay
             svg.filters.appendAll(defs)

@@ -3,7 +3,7 @@ import { icon } from 'leaflet'
 import { proxify } from '../../util'
 
 export { default as RedCircle } from './RedCircle'
-export { default as Marker } from './Marker'
+export { default as makeMarker } from './marker'
 
 export const red = icon({
     iconUrl: proxify('http://harrywood.co.uk/maps/examples/leaflet/marker-icon-red.png'),

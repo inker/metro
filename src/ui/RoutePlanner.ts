@@ -17,16 +17,16 @@ const { shortestRoute } = algorithm
 
 export default class implements Widget {
     private metroMap: MetroMap
-    private readonly fromMarker: Marker
-    private readonly toMarker: Marker
+    private readonly fromMarker = marker([0, 0], {
+        draggable: true,
+        icon: Icons.makeMarker('#228822', 'A'),
+    })
+    private readonly toMarker = marker([0, 0], {
+        draggable: true,
+        icon: Icons.makeMarker('#dd2222', 'B'),
+    })
 
     constructor() {
-        this.fromMarker = marker([0, 0], { draggable: true, icon: Icons.Marker('#228822', 'A') })
-        this.toMarker = marker([0, 0], { draggable: true, icon: Icons.Marker('#dd2222', 'B') })
-        this.addMarkerListeners()
-    }
-
-    private addMarkerListeners() {
         for (const marker of [this.fromMarker, this.toMarker]) {
             marker
                 .on('drag', e => this.visualizeShortestRoute(false))

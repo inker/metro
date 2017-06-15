@@ -10,7 +10,7 @@ import {
 function makeTextLabel(text: string) {
     const label = createSVGElement('text')
     label.setAttribute('x', '10')
-    label.setAttribute('y', '15')
+    label.setAttribute('y', '14')
     const { style } = label
     style.fill = '#fff'
     style.opacity = '1'
