@@ -203,7 +203,7 @@ export default class {
             const { defs } = this.overlay
             svg.filters.appendAll(defs)
             const { textContent } = defs
-            if ((textContent || '').length === 0) {
+            if (!textContent) {
                 alert(tr`Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience.`)
             }
 
