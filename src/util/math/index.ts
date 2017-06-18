@@ -35,9 +35,9 @@ const getMidVertices = (points: Point[], part: number) =>
 
 const getVertices = (points: Point[], part: number): Point[] =>
     points.length < 2 ? points : [
-        head(points),
+        head(points) as Point,
         ...getMidVertices(points, part),
-        last(points),
+        last(points) as Point,
     ]
 
 export function splitInTwo(points: Point[], part: number): [Point[], Point[]] {
