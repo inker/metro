@@ -82,9 +82,9 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> impleme
     }
 
     private updateOverlayPositioning() {
-        const nw = this.bounds.getNorthWest()
-        const se = this.bounds.getSouthEast()
-        const { map, margin } = this
+        const { map, bounds, margin } = this
+        const nw = bounds.getNorthWest()
+        const se = bounds.getSouthEast()
         this.topLeft = map.project(nw).round()
 
         const pixelBounds = L.bounds(map.latLngToLayerPoint(nw), map.latLngToLayerPoint(se))
