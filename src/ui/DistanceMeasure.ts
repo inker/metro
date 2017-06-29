@@ -45,11 +45,21 @@ export default class implements L.ILayer {
         if (latlngs.length > nMarkers) {
             latlngs.length = nMarkers
         }
-        this.dashedLine.getLatLngs()[0] = last(latlngs)
+        this.dashedLine.getLatLngs()[0] = last(latlngs) as L.LatLng
         this.polyline.redraw()
-        if (nMarkers > 1) {
-            last(markers).openPopup()
+        this.openLastMarkerPopup()
+    }
+
+    private openLastMarkerPopup() {
+        const markers = this.markers.getLayers()
+        if (markers.length < 2) {
+            return
         }
+        const lastMarker = last(markers)
+        if (!lastMarker || !(lastMarker instanceof L.Marker)) {
+            return
+        }
+        lastMarker.openPopup()
     }
 
     private showDashedLine() {
