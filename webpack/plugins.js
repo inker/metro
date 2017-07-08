@@ -2,10 +2,11 @@ const {
   optimize: {
     CommonsChunkPlugin,
     OccurrenceOrderPlugin,
-    UglifyJsPlugin,
   },
   ProvidePlugin,
 } = require('webpack')
+
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 // const { CheckerPlugin } = require('awesome-typescript-loader')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -33,10 +34,16 @@ module.exports = env => [
     template: 'template.html',
     hash: true,
     minify: {
-      minifyJS: true,
-      minifyCSS: true,
       removeComments: true,
       collapseWhitespace: true,
+      removeRedundantAttributes: true,
+      useShortDoctype: true,
+      removeEmptyAttributes: true,
+      removeStyleLinkTypeAttributes: true,
+      keepClosingSlash: true,
+      minifyJS: true,
+      minifyCSS: true,
+      minifyURLs: true,
     },
   }),
 
