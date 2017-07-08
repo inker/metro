@@ -93,9 +93,9 @@ export default class MapEditor implements Widget {
         const pathsOuter = byId('paths-outer')
         const pathsInner = byId('paths-inner')
 
-        let movingCircle: SVGCircleElement|null
-        let type: string|undefined
-        let fromCircle: SVGCircleElement|null
+        let movingCircle: SVGCircleElement | null
+        let type: string | undefined
+        let fromCircle: SVGCircleElement | null
         dummyCircles.addEventListener('mousedown', e => {
             if (e.button !== 2 && fromCircle) {
                 const detail = {

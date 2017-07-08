@@ -102,17 +102,18 @@ export default class {
 
     deletePlatform(platform: Platform) {
         console.log('removing platform', platform)
-        for (const transfer of platform.transfers) {
+        const { transfers, spans, station } = platform
+        for (const transfer of transfers) {
             deleteFromArray(this.transfers, transfer)
         }
-        platform.transfers.length = 0
-        if (platform.spans.length === 1) {
-            const span = platform.spans[0]
+        transfers.length = 0
+        if (spans.length === 1) {
+            const span = spans[0]
             const neighbor = span.other(platform)
             deleteFromArray(neighbor.spans, span)
             deleteFromArray(this.spans, span)
-        } else if (platform.spans.length === 2) {
-            const [first, second] = platform.spans
+        } else if (spans.length === 2) {
+            const [first, second] = spans
             const end = second.other(platform)
             if (!end) {
                 throw new Error(`span does not have other end`)
@@ -129,13 +130,12 @@ export default class {
             deleteFromArray(end.spans, second)
             deleteFromArray(this.spans, second)
         } else {
-            for (const span of platform.spans) {
+            for (const span of spans) {
                 const neighbor = span.other(platform)
                 deleteFromArray(neighbor.spans, span)
                 deleteFromArray(this.spans, span)
             }
         }
-        const { station } = platform
         if (station.platforms.length === 1) {
             deleteFromArray(this.stations, station)
         } else {
