@@ -11,7 +11,7 @@ const tsDev = 'awesome-typescript-loader'
 const tsProd = {
   loader: tsDev,
   options: {
-    ignoreDiagnostics: [2403, 2300, 2451, 2307, 2345, 2339, 2305], // 2305 is temporary
+    ignoreDiagnostics: [2307, 2345, 2339],
   },
 }
 

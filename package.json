@@ -22,18 +22,12 @@
     "@types/hammerjs": "^2.0.34",
     "@types/leaflet": "^0.7.30",
     "@types/lodash": "^4.14.68",
-    "@types/whatwg-fetch": "0.0.33",
     "autoprefixer": "^7.1.2",
     "awesome-typescript-loader": "^3.2.1",
-    "classlist-polyfill": "^1.2.0",
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.28.4",
     "cssnano": "^3.10.0",
-    "es6-promise": "^4.1.1",
-    "es6-set": "^0.1.5",
-    "exports-loader": "^0.6.4",
     "html-webpack-plugin": "^2.29.0",
-    "imports-loader": "^0.7.1",
     "postcss-loader": "^2.0.6",
     "source-map-loader": "^0.2.1",
     "style-loader": "^0.18.2",
@@ -43,8 +37,7 @@
     "url-loader": "^0.5.9",
     "webpack": "^3.0.0",
     "webpack-bundle-analyzer": "^2.8.2",
-    "webpack-dev-server": "^2.5.0",
-    "whatwg-fetch": "^2.0.3"
+    "webpack-dev-server": "^2.5.0"
   },
   "scripts": {
     "build:prod": "webpack --colors --config webpack/webpack.config.js --env.ENV=prod",
