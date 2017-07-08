@@ -43,6 +43,8 @@ export default class<V> {
     }
 
     invert() {
-        [this._source, this._target] = [this._target, this._source]
+        const t = this._source
+        this._source = this._target
+        this._target = t
     }
 }
