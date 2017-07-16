@@ -273,77 +273,77 @@ export default class extends MetroMap {
         platform['_location'] = cached
     }
 
-    private transferToModel(transfer: Transfer, elements: Element[]) {
-        const cached = [transfer.source, transfer.target]
-        const { tagName } = elements[0];
-        ['source', 'target'].forEach((prop, pi) => {
-            Object.defineProperty(transfer, prop, {
-                get: () => transfer['_' + prop],
-                set: (platform: Platform) => {
-                    transfer['_' + prop] = platform
-                    const circle = tryGetFromMap(pool.platformBindings, platform)
-                    const circleBorderWidth = parseFloat(getComputedStyle(circle).strokeWidth || '')
-                    const r = +dom.attr(circle, 'r')
-                    const circleTotalRadius = r / 2 + circleBorderWidth
-                    const pos = tryGetFromMap(this.platformsOnSVG, platform)
-                    if (tagName === 'line') {
-                        const n = pi + 1
-                        const other = transfer.other(platform)
-                        for (const el of elements) {
-                            el.setAttribute('x' + n, pos.x.toString())
-                            el.setAttribute('y' + n, pos.y.toString())
-                        }
-                        const gradient = tryGetFromMap(pool.gradientBindings, transfer)
-                        const otherPos = tryGetFromMap(this.platformsOnSVG, other)
-                        const dir = prop === 'source' ? otherPos.subtract(pos) : pos.subtract(otherPos)
-                        gradients.setDirection(gradient, dir)
-                        const circlePortion = circleTotalRadius / pos.distanceTo(otherPos)
-                        gradients.setOffset(gradient, circlePortion)
-                    } else if (tagName === 'path') {
-                        const transfers: Transfer[] = []
-                        for (const t of this.network.transfers) {
-                            if (transfer.isAdjacent(t)) {
-                                transfers.push(t)
-                                if (transfers.length === 3) {
-                                    break
-                                }
-                            }
-                        }
+    // private transferToModel(transfer: Transfer, elements: Element[]) {
+    //     const cached = [transfer.source, transfer.target]
+    //     const { tagName } = elements[0];
+    //     ['source', 'target'].forEach((prop, pi) => {
+    //         Object.defineProperty(transfer, prop, {
+    //             get: () => transfer['_' + prop],
+    //             set: (platform: Platform) => {
+    //                 transfer['_' + prop] = platform
+    //                 const circle = tryGetFromMap(pool.platformBindings, platform)
+    //                 const circleBorderWidth = parseFloat(getComputedStyle(circle).strokeWidth || '')
+    //                 const r = +dom.attr(circle, 'r')
+    //                 const circleTotalRadius = r / 2 + circleBorderWidth
+    //                 const pos = tryGetFromMap(this.platformsOnSVG, platform)
+    //                 if (tagName === 'line') {
+    //                     const n = pi + 1
+    //                     const other = transfer.other(platform)
+    //                     for (const el of elements) {
+    //                         el.setAttribute('x' + n, pos.x.toString())
+    //                         el.setAttribute('y' + n, pos.y.toString())
+    //                     }
+    //                     const gradient = tryGetFromMap(pool.gradientBindings, transfer)
+    //                     const otherPos = tryGetFromMap(this.platformsOnSVG, other)
+    //                     const dir = prop === 'source' ? otherPos.subtract(pos) : pos.subtract(otherPos)
+    //                     gradients.setDirection(gradient, dir)
+    //                     const circlePortion = circleTotalRadius / pos.distanceTo(otherPos)
+    //                     gradients.setOffset(gradient, circlePortion)
+    //                 } else if (tagName === 'path') {
+    //                     const transfers: Transfer[] = []
+    //                     for (const t of this.network.transfers) {
+    //                         if (transfer.isAdjacent(t)) {
+    //                             transfers.push(t)
+    //                             if (transfers.length === 3) {
+    //                                 break
+    //                             }
+    //                         }
+    //                     }
 
-                        const circular = new Set<Platform>()
-                        for (const tr of transfers) {
-                            circular.add(tr.source).add(tr.target)
-                        }
+    //                     const circular = new Set<Platform>()
+    //                     for (const tr of transfers) {
+    //                         circular.add(tr.source).add(tr.target)
+    //                     }
 
-                        const circumpoints = Array.from(circular).map(i => this.platformsOnSVG.get(i))
-                        for (const i of circular) {
-                            circumpoints.push(this.platformsOnSVG.get(i))
-                        }
-                        const outerArcs = transfers.map(t => tryGetFromMap(pool.outerEdgeBindings, t))
-                        const innerArcs = transfers.map(t => tryGetFromMap(pool.innerEdgeBindings, t))
-                        for (let i = 0; i < 3; ++i) {
-                            const tr = transfers[i]
-                            const outer = outerArcs[i]
-                            const inner = innerArcs[i]
-                            const pos1 = tryGetFromMap(this.platformsOnSVG, tr.source)
-                            const pos2 = tryGetFromMap(this.platformsOnSVG, tr.target)
-                            const thirdPos = difference(circumpoints, [pos1, pos2])[0]
-                            if (thirdPos) {
-                                svg.arc.setPath(outer, pos1, pos2, thirdPos)
-                                inner.setAttribute('d', dom.attr(outer, 'd'))
-                            }
-                            const gradient = tryGetFromMap(pool.gradientBindings, tr)
-                            gradients.setDirection(gradient, pos2.subtract(pos1))
-                            const circlePortion = circleTotalRadius / pos1.distanceTo(pos2)
-                            gradients.setOffset(gradient, circlePortion)
-                        }
-                    } else {
-                        throw new TypeError('wrong element type for transfer')
-                    }
-                },
-            })
-            transfer['_' + prop] = cached[pi]
-        })
-    }
+    //                     const circumpoints = Array.from(circular).map(i => this.platformsOnSVG.get(i))
+    //                     for (const i of circular) {
+    //                         circumpoints.push(this.platformsOnSVG.get(i))
+    //                     }
+    //                     const outerArcs = transfers.map(t => tryGetFromMap(pool.outerEdgeBindings, t))
+    //                     const innerArcs = transfers.map(t => tryGetFromMap(pool.innerEdgeBindings, t))
+    //                     for (let i = 0; i < 3; ++i) {
+    //                         const tr = transfers[i]
+    //                         const outer = outerArcs[i]
+    //                         const inner = innerArcs[i]
+    //                         const pos1 = tryGetFromMap(this.platformsOnSVG, tr.source)
+    //                         const pos2 = tryGetFromMap(this.platformsOnSVG, tr.target)
+    //                         const thirdPos = difference(circumpoints, [pos1, pos2])[0]
+    //                         if (thirdPos) {
+    //                             svg.arc.setPath(outer, pos1, pos2, thirdPos)
+    //                             inner.setAttribute('d', dom.attr(outer, 'd'))
+    //                         }
+    //                         const gradient = tryGetFromMap(pool.gradientBindings, tr)
+    //                         gradients.setDirection(gradient, pos2.subtract(pos1))
+    //                         const circlePortion = circleTotalRadius / pos1.distanceTo(pos2)
+    //                         gradients.setOffset(gradient, circlePortion)
+    //                     }
+    //                 } else {
+    //                     throw new TypeError('wrong element type for transfer')
+    //                 }
+    //             },
+    //         })
+    //         transfer['_' + prop] = cached[pi]
+    //     })
+    // }
 
 }

@@ -12,16 +12,12 @@ interface QA {
     a: string,
 }
 
-interface FAQData {
-    faq: QA[],
-}
-
 export default class implements Widget {
     private readonly button: HTMLButtonElement
     private readonly card: HTMLDivElement
     private map: Map
 
-    constructor(faqData: string[]) {
+    constructor(faqData: QA[]) {
         const btn = document.createElement('button')
         btn.textContent = 'FAQ'
         btn.classList.add('leaflet-control')
@@ -39,7 +35,7 @@ export default class implements Widget {
         const replacement = '<a href=\"$1\" target=\"_blank\">$2</a>'
         const questionClass = styles.question
         const answerClass = styles.answer
-        const qa2html = qa => `
+        const qa2html = (qa: QA) => `
             <div>
                 <span class="${questionClass}">${qa.q}</span>
                 <span class="${answerClass}">${qa.a}</span>

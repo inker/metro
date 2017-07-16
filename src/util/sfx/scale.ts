@@ -3,7 +3,7 @@ import { byId } from '../dom'
 import { tryGetFromMap } from '../collections'
 
 import { Transfer } from '../../network'
-import { attr, newAttributeValues, restoreAttributes } from '../dom'
+import { newAttributeValues, restoreAttributes } from '../dom'
 
 const initialCircles = new Set<SVGCircleElement>()
 const initialStadiums = new Set<SVGRectElement>()

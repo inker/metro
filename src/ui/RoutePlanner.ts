@@ -1,4 +1,4 @@
-import { Marker, marker, LatLng } from 'leaflet'
+import { marker, LatLng } from 'leaflet'
 import * as alertify from 'alertifyjs'
 
 import MetroMap from '../MetroMap'
@@ -27,8 +27,8 @@ export default class implements Widget {
     })
 
     constructor() {
-        for (const marker of [this.fromMarker, this.toMarker]) {
-            marker
+        for (const m of [this.fromMarker, this.toMarker]) {
+            m
                 .on('drag', e => this.visualizeShortestRoute(false))
                 .on('dragend', e => this.visualizeShortestRoute(true))
         }
@@ -58,12 +58,12 @@ export default class implements Widget {
     private onFromTo = (e: MouseEvent) => {
         const map = this.metroMap.getMap()
         const coors = mouseToLatLng(map, e)
-        const marker = e.type === 'routefrom' ? this.fromMarker : this.toMarker
-        marker.setLatLng(coors)
-        if (!map.hasLayer(marker)) {
-            map.addLayer(marker)
+        const m = e.type === 'routefrom' ? this.fromMarker : this.toMarker
+        m.setLatLng(coors)
+        if (!map.hasLayer(m)) {
+            map.addLayer(m)
         }
-        const otherMarker = marker === this.fromMarker ? this.toMarker : this.fromMarker
+        const otherMarker = m === this.fromMarker ? this.toMarker : this.fromMarker
         if (map.hasLayer(otherMarker)) {
             this.visualizeShortestRoute(true)
             // this.map.once('zoomend', e => this.visualizeShortestRoute(latLngArr));

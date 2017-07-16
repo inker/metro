@@ -5,7 +5,7 @@ import { timeToTravel } from '../math/phys'
 import { findClosestObject } from '../geo'
 import { tryGetFromMap } from '../collections'
 
-import Network, {
+import {
     Platform,
     Edge,
     Transfer,
@@ -13,7 +13,7 @@ import Network, {
 
 const distanceBetween = (a: LatLng, b: LatLng) => LatLng.prototype.distanceTo.call(a, b) as number
 
-const WALKING_SPEED = 1.4
+// const WALKING_SPEED = 1.4
 const WALKING_WITH_OBSTACLES = 1
 const MAX_TRAIN_SPEED = 20
 const TRAIN_ACCELERATION = 0.7
@@ -112,7 +112,7 @@ export default (objects: Platform[], p1: LatLng, p2: LatLng): ShortestRouteObjec
     }
     // find the shortest time & the exit station
     let shortestTime = Infinity
-    for (const [p, t] of currentTime) {
+    for (const [p] of currentTime) {
         const alt = tryGetFromMap(currentTime, p) + tryGetFromMap(fromPlatformToDest, p)
         if (alt < shortestTime) {
             shortestTime = alt

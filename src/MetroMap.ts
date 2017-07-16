@@ -1,7 +1,6 @@
 import * as L from 'leaflet'
 import unblur from 'unblur'
 import {
-    get,
     difference,
     intersection,
     uniqueId,
@@ -36,7 +35,7 @@ import {
     getPlatformNames,
     getPlatformNamesZipped,
     // midPointsToEnds,
-    drawBezierHints,
+    // drawBezierHints,
 } from './util'
 
 const {
@@ -349,17 +348,14 @@ export default class {
         console.time('preparation')
         const { detailedZoom } = this.config
         const zoom = this.map.getZoom()
-        const coef = zoom > 9 ? zoom : zoom > 8 ? 9.5 : 9
         // const lineWidth = 2 ** (zoom / 4 - 1.75);
         const {
             lineWidth,
             lightLineWidth,
-            circleRadius,
             circleBorder,
             dummyCircleRadius,
             transferWidth,
             transferBorder,
-            fullCircleRadius,
         } = this.getSvgSizes()
 
         const strokeWidths = {
@@ -746,7 +742,7 @@ export default class {
         if (!tokens) {
             throw new Error(`match failed for ${source.name}-${target.name}`)
         }
-        const [lineId, lineType, lineNum] = tokens
+        const [lineId, lineType] = tokens
 
         const controlPoints = this.getControlPoints(span)
 

@@ -90,8 +90,8 @@ export default class MapEditor implements Widget {
     private addMapListeners() {
         const map = this.metroMap.getMap()
         const dummyCircles = byId('dummy-circles')
-        const pathsOuter = byId('paths-outer')
-        const pathsInner = byId('paths-inner')
+        // const pathsOuter = byId('paths-outer')
+        // const pathsInner = byId('paths-inner')
 
         let movingCircle: SVGCircleElement | null
         let type: string | undefined

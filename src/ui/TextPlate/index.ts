@@ -8,7 +8,6 @@ export default class TextPlate {
     readonly element = svg.createSVGElement('g')
     private _disabled = false
     private _editable = false
-    private _fontSize: number
 
     constructor() {
         const { element } = this

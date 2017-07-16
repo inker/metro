@@ -1,4 +1,4 @@
-import { point, icon, bounds } from 'leaflet'
+import { point, icon } from 'leaflet'
 import { svgToDataUrl } from 'svgio'
 
 import {

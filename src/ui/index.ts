@@ -120,7 +120,7 @@ export function drawZones(map: L.Map, platforms: Platform[]) {
         L.circle(metroMean, i - 250, { weight: 1 }).addTo(map)
         L.circle(metroMean, i + 250, { weight: 1 }).addTo(map)
     }
-    const ePoints = platforms.filter(p => p.spans[0].routes[0].line.startsWith('E')).map(p => p.location)
+    // const ePoints = platforms.filter(p => p.spans[0].routes[0].line.startsWith('E')).map(p => p.location)
     const mainStationName = 'Glavnyj voxal'
     const mainStationPlatform = platforms.find(p => p.name === mainStationName && p.spans[0].routes[0].line.startsWith('E'))
     if (!mainStationPlatform) {
