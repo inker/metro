@@ -1,5 +1,5 @@
 import { downloadText } from 'download.js'
-import { difference } from 'lodash'
+// import { difference } from 'lodash'
 
 import MetroMap from './MetroMap'
 
@@ -19,7 +19,7 @@ import {
     collections,
     mouseToLatLng,
     getPlatformNames,
-    dom,
+    // dom,
 } from './util'
 
 const {
@@ -29,7 +29,7 @@ const {
     tryGetKeyFromBiMap,
 } = collections
 
-const { gradients } = svg
+// const { gradients } = svg
 
 export default class extends MetroMap {
     constructor(config: Config) {
