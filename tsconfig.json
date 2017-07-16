@@ -10,6 +10,7 @@
     // "allowSyntheticDefaultImports": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
+    "noUnusedLocals": true,
     "downlevelIteration": true,
     "noEmitHelpers": true,
     "importHelpers": true,
