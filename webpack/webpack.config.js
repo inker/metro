@@ -5,7 +5,7 @@ const plugins = require('./plugins')
 const rootDir = process.cwd()
 const distDir = path.join(rootDir, 'docs')
 
-module.exports = ({ ENV }) => ({
+module.exports = env => ({
   target: 'web',
   context: path.join(rootDir, 'src'),
   entry: {
@@ -13,7 +13,7 @@ module.exports = ({ ENV }) => ({
   },
   output: {
     path: distDir,
-    filename: ENV === 'dev' ? '[name].js' : '[name].[hash].js',
+    filename: env === 'dev' ? '[name].js' : '[name].[hash].js',
     sourceMapFilename: '[file].map',
   },
   resolve: {
@@ -28,12 +28,12 @@ module.exports = ({ ENV }) => ({
       'alertify-dist': path.join(rootDir, 'node_modules/alertifyjs/build'),
     },
   },
-  devtool: ENV === 'dev' ? 'source-map' : undefined,
+  devtool: env === 'dev' ? 'source-map' : undefined,
   module: {
-    rules: rules(ENV),
+    rules: rules(env),
   },
-  plugins: plugins(ENV),
-  devServer: ENV !== 'dev' ? undefined : {
+  plugins: plugins(env),
+  devServer: env !== 'dev' ? undefined : {
     contentBase: distDir,
     port: 9080,
   },
