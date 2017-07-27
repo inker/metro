@@ -12,6 +12,8 @@ import './css/map.css'
 
 import 'core-js/fn/object/entries'
 
+declare const System
+
 Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images'
 
 if (Browser.ie) {
@@ -20,7 +22,7 @@ if (Browser.ie) {
 }
 
 const configPromise = getJSON('res/mapconfig.json') as Promise<Config>
-const mapPromise = Browser.mobile ? import('./MetroMap') : import('./EditableMetroMap')
+const mapPromise = Browser.mobile ? System.import('./MetroMap') : System.import('./EditableMetroMap')
 
 const tokens = location.search.match(/city=(\w+)/)
 const city = tokens ? tokens[1] : 'spb'

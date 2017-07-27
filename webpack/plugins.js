@@ -27,7 +27,7 @@ module.exports = env => [
   new CommonsChunkPlugin({
     name: 'vendor',
     filename: 'vendor.js',
-    minChunks: module => module.resource && module.resource.includes('node_modules'),
+    minChunks: ({ context }) => context && context.includes('node_modules'),
   }),
 
   new HtmlWebpackPlugin({
