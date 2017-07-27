@@ -613,7 +613,7 @@ export default class {
     }
 
     private getPlatformColor(platform: Platform): string {
-        return color.mean(this.linesToColors(platform.passingLines()))
+        return color.meanColor(this.linesToColors(platform.passingLines()))
     }
 
     private linesToColors(lines: Set<string>): string[] {
@@ -636,7 +636,7 @@ export default class {
             ci.classList.add(line[0] === 'M' ? line : line[0])
             return
         }
-        ci.style.stroke = color.mean(this.linesToColors(lines))
+        ci.style.stroke = color.meanColor(this.linesToColors(lines))
     }
 
     protected makeWhiskers(platform: Platform): Map<Span, L.Point> {

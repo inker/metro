@@ -6,13 +6,10 @@ const IS_GLOBAL = new RegExp(isGlobal)
 const IS_CSS = new RegExp(cssExt)
 const IS_GLOBAL_CSS = new RegExp(`(${isGlobal}).+?${cssExt}`)
 
-const tsDev = 'awesome-typescript-loader'
-
-const tsProd = {
-  loader: tsDev,
-  options: {
-    ignoreDiagnostics: [2307, 2345, 2339],
-  },
+const tsOptions = env => env === 'dev' ? {
+  // getCustomTransformers: () => ({ before: [styledComponentsTransformer] }),
+} : {
+  ignoreDiagnostics: [2307, 2345, 2339],
 }
 
 module.exports = env => [
@@ -21,9 +18,19 @@ module.exports = env => [
   //   test: /\.js$/,
   //   use: 'source-map-loader',
   // },
+  env !== 'dev' && {
+    test: /\.tsx?$/,
+    loader: 'lodash-ts-imports-loader',
+    exclude: /node_modules/,
+    enforce: 'pre',
+  },
   {
     test: /\.ts$/,
-    use: env === 'dev' ? tsDev : tsProd,
+    use: {
+      loader: 'awesome-typescript-loader',
+      options: tsOptions(env),
+    },
+    exclude: /node_modules/,
   },
   { // non-global
     test: path => IS_CSS.test(path) && !IS_GLOBAL.test(path),
@@ -57,4 +64,4 @@ module.exports = env => [
       },
     },
   },
-]
+].filter(i => i)

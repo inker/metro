@@ -1,5 +1,9 @@
 import * as L from 'leaflet'
-import * as _ from 'lodash'
+import {
+    zip,
+    uniq,
+    identity,
+} from 'lodash'
 
 import { Platform } from '../network'
 
@@ -68,13 +72,12 @@ export function getPlatformNames(platform: Platform): string[] {
     return names
 }
 
-export const getPlatformNamesZipped = (platforms: Platform[]) =>
-    _(platforms)
-        .map(getPlatformNames)
-        .thru(arr => _.zip(...arr))
-        .map(arr => _.uniq(arr).join(' / '))
-        .filter(_.identity)
-        .value()
+export function getPlatformNamesZipped(platforms: Platform[]) {
+    const platformNames = platforms.map(getPlatformNames)
+    return zip(...platformNames)
+        .map(arr => uniq(arr).join(' / '))
+        .filter(identity)
+}
 
 export function midPointsToEnds(pos: L.Point, midPts: L.Point[]) {
     const lens = midPts.map(midPt => pos.distanceTo(midPt))
@@ -144,7 +147,7 @@ export function drawBezierHints(parent: Element, controlPoints: L.Point[], lines
         if (linesColor) {
             arr.push(linesColor)
         }
-        line.style.stroke = color.mean(arr)
+        line.style.stroke = color.meanColor(arr)
         line.style.strokeOpacity = '0.75'
         line.style.strokeWidth = '1px'
         parent.appendChild(line)
