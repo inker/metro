@@ -2,10 +2,11 @@ import { identity } from 'lodash'
 import { repeatUntil } from './index'
 import { getOrMakeInMap } from './collections'
 
-export function tryGetElement(query: string, interval = 100, ttl = 100): Promise<Element> {
+export async function tryGetElement(query: string, interval = 100, ttl = 100) {
     const rest = query.slice(1)
     const func = query[0] === '#' ? (() => document.getElementById(rest)) : () => document.querySelector(query)
-    return repeatUntil(func, identity, interval, ttl)
+    const el = await repeatUntil(func, identity, interval, ttl)
+    return el as Element
 }
 
 export function removeAllChildren(el: Node) {

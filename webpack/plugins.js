@@ -1,4 +1,5 @@
 const {
+  DefinePlugin,
   optimize: {
     CommonsChunkPlugin,
     OccurrenceOrderPlugin,
@@ -16,6 +17,12 @@ module.exports = env => [
   // new CheckerPlugin(),
 
   // new OccurrenceOrderPlugin(),
+
+  new DefinePlugin({
+    'process.env': {
+      NODE_ENV: JSON.stringify(env === 'dev' ? 'development' : 'production'),
+    },
+  }),
 
   new CommonsChunkPlugin({
     name: 'vendor',
@@ -49,16 +56,20 @@ module.exports = env => [
   ]),
 
   env !== 'dev' && new UglifyJsPlugin({
-    compress: {
-      screw_ie8: true,
-      warnings: false,
-      dead_code: true,
-      properties: true,
-      unused: true,
-      join_vars: true,
-    },
-    output: {
-      comments: false,
+    uglifyOptions: {
+      compress: {
+        warnings: false,
+        dead_code: true,
+        properties: true,
+        unused: true,
+        join_vars: true,
+      },
+      mangle: {
+        safari10: true,
+      },
+      output: {
+        comments: false,
+      },
     },
     // sourceMap: true, // retains sourcemaps for typescript
   }),
