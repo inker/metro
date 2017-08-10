@@ -30,6 +30,10 @@ module.exports = env => [
     minChunks: ({ context }) => context && context.includes('node_modules'),
   }),
 
+  // new CommonsChunkPlugin({
+  //   async: true,
+  // }),
+
   new HtmlWebpackPlugin({
     filename: 'index.html',
     template: 'template.html',
