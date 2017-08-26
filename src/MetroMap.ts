@@ -131,7 +131,7 @@ export default class {
     private readonly platformOffsets = new Map<L.Point, Map<Span, number>>()
     protected readonly platformsOnSVG = new WeakMap<Platform, L.Point>()
 
-    protected readonly plate = new ui.TextPlate()
+    protected readonly tooltip = new ui.Tooltip()
 
     // private routeWorker = new Worker('js/routeworker.js');
 
@@ -272,7 +272,7 @@ export default class {
         const { map, contextMenu } = this
 
         map.on('zoomstart', e => {
-            this.plate.hide()
+            this.tooltip.hide()
         })
 
         map.on('distancemeasureinit', e => {
@@ -300,7 +300,7 @@ export default class {
             origin.appendChild(g)
         }
 
-        origin.insertBefore(this.plate.element, document.getElementById('dummy-circles'))
+        origin.insertBefore(this.tooltip.element, document.getElementById('dummy-circles'))
         this.redrawNetwork()
         this.addStationListeners()
     }
@@ -331,8 +331,8 @@ export default class {
     }
 
     private cleanElements() {
-        const { overlay, plate } = this
-        const { element } = plate
+        const { overlay, tooltip } = this
+        const { element } = tooltip
         for (const child of (overlay.origin.childNodes as any)) {
             if (child !== element) {
                 dom.removeAllChildren(child)
@@ -377,7 +377,7 @@ export default class {
         lightRailPathStyle.strokeWidth = `${lightLineWidth}px`
 
         // 11 - 11, 12 - 11.5, 13 - 12, 14 - 12.5
-        this.plate.setFontSize(Math.max((zoom + 10) * 0.5, 11))
+        this.tooltip.setFontSize(Math.max((zoom + 10) * 0.5, 11))
 
         const stationCircumpoints = new Map<Station, Platform[]>()
 
@@ -817,7 +817,7 @@ export default class {
 
     private addStationListeners() {
         const onMouseOut = (e: MouseEvent) => {
-            this.plate.hide()
+            this.tooltip.hide()
             scale.unscaleAll()
         }
         const dummyCircles = dom.byId('dummy-circles')
@@ -861,7 +861,7 @@ export default class {
         }
         const topmostPlatform = maxBy(platforms, p => p.location.lat)
         const topmostCircle = tryGetFromMap(pool.platformBindings, topmostPlatform)
-        this.plate.show(svg.getElementOffset(topmostCircle), namesOnPlate)
+        this.tooltip.show(svg.getElementOffset(topmostCircle), namesOnPlate)
     }
 
 }

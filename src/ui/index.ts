@@ -8,7 +8,7 @@ import { tr } from '../i18n'
 
 import MapEditor from './MapEditor'
 import FAQ from './FAQ'
-import TextPlate from './TextPlate'
+import Tooltip from './Tooltip'
 import RoutePlanner from './RoutePlanner'
 import ContextMenu from './ContextMenu'
 import DistanceMeasure from './DistanceMeasure'
@@ -20,7 +20,7 @@ export {
     DistanceMeasure,
     MapEditor,
     FAQ,
-    TextPlate,
+    Tooltip,
     RoutePlanner,
     ContextMenu,
     Icons,
@@ -130,7 +130,6 @@ export function drawZones(map: L.Map, platforms: Platform[]) {
     L.circle(eMean, 30000).addTo(map)
     L.circle(eMean, 45000).addTo(map)
 }
-
 
 export function cacheIcons(map: L.Map, markers: L.Marker[]) {
     for (const marker of markers) {

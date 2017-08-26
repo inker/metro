@@ -4,7 +4,7 @@ import { svg } from '../../util'
 
 import * as styles from './styles.css'
 
-export default class TextPlate {
+export default class Tooltip {
     readonly element = svg.createSVGElement('g')
     private _disabled = false
     private _editable = false
