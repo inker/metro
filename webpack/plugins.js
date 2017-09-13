@@ -36,7 +36,7 @@ module.exports = env => [
 
   new HtmlWebpackPlugin({
     filename: 'index.html',
-    template: 'template.html',
+    template: 'src/template.html',
     hash: true,
     minify: {
       removeComments: true,
@@ -54,7 +54,7 @@ module.exports = env => [
 
   new CopyWebpackPlugin([
     {
-      from: '../res',
+      from: 'res',
       to: 'res',
     },
   ]),
