@@ -50,7 +50,7 @@ module.exports = env => [
   new HtmlWebpackPlugin({
     filename: 'index.html',
     template: 'src/template.html',
-    hash: true,
+    hash: true, // needed because of configs
     minify: {
       removeComments: true,
       collapseWhitespace: true,
