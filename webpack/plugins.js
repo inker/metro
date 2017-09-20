@@ -26,7 +26,7 @@ module.exports = env => [
     },
   }),
 
-	new (env === 'dev' ? NamedModulesPlugin : HashedModuleIdsPlugin)(),
+	// new (env === 'dev' ? NamedModulesPlugin : HashedModuleIdsPlugin)(),
 
 	env !== 'dev' && new CommonsChunkPlugin({
 		name: 'app',
@@ -42,10 +42,10 @@ module.exports = env => [
 		minChunks: ({ context }) => context && context.includes('node_modules'),
 	}),
 
-	env !== 'dev' && new CommonsChunkPlugin({
-		name: 'runtime',
-		minChunks: Infinity,
-	}),
+	// env !== 'dev' && new CommonsChunkPlugin({
+	// 	name: 'runtime',
+	// 	minChunks: Infinity,
+	// }),
 
   new HtmlWebpackPlugin({
     filename: 'index.html',
