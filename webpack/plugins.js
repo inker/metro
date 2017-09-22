@@ -4,6 +4,8 @@ const {
     CommonsChunkPlugin,
     OccurrenceOrderPlugin,
   },
+	NamedModulesPlugin,
+	HashedModuleIdsPlugin,
 } = require('webpack')
 
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
@@ -24,20 +26,31 @@ module.exports = env => [
     },
   }),
 
-  new CommonsChunkPlugin({
-    name: 'vendor',
-    filename: 'vendor.js',
-    minChunks: ({ context }) => context && context.includes('node_modules'),
-  }),
+	// new (env === 'dev' ? NamedModulesPlugin : HashedModuleIdsPlugin)(),
 
-  // new CommonsChunkPlugin({
-  //   async: true,
-  // }),
+	env !== 'dev' && new CommonsChunkPlugin({
+		name: 'app',
+		children: true,
+		minChunks: 2,
+		async: 'commons',
+	}),
+
+	env !== 'dev' && new CommonsChunkPlugin({
+		name: 'vendor',
+		// names: 'vendor',
+		// chunks: 'app',
+		minChunks: ({ context }) => context && context.includes('node_modules'),
+	}),
+
+	// env !== 'dev' && new CommonsChunkPlugin({
+	// 	name: 'runtime',
+	// 	minChunks: Infinity,
+	// }),
 
   new HtmlWebpackPlugin({
     filename: 'index.html',
-    template: 'template.html',
-    hash: true,
+    template: 'src/template.html',
+    hash: true, // needed because of configs
     minify: {
       removeComments: true,
       collapseWhitespace: true,
@@ -54,7 +67,7 @@ module.exports = env => [
 
   new CopyWebpackPlugin([
     {
-      from: '../res',
+      from: 'res',
       to: 'res',
     },
   ]),

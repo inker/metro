@@ -7,13 +7,12 @@ const distDir = path.join(rootDir, 'docs')
 
 module.exports = env => ({
   target: 'web',
-  context: path.join(rootDir, 'src'),
   entry: {
-    app: './main.ts',
+    app: './src/main.ts',
   },
   output: {
     path: distDir,
-    filename: env === 'dev' ? '[name].js' : '[name].[hash].js',
+		filename: env === 'dev' ? '[name].js' : '[name].[hash].js',
     sourceMapFilename: '[file].map',
   },
   resolve: {
