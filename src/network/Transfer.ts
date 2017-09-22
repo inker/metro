@@ -1,4 +1,4 @@
-import { deleteFromArray } from '../util/collections'
+import fastDelete from 'fast-delete'
 
 import Platform from './Platform'
 import Edge from './Edge'
@@ -15,7 +15,7 @@ export default class extends Edge<Platform> {
     }
     set source(vertex: Platform) {
         if (this._source !== undefined) {
-            deleteFromArray(this._source.transfers, this)
+            fastDelete(this._source.transfers, this as Edge<Platform>)
         }
         this._source = vertex
         vertex.transfers.push(this)
@@ -26,7 +26,7 @@ export default class extends Edge<Platform> {
     }
     set target(vertex: Platform) {
         if (this._target !== undefined) {
-            deleteFromArray(this._target.transfers, this)
+            fastDelete(this._target.transfers, this as Edge<Platform>)
         }
         this._target = vertex
         vertex.transfers.push(this)

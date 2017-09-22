@@ -10,15 +10,6 @@ export function intersection<T>(a: Set<T>, b: Set<T>) {
     return isn
 }
 
-export function deleteFromArray<T>(arr: (T | null | undefined)[], el: T) {
-    const pos = arr.indexOf(el)
-    if (pos === -1) {
-        return
-    }
-    arr[pos] = last(arr)
-    arr.pop()
-}
-
 interface IMap<K, V> {
     get: (key: K) => V | undefined,
     set: (key: K, val: V) => IMap<K, V>,

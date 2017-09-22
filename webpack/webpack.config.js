@@ -35,5 +35,6 @@ module.exports = env => ({
   devServer: env !== 'dev' ? undefined : {
     contentBase: distDir,
     port: 9080,
+    open: true,
   },
 })

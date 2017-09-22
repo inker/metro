@@ -1,4 +1,4 @@
-import { deleteFromArray } from '../util/collections'
+import fastDelete from 'fast-delete'
 
 import Platform from './Platform'
 import Edge from './Edge'
@@ -19,7 +19,7 @@ export default class Span extends Edge<Platform> {
 
     set source(vertex: Platform) {
         if (this._source !== undefined) {
-            deleteFromArray(this._source.spans, this)
+            fastDelete(this._source.spans, this as Span)
         }
         this._source = vertex
         vertex.spans.push(this)
@@ -31,7 +31,7 @@ export default class Span extends Edge<Platform> {
 
     set target(vertex: Platform) {
         if (this._target !== undefined) {
-            deleteFromArray(this._target.spans, this)
+            fastDelete(this._target.spans, this as Span)
         }
         this._target = vertex
         vertex.spans.push(this)
