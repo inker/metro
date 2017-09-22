@@ -8,6 +8,7 @@
     "animate-svg": "^1.0.2",
     "bim": "^1.1.1",
     "core-js": "^2.5.0",
+    "delay.js": "^1.0.2",
     "download.js": "0.0.3",
     "hammerjs": "^2.0.8",
     "html-tags": "^2.0.0",

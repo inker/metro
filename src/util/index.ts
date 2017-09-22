@@ -1,4 +1,5 @@
 import * as L from 'leaflet'
+import delay from 'delay.js'
 import {
     zip,
     uniq,
@@ -88,8 +89,6 @@ export function midPointsToEnds(pos: L.Point, midPts: L.Point[]) {
     const offset = pos.subtract(midOfMidsWeighted)
     return midPts.map(v => math.vector.round(v.add(offset), 2))
 }
-
-export const delay = (ms: number) => new Promise<void>((resolve, reject) => setTimeout(resolve, ms))
 
 export async function repeatUntil<ReturnValueType>(
     func: () => ReturnValueType,
