@@ -1,5 +1,3 @@
-import { last } from 'lodash'
-
 export function intersection<T>(a: Set<T>, b: Set<T>) {
     const isn = new Set<T>()
     for (const item of a) {
