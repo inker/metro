@@ -23,7 +23,7 @@
   "devDependencies": {
     "@types/hammerjs": "^2.0.35",
     "@types/leaflet": "^0.7.30",
-    "@types/lodash": "^4.14.74",
+    "@types/lodash": "^4.14.76",
     "autoprefixer": "^7.1.4",
     "awesome-typescript-loader": "^3.2.3",
     "copy-webpack-plugin": "^4.0.1",
@@ -35,12 +35,12 @@
     "source-map-loader": "^0.2.1",
     "style-loader": "^0.18.2",
     "tslint": "^5.7.0",
-    "typescript": "^2.5.2",
+    "typescript": "^2.5.3",
     "uglifyjs-webpack-plugin": "^1.0.0-beta.2",
     "url-loader": "^0.5.9",
     "webpack": "^3.6.0",
     "webpack-bundle-analyzer": "^2.9.0",
-    "webpack-dev-server": "^2.8.2"
+    "webpack-dev-server": "^2.9.1"
   },
   "scripts": {
     "build:prod": "webpack --colors --config webpack/webpack.config.js --env=prod",
