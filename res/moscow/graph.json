@@ -1,5 +1,5 @@
 {
-  "version": 1506797147512,
+  "version": 1506797358333,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -2364,7 +2364,7 @@
       }
     },
     {
-      "name": "Tajninkaja",
+      "name": "Tajninka",
       "altNames": {},
       "location": {
         "lat": 55.90093657841595,
@@ -4170,6 +4170,30 @@
         "lat": 55.56009756408095,
         "lng": 38.11758041381836
       }
+    },
+    {
+      "name": "Sukromka",
+      "altNames": {},
+      "location": {
+        "lat": 55.90342063549281,
+        "lng": 37.71460533142089
+      }
+    },
+    {
+      "name": "Mytiščinskij park",
+      "altNames": {},
+      "location": {
+        "lat": 55.91044490435585,
+        "lng": 37.736921310424805
+      }
+    },
+    {
+      "name": "Mytišči",
+      "altNames": {},
+      "location": {
+        "lat": 55.91456986650045,
+        "lng": 37.759602069854736
+      }
     }
   ],
   "transfers": [
@@ -4776,6 +4800,10 @@
     {
       "source": 513,
       "target": 291
+    },
+    {
+      "source": 523,
+      "target": 296
     }
   ],
   "lines": {
@@ -8526,6 +8554,27 @@
       "target": 520,
       "routes": [
         24
+      ]
+    },
+    {
+      "source": 122,
+      "target": 521,
+      "routes": [
+        5
+      ]
+    },
+    {
+      "source": 521,
+      "target": 522,
+      "routes": [
+        5
+      ]
+    },
+    {
+      "source": 522,
+      "target": 523,
+      "routes": [
+        5
       ]
     }
   ],
