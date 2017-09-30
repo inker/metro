@@ -210,12 +210,13 @@ export default class extends MetroMap {
             contextMenu.removeItem('spandelete')
             contextMenu.removeItem('transferdelete')
         })
-        this.subscribe('mapsave', e => {
+        this.subscribe('mapsave', async e => {
             const json = this.network.toJSON()
-            gitHubDialog(json).catch(err => {
-                console.error(err)
-                downloadText('graph.json', json)
-            })
+            const uploaded = await gitHubDialog(json)
+            if (uploaded) {
+                return
+            }
+            downloadText('graph.json', json)
         })
     }
 

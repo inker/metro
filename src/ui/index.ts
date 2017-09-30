@@ -5,6 +5,7 @@ import Network, { Platform, Route } from '../network'
 import { getSecondLanguage } from '../util'
 import { calculateGeoMedian } from '../util/geo'
 import { tr } from '../i18n'
+import { prompt, confirm } from './alertify'
 
 import * as Icons from './Icons'
 import * as tileLayers from './tilelayers'
@@ -33,32 +34,38 @@ function assignNames(platform: Platform, newNames: string[]) {
     }
 }
 
-export function platformRenameDialog(platform: Platform) {
+export async function platformRenameDialog(platform: Platform) {
     const ru = platform.name
     const { fi, en } = platform.altNames
     const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru]
     const nameString = names.join('|')
-    alertify.prompt(tr`New name`, nameString, (okev, val: string) => {
-        const newNames = val.split('|')
-        assignNames(platform, newNames)
-        if (val === nameString) {
-            return alertify.warning(tr`Name was not changed`)
-        }
-        const oldNamesStr = names.slice(1).join(', ')
-        const newNamesStr = newNames.slice(1).join(', ')
-        alertify.success(tr`${ru} (${oldNamesStr}) renamed to ${newNames[0]} (${newNamesStr})`)
-        const station = platform.station
-        if (station.platforms.length < 2) {
-            return
-        }
-        alertify.confirm(tr`Rename the entire station?`, () => {
-            for (const p of station.platforms) {
-                assignNames(p, newNames)
-            }
-            alertify.success(tr`The entire station was renamed to ${val}`)
-        })
 
-    }, () => alertify.warning(tr`Name change cancelled`))
+    const val = await prompt(tr`New name`, nameString)
+    if (val === null) {
+        alertify.warning(tr`Name change cancelled`)
+        return
+    }
+    const newNames = val.split('|')
+    assignNames(platform, newNames)
+    if (val === nameString) {
+        return alertify.warning(tr`Name was not changed`)
+    }
+    const oldNamesStr = names.slice(1).join(', ')
+    const newNamesStr = newNames.slice(1).join(', ')
+    alertify.success(tr`${ru} (${oldNamesStr}) renamed to ${newNames[0]} (${newNamesStr})`)
+    const station = platform.station
+    if (station.platforms.length < 2) {
+        return
+    }
+
+    const confirmed = await confirm(tr`Rename the entire station?`)
+    if (!confirmed) {
+        return
+    }
+    for (const p of station.platforms) {
+        assignNames(p, newNames)
+    }
+    alertify.success(tr`The entire station was renamed to ${val}`)
 }
 
 export function askRoutes(network: Network, defSet = new Set<Route>()) {
