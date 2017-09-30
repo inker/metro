@@ -79,6 +79,7 @@ export default class {
     toJSON(): string {
         const { platforms, transfers, lines, spans, routes } = this
         return JSON.stringify({
+            graphVersion: '1.0',
             version: Date.now(),
             platforms: platforms.map(p => ({
                 name: p.name,
