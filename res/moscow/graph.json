@@ -1,5 +1,5 @@
 {
-  "version": 1506797358333,
+  "version": 1506797505067,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4193,6 +4193,14 @@
       "location": {
         "lat": 55.91456986650045,
         "lng": 37.759602069854736
+      }
+    },
+    {
+      "name": "Zabolotje",
+      "altNames": {},
+      "location": {
+        "lat": 55.92652737092017,
+        "lng": 37.546387910842896
       }
     }
   ],
@@ -8575,6 +8583,13 @@
       "target": 523,
       "routes": [
         5
+      ]
+    },
+    {
+      "source": 213,
+      "target": 524,
+      "routes": [
+        9
       ]
     }
   ],
