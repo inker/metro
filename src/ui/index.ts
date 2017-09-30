@@ -7,7 +7,7 @@ import { calculateGeoMedian } from '../util/geo'
 import { tr } from '../i18n'
 
 import * as Icons from './Icons'
-import * as tilelayers from './tileLayers'
+import * as tilelayers from './tilelayers'
 
 export { default as MapEditor } from './MapEditor'
 export { default as FAQ } from './FAQ'
