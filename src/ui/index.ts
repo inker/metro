@@ -7,7 +7,7 @@ import { calculateGeoMedian } from '../util/geo'
 import { tr } from '../i18n'
 
 import * as Icons from './Icons'
-import * as tilelayers from './tilelayers'
+import * as tileLayers from './tilelayers'
 
 export { default as MapEditor } from './MapEditor'
 export { default as FAQ } from './FAQ'
@@ -20,7 +20,7 @@ export { default as gitHubDialog } from './GitHub'
 
 export {
     Icons,
-    tilelayers,
+    tileLayers,
 }
 
 function assignNames(platform: Platform, newNames: string[]) {
