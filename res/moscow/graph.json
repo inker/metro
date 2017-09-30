@@ -1,5 +1,5 @@
 {
-  "version": 1506798609250,
+  "version": 1506798772845,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -3679,8 +3679,8 @@
       "name": "Aeroport Šeremetjevo",
       "altNames": {},
       "location": {
-        "lat": 55.96282214806759,
-        "lng": 37.40591526031494
+        "lat": 55.96392709998993,
+        "lng": 37.41660118103027
       }
     },
     {
