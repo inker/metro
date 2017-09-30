@@ -1,5 +1,5 @@
 {
-  "version": 1506798609250,
+  "version": 1506799969208,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4202,6 +4202,22 @@
         "lat": 55.92652737092017,
         "lng": 37.546387910842896
       }
+    },
+    {
+      "name": "Putilkovo",
+      "altNames": {},
+      "location": {
+        "lat": 55.86341580301507,
+        "lng": 37.38904953002929
+      }
+    },
+    {
+      "name": "Aľoškino",
+      "altNames": {},
+      "location": {
+        "lat": 55.86076059447678,
+        "lng": 37.43674993515015
+      }
     }
   ],
   "transfers": [
@@ -4812,6 +4828,14 @@
     {
       "source": 523,
       "target": 296
+    },
+    {
+      "source": 453,
+      "target": 459
+    },
+    {
+      "source": 526,
+      "target": 144
     }
   ],
   "lines": {
@@ -8590,6 +8614,20 @@
       "target": 524,
       "routes": [
         9
+      ]
+    },
+    {
+      "source": 525,
+      "target": 76,
+      "routes": [
+        2
+      ]
+    },
+    {
+      "source": 526,
+      "target": 525,
+      "routes": [
+        2
       ]
     }
   ],
