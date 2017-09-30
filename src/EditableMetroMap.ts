@@ -5,9 +5,15 @@ import { downloadText } from 'download.js'
 import MetroMap from './MetroMap'
 
 import { Config } from './res'
-import { MapEditor, askRoutes, platformRenameDialog } from './ui'
 import pool from './ObjectPool'
 import { tr } from './i18n'
+
+import {
+    MapEditor,
+    askRoutes,
+    platformRenameDialog,
+    gitHubDialog,
+} from './ui'
 
 import {
     Platform,
@@ -205,7 +211,11 @@ export default class extends MetroMap {
             contextMenu.removeItem('transferdelete')
         })
         this.subscribe('mapsave', e => {
-            downloadText('graph.json', this.network.toJSON())
+            const json = this.network.toJSON()
+            gitHubDialog(json).catch(err => {
+                console.error(err)
+                downloadText('graph.json', json)
+            })
         })
     }
 

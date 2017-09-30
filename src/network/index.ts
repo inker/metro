@@ -96,7 +96,7 @@ export default class {
                 routes: s.routes.map(r => routes.indexOf(r)),
             })),
             routes,
-        }, (k, v) => k.startsWith('_') ? undefined : v)
+        }, (k, v) => k.startsWith('_') ? undefined : v, 2)
     }
 
     deletePlatform(platform: Platform) {

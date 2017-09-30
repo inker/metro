@@ -6,25 +6,20 @@ import { getSecondLanguage } from '../util'
 import { calculateGeoMedian } from '../util/geo'
 import { tr } from '../i18n'
 
-import MapEditor from './MapEditor'
-import FAQ from './FAQ'
-import Tooltip from './Tooltip'
-import RoutePlanner from './RoutePlanner'
-import ContextMenu from './ContextMenu'
-import DistanceMeasure from './DistanceMeasure'
-import SvgOverlay from './SvgOverlay'
 import * as Icons from './Icons'
-import * as tileLayers from './tilelayers'
+import * as tileLayers from './tileLayers'
+
+export { default as MapEditor } from './MapEditor'
+export { default as FAQ } from './FAQ'
+export { default as Tooltip } from './Tooltip'
+export { default as RoutePlanner } from './RoutePlanner'
+export { default as ContextMenu } from './ContextMenu'
+export { default as DistanceMeasure } from './DistanceMeasure'
+export { default as SvgOverlay } from './SvgOverlay'
+export { default as gitHubDialog } from './GitHub'
 
 export {
-    DistanceMeasure,
-    MapEditor,
-    FAQ,
-    Tooltip,
-    RoutePlanner,
-    ContextMenu,
     Icons,
-    SvgOverlay,
     tileLayers,
 }
 
