@@ -2,8 +2,10 @@ import * as GitHub from 'github-api'
 import * as alertify from 'alertifyjs'
 import delay from 'delay.js'
 
+import { makeLink } from '../util'
 import { prompt } from './alertify'
 
+const GITHUB_URL = 'https://github.com'
 const MY_NAME = 'inker'
 const REPO_NAME = 'metro'
 const MAIN_BRANCH = 'master'
@@ -13,7 +15,13 @@ interface Auth {
     password: string,
 }
 
-async function sendToGitHub(json: string, { username, password }: Auth) {
+interface PullRequest {
+    repo: any,
+    url: string,
+    branchName: string,
+}
+
+async function sendToGitHub(json: string, { username, password }: Auth): Promise<PullRequest | null> {
     const tokens = location.search.match(/city=(\w+)/)
     const city = tokens ? tokens[1] : 'spb'
     const title = `modify ${city} map`
@@ -29,6 +37,7 @@ async function sendToGitHub(json: string, { username, password }: Auth) {
         // try committing directly to the repo
         await repo.writeFile(MAIN_BRANCH, `res/${city}/graph.json`, json, title, {})
         alertify.success('Success')
+        return null
     } catch (err) {
         // or create a pull request
         const fork = await repo.fork()
@@ -36,31 +45,35 @@ async function sendToGitHub(json: string, { username, password }: Auth) {
         const { owner, name } = fork.data
         const tempRepo = gh.getRepo(owner.login, name)
 
-        await tempRepo.writeFile(MAIN_BRANCH, `res/${city}/graph.json`, json, title, {})
+        const branchName = `branch-${Date.now()}`
+        await tempRepo.createBranch('master', branchName)
+        alertify.message('Branch created')
+
+        await tempRepo.writeFile(branchName, `res/${city}/graph.json`, json, title, {})
         alertify.message('File written')
+
+        const body = await prompt('What did you change?', null) || title
 
         const pullRequest = await repo.createPullRequest({
             title,
-            head: `${username}:${MAIN_BRANCH}`,
+            head: `${username}:${branchName}`,
             base: MAIN_BRANCH,
-            body: title,
+            body,
             maintainer_can_modify: false,
         })
         alertify.success('Success')
-        return pullRequest.data.html_url
+        return {
+            repo,
+            url: pullRequest.data.html_url,
+            branchName,
+        }
     }
 }
 
-async function getPullRequest(username: string, password: string) {
-    const gh = new GitHub({
-        username,
-        password,
-    })
-
-    const repo = gh.getRepo(MY_NAME, REPO_NAME)
+async function getPullRequest(repo, head: string) {
     try {
         const { data } = await repo.listPullRequests({
-            head: `${username}:${MAIN_BRANCH}`,
+            head,
         })
         return data[0].html_url as string
     } catch (err) {
@@ -70,7 +83,7 @@ async function getPullRequest(username: string, password: string) {
 }
 
 async function githubDialog(json: string): Promise<boolean> {
-    const username = await prompt('GitHub username', null)
+    const username = await prompt(`GitHub username (${makeLink(GITHUB_URL, 'make an account', true)})`, null)
     if (!username) {
         return false
     }
@@ -80,14 +93,14 @@ async function githubDialog(json: string): Promise<boolean> {
         return false
     }
     alertify.message('Wait...')
-
+    let pr: PullRequest | null | undefined
     try {
-        const url = await sendToGitHub(json, {
+        pr = await sendToGitHub(json, {
             username,
             password,
         })
-        if (url) {
-            alertify.alert(`Pull request created (<a href="${url}" target="_blank">link</a>)`)
+        if (pr) {
+            alertify.alert(`Pull request created (${makeLink(pr.url, 'link', true)})`)
         }
         return true
     } catch (err) {
@@ -102,10 +115,12 @@ async function githubDialog(json: string): Promise<boolean> {
         const errors = `${data.message}. ${data.errors.map(e => e.message).join('. ')}`
         if (errors.includes('pull request already exists')) {
             alertify.warning('Problem with creating a pull request')
-            const url = await getPullRequest(username, password)
-            if (url) {
-                alertify.alert(`Pull request already exists (<a href="${url}" target="_blank">link</a>)`)
-                return true
+            if (pr) {
+                const url = await getPullRequest(pr.repo, `${username}:${pr.branchName}`)
+                if (url) {
+                    alertify.alert(`Pull request already exists (${makeLink(url, 'link', true)})`)
+                    return true
+                }
             }
         }
         alertify.error('Error')

@@ -44,7 +44,11 @@ const RESET_SELECTOR = [
     'station-circles',
 ].map(i => `#${i} > *`).join(', ')
 
-export const proxify = (url: string) => `${PROXY_URL}${url}`
+export const proxify = (url: string) =>
+    `${PROXY_URL}${url}`
+
+export const makeLink = (url: string, text: string, newTab = false) =>
+    `<a href="${url}" ${newTab ? 'target="_blank"' : ''}>${text}</a>`
 
 export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {
     const { top, left } = map.getContainer().getBoundingClientRect()
