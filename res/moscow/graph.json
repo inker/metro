@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1506820897254,
+  "version": 1506870780157,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -2045,7 +2045,7 @@
       }
     },
     {
-      "name": "Nagatinskij Zaton",
+      "name": "Klenovyj buľvar",
       "altNames": {},
       "location": {
         "lat": 55.67453537168735,
@@ -4202,6 +4202,14 @@
       "location": {
         "lat": 55.92652737092017,
         "lng": 37.546387910842896
+      }
+    },
+    {
+      "name": "Nagatinskij Zaton",
+      "altNames": {},
+      "location": {
+        "lat": 55.68258093401054,
+        "lng": 37.70175218582153
       }
     }
   ],
@@ -6630,7 +6638,7 @@
       ]
     },
     {
-      "source": 254,
+      "source": 525,
       "target": 255,
       "routes": [
         10
@@ -8591,6 +8599,13 @@
       "target": 524,
       "routes": [
         9
+      ]
+    },
+    {
+      "source": 525,
+      "target": 254,
+      "routes": [
+        10
       ]
     }
   ],
