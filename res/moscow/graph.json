@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1506819358065,
+  "version": 1506819962893,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -877,7 +877,7 @@
       }
     },
     {
-      "name": "Ulica Obručeva",
+      "name": "Voroncovo",
       "altNames": {},
       "location": {
         "lat": 55.65691404600361,
@@ -1861,7 +1861,7 @@
       }
     },
     {
-      "name": "Ulica Obručeva",
+      "name": "Voroncovo",
       "altNames": {},
       "location": {
         "lat": 55.65819718504497,
@@ -1869,7 +1869,7 @@
       }
     },
     {
-      "name": "Voroncovo",
+      "name": "Ulica Novatorov",
       "altNames": {},
       "location": {
         "lat": 55.67089315205259,
@@ -2205,7 +2205,7 @@
       }
     },
     {
-      "name": "Voroncovo",
+      "name": "Ulica Novatorov",
       "altNames": {},
       "location": {
         "lat": 55.67055432368612,
