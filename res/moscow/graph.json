@@ -1,5 +1,6 @@
 {
-  "version": 1506798609250,
+  "graphVersion": "1.0",
+  "version": 1506819358065,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -668,7 +669,7 @@
       }
     },
     {
-      "name": "Ščolkovskoje šosse",
+      "name": "Černicyno",
       "altNames": {},
       "location": {
         "lat": 55.80932757762939,
@@ -2212,7 +2213,7 @@
       }
     },
     {
-      "name": "Ulica Akademika Oparina",
+      "name": "RUDN",
       "altNames": {},
       "location": {
         "lat": 55.650297949476155,
@@ -2268,7 +2269,7 @@
       }
     },
     {
-      "name": "Mosfilm",
+      "name": "Potylicha",
       "altNames": {},
       "location": {
         "lat": 55.725418348803586,
@@ -3812,7 +3813,7 @@
       }
     },
     {
-      "name": "Ščolkovskoje šosse",
+      "name": "Černicyno",
       "altNames": {},
       "location": {
         "lat": 55.8100118694404,
