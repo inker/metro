@@ -1,7 +1,6 @@
 import { LatLng, latLng, latLngBounds } from 'leaflet'
 import { meanBy } from 'lodash'
 
-
 export const getCenter = (points: LatLng[]) => latLng(
     meanBy(points, p => p.lat),
     meanBy(points, p => p.lng),
@@ -28,22 +27,6 @@ export function findClosestObject<T extends Locatable | LatLng>(point: LatLng, o
         }
     }
     return closest
-}
-
-/** object must contain the 'location' field */
-export function findObjectsWithinRadius<T extends Locatable>(
-    point: LatLng,
-    objects: T[],
-    radius: number,
-    sortArray = false,
-): T[] {
-    const arr = objects
-        .map(item => ({ item, distance: point.distanceTo(item.location) }))
-        .filter(o => o.distance <= radius)
-    if (sortArray) {
-        arr.sort((a, b) => a.distance - b.distance)
-    }
-    return arr.map(o => o.item)
 }
 
 const DECREASE_RATE = 0.61803398875
