@@ -3,7 +3,6 @@ import * as localForage from 'localforage'
 import { throttle } from 'lodash'
 
 import MetroMap from '../../MetroMap'
-import { tr } from '../../i18n'
 import Widget from '../base/Widget'
 import { byId } from '../../util/dom'
 
@@ -30,12 +29,12 @@ export default class MapEditor implements Widget {
         } = this
         if (val) {
             const dummyCircles = byId('dummy-circles')
-            button.textContent = tr`Save map`
+            button.textContent = 'Save map'
             button.onclick = e => this.saveMapClick()
             dummyCircles.onmousedown = dummyCircles.onclick = () => false
             mediator.publish(new Event('editmapstart'))
         } else {
-            button.textContent = tr`Edit map`
+            button.textContent = 'Edit map'
             button.onclick = e => this.editMapClick()
             mediator.publish(new Event('editmapend'))
         }

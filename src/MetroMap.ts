@@ -11,7 +11,6 @@ import {
 import * as ui from './ui'
 import { Config, getLineRules, getJSON } from './res'
 import pool from './ObjectPool'
-import { tr } from './i18n'
 
 import Network, {
     Platform,
@@ -203,7 +202,7 @@ export default class {
             svg.filters.appendAll(defs)
             const { textContent } = defs
             if (!textContent) {
-                alert(tr`Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience.`)
+                alert("Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience.")
             }
 
             this.lineRules = await lineRulesPromise

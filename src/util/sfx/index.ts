@@ -3,7 +3,7 @@ import * as alertify from 'alertifyjs'
 import pool from '../../ObjectPool'
 import { filters } from '../svg'
 import { ShortestRouteObject } from '../algorithm'
-import { tr, formatTime as ft } from '../../i18n'
+import { formatTime as ft } from '../../util'
 import { Platform, Edge, Span } from '../../network'
 
 import * as animation from './animation'
@@ -26,7 +26,7 @@ export async function visualizeRoute(obj: ShortestRouteObject<Platform>, shouldA
     const { platforms = [], edges, time } = obj
     const walkTo = ft(time.walkTo)
     if (edges === undefined) {
-        return alertify.success(tr`${walkTo} on foot!`)
+        return alertify.success(`${walkTo} on foot!`)
     }
 
     await animation.terminateAnimations()
@@ -44,7 +44,7 @@ export async function visualizeRoute(obj: ShortestRouteObject<Platform>, shouldA
     const finished = await animation.animateRoute(platforms, edges)
     // finished is undefined if not animated, false if animation is still running or true if otherwise
     if (finished) {
-        alertify.message(tr`TIME:<br>${walkTo} on foot<br>${ft(time.metro)} by metro<br>${ft(time.walkFrom)} on foot<br>TOTAL: ${ft(time.total)}`, 10)
+        alertify.message(`TIME:<br>${walkTo} on foot<br>${ft(time.metro)} by metro<br>${ft(time.walkFrom)} on foot<br>TOTAL: ${ft(time.total)}`, 10)
     }
 }
 

@@ -2,7 +2,6 @@ import * as L from 'leaflet'
 import { remove } from 'lodash'
 
 import { MetroMapEventMap, dom } from '../../util'
-import { translate } from '../../i18n'
 
 import * as styles from './styles.css'
 
@@ -81,7 +80,7 @@ export default class implements L.ILayer {
             } else {
                 cell.setAttribute('data-event', item.event)
             }
-            cell.textContent = translate(item.text)
+            cell.textContent = item.text
             this.container.appendChild(cell)
         }
 

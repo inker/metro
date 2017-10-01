@@ -6,7 +6,6 @@ import MetroMap from './MetroMap'
 
 import { Config } from './res'
 import pool from './ObjectPool'
-import { tr } from './i18n'
 
 import {
     MapEditor,
@@ -82,7 +81,7 @@ export default class extends MetroMap {
         this.subscribe('platformadd', e => {
             const { detail } = e
             const location = mouseToLatLng(map, detail)
-            const newPlatform = new Platform(tr`New station`, location, {})
+            const newPlatform = new Platform('New station', location, {})
             this.network.platforms.push(newPlatform)
             if (detail.relatedTarget !== undefined) {
                 const span = relatedTargetToSpan(detail.relatedTarget)

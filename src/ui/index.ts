@@ -4,7 +4,6 @@ import * as alertify from 'alertifyjs'
 import Network, { Platform, Route } from '../network'
 import { getSecondLanguage } from '../util'
 import { calculateGeoMedian } from '../util/geo'
-import { tr } from '../i18n'
 import { prompt, confirm } from './alertify'
 
 import * as Icons from './Icons'
@@ -40,32 +39,32 @@ export async function platformRenameDialog(platform: Platform) {
     const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru]
     const nameString = names.join('|')
 
-    const val = await prompt(tr`New name`, nameString)
+    const val = await prompt('New name', nameString)
     if (val === null) {
-        alertify.warning(tr`Name change cancelled`)
+        alertify.warning('Name change cancelled')
         return
     }
     const newNames = val.split('|')
     assignNames(platform, newNames)
     if (val === nameString) {
-        return alertify.warning(tr`Name was not changed`)
+        return alertify.warning('Name was not changed')
     }
     const oldNamesStr = names.slice(1).join(', ')
     const newNamesStr = newNames.slice(1).join(', ')
-    alertify.success(tr`${ru} (${oldNamesStr}) renamed to ${newNames[0]} (${newNamesStr})`)
+    alertify.success(`${ru} (${oldNamesStr}) renamed to ${newNames[0]} (${newNamesStr})`)
     const station = platform.station
     if (station.platforms.length < 2) {
         return
     }
 
-    const confirmed = await confirm(tr`Rename the entire station?`)
+    const confirmed = await confirm('Rename the entire station?')
     if (!confirmed) {
         return
     }
     for (const p of station.platforms) {
         assignNames(p, newNames)
     }
-    alertify.success(tr`The entire station was renamed to ${val}`)
+    alertify.success(`The entire station was renamed to ${val}`)
 }
 
 export function askRoutes(network: Network, defSet = new Set<Route>()) {
