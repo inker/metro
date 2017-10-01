@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1506870780157,
+  "version": 1506870922089,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -453,7 +453,7 @@
       }
     },
     {
-      "name": "Kolomenskoje",
+      "name": "Novinki",
       "altNames": {},
       "location": {
         "lat": 55.67850391601263,
@@ -2045,7 +2045,7 @@
       }
     },
     {
-      "name": "Klenovyj buľvar",
+      "name": "Kolomenskoje",
       "altNames": {},
       "location": {
         "lat": 55.67453537168735,
