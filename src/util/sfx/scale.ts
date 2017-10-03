@@ -1,9 +1,12 @@
 import pool from '../../ObjectPool'
-import { byId } from '../dom'
 import { tryGetFromMap } from '../collections'
 
 import { Transfer } from '../../network'
-import { newAttributeValues, restoreAttributes } from '../dom'
+import {
+    byId,
+    newAttributeValues,
+    restoreAttributes,
+} from '../dom'
 
 const initialCircles = new Set<SVGCircleElement>()
 const initialStadiums = new Set<SVGRectElement>()

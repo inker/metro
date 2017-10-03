@@ -99,7 +99,7 @@ export function appendAll(defs: SVGDefsElement) {
     defs.appendChild(makeGray())
 }
 
-export function applyDrop(path: SVGPathElement|SVGLineElement) {
+export function applyDrop(path: SVGPathElement | SVGLineElement) {
     // fixing disappearing lines
     const box = path.getBoundingClientRect()
     const style = getComputedStyle(path)

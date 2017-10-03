@@ -34,8 +34,6 @@ export {
     MetroMapEventMap,
 }
 
-const PROXY_URL = 'https://proxy-antonv.rhcloud.com/?url='
-
 const RESET_SELECTOR = [
     'paths-inner',
     'paths-outer',
@@ -43,9 +41,6 @@ const RESET_SELECTOR = [
     'transfers-outer',
     'station-circles',
 ].map(i => `#${i} > *`).join(', ')
-
-export const proxify = (url: string) =>
-    `${PROXY_URL}${url}`
 
 export const makeLink = (url: string, text: string, newTab = false) =>
     `<a href="${url}" ${newTab ? 'target="_blank"' : ''}>${text}</a>`

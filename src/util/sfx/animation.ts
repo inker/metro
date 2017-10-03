@@ -15,7 +15,7 @@ import { scaleElement } from './scale'
 const canPulsate = Browser.webkit && !Browser.mobile
 
 let animationsAllowed = true
-let currentAnimation: Promise<boolean>|null = null
+let currentAnimation: Promise<boolean> | null = null
 
 const BASE_SPEED = 1
 const TRANSFER_SPEED = 0.25

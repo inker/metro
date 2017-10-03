@@ -107,7 +107,7 @@ export function makeTransferLine(start: Point, end: Point): SVGLineElement[] {
     return [makeLine(start, tg), makeLine(start, tg)]
 }
 
-export function getElementOffset(circle: SVGCircleElement|SVGRectElement): Point {
+export function getElementOffset(circle: SVGCircleElement | SVGRectElement): Point {
     const cx = circle.getAttribute('cx')
     if (cx === null) {
         const x = +attr(circle, 'x') + +attr(circle, 'width') / 2

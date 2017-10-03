@@ -171,7 +171,6 @@ export default class extends MetroMap {
             }
             contextMenu.insertItem('platformaddclick', 'New station', target => !pathTrigger(target))
 
-
             const trigger = (target: EventTarget) => {
                 const targetsParent = (target as SVGElement).parentElement
                 if (!targetsParent) {
