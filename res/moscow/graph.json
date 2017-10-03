@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1506870922089,
+  "version": 1507036162945,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -1573,7 +1573,7 @@
       }
     },
     {
-      "name": "Južnoportovaja",
+      "name": "Južnyj port",
       "altNames": {},
       "location": {
         "lat": 55.706284544991206,
