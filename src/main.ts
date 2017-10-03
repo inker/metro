@@ -1,7 +1,7 @@
 import { Browser, Icon } from 'leaflet'
 import { capitalize } from 'lodash'
 
-import { getJSON, Config } from './res'
+import * as config from './mapconfig.json'
 
 import 'leaflet-dist/leaflet.css'
 import 'alertify-dist/css/alertify.css'
@@ -20,20 +20,16 @@ if (Browser.ie) {
     throw new Error('shitty browser')
 }
 
-const configPromise = getJSON('res/mapconfig.json') as Promise<Config>
 const mapPromise = Browser.mobile ? System.import('./MetroMap') : System.import('./EditableMetroMap')
 
 const tokens = location.search.match(/city=(\w+)/)
 const city = tokens ? tokens[1] : 'spb'
 
-;
-(async () => {
-    const config = await configPromise
-    for (const url of Object.keys(config.url)) {
-        config.url[url] = config.url[url].replace(/\{city\}/g, city)
-    }
-    document.title = `${city && city !== 'spb' ? capitalize(city) : 'St Petersburg'} metro plan proposal`
+for (const url of Object.keys(config.url)) {
+    config.url[url] = config.url[url].replace(/\{city\}/g, city)
+}
+document.title = `${city && city !== 'spb' ? capitalize(city) : 'St Petersburg'} metro plan proposal`
 
-    const Map = await mapPromise
-    new Map.default(config)
-})()
+mapPromise.then(map => {
+    new map.default(config)
+})
