@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1507036162945,
+  "version": 1507140643905,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -1109,7 +1109,7 @@
       }
     },
     {
-      "name": "Mňovniki",
+      "name": "Chorošovo",
       "altNames": {},
       "location": {
         "lat": 55.77750829730544,
@@ -1933,7 +1933,7 @@
       }
     },
     {
-      "name": "Chorošovo",
+      "name": "Mňovniki",
       "altNames": {},
       "location": {
         "lat": 55.77594546428934,
@@ -1941,7 +1941,7 @@
       }
     },
     {
-      "name": "Mňovniki",
+      "name": "Chorošovo",
       "altNames": {},
       "location": {
         "lat": 55.776826451225254,
@@ -2429,7 +2429,7 @@
       }
     },
     {
-      "name": "Mňovniki",
+      "name": "Chorošovo",
       "altNames": {},
       "location": {
         "lat": 55.77730917534709,
