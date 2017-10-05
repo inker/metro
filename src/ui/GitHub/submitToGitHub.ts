@@ -4,15 +4,11 @@ import * as alertify from 'alertifyjs'
 import { makeLink } from '../../util'
 import askChanges from './askChanges'
 import getPullRequest from './getPullRequest'
+import { AuthData } from './auth'
 
 const MY_NAME = 'inker'
 const REPO_NAME = 'metro'
 const MAIN_BRANCH = 'master'
-
-interface Auth {
-    username: string,
-    password: string,
-}
 
 interface PullRequest {
     repo: any,
@@ -20,7 +16,7 @@ interface PullRequest {
     branchName: string,
 }
 
-export default async (json: string, { username, password }: Auth): Promise<PullRequest | null> => {
+export default async (json: string, { username, password }: AuthData): Promise<PullRequest | null> => {
     const tokens = location.search.match(/city=(\w+)/)
     const city = tokens ? tokens[1] : 'spb'
     const title = `modify ${city} map`

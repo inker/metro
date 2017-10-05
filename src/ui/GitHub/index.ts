@@ -1,27 +1,17 @@
 import * as alertify from 'alertifyjs'
-import delay from 'delay.js'
 
 import { makeLink } from '../../util'
-import askUsername from './askUsername'
-import askPassword from './askPassword'
-import sendToGitHub from './sendToGitHub'
+import auth from './auth'
+import submitToGitHub from './submitToGitHub'
 
 export default async function githubDialog(json: string): Promise<boolean> {
-    const username = await askUsername()
-    if (!username) {
-        return false
-    }
-    await delay(0)
-    const password = await askPassword()
-    if (!password) {
+    const authData = await auth()
+    if (!authData) {
         return false
     }
     alertify.message('Wait...')
     try {
-        const pr = await sendToGitHub(json, {
-            username,
-            password,
-        })
+        const pr = await submitToGitHub(json, authData)
         if (!pr) {
             alertify.error('Could not create a pull request')
             alertify.alert('Error', 'You have no permission to create pull requests for this repo')
