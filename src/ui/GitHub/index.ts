@@ -6,7 +6,7 @@ import askUsername from './askUsername'
 import askPassword from './askPassword'
 import sendToGitHub from './sendToGitHub'
 
-async function githubDialog(json: string): Promise<boolean> {
+export default async function githubDialog(json: string): Promise<boolean> {
     const username = await askUsername()
     if (!username) {
         return false
@@ -43,5 +43,3 @@ async function githubDialog(json: string): Promise<boolean> {
         return false
     }
 }
-
-export default githubDialog
