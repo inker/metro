@@ -2,6 +2,7 @@ import * as GitHub from 'github-api'
 import * as alertify from 'alertifyjs'
 
 import { makeLink } from '../../util'
+import forkRepo from './forkRepo'
 import askChanges from './askChanges'
 import getPullRequest from './getPullRequest'
 import { AuthData } from './auth'
@@ -45,20 +46,18 @@ export default async (json: string, { username, password }: AuthData): Promise<P
         return null
     }
 
+    alertify.message('Could not push directly, so forking the repo')
+
     const changesPromise = askChanges()
 
     // create a pull request
-    alertify.message('Forking repo')
-    const fork = await repo.fork()
-    alertify.message('Repo forked')
-    const { owner, name } = fork.data
-    const tempRepo = gh.getRepo(owner.login, name)
+    const forkedRepo = await forkRepo(gh, repo, MAIN_BRANCH)
 
     const branchName = `branch-${Date.now()}`
-    await tempRepo.createBranch(MAIN_BRANCH, branchName)
+    await forkedRepo.createBranch(MAIN_BRANCH, branchName)
     alertify.message('Branch created')
 
-    await tempRepo.writeFile(branchName, `res/${city}/graph.json`, json, title, {})
+    await forkedRepo.writeFile(branchName, `res/${city}/graph.json`, json, title, {})
     alertify.message('File written')
 
     const body = await changesPromise
