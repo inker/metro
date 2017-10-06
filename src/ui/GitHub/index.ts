@@ -18,7 +18,8 @@ export default async function githubDialog(json: string): Promise<boolean> {
             return false
         }
         if (pr.url) {
-            alertify.alert('Success', `Pull request created (${makeLink(pr.url, 'link', true)})`)
+            const link = makeLink(pr.url, 'link', true)
+            alertify.alert('Success', `Pull request created (${link})`)
         }
         return true
     } catch (err) {
