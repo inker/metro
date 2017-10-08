@@ -1,6 +1,10 @@
 import * as L from 'leaflet'
 import * as alertify from 'alertifyjs'
 
+import 'leaflet-dist/leaflet.css'
+import 'alertify-dist/css/alertify.css'
+import 'alertify-dist/css/themes/default.css'
+
 import Network, { Platform, Route } from '../network'
 import { getSecondLanguage } from '../util'
 import { calculateGeoMedian } from '../util/geo'

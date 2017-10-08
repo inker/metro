@@ -3,9 +3,6 @@ import { capitalize } from 'lodash'
 
 import * as config from './mapconfig.json'
 
-import 'leaflet-dist/leaflet.css'
-import 'alertify-dist/css/alertify.css'
-import 'alertify-dist/css/themes/default.css'
 import './css/index.css'
 import './css/map.css'
 

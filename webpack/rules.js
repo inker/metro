@@ -1,4 +1,5 @@
 const { sep } = require('path')
+const { createLodashTransformer } = require('typescript-plugin-lodash')
 
 const isGlobal = `src\\${sep}css|node_modules`
 const cssExt = '\\.css$'
@@ -10,6 +11,7 @@ const tsOptions = env => env === 'dev' ? {
   // getCustomTransformers: () => ({ before: [styledComponentsTransformer] }),
 } : {
   ignoreDiagnostics: [2307, 2345, 2339],
+  getCustomTransformers: () => ({ before: [createLodashTransformer()] }),
 }
 
 module.exports = env => [
@@ -18,12 +20,6 @@ module.exports = env => [
   //   test: /\.js$/,
   //   use: 'source-map-loader',
   // },
-  env !== 'dev' && {
-    test: /\.tsx?$/,
-    loader: 'lodash-ts-imports-loader',
-    exclude: /node_modules/,
-    enforce: 'pre',
-  },
   {
     test: /\.ts$/,
     use: {
