@@ -71,10 +71,10 @@ export async function platformRenameDialog(platform: Platform) {
     alertify.success(`The entire station was renamed to ${val}`)
 }
 
-export function askRoutes(network: Network, defSet = new Set<Route>()) {
+export async function askRoutes(network: Network, defSet = new Set<Route>()) {
     const def = defSet === undefined ? undefined : Array.from(defSet).map(r => r.line + r.branch).join('|')
     const routeSet = new Set<Route>()
-    const routeString = prompt('routes', def)
+    const routeString = await prompt('routes', def)
     if (routeString === null) {
         return defSet
     }
