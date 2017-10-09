@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1507584444140,
+  "version": 1507592633866,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -1101,7 +1101,7 @@
       }
     },
     {
-      "name": "Begovaja",
+      "name": "Ippodrom",
       "altNames": {},
       "location": {
         "lat": 55.773407989951416,
@@ -3189,7 +3189,7 @@
       }
     },
     {
-      "name": "Begovaja",
+      "name": "Ippodrom",
       "altNames": {},
       "location": {
         "lat": 55.77326617616647,
