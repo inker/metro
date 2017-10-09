@@ -1,6 +1,8 @@
 import { Browser, Icon } from 'leaflet'
 import { capitalize } from 'lodash'
 
+import './MetroMap'
+
 import * as config from './mapconfig.json'
 
 import './css/index.css'
@@ -17,7 +19,7 @@ if (Browser.ie) {
     throw new Error('shitty browser')
 }
 
-const mapPromise = Browser.mobile ? System.import('./MetroMap') : System.import('./EditableMetroMap')
+const mapPromise = Browser.mobile ? import('./MetroMap') : import('./EditableMetroMap')
 
 const tokens = location.search.match(/city=(\w+)/)
 const city = tokens ? tokens[1] : 'spb'
