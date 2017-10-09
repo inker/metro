@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1507583195873,
+  "version": 1507584444140,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -589,7 +589,7 @@
       }
     },
     {
-      "name": "Volokolamskaja",
+      "name": "Mitinskij park",
       "altNames": {},
       "location": {
         "lat": 55.83568371042278,
