@@ -10,8 +10,6 @@ import './css/map.css'
 
 import 'core-js/fn/object/entries'
 
-declare const System
-
 Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images'
 
 if (Browser.ie) {
