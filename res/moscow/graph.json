@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1507582711392,
+  "version": 1507583195873,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -581,7 +581,7 @@
       }
     },
     {
-      "name": "Mäkinino",
+      "name": "Mäkininskaja pojma",
       "altNames": {},
       "location": {
         "lat": 55.82507831245776,
@@ -4243,6 +4243,14 @@
         "lat": 55.780169193104115,
         "lng": 37.45445251464844
       }
+    },
+    {
+      "name": "Mäkinino",
+      "altNames": {},
+      "location": {
+        "lat": 55.809529550472526,
+        "lng": 37.38119602203369
+      }
     }
   ],
   "transfers": [
@@ -6828,7 +6836,7 @@
       ]
     },
     {
-      "source": 71,
+      "source": 530,
       "target": 527,
       "routes": [
         14
@@ -8668,6 +8676,13 @@
     {
       "source": 529,
       "target": 526,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 71,
+      "target": 530,
       "routes": [
         14
       ]
