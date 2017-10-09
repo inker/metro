@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1507140643905,
+  "version": 1507572251845,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -853,7 +853,7 @@
       }
     },
     {
-      "name": "Akademičeskaja",
+      "name": "Čeřomuški",
       "altNames": {},
       "location": {
         "lat": 55.68780966214427,
@@ -869,7 +869,7 @@
       }
     },
     {
-      "name": "Čeřomuški",
+      "name": "Novyje Čeřomuški",
       "altNames": {},
       "location": {
         "lat": 55.670212467092824,
