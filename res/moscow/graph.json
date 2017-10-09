@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1507572251845,
+  "version": 1507582711392,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4211,6 +4211,38 @@
         "lat": 55.68258093401054,
         "lng": 37.70175218582153
       }
+    },
+    {
+      "name": "Serebřanyj bor",
+      "altNames": {},
+      "location": {
+        "lat": 55.78393395973092,
+        "lng": 37.42990493774414
+      }
+    },
+    {
+      "name": "Rubľovo",
+      "altNames": {},
+      "location": {
+        "lat": 55.78675729599251,
+        "lng": 37.35493183135986
+      }
+    },
+    {
+      "name": "Mňovniki",
+      "altNames": {},
+      "location": {
+        "lat": 55.77753846721038,
+        "lng": 37.478742599487305
+      }
+    },
+    {
+      "name": "Živopisnaja",
+      "altNames": {},
+      "location": {
+        "lat": 55.780169193104115,
+        "lng": 37.45445251464844
+      }
     }
   ],
   "transfers": [
@@ -4821,6 +4853,10 @@
     {
       "source": 523,
       "target": 296
+    },
+    {
+      "source": 241,
+      "target": 528
     }
   ],
   "lines": {
@@ -6792,8 +6828,8 @@
       ]
     },
     {
-      "source": 274,
-      "target": 242,
+      "source": 71,
+      "target": 527,
       "routes": [
         14
       ]
@@ -8606,6 +8642,34 @@
       "target": 254,
       "routes": [
         10
+      ]
+    },
+    {
+      "source": 526,
+      "target": 71,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 274,
+      "target": 528,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 528,
+      "target": 529,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 529,
+      "target": 526,
+      "routes": [
+        14
       ]
     }
   ],
