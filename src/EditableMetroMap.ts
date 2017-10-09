@@ -98,12 +98,15 @@ export default class extends MetroMap {
             this.network.deletePlatform(platform)
             this.redrawNetwork()
         })
-        this.subscribe('spanroutechange', e => {
+        this.subscribe('spanroutechange', async e => {
             if (e.relatedTarget === undefined) {
                 return
             }
             const span = relatedTargetToSpan(e.relatedTarget)
-            const routeSet = askRoutes(this.network, new Set(span.routes))
+            const routeSet = await askRoutes(this.network, new Set(span.routes))
+            if (!routeSet) {
+                return
+            }
             span.routes = Array.from(routeSet)
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
@@ -115,7 +118,7 @@ export default class extends MetroMap {
             span.invert()
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
-        this.subscribe('spanend', e => {
+        this.subscribe('spanend', async e => {
             const source = tryGetKeyFromBiMap(pool.dummyBindings, e.detail.source)
             const target = tryGetKeyFromBiMap(pool.dummyBindings, e.detail.target)
             contextMenu.removeItem('spanend')
@@ -129,7 +132,7 @@ export default class extends MetroMap {
                 tn > 0 && sn === 0 ? (tn === 1 ? targetRoutes : askRoutes(this.network, targetRoutes)) :
                     askRoutes(this.network, intersection(sourceRoutes, targetRoutes))
 
-            this.network.spans.push(new Span(source, target, Array.from(routeSet)))
+            this.network.spans.push(new Span(source, target, Array.from(await routeSet)))
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
         this.subscribe('spandelete', e => {

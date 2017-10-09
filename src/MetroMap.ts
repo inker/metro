@@ -155,7 +155,10 @@ export default class {
                 return getLineRules()
             })
             const networkPromise = this.getGraph()
-            const tileLoadPromise = new Promise(resolve => mapbox.once('load', resolve))
+            const tileLoadPromise = new Promise(resolve => {
+                mapbox.once('load', resolve)
+                setTimeout(resolve, 5000)
+            })
             const dataPromise = getJSON(config.url.data)
 
             // wait.textContent = 'making map...';
