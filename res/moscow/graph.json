@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1507659824927,
+  "version": 1507660044805,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -2192,8 +2192,8 @@
       "name": "Delovoj centr",
       "altNames": {},
       "location": {
-        "lat": 55.74822645017851,
-        "lng": 37.53329873085022
+        "lat": 55.748295893054305,
+        "lng": 37.53434479236603
       }
     },
     {
@@ -2421,7 +2421,7 @@
       }
     },
     {
-      "name": "Magistraľnaja",
+      "name": "Presňa",
       "altNames": {},
       "location": {
         "lat": 55.76558935805265,
