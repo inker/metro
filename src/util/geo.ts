@@ -29,7 +29,7 @@ export function findClosestObject<T extends Locatable | LatLng>(point: LatLng, o
     return closest
 }
 
-const DECREASE_RATE = 0.61803398875
+const DECREASE_RATE = 2 / (1 + Math.sqrt(5))
 
 export function calculateGeoMedian(
     points: LatLng[],
