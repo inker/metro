@@ -1,6 +1,6 @@
 import { marker, LatLng } from 'leaflet'
-import * as alertify from 'alertifyjs'
 
+import alertify from '../ui/alertify'
 import MetroMap from '../MetroMap'
 import { Icons, cacheIcons } from './index'
 import Widget from './base/Widget'

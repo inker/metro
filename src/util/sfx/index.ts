@@ -1,5 +1,4 @@
-import * as alertify from 'alertifyjs'
-
+import alertify from '../../ui/alertify'
 import pool from '../../ObjectPool'
 import { filters } from '../svg'
 import { ShortestRouteObject } from '../algorithm'

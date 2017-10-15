@@ -1,4 +1,4 @@
-import * as alertify from 'alertifyjs'
+import alertify from '../alertify'
 
 import { makeLink } from '../../util'
 import auth from './auth'

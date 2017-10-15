@@ -36,12 +36,6 @@ a:hover {
     opacity: 1;
 }
 
-.ajs-message {
-    bottom: 20px;
-    background-color: #ccc;
-    font-family: Segoe, Tahoma, Ubuntu;
-}
-
 @media only screen and (max-device-width: 1000px) and (-webkit-min-device-pixel-ratio: 2) {
     .leaflet-control-attribution {
         display: none;

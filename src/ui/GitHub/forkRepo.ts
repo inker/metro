@@ -1,4 +1,4 @@
-import * as alertify from 'alertifyjs'
+import alertify from '../alertify'
 
 export default async (gh, baseRepo, baseBranch) => {
     const head = `heads/${baseBranch}`

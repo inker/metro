@@ -1,5 +1,12 @@
 import * as alertify from 'alertifyjs'
 
+import 'alertify-dist/css/alertify.css'
+import 'alertify-dist/css/themes/default.css'
+
+import '../../css/alertify.css'
+
+export default alertify
+
 export const prompt = (...args: any[]) => new Promise<string | null>((resolve, reject) => {
     alertify.prompt(...args, (ev, value: string) => {
         resolve(value)

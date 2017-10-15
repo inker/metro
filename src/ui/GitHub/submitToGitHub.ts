@@ -1,6 +1,6 @@
 import * as GitHub from 'github-api'
-import * as alertify from 'alertifyjs'
 
+import alertify from '../alertify'
 import { makeLink } from '../../util'
 import forkRepo from './forkRepo'
 import askChanges from './askChanges'
