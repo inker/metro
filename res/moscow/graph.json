@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1507660044805,
+  "version": 1508086365583,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4251,6 +4251,14 @@
         "lat": 55.809529550472526,
         "lng": 37.38119602203369
       }
+    },
+    {
+      "name": "Beřozovaja rošča",
+      "altNames": {},
+      "location": {
+        "lat": 55.78559902894423,
+        "lng": 37.505478858947754
+      }
     }
   ],
   "transfers": [
@@ -4865,6 +4873,10 @@
     {
       "source": 241,
       "target": 528
+    },
+    {
+      "source": 304,
+      "target": 531
     }
   ],
   "lines": {
@@ -5870,7 +5882,7 @@
       ]
     },
     {
-      "source": 138,
+      "source": 531,
       "target": 139,
       "routes": [
         6
@@ -8685,6 +8697,13 @@
       "target": 530,
       "routes": [
         14
+      ]
+    },
+    {
+      "source": 531,
+      "target": 138,
+      "routes": [
+        6
       ]
     }
   ],
