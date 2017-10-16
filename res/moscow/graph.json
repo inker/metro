@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508086365583,
+  "version": 1508181183158,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -2421,7 +2421,7 @@
       }
     },
     {
-      "name": "Presňa",
+      "name": "Magistraľnaja",
       "altNames": {},
       "location": {
         "lat": 55.76558935805265,
