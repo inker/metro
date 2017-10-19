@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508445435160,
+  "version": 1508445954635,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4427,6 +4427,70 @@
         "lat": 55.750641781933986,
         "lng": 37.54157066345215
       }
+    },
+    {
+      "name": "Nagatinskaja pojma",
+      "altNames": {},
+      "location": {
+        "lat": 55.69372100249709,
+        "lng": 37.66297817230224
+      }
+    },
+    {
+      "name": "Kolomenskoje",
+      "altNames": {},
+      "location": {
+        "lat": 55.67608411981217,
+        "lng": 37.679243087768555
+      }
+    },
+    {
+      "name": "Kurjanovo",
+      "altNames": {},
+      "location": {
+        "lat": 55.65546138501023,
+        "lng": 37.69808292388916
+      }
+    },
+    {
+      "name": "Moskvorečje",
+      "altNames": {},
+      "location": {
+        "lat": 55.63962388406009,
+        "lng": 37.68739700317383
+      }
+    },
+    {
+      "name": "Caricyno",
+      "altNames": {},
+      "location": {
+        "lat": 55.61973318244785,
+        "lng": 37.67138957977295
+      }
+    },
+    {
+      "name": "Severnoje Biřuľovo",
+      "altNames": {},
+      "location": {
+        "lat": 55.591248411118954,
+        "lng": 37.65735626220703
+      }
+    },
+    {
+      "name": "Bitca",
+      "altNames": {},
+      "location": {
+        "lat": 55.5707750924518,
+        "lng": 37.610363960266106
+      }
+    },
+    {
+      "name": "Poľany",
+      "altNames": {},
+      "location": {
+        "lat": 55.54752348113941,
+        "lng": 37.555646896362305
+      }
     }
   ],
   "transfers": [
@@ -5117,6 +5181,38 @@
     {
       "source": 552,
       "target": 272
+    },
+    {
+      "source": 553,
+      "target": 55
+    },
+    {
+      "source": 554,
+      "target": 255
+    },
+    {
+      "source": 556,
+      "target": 349
+    },
+    {
+      "source": 557,
+      "target": 350
+    },
+    {
+      "source": 557,
+      "target": 59
+    },
+    {
+      "source": 383,
+      "target": 558
+    },
+    {
+      "source": 559,
+      "target": 353
+    },
+    {
+      "source": 216,
+      "target": 560
     }
   ],
   "lines": {
@@ -9082,6 +9178,62 @@
     {
       "source": 533,
       "target": 552,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 549,
+      "target": 553,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 553,
+      "target": 554,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 554,
+      "target": 555,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 555,
+      "target": 556,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 556,
+      "target": 557,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 557,
+      "target": 558,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 558,
+      "target": 559,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 559,
+      "target": 560,
       "routes": [
         14
       ]
