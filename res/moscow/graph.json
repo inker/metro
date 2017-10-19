@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508445954635,
+  "version": 1508446327519,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4490,6 +4490,30 @@
       "location": {
         "lat": 55.54752348113941,
         "lng": 37.555646896362305
+      }
+    },
+    {
+      "name": "Čečora",
+      "altNames": {},
+      "location": {
+        "lat": 55.529407789852314,
+        "lng": 37.52007007598877
+      }
+    },
+    {
+      "name": "Ostafjevo",
+      "altNames": {},
+      "location": {
+        "lat": 55.502364438281035,
+        "lng": 37.50809669494628
+      }
+    },
+    {
+      "name": "Řazanovo",
+      "altNames": {},
+      "location": {
+        "lat": 55.488993836272655,
+        "lng": 37.506208419799805
       }
     }
   ],
@@ -9234,6 +9258,27 @@
     {
       "source": 559,
       "target": 560,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 560,
+      "target": 561,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 561,
+      "target": 562,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 562,
+      "target": 563,
       "routes": [
         14
       ]
