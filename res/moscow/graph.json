@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508446327519,
+  "version": 1508446538027,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4514,6 +4514,14 @@
       "location": {
         "lat": 55.488993836272655,
         "lng": 37.506208419799805
+      }
+    },
+    {
+      "name": "Archangeľskoje",
+      "altNames": {},
+      "location": {
+        "lat": 55.78550250513579,
+        "lng": 37.30107307434082
       }
     }
   ],
@@ -9279,6 +9287,13 @@
     {
       "source": 562,
       "target": 563,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 527,
+      "target": 564,
       "routes": [
         14
       ]
