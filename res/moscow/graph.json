@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508447788690,
+  "version": 1508448381153,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -2277,7 +2277,7 @@
       }
     },
     {
-      "name": "Sortirovočnaja",
+      "name": "Jurjevskaja",
       "altNames": {},
       "location": {
         "lat": 55.763675953427644,
@@ -3341,7 +3341,7 @@
       }
     },
     {
-      "name": "Sortirovočnaja",
+      "name": "Jurjevskaja",
       "altNames": {},
       "location": {
         "lat": 55.76363370053084,
