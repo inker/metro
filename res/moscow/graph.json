@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508442449903,
+  "version": 1508444086066,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -2261,27 +2261,27 @@
       }
     },
     {
-      "name": "Universitet",
+      "name": "Kadetskij plac",
       "altNames": {},
       "location": {
-        "lat": 55.69480943831871,
-        "lng": 37.53421068191528
+        "lat": 55.75892523379117,
+        "lng": 37.694735527038574
       }
     },
     {
-      "name": "Potylicha",
+      "name": "Lefortovo",
       "altNames": {},
       "location": {
-        "lat": 55.725418348803586,
-        "lng": 37.533674240112305
+        "lat": 55.76329567570822,
+        "lng": 37.70675182342529
       }
     },
     {
-      "name": "Kutuzovo",
+      "name": "Sortirovočnaja",
       "altNames": {},
       "location": {
-        "lat": 55.739735372398265,
-        "lng": 37.53212928771973
+        "lat": 55.763675953427644,
+        "lng": 37.71887540817261
       }
     },
     {
@@ -4261,11 +4261,11 @@
       }
     },
     {
-      "name": "Vystavočnaja",
+      "name": "Sokolinaja Gora",
       "altNames": {},
       "location": {
-        "lat": 55.749989657097,
-        "lng": 37.539124488830566
+        "lat": 55.77024873931422,
+        "lng": 37.744131088256836
       }
     },
     {
@@ -4357,35 +4357,51 @@
       }
     },
     {
-      "name": "Kadetskij plac",
+      "name": "Ulica Garibaldi",
       "altNames": {},
       "location": {
-        "lat": 55.75892523379117,
-        "lng": 37.694735527038574
+        "lat": 55.67574533639902,
+        "lng": 37.539424896240234
       }
     },
     {
-      "name": "Lefortovo",
+      "name": "Profsojuznaja",
       "altNames": {},
       "location": {
-        "lat": 55.76329567570822,
-        "lng": 37.70675182342529
+        "lat": 55.67835873246176,
+        "lng": 37.561655044555664
       }
     },
     {
-      "name": "Sortirovočnaja",
+      "name": "Kotlovka",
       "altNames": {},
       "location": {
-        "lat": 55.763675953427644,
-        "lng": 37.71887540817261
+        "lat": 55.67913303850629,
+        "lng": 37.59572982788085
       }
     },
     {
-      "name": "Sokolinaja Gora",
+      "name": "Nižnije Kotly",
       "altNames": {},
       "location": {
-        "lat": 55.77024873931422,
-        "lng": 37.744131088256836
+        "lat": 55.68203654966382,
+        "lng": 37.62293815612793
+      }
+    },
+    {
+      "name": "Kožuchovo",
+      "altNames": {},
+      "location": {
+        "lat": 55.699864220812444,
+        "lng": 37.64049053192139
+      }
+    },
+    {
+      "name": "New station",
+      "altNames": {},
+      "location": {
+        "lat": 55.69940472214197,
+        "lng": 37.64448165893555
       }
     }
   ],
@@ -4683,12 +4699,12 @@
       "target": 233
     },
     {
-      "source": 282,
-      "target": 13
+      "source": 543,
+      "target": 519
     },
     {
       "source": 284,
-      "target": 45
+      "target": 417
     },
     {
       "source": 273,
@@ -4747,8 +4763,8 @@
       "target": 299
     },
     {
-      "source": 299,
-      "target": 284
+      "source": 250,
+      "target": 283
     },
     {
       "source": 311,
@@ -5008,11 +5024,11 @@
     },
     {
       "source": 285,
-      "target": 532
+      "target": 272
     },
     {
-      "source": 154,
-      "target": 532
+      "source": 532,
+      "target": 320
     },
     {
       "source": 136,
@@ -5047,24 +5063,24 @@
       "target": 541
     },
     {
-      "source": 543,
-      "target": 519
+      "source": 545,
+      "target": 107
     },
     {
-      "source": 250,
-      "target": 545
-    },
-    {
-      "source": 546,
-      "target": 417
+      "source": 380,
+      "target": 547
     },
     {
       "source": 547,
-      "target": 320
+      "target": 170
     },
     {
-      "source": 285,
-      "target": 272
+      "source": 548,
+      "target": 549
+    },
+    {
+      "source": 549,
+      "target": 328
     }
   ],
   "lines": {
@@ -6994,8 +7010,8 @@
       ]
     },
     {
-      "source": 268,
-      "target": 269,
+      "source": 547,
+      "target": 548,
       "routes": [
         13
       ]
@@ -7046,46 +7062,46 @@
       "source": 275,
       "target": 276,
       "routes": [
-        14
+        13
       ]
     },
     {
       "source": 276,
       "target": 277,
       "routes": [
-        14
+        13
       ]
     },
     {
       "source": 479,
       "target": 278,
       "routes": [
-        14
+        13
       ]
     },
     {
       "source": 278,
       "target": 279,
       "routes": [
-        14
+        13
       ]
     },
     {
       "source": 279,
       "target": 280,
       "routes": [
-        14
+        13
       ]
     },
     {
       "source": 280,
       "target": 281,
       "routes": [
-        14
+        13
       ]
     },
     {
-      "source": 275,
+      "source": 543,
       "target": 282,
       "routes": [
         14
@@ -7099,8 +7115,8 @@
       ]
     },
     {
-      "source": 283,
-      "target": 284,
+      "source": 285,
+      "target": 533,
       "routes": [
         14
       ]
@@ -8520,21 +8536,21 @@
       "source": 479,
       "target": 277,
       "routes": [
-        14
+        13
       ]
     },
     {
       "source": 281,
       "target": 480,
       "routes": [
-        14
+        13
       ]
     },
     {
       "source": 480,
       "target": 481,
       "routes": [
-        14
+        13
       ]
     },
     {
@@ -8730,7 +8746,7 @@
       "source": 518,
       "target": 508,
       "routes": [
-        14
+        13
       ]
     },
     {
@@ -8786,21 +8802,21 @@
       "source": 481,
       "target": 516,
       "routes": [
-        14
+        13
       ]
     },
     {
       "source": 516,
       "target": 517,
       "routes": [
-        14
+        13
       ]
     },
     {
       "source": 517,
       "target": 518,
       "routes": [
-        14
+        13
       ]
     },
     {
@@ -8895,8 +8911,8 @@
       ]
     },
     {
-      "source": 532,
-      "target": 533,
+      "source": 283,
+      "target": 284,
       "routes": [
         14
       ]
@@ -8972,31 +8988,45 @@
       ]
     },
     {
-      "source": 543,
+      "source": 275,
       "target": 544,
       "routes": [
-        14
+        13
       ]
     },
     {
       "source": 544,
       "target": 545,
       "routes": [
-        14
+        13
       ]
     },
     {
       "source": 545,
       "target": 546,
       "routes": [
-        14
+        13
       ]
     },
     {
       "source": 546,
       "target": 547,
       "routes": [
-        14
+        13
+      ]
+    },
+    {
+      "source": 548,
+      "target": 268,
+      "routes": [
+        13
+      ]
+    },
+    {
+      "source": 269,
+      "target": 549,
+      "routes": [
+        13
       ]
     }
   ],
