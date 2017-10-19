@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508446538027,
+  "version": 1508447788690,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4421,7 +4421,7 @@
       }
     },
     {
-      "name": "New station",
+      "name": "Vystavočnaja",
       "altNames": {},
       "location": {
         "lat": 55.750641781933986,
