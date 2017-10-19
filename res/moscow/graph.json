@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508181183158,
+  "version": 1508442449903,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -29,7 +29,7 @@
       }
     },
     {
-      "name": "Krasnyje vorota",
+      "name": "Krasnyje Vorota",
       "altNames": {},
       "location": {
         "lat": 55.76836875806236,
@@ -2288,8 +2288,8 @@
       "name": "Vystavočnaja",
       "altNames": {},
       "location": {
-        "lat": 55.74905371814239,
-        "lng": 37.53982186317444
+        "lat": 55.749760203172876,
+        "lng": 37.54047632217407
       }
     },
     {
@@ -4259,6 +4259,134 @@
         "lat": 55.78559902894423,
         "lng": 37.505478858947754
       }
+    },
+    {
+      "name": "Vystavočnaja",
+      "altNames": {},
+      "location": {
+        "lat": 55.749989657097,
+        "lng": 37.539124488830566
+      }
+    },
+    {
+      "name": "Třochgorka",
+      "altNames": {},
+      "location": {
+        "lat": 55.75693301901982,
+        "lng": 37.55927324295044
+      }
+    },
+    {
+      "name": "Vagaňkovo",
+      "altNames": {},
+      "location": {
+        "lat": 55.7631387346159,
+        "lng": 37.56309270858765
+      }
+    },
+    {
+      "name": "Tišinka",
+      "altNames": {},
+      "location": {
+        "lat": 55.76861922628898,
+        "lng": 37.579851150512695
+      }
+    },
+    {
+      "name": "Tišinka",
+      "altNames": {},
+      "location": {
+        "lat": 55.76742420677927,
+        "lng": 37.57847785949706
+      }
+    },
+    {
+      "name": "Triumfaľnaja",
+      "altNames": {},
+      "location": {
+        "lat": 55.769548660582416,
+        "lng": 37.59476959705353
+      }
+    },
+    {
+      "name": "Cvetnoj buľvar",
+      "altNames": {},
+      "location": {
+        "lat": 55.76898738148411,
+        "lng": 37.61770248413086
+      }
+    },
+    {
+      "name": "Sucharevskaja",
+      "altNames": {},
+      "location": {
+        "lat": 55.77284978377382,
+        "lng": 37.63335585594177
+      }
+    },
+    {
+      "name": "Krasnyje Vorota",
+      "altNames": {},
+      "location": {
+        "lat": 55.76853473116346,
+        "lng": 37.648987770080566
+      }
+    },
+    {
+      "name": "Basmannaja",
+      "altNames": {},
+      "location": {
+        "lat": 55.7642131648377,
+        "lng": 37.65655159950256
+      }
+    },
+    {
+      "name": "Basmannaja",
+      "altNames": {},
+      "location": {
+        "lat": 55.764370101605486,
+        "lng": 37.659544944763184
+      }
+    },
+    {
+      "name": "Gorochovo pole",
+      "altNames": {},
+      "location": {
+        "lat": 55.763754422971616,
+        "lng": 37.671003341674805
+      }
+    },
+    {
+      "name": "Kadetskij plac",
+      "altNames": {},
+      "location": {
+        "lat": 55.75892523379117,
+        "lng": 37.694735527038574
+      }
+    },
+    {
+      "name": "Lefortovo",
+      "altNames": {},
+      "location": {
+        "lat": 55.76329567570822,
+        "lng": 37.70675182342529
+      }
+    },
+    {
+      "name": "Sortirovočnaja",
+      "altNames": {},
+      "location": {
+        "lat": 55.763675953427644,
+        "lng": 37.71887540817261
+      }
+    },
+    {
+      "name": "Sokolinaja Gora",
+      "altNames": {},
+      "location": {
+        "lat": 55.77024873931422,
+        "lng": 37.744131088256836
+      }
     }
   ],
   "transfers": [
@@ -4877,6 +5005,66 @@
     {
       "source": 304,
       "target": 531
+    },
+    {
+      "source": 285,
+      "target": 532
+    },
+    {
+      "source": 154,
+      "target": 532
+    },
+    {
+      "source": 136,
+      "target": 534
+    },
+    {
+      "source": 536,
+      "target": 535
+    },
+    {
+      "source": 26,
+      "target": 537
+    },
+    {
+      "source": 538,
+      "target": 203
+    },
+    {
+      "source": 538,
+      "target": 181
+    },
+    {
+      "source": 98,
+      "target": 539
+    },
+    {
+      "source": 3,
+      "target": 540
+    },
+    {
+      "source": 542,
+      "target": 541
+    },
+    {
+      "source": 543,
+      "target": 519
+    },
+    {
+      "source": 250,
+      "target": 545
+    },
+    {
+      "source": 546,
+      "target": 417
+    },
+    {
+      "source": 547,
+      "target": 320
+    },
+    {
+      "source": 285,
+      "target": 272
     }
   ],
   "lines": {
@@ -5504,7 +5692,7 @@
       ]
     },
     {
-      "source": 84,
+      "source": 542,
       "target": 85,
       "routes": [
         4
@@ -5560,7 +5748,7 @@
       ]
     },
     {
-      "source": 92,
+      "source": 536,
       "target": 93,
       "routes": [
         4
@@ -6841,10 +7029,10 @@
       ]
     },
     {
-      "source": 284,
-      "target": 285,
+      "source": 531,
+      "target": 138,
       "routes": [
-        14
+        6
       ]
     },
     {
@@ -8700,10 +8888,115 @@
       ]
     },
     {
-      "source": 531,
-      "target": 138,
+      "source": 284,
+      "target": 532,
       "routes": [
-        6
+        14
+      ]
+    },
+    {
+      "source": 532,
+      "target": 533,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 533,
+      "target": 534,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 534,
+      "target": 535,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 536,
+      "target": 92,
+      "routes": [
+        4
+      ]
+    },
+    {
+      "source": 535,
+      "target": 537,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 537,
+      "target": 538,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 538,
+      "target": 539,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 539,
+      "target": 540,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 542,
+      "target": 84,
+      "routes": [
+        4
+      ]
+    },
+    {
+      "source": 540,
+      "target": 541,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 541,
+      "target": 543,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 543,
+      "target": 544,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 544,
+      "target": 545,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 545,
+      "target": 546,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 546,
+      "target": 547,
+      "routes": [
+        14
       ]
     }
   ],
