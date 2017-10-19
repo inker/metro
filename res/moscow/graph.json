@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508444086066,
+  "version": 1508445435160,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4403,6 +4403,30 @@
         "lat": 55.69940472214197,
         "lng": 37.64448165893555
       }
+    },
+    {
+      "name": "Devičje pole",
+      "altNames": {},
+      "location": {
+        "lat": 55.73754889251636,
+        "lng": 37.575602531433105
+      }
+    },
+    {
+      "name": "Dorogomilovo",
+      "altNames": {},
+      "location": {
+        "lat": 55.744228747576805,
+        "lng": 37.568371295928955
+      }
+    },
+    {
+      "name": "New station",
+      "altNames": {},
+      "location": {
+        "lat": 55.750641781933986,
+        "lng": 37.54157066345215
+      }
     }
   ],
   "transfers": [
@@ -5081,6 +5105,18 @@
     {
       "source": 549,
       "target": 328
+    },
+    {
+      "source": 552,
+      "target": 285
+    },
+    {
+      "source": 552,
+      "target": 154
+    },
+    {
+      "source": 552,
+      "target": 272
     }
   ],
   "lines": {
@@ -5424,49 +5460,49 @@
       "source": 270,
       "target": 271,
       "routes": [
-        13
+        14
       ]
     },
     {
       "source": 45,
       "target": 44,
       "routes": [
-        13
+        3
       ]
     },
     {
       "source": 46,
       "target": 45,
       "routes": [
-        13
+        3
       ]
     },
     {
       "source": 46,
       "target": 47,
       "routes": [
-        13
+        3
       ]
     },
     {
       "source": 47,
       "target": 48,
       "routes": [
-        13
+        3
       ]
     },
     {
       "source": 48,
       "target": 49,
       "routes": [
-        13
+        3
       ]
     },
     {
       "source": 49,
       "target": 50,
       "routes": [
-        13
+        3
       ]
     },
     {
@@ -7020,14 +7056,14 @@
       "source": 269,
       "target": 270,
       "routes": [
-        13
+        14
       ]
     },
     {
-      "source": 271,
-      "target": 44,
+      "source": 269,
+      "target": 549,
       "routes": [
-        13
+        14
       ]
     },
     {
@@ -7115,8 +7151,8 @@
       ]
     },
     {
-      "source": 285,
-      "target": 533,
+      "source": 550,
+      "target": 551,
       "routes": [
         14
       ]
@@ -9023,10 +9059,31 @@
       ]
     },
     {
-      "source": 269,
-      "target": 549,
+      "source": 43,
+      "target": 44,
       "routes": [
-        13
+        3
+      ]
+    },
+    {
+      "source": 271,
+      "target": 550,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 285,
+      "target": 551,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 533,
+      "target": 552,
+      "routes": [
+        14
       ]
     }
   ],
