@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508528190896,
+  "version": 1508535132315,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -3253,7 +3253,7 @@
       }
     },
     {
-      "name": "Skolkovo",
+      "name": "Novoivanovskoje",
       "altNames": {},
       "location": {
         "lat": 55.71226864306213,
