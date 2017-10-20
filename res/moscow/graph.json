@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508527699197,
+  "version": 1508528190896,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4269,7 +4269,7 @@
       }
     },
     {
-      "name": "Třochgorka",
+      "name": "CMT",
       "altNames": {},
       "location": {
         "lat": 55.75693301901982,
@@ -4549,11 +4549,19 @@
       }
     },
     {
-      "name": "Zarečje",
+      "name": "Skoltech",
       "altNames": {},
       "location": {
-        "lat": 55.68943952757119,
-        "lng": 37.39428520202637
+        "lat": 55.699259616176356,
+        "lng": 37.3665189743042
+      }
+    },
+    {
+      "name": "Třochgorka",
+      "altNames": {},
+      "location": {
+        "lat": 55.696913661644686,
+        "lng": 37.3364782333374
       }
     }
   ],
@@ -5277,6 +5285,10 @@
     {
       "source": 216,
       "target": 560
+    },
+    {
+      "source": 569,
+      "target": 407
     }
   ],
   "lines": {
@@ -9354,6 +9366,13 @@
     {
       "source": 567,
       "target": 568,
+      "routes": [
+        3
+      ]
+    },
+    {
+      "source": 568,
+      "target": 569,
       "routes": [
         3
       ]
