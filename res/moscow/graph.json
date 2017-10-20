@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508448381153,
+  "version": 1508527699197,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4522,6 +4522,38 @@
       "location": {
         "lat": 55.78550250513579,
         "lng": 37.30107307434082
+      }
+    },
+    {
+      "name": "Gvardejskaja",
+      "altNames": {},
+      "location": {
+        "lat": 55.72002847178339,
+        "lng": 37.423768043518066
+      }
+    },
+    {
+      "name": "Vitebskaja",
+      "altNames": {},
+      "location": {
+        "lat": 55.717103608335954,
+        "lng": 37.40827560424805
+      }
+    },
+    {
+      "name": "Trojekurovo",
+      "altNames": {},
+      "location": {
+        "lat": 55.70056555047345,
+        "lng": 37.399349212646484
+      }
+    },
+    {
+      "name": "Zarečje",
+      "altNames": {},
+      "location": {
+        "lat": 55.68943952757119,
+        "lng": 37.39428520202637
       }
     }
   ],
@@ -9296,6 +9328,34 @@
       "target": 564,
       "routes": [
         14
+      ]
+    },
+    {
+      "source": 50,
+      "target": 565,
+      "routes": [
+        3
+      ]
+    },
+    {
+      "source": 565,
+      "target": 566,
+      "routes": [
+        3
+      ]
+    },
+    {
+      "source": 566,
+      "target": 567,
+      "routes": [
+        3
+      ]
+    },
+    {
+      "source": 567,
+      "target": 568,
+      "routes": [
+        3
       ]
     }
   ],
