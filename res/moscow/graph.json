@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508535132315,
+  "version": 1508535322156,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4549,7 +4549,7 @@
       }
     },
     {
-      "name": "Skoltech",
+      "name": "Skolkovo",
       "altNames": {},
       "location": {
         "lat": 55.699259616176356,
