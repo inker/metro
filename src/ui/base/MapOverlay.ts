@@ -7,7 +7,7 @@ type LeafletMouseEvent = L.LeafletMouseEvent
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
 
-export default class MapOverlay<TagName extends keyof ElementTagNameMap> implements L.ILayer {
+export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
     private map: L.Map
     protected overlayContainer: ElementTagNameMap[TagName]
 
@@ -36,28 +36,26 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> impleme
         this.maxZoom = map.getMaxZoom()
 
         this.updateOverlayPositioning()
-
-        const { objectsPane, markerPane, mapPane } = map.getPanes();
-        (L.version[0] === '1' ? mapPane : objectsPane).insertBefore(this.overlayContainer, markerPane)
-
+        const { markerPane, mapPane } = map.getPanes()
+        mapPane.insertBefore(this.overlayContainer, markerPane)
         this.addMapMovementListeners()
     }
 
     onRemove(map: L.Map) {
         // this.map = this.minZoom = this.maxZoom = undefined
-        const { objectsPane, mapPane } = map.getPanes();
-        (L.version[0] === '1' ? mapPane : objectsPane).removeChild(this.overlayContainer)
+        map.getPanes().mapPane.removeChild(this.overlayContainer)
         this.map.clearAllEventListeners() // fix later
     }
 
     private addMapMovementListeners() {
         const { map } = this
         const { style, classList } = this.overlayContainer
-        let mousePos: L.Point|null
+        let mousePos: L.Point | null
         classList.add('leaflet-zoom-animated')
         map.on('zoomanim', e => {
             // console.log('zoomanim', Object.freeze(e))
-            const { scale, target } = e as any
+            const { target } = e
+            const scale = 2 ** (target._animateToZoom - target._zoom)
             if (scale !== 1) {
                 this.scaleOverlay(scale, mousePos || get(target, 'scrollWheelZoom._lastMousePos') as L.Point)
             }
@@ -85,11 +83,11 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> impleme
         const { map, bounds, margin } = this
         const nw = bounds.getNorthWest()
         const se = bounds.getSouthEast()
-        this.topLeft = map.project(nw).round()
+        this.topLeft = map.project(nw, map.getZoom()).round()
 
         const pixelBounds = L.bounds(map.latLngToLayerPoint(nw), map.latLngToLayerPoint(se))
         const { style } = this.overlayContainer
-        const topLeft = pixelBounds.min.subtract(margin)
+        const topLeft = (pixelBounds.min as L.Point).subtract(margin)
         style.left = topLeft.x + 'px'
         style.top = topLeft.y + 'px'
 
@@ -118,7 +116,7 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> impleme
 
     latLngToOverlayPoint(location: L.LatLng): L.Point {
         return this.map
-            .project(location)
+            .project(location, this.map.getZoom())
             .round()
             .subtract(this.topLeft)
     }

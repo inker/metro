@@ -1,0 +1,17 @@
+.leaflet-dragging #map-container {
+  cursor: grab;
+}
+
+.leaflet-control-scale-line {
+  opacity: 1;
+}
+
+.leaflet-fade-anim .leaflet-tile {
+  will-change: initial;
+}
+
+@media only screen and (max-device-width: 1000px) and (-webkit-min-device-pixel-ratio: 2) {
+  .leaflet-control-attribution {
+      display: none;
+  }
+}

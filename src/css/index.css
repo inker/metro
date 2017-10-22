@@ -22,24 +22,10 @@ a:hover {
     cursor: default;
 }
 
-.leaflet-dragging #map-container {
-    cursor: grab;
-}
-
 #map-container.dimmed {
     filter: brightness(0.75);
     transition-property: filter;
     transition-duration: 200ms;
-}
-
-.leaflet-control-scale-line {
-    opacity: 1;
-}
-
-@media only screen and (max-device-width: 1000px) and (-webkit-min-device-pixel-ratio: 2) {
-    .leaflet-control-attribution {
-        display: none;
-    }
 }
 
 #wait {

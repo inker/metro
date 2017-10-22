@@ -19,7 +19,7 @@ interface ContextMenuItem<EventName> {
     extra?: Extra,
 }
 
-export default class implements L.ILayer {
+export default class ContextMenu {
     private map: L.Map
     private readonly items: ContextMenuItem<EventName>[]
     private readonly container: HTMLDivElement

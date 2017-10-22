@@ -165,11 +165,6 @@ export default class {
 
             config.center = [0, 0]
             const mapOptions = { ...config }
-            if (L.version[0] === '1') {
-                mapOptions.wheelPxPerZoomLevel = 75
-                mapOptions.inertiaMaxSpeed = 1500
-                mapOptions.fadeAnimation = false
-            }
             const scaleControl = L.control.scale({
                 imperial: false,
             })

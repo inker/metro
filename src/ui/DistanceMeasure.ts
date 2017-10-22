@@ -6,7 +6,7 @@ import { RedCircle } from './Icons'
 
 type LeafletMouseEvent = L.LeafletMouseEvent
 
-export default class implements L.ILayer {
+export default class DistanceMeasure {
     private map: L.Map
     private readonly polyline = L.polyline([], { color: 'red'})
     private readonly markers = L.featureGroup()
