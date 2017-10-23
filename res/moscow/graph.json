@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508765741393,
+  "version": 1508768303846,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -1645,7 +1645,7 @@
       }
     },
     {
-      "name": "Marjina Rošča",
+      "name": "Marjina rošča",
       "altNames": {},
       "location": {
         "lat": 55.79366998627736,
@@ -1973,7 +1973,7 @@
       }
     },
     {
-      "name": "Marjina Rošča",
+      "name": "Marjina rošča",
       "altNames": {},
       "location": {
         "lat": 55.79848884123783,
