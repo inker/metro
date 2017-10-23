@@ -23,7 +23,6 @@ import {
 import {
     svg,
     collections,
-    mouseToLatLng,
     getPlatformNames,
     // dom,
 } from './util'
@@ -71,7 +70,7 @@ export default class extends MetroMap {
         })
         this.subscribe('platformmove', e => {
             const platform = relatedTargetToPlatform(e.relatedTarget)
-            platform.location = mouseToLatLng(map, e)
+            platform.location = map.mouseEventToLatLng(e)
         })
         this.subscribe('platformmoveend', e => {
             const platform = relatedTargetToPlatform(e.relatedTarget)
@@ -80,7 +79,7 @@ export default class extends MetroMap {
         })
         this.subscribe('platformadd', e => {
             const { detail } = e
-            const location = mouseToLatLng(map, detail)
+            const location = map.mouseEventToLatLng(detail)
             const newPlatform = new Platform('New station', location, {})
             this.network.platforms.push(newPlatform)
             if (detail.relatedTarget !== undefined) {

@@ -1,7 +1,7 @@
 import * as L from 'leaflet'
 import { last } from 'lodash'
 
-import { events, mouseToLatLng } from '../util'
+import { events } from '../util'
 import { RedCircle } from './Icons'
 
 type LeafletMouseEvent = L.LeafletMouseEvent
@@ -15,7 +15,7 @@ export default class DistanceMeasure {
     onAdd(map: L.Map) {
         this.map = map
         map.fireEvent('distancemeasureinit')
-        map.on('measuredistance', (e: MouseEvent) => this.measureDistance(mouseToLatLng(map, e)))
+        map.on('measuredistance', (e: MouseEvent) => this.measureDistance(map.mouseEventToLatLng(e)))
         map.on('clearmeasurements', (e: MouseEvent) => this.clearMeasurements())
         return this
     }
@@ -45,7 +45,11 @@ export default class DistanceMeasure {
         if (latlngs.length > nMarkers) {
             latlngs.length = nMarkers
         }
-        this.dashedLine.getLatLngs()[0] = last(latlngs) as L.LatLng
+        const dashedLingLatLngs = this.dashedLine.getLatLngs()
+        dashedLingLatLngs[0] = last(latlngs) as L.LatLng
+        this.dashedLine.setLatLngs(dashedLingLatLngs)
+
+        this.polyline.setLatLngs(latlngs)
         this.polyline.redraw()
         this.openLastMarkerPopup()
     }
@@ -107,7 +111,9 @@ export default class DistanceMeasure {
     }
 
     private resetDashedLine = (e: LeafletMouseEvent) => {
-        this.dashedLine.getLatLngs()[1] = e.latlng
+        const dashedLingLatLngs = this.dashedLine.getLatLngs()
+        dashedLingLatLngs[1] = e.latlng
+        this.dashedLine.setLatLngs(dashedLingLatLngs)
         this.dashedLine.redraw()
     }
 

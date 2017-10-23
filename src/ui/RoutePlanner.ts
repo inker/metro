@@ -8,7 +8,6 @@ import Widget from './base/Widget'
 import {
     sfx,
     algorithm,
-    mouseToLatLng,
     resetStyle,
 } from '../util'
 
@@ -57,7 +56,7 @@ export default class implements Widget {
 
     private onFromTo = (e: MouseEvent) => {
         const map = this.metroMap.getMap()
-        const coors = mouseToLatLng(map, e)
+        const coors = map.mouseEventToLatLng(e)
         const m = e.type === 'routefrom' ? this.fromMarker : this.toMarker
         m.setLatLng(coors)
         if (!map.hasLayer(m)) {

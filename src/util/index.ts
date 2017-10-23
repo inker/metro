@@ -45,12 +45,6 @@ const RESET_SELECTOR = [
 export const makeLink = (url: string, text: string, newTab = false) =>
     `<a href="${url}" ${newTab ? 'target="_blank"' : ''}>${text}</a>`
 
-export function mouseToLatLng(map: L.Map, event: MouseEvent): L.LatLng {
-    const { top, left } = map.getContainer().getBoundingClientRect()
-    const containerPoint = L.point(event.clientX - left, event.clientY - top)
-    return map.containerPointToLatLng(containerPoint)
-}
-
 export function resetStyle() {
     const els = document.querySelectorAll(RESET_SELECTOR) as any as HTMLElement[]
     for (const { style } of els) {
