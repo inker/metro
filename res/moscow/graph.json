@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508768303846,
+  "version": 1508794649153,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -237,7 +237,7 @@
       }
     },
     {
-      "name": "Aviacionnaja",
+      "name": "Zykovo",
       "altNames": {},
       "location": {
         "lat": 55.80038546103223,
