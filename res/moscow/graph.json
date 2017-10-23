@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508535322156,
+  "version": 1508765741393,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -1277,7 +1277,7 @@
       }
     },
     {
-      "name": "Ulica Udaľcova",
+      "name": "Nikoľskoje",
       "altNames": {},
       "location": {
         "lat": 55.68983866793182,
@@ -1885,7 +1885,7 @@
       }
     },
     {
-      "name": "Ulica Udaľcova",
+      "name": "Nikoľskoje",
       "altNames": {},
       "location": {
         "lat": 55.68878638001039,
