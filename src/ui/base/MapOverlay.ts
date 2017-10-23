@@ -57,6 +57,12 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
             const { target } = e
             const scale = 2 ** (target._animateToZoom - target._zoom)
             if (scale !== 1) {
+                const oldCenter = this.map.getCenter()
+                const newCenter = target._animateToCenter
+                if (oldCenter.equals(newCenter)) {
+                    // +/- button click
+                    mousePos = L.point(innerWidth / 2, innerHeight / 2).round()
+                }
                 this.scaleOverlay(scale, mousePos || get(target, 'scrollWheelZoom._lastMousePos') as L.Point)
             }
             mousePos = null
@@ -70,10 +76,6 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
             this.updateOverlayPositioning()
             map.fireEvent('overlayupdate', this)
         })
-
-        // +/- button click
-        map.zoomControl.getContainer()
-            .addEventListener('mousedown', e => mousePos = L.point(innerWidth / 2, innerHeight / 2).round(), true)
 
         // double click zoom
         map.on('dblclick', (e: LeafletMouseEvent) => mousePos = L.DomEvent.getMousePosition(e.originalEvent))
