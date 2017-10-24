@@ -98,15 +98,15 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
     }
 
     private scaleOverlay(scaleFactor: number, mousePos?: L.Point) {
-        const { left, top } = this.overlayContainer.getBoundingClientRect()
+        const nw = this.bounds.getNorthWest()
+        const boxTopLeft = this.map.latLngToContainerPoint(nw).subtract(this.margin)
         if (!mousePos) {
             const el = document.documentElement
             mousePos = L.point(el.clientWidth / 2, el.clientHeight / 2)
         }
+        const o = mousePos.subtract(boxTopLeft)
         const { style } = this.overlayContainer
-        // style.left = '0';
-        // style.top = '0';
-        style.transformOrigin = `${mousePos.x - left}px ${mousePos.y - top}px`
+        style.transformOrigin = `${o.x}px ${o.y}px`
         style.transform = `scale(${scaleFactor})`
     }
 
