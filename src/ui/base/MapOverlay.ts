@@ -18,6 +18,8 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
     private minZoom: number
     private maxZoom: number
 
+    private mousePos: L.Point | null
+
     constructor(tagName: TagName, bounds: L.LatLngBounds, margin = L.point(100, 100)) {
         const ns = htmlTags.includes(tagName) && tagName !== 'svg' ? HTML_NAMESPACE : SVG_NAMESPACE
         this.overlayContainer = document.createElementNS(ns, tagName) as any
@@ -48,36 +50,42 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
     }
 
     private addMapMovementListeners() {
-        const { map } = this
-        const { style, classList } = this.overlayContainer
-        let mousePos: L.Point | null
-        classList.add('leaflet-zoom-animated')
-        map.on('zoomanim', ({ target, center, zoom }: any) => {
-            // console.log('zoomanim', Object.freeze(e))
-            const oldZoom = map.getZoom()
-            const scale = map.getZoomScale(zoom, oldZoom)
-            if (scale !== 1) {
-                const oldCenter = this.map.getCenter()
-                if (oldCenter.equals(center)) {
-                    // +/- button click
-                    mousePos = L.point(innerWidth / 2, innerHeight / 2).round()
-                }
-                this.scaleOverlay(scale, mousePos || get(target, 'scrollWheelZoom._lastMousePos') as L.Point)
-            }
-            mousePos = null
-        }).on('zoomend', e => {
-            // console.log('zoomend', e)
-            // console.log(map.project(this.network.platforms[69].location, map.getZoom()).divideBy(2 ** map.getZoom()))
+        this.overlayContainer.classList.add('leaflet-zoom-animated')
+        this.map
+            .on('zoomanim', this.onZoomAnim as any)
+            .on('zoomend', this.onZoomEnd)
+            .on('dblclick', this.onDoubleClick)
+    }
 
-            style.transform = null
-            style.transformOrigin = null
-
-            this.updateOverlayPositioning()
-            map.fireEvent('overlayupdate', this)
-        })
-
+    private onDoubleClick = (e: LeafletMouseEvent) => {
         // double click zoom
-        map.on('dblclick', (e: LeafletMouseEvent) => mousePos = L.DomEvent.getMousePosition(e.originalEvent))
+        this.mousePos = this.map.mouseEventToContainerPoint(e.originalEvent)
+    }
+
+    private onZoomAnim = ({ target, center, zoom }) => {
+        const { map } = this
+        const oldZoom = map.getZoom()
+        if (zoom !== oldZoom) {
+            const scale = map.getZoomScale(zoom, oldZoom)
+            const oldCenter = map.getCenter()
+            if (center.equals(oldCenter)) {
+                this.mousePos = L.point(innerWidth / 2, innerHeight / 2).round()
+            } else if (!this.mousePos) {
+                this.mousePos = get(target, 'scrollWheelZoom._lastMousePos')
+            }
+            this.scaleOverlay(scale)
+        }
+        this.mousePos = null
+    }
+
+    private onZoomEnd = () => {
+        const { style } = this.overlayContainer
+
+        style.transform = null
+        style.transformOrigin = null
+
+        this.updateOverlayPositioning()
+        this.map.fireEvent('overlayupdate', this)
     }
 
     private updateOverlayPositioning() {
@@ -97,14 +105,14 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
         style.height = overlaySize.y + 'px'
     }
 
-    private scaleOverlay(scaleFactor: number, mousePos?: L.Point) {
+    private scaleOverlay(scaleFactor: number) {
         const nw = this.bounds.getNorthWest()
         const boxTopLeft = this.map.latLngToContainerPoint(nw).subtract(this.margin)
-        if (!mousePos) {
+        if (!this.mousePos) {
             const el = document.documentElement
-            mousePos = L.point(el.clientWidth / 2, el.clientHeight / 2)
+            this.mousePos = L.point(el.clientWidth / 2, el.clientHeight / 2)
         }
-        const o = mousePos.subtract(boxTopLeft)
+        const o = this.mousePos.subtract(boxTopLeft)
         const { style } = this.overlayContainer
         style.transformOrigin = `${o.x}px ${o.y}px`
         style.transform = `scale(${scaleFactor})`
