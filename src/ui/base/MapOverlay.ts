@@ -52,14 +52,12 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
         const { style, classList } = this.overlayContainer
         let mousePos: L.Point | null
         classList.add('leaflet-zoom-animated')
-        map.on('zoomanim', e => {
+        map.on('zoomanim', ({ target, center }: any) => {
             // console.log('zoomanim', Object.freeze(e))
-            const { target } = e
-            const scale = 2 ** (target._animateToZoom - target._zoom)
+            const scale = map.getZoomScale(target._animateToZoom, target._zoom)
             if (scale !== 1) {
                 const oldCenter = this.map.getCenter()
-                const newCenter = target._animateToCenter
-                if (oldCenter.equals(newCenter)) {
+                if (oldCenter.equals(center)) {
                     // +/- button click
                     mousePos = L.point(innerWidth / 2, innerHeight / 2).round()
                 }
