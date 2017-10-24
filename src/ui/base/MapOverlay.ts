@@ -2,8 +2,6 @@ import * as L from 'leaflet'
 import { get } from 'lodash'
 import * as htmlTags from 'html-tags'
 
-type LeafletMouseEvent = L.LeafletMouseEvent
-
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
 
@@ -57,7 +55,7 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
             .on('dblclick', this.onDoubleClick)
     }
 
-    private onDoubleClick = (e: LeafletMouseEvent) => {
+    private onDoubleClick = (e: L.LeafletMouseEvent) => {
         // double click zoom
         this.mousePos = this.map.mouseEventToContainerPoint(e.originalEvent)
     }
