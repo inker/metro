@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508794649153,
+  "version": 1508887636573,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -2797,7 +2797,7 @@
       }
     },
     {
-      "name": "Moskvorečje",
+      "name": "Saburovo",
       "altNames": {},
       "location": {
         "lat": 55.64125878493989,
@@ -4453,7 +4453,7 @@
       }
     },
     {
-      "name": "Moskvorečje",
+      "name": "Saburovo",
       "altNames": {},
       "location": {
         "lat": 55.63962388406009,
