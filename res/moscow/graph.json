@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508951620646,
+  "version": 1508964594931,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4562,6 +4562,14 @@
       "location": {
         "lat": 55.696913661644686,
         "lng": 37.3364782333374
+      }
+    },
+    {
+      "name": "Vostočnoje Biřuľovo",
+      "altNames": {},
+      "location": {
+        "lat": 55.59537695423585,
+        "lng": 37.662699222564704
       }
     }
   ],
@@ -9294,7 +9302,7 @@
       ]
     },
     {
-      "source": 557,
+      "source": 570,
       "target": 558,
       "routes": [
         14
@@ -9375,6 +9383,13 @@
       "target": 569,
       "routes": [
         3
+      ]
+    },
+    {
+      "source": 570,
+      "target": 557,
+      "routes": [
+        14
       ]
     }
   ],
