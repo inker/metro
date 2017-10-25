@@ -23,8 +23,8 @@
   },
   "devDependencies": {
     "@types/hammerjs": "^2.0.35",
-    "@types/leaflet": "^1.2.0",
-    "@types/lodash": "^4.14.78",
+    "@types/leaflet": "^1.2.1",
+    "@types/lodash": "^4.14.80",
     "autoprefixer": "^7.1.6",
     "awesome-typescript-loader": "^3.2.3",
     "copy-webpack-plugin": "^4.2.0",
