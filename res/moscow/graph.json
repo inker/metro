@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508887837749,
+  "version": 1508889922106,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -1717,7 +1717,7 @@
       }
     },
     {
-      "name": "Varšavskaja",
+      "name": "Iźutino",
       "altNames": {},
       "location": {
         "lat": 55.653472967892064,
@@ -3053,7 +3053,7 @@
       }
     },
     {
-      "name": "Varšavskaja",
+      "name": "Iźutino",
       "altNames": {},
       "location": {
         "lat": 55.654952940927956,
