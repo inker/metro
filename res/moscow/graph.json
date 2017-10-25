@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508889922106,
+  "version": 1508890327157,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -3749,7 +3749,7 @@
       }
     },
     {
-      "name": "Trikotažnaja",
+      "name": "Spasskoje",
       "altNames": {},
       "location": {
         "lat": 55.833107949259045,
