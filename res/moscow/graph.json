@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508964594931,
+  "version": 1508966689601,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4571,6 +4571,38 @@
         "lat": 55.59537695423585,
         "lng": 37.662699222564704
       }
+    },
+    {
+      "name": "Vladimirskij pośolok",
+      "altNames": {},
+      "location": {
+        "lat": 55.76467190130656,
+        "lng": 37.78271198272706
+      }
+    },
+    {
+      "name": "Terleckaja",
+      "altNames": {},
+      "location": {
+        "lat": 55.7606879571496,
+        "lng": 37.79863357543946
+      }
+    },
+    {
+      "name": "Ivanovskoje",
+      "altNames": {},
+      "location": {
+        "lat": 55.76720692656917,
+        "lng": 37.83262252807617
+      }
+    },
+    {
+      "name": "Strojka",
+      "altNames": {},
+      "location": {
+        "lat": 55.78144828923086,
+        "lng": 37.86103248596192
+      }
     }
   ],
   "transfers": [
@@ -5297,6 +5329,10 @@
     {
       "source": 384,
       "target": 558
+    },
+    {
+      "source": 574,
+      "target": 341
     }
   ],
   "lines": {
@@ -9388,6 +9424,34 @@
     {
       "source": 570,
       "target": 557,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 532,
+      "target": 571,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 571,
+      "target": 572,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 572,
+      "target": 573,
+      "routes": [
+        14
+      ]
+    },
+    {
+      "source": 573,
+      "target": 574,
       "routes": [
         14
       ]
