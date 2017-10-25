@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508966689601,
+  "version": 1508968690129,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -2453,7 +2453,7 @@
       }
     },
     {
-      "name": "Novogirejevo",
+      "name": "Vladyčino",
       "altNames": {},
       "location": {
         "lat": 55.74433745185643,
