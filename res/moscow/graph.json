@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508891064340,
+  "version": 1508951620646,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -1109,7 +1109,7 @@
       }
     },
     {
-      "name": "Chorošovo",
+      "name": "Chorošovskoje šosse",
       "altNames": {},
       "location": {
         "lat": 55.77750829730544,
@@ -1941,7 +1941,7 @@
       }
     },
     {
-      "name": "Chorošovo",
+      "name": "Chorošovskoje šosse",
       "altNames": {},
       "location": {
         "lat": 55.776826451225254,
@@ -2429,7 +2429,7 @@
       }
     },
     {
-      "name": "Chorošovo",
+      "name": "Chorošovskoje šosse",
       "altNames": {},
       "location": {
         "lat": 55.77730917534709,
@@ -4237,7 +4237,7 @@
       }
     },
     {
-      "name": "Živopisnaja",
+      "name": "Chorošovo",
       "altNames": {},
       "location": {
         "lat": 55.780169193104115,
