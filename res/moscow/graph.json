@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508890327157,
+  "version": 1508891064340,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -3077,7 +3077,7 @@
       }
     },
     {
-      "name": "Južnoje Biřuľovo",
+      "name": "Biřuľovo",
       "altNames": {},
       "location": {
         "lat": 55.583208327512445,
@@ -4469,11 +4469,11 @@
       }
     },
     {
-      "name": "Severnoje Biřuľovo",
+      "name": "Biřuľovo",
       "altNames": {},
       "location": {
-        "lat": 55.591248411118954,
-        "lng": 37.65735626220703
+        "lat": 55.58052793364279,
+        "lng": 37.65911579132081
       }
     },
     {
@@ -5275,8 +5275,8 @@
       "target": 59
     },
     {
-      "source": 383,
-      "target": 558
+      "source": 569,
+      "target": 407
     },
     {
       "source": 559,
@@ -5287,8 +5287,8 @@
       "target": 560
     },
     {
-      "source": 569,
-      "target": 407
+      "source": 384,
+      "target": 558
     }
   ],
   "lines": {
