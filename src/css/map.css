@@ -27,6 +27,10 @@ circle {
     fill: none;
 }
 
+#paths-outer > path, #transfers-outer > path {
+    pointer-events: stroke;
+}
+
 #transfers-outer {
     stroke: #404040;
 }
