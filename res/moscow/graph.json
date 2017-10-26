@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1508968690129,
+  "version": 1509056651138,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -3805,11 +3805,11 @@
       }
     },
     {
-      "name": "Sirenevyj buľvar",
+      "name": "Kalošino",
       "altNames": {},
       "location": {
-        "lat": 55.80258349463027,
-        "lng": 37.78172492980957
+        "lat": 55.81165170922683,
+        "lng": 37.77421474456788
       }
     },
     {
