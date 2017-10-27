@@ -5,9 +5,9 @@ import './MetroMap'
 
 import * as config from './mapconfig.json'
 
-import './css/index.css'
-import './css/leaflet.css'
-import './css/map.css'
+import './css/index.css?global'
+import './css/leaflet.css?global'
+import './css/map.css?global'
 
 import 'core-js/fn/object/entries'
 
