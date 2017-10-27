@@ -3,7 +3,7 @@ import * as alertify from 'alertifyjs'
 import 'alertify-dist/css/alertify.css'
 import 'alertify-dist/css/themes/default.css'
 
-import './alertify.css'
+import './styles.css'
 
 export default alertify
 
