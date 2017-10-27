@@ -1,11 +1,4 @@
-const { sep } = require('path')
 const { createLodashTransformer } = require('typescript-plugin-lodash')
-
-const isGlobal = `src\\${sep}css|node_modules`
-const cssExt = '\\.css$'
-const IS_GLOBAL = new RegExp(isGlobal)
-const IS_CSS = new RegExp(cssExt)
-const IS_GLOBAL_CSS = new RegExp(`(${isGlobal}).+?${cssExt}`)
 
 const tsOptions = env => env === 'dev' ? {
   // getCustomTransformers: () => ({ before: [styledComponentsTransformer] }),
@@ -29,7 +22,7 @@ module.exports = env => [
     exclude: /node_modules/,
   },
   { // non-global
-    test: path => IS_CSS.test(path) && !IS_GLOBAL.test(path),
+    test: /\.scss$/,
     use: [
       'style-loader',
       {
@@ -42,9 +35,10 @@ module.exports = env => [
       },
       'postcss-loader',
     ],
+    exclude: /node_modules/,
   },
   { // global
-    test: IS_GLOBAL_CSS,
+    test: /\.css$/,
     use: [
       'style-loader',
       'css-loader',

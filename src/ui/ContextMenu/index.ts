@@ -3,7 +3,7 @@ import { remove } from 'lodash'
 
 import { MetroMapEventMap, dom } from '../../util'
 
-import * as styles from './styles.css'
+import * as styles from './styles.scss'
 
 type EventName = keyof MetroMapEventMap
 

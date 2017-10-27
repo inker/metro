@@ -6,7 +6,7 @@ import MetroMap from '../../MetroMap'
 import Widget from '../base/Widget'
 import { byId } from '../../util/dom'
 
-import * as styles from './styles.css'
+import * as styles from './styles.scss'
 
 
 export default class MapEditor implements Widget {

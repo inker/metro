@@ -5,7 +5,7 @@ import Widget from '../base/Widget'
 import MetroMap from '../../MetroMap'
 import { transitionEnd, once } from '../../util/events'
 
-import * as styles from './styles.css'
+import * as styles from './styles.scss'
 
 interface QA {
     q: string,
