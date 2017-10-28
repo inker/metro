@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509152950835,
+  "version": 1509153975878,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -437,7 +437,7 @@
       }
     },
     {
-      "name": "Simonovo",
+      "name": "Kožuchovo",
       "altNames": {},
       "location": {
         "lat": 55.707372630994044,
@@ -2149,7 +2149,7 @@
       }
     },
     {
-      "name": "Simonovo",
+      "name": "Kožuchovo",
       "altNames": {},
       "location": {
         "lat": 55.70650216461572,
@@ -2621,7 +2621,7 @@
       }
     },
     {
-      "name": "Simonovo",
+      "name": "Kožuchovo",
       "altNames": {},
       "location": {
         "lat": 55.7063691749892,
@@ -2629,7 +2629,7 @@
       }
     },
     {
-      "name": "Kožuchovo",
+      "name": "Ťufeleva rošča",
       "altNames": {},
       "location": {
         "lat": 55.69794759194814,
@@ -4389,7 +4389,7 @@
       }
     },
     {
-      "name": "Kožuchovo",
+      "name": "Ťufeleva rošča",
       "altNames": {},
       "location": {
         "lat": 55.699864220812444,
@@ -4397,7 +4397,7 @@
       }
     },
     {
-      "name": "New station",
+      "name": "Ťufeleva rošča",
       "altNames": {},
       "location": {
         "lat": 55.69940472214197,
