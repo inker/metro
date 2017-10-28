@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509231404967,
+  "version": 1509233293362,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -469,7 +469,7 @@
       }
     },
     {
-      "name": "Šadrovo",
+      "name": "Šajdrovo",
       "altNames": {},
       "location": {
         "lat": 55.635790682258055,
