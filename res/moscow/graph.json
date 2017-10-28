@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509056651138,
+  "version": 1509152950835,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -2069,7 +2069,7 @@
       }
     },
     {
-      "name": "Pätigorskaja",
+      "name": "Väzovka",
       "altNames": {},
       "location": {
         "lat": 55.72491081363781,
