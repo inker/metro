@@ -1,5 +1,4 @@
 import { Point } from 'leaflet'
-import delay from 'delay.js'
 import {
     zip,
     uniq,
