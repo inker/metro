@@ -60,7 +60,9 @@ import {
 } from './util/collections'
 
 import { scale } from './util/sfx'
-import { findCycle } from './util/algorithm'
+import findCycle from './util/algorithm/findCycle'
+
+import 'leaflet-dist/leaflet.css'
 
 const {
     mean,

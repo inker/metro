@@ -1,4 +1,4 @@
-import * as L from 'leaflet'
+import { Point } from 'leaflet'
 import delay from 'delay.js'
 import {
     zip,
@@ -73,7 +73,7 @@ export function getPlatformNamesZipped(platforms: Platform[]) {
         .filter(identity)
 }
 
-export function midPointsToEnds(pos: L.Point, midPts: L.Point[]) {
+export function midPointsToEnds(pos: Point, midPts: Point[]) {
     const lens = midPts.map(midPt => pos.distanceTo(midPt))
     const midOfMidsWeighted = midPts[1]
         .subtract(midPts[0])
@@ -148,7 +148,7 @@ export function formatTime(time?: number) {
     return `${hours > 0 ? `${hours}h` : ''} ${inflect(mins, 'min')}`
 }
 
-export function drawBezierHints(parent: Element, controlPoints: L.Point[], linesColor?: string) {
+export function drawBezierHints(parent: Element, controlPoints: Point[], linesColor?: string) {
     for (let i = 1; i < controlPoints.length; ++i) {
         const line = svg.createSVGElement('line')
         line.setAttribute('x1', controlPoints[i - 1].x.toString())

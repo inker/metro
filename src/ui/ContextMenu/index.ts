@@ -1,4 +1,4 @@
-import * as L from 'leaflet'
+import { Map as LeafletMap, Browser } from 'leaflet'
 import { remove } from 'lodash'
 
 import { MetroMapEventMap } from '../../util'
@@ -21,7 +21,7 @@ interface ContextMenuItem<EventName> {
 }
 
 export default class ContextMenu {
-    private map: L.Map
+    private map: LeafletMap
     private readonly items: ContextMenuItem<EventName>[]
     private readonly container: HTMLDivElement
 
@@ -37,12 +37,12 @@ export default class ContextMenu {
         })
     }
 
-    addTo(map: L.Map) {
+    addTo(map: LeafletMap) {
         this.onAdd(map)
         return this
     }
 
-    onAdd(map: L.Map) {
+    onAdd(map: LeafletMap) {
         this.map = map
         if (map === undefined) {
             throw new Error('cannot add map editor to metro map: leaflet map is missing')
@@ -55,13 +55,13 @@ export default class ContextMenu {
         // objectsPane.addEventListener('contextmenu', listener, true); // 'true' prevents propagation
         mapContainer.addEventListener('mousedown', cancelListener)
         mapContainer.addEventListener('touchstart', cancelListener)
-        if (!L.Browser.mobile) {
+        if (!Browser.mobile) {
             map.on('movestart', cancelListener)
         }
         document.body.appendChild(this.container)
     }
 
-    onRemove(map: L.Map) {
+    onRemove(map: LeafletMap) {
         // TODO
     }
 
@@ -132,14 +132,14 @@ export default class ContextMenu {
 
     private show() {
         this.container.style.visibility = null
-        if (L.Browser.mobile) {
+        if (Browser.mobile) {
             this.map.dragging.disable()
         }
     }
 
     private hide() {
         this.container.style.visibility = 'hidden'
-        if (L.Browser.mobile) {
+        if (Browser.mobile) {
             this.map.dragging.enable()
         }
     }

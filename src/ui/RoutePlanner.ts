@@ -6,7 +6,7 @@ import { Icons, cacheIcons } from './index'
 import Widget from './base/Widget'
 
 import { resetStyle } from '../util'
-import { shortestRoute } from '../util/algorithm'
+import shortestRoute from '../util/algorithm/shortestRoute'
 import { animation, visualizeRoute } from '../util/sfx'
 
 export default class implements Widget {
