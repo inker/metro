@@ -1,4 +1,4 @@
-/*@import '/metro/res/colors.css';*/
+/* @import '../colors.css'; */
 
 /*.M1 { stroke: #E32017; }
 .M2 { stroke: #003688; }
@@ -17,20 +17,20 @@
 #paths-inner * { stroke: #FFFFFF; }*/
 
 /* reverse engineered from the original map */
-.M1 { stroke: rgb(238,46,34); } /* Voxaľnaja */
-.M2 { stroke: rgb(27,63,148); } /* Moskovskaja */
-.M3 { stroke: rgb(0,132,61); } /* Nevskaja */
-.M4 { stroke: rgb(244,128,38); } /* Lahtinskaja */
-.M5 { stroke: rgb(151,1,94); } /* Kupčinskaja */
-.M6 { stroke: rgb(176,95,15); } /* Ligovskaja */
-.M7 { stroke: rgb(254,209,5); } /* Koľcevaja */
-.M8 { stroke: rgb(149,156,161); } /* Admiraltejskaja */
-.M9 { stroke: rgb(6,157,220); } /* Severnaja */
-.M10 { stroke: rgb(243,134,160); } /* Pravoberežnaja */
-.M11 { stroke: rgb(35,31,32); } /* Aviacionnaja */
-.M12 { stroke: rgb(121,193,66); } /* Kinovejevskaja */
-.E { stroke:  rgb(96,64,153); }
-.L { stroke: rgb(0,177,176); }
+.M1 { stroke: var(--red); } /* Voxaľnaja */
+.M2 { stroke: var(--blue); } /* Moskovskaja */
+.M3 { stroke: var(--green); } /* Nevskaja */
+.M4 { stroke: var(--orange); } /* Lahtinskaja */
+.M5 { stroke: var(--purple); } /* Kupčinskaja */
+.M6 { stroke: var(--brown); } /* Ligovskaja */
+.M7 { stroke: var(--yellow); } /* Koľcevaja */
+.M8 { stroke: var(--grey); } /* Admiraltejskaja */
+.M9 { stroke: var(--azure); } /* Severnaja */
+.M10 { stroke: var(--pink); } /* Pravoberežnaja */
+.M11 { stroke: var(--black); } /* Aviacionnaja */
+.M12 { stroke: var(--lime); } /* Kinovejevskaja */
+.E { stroke:  var(--blue); }
+.L { stroke: var(--cyan); }
 #paths-inner * { stroke: #FFFFFF; }
 
 /* wikipedia */

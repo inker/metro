@@ -17,7 +17,7 @@
     "localforage": "^1.5.2",
     "lodash": "^4.17.4",
     "svgio": "^0.3.3",
-    "tryfunc": "^1.0.0",
+    "tryfunc": "^1.0.1",
     "tslib": "^1.8.0",
     "unblur": "^0.5.7"
   },

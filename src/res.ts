@@ -21,7 +21,36 @@ export const cachelessFetch = (url: string) =>
 export const getJSON = (url: string) =>
     cachelessFetch(url).then(data => data.json()) as Promise<any>
 
+async function getColors() {
+    const response = await cachelessFetch('res/colors.css')
+    const text = await response.text()
+    const re = /(--[\w-]+?):\s*?(\S.+?);/g
+    const pairs: string[][] = []
+    let m: RegExpExecArray | null
+    while ((m = re.exec(text)) !== null) {
+        pairs.push([m[1], m[2]])
+    }
+    return new Map<string, string>(pairs as any)
+}
+
+function replaceStrokeColor(colors: Map<string, string>, rule: CSSStyleRule) {
+    const { stroke } = rule.style
+    if (!stroke) {
+        return
+    }
+    const tokens = stroke.match(/^var\((.+?)\)$/)
+    if (!tokens || !tokens[1]) {
+        return
+    }
+    const color = colors.get(tokens[1])
+    if (!color) {
+        return
+    }
+    rule.style.stroke = color
+}
+
 export async function getLineRules() {
+    const colorsPromise = getColors()
     const lineRules = new Map<string, CSSStyleDeclaration>()
     const link = document.getElementById('scheme') as HTMLLinkElement
 
@@ -29,6 +58,7 @@ export async function getLineRules() {
         interval: 100,
         numAttempts: 100,
     })
+    const colors = await colorsPromise
     for (const rule of (cssRules as any)) {
         if (!(rule instanceof CSSStyleRule)) {
             continue
@@ -37,6 +67,7 @@ export async function getLineRules() {
         for (const selector of selectors) {
             const tokens = selector.match(/^.(M\d+|L|E)$/)
             if (tokens && tokens[1]) {
+                replaceStrokeColor(colors, rule)
                 lineRules.set(tokens[1], rule.style)
             }
         }

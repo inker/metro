@@ -1,8 +1,8 @@
-.M1 { stroke: rgb(0,132,61); }
-.M2 { stroke: rgb(254,209,5); }
-.M3 { stroke: rgb(238,46,34); }
-.M4 { stroke: rgb(27,63,148); }
-.M5 { stroke: rgb(151,1,94); }
+.M1 { stroke: var(--green); }
+.M2 { stroke: var(--yellow); }
+.M3 { stroke: var(--red); }
+.M4 { stroke: var(--blue); }
+.M5 { stroke: var(--purple); }
 .M6 { stroke: rgb(176,95,15); }
 .M7 { stroke: rgb(244,128,38); }
 .M8 { stroke: rgb(149,156,161); }
