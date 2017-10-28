@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509229888691,
+  "version": 1509231404967,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -5333,6 +5333,18 @@
     {
       "source": 574,
       "target": 341
+    },
+    {
+      "source": 91,
+      "target": 551
+    },
+    {
+      "source": 43,
+      "target": 551
+    },
+    {
+      "source": 35,
+      "target": 551
     }
   ],
   "lines": {
