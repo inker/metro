@@ -5,7 +5,7 @@
   "main": "bin/www",
   "dependencies": {
     "alertifyjs": "^1.11.0",
-    "animate-svg": "^1.0.2",
+    "animate-svg": "^1.1.0",
     "bim": "^1.1.1",
     "delay.js": "^1.0.2",
     "download.js": "0.0.3",
