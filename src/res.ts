@@ -1,4 +1,4 @@
-import { tryRun } from './util'
+import { tryCall } from 'tryfunc'
 
 export interface Config {
     containerId: string,
@@ -25,7 +25,10 @@ export async function getLineRules() {
     const lineRules = new Map<string, CSSStyleDeclaration>()
     const link = document.getElementById('scheme') as HTMLLinkElement
 
-    const cssRules = await tryRun(() => (link.sheet as CSSStyleSheet).cssRules)
+    const cssRules = await tryCall(() => (link.sheet as CSSStyleSheet).cssRules, {
+        interval: 100,
+        numAttempts: 100,
+    })
     for (const rule of (cssRules as any)) {
         if (!(rule instanceof CSSStyleRule)) {
             continue

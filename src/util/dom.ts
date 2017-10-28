@@ -1,11 +1,14 @@
+import { tryUntil } from 'tryfunc'
 import { identity } from 'lodash'
-import { repeatUntil } from './index'
 import { getOrMakeInMap } from './collections'
 
-export async function tryGetElement(query: string, interval = 100, ttl = 100) {
+export async function tryGetElement(query: string, interval = 100, numAttempts = 100) {
     const rest = query.slice(1)
     const func = query[0] === '#' ? (() => document.getElementById(rest)) : () => document.querySelector(query)
-    const el = await repeatUntil(func, identity, interval, ttl)
+    const el = await tryUntil(func, identity, {
+        interval,
+        numAttempts,
+    })
     return el as Element
 }
 

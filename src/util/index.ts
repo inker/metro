@@ -81,37 +81,6 @@ export function midPointsToEnds(pos: Point, midPts: Point[]) {
     return midPts.map(v => math.vector.round(v.add(offset), 2))
 }
 
-export async function repeatUntil<ReturnValueType>(
-    func: () => ReturnValueType,
-    validate: (val: ReturnValueType) => boolean,
-    interval = 100,
-    ttl = 100,
-) {
-    for (let i = 0; i < ttl; ++i) {
-        const val = func()
-        if (validate(val)) {
-            return val
-        }
-        await delay(interval)
-    }
-    throw new Error('rejected')
-}
-
-export async function tryRun<ReturnValueType>(
-    func: () => ReturnValueType,
-    interval = 100,
-    ttl = 100,
-) {
-    for (let i = 0; i < ttl; ++i) {
-        try {
-            return func()
-        } catch (e) {
-            await delay(interval)
-        }
-    }
-    throw new Error('rejected')
-}
-
 interface CityLang {
     [city: string]: string | undefined,
 }
