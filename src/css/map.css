@@ -4,10 +4,8 @@ path {
 
 circle {
     transform-origin: 50% 50%;
-}
 
-@-moz-document url-prefix() {
-    circle {
+    @-moz-document url-prefix() {
         transform-origin: 0% 0%;
     }
 }
@@ -27,8 +25,10 @@ circle {
     fill: none;
 }
 
-#paths-outer > path, #transfers-outer > path {
-    pointer-events: stroke;
+#paths-outer, #transfers-outer {
+    & > path {
+        pointer-events: stroke;
+    }
 }
 
 #transfers-outer {

@@ -6,8 +6,7 @@ import MetroMap from '../../MetroMap'
 import Widget from '../base/Widget'
 import { byId } from '../../util/dom'
 
-import * as styles from './styles.scss'
-
+import * as styles from './styles.pcss'
 
 export default class MapEditor implements Widget {
     private metroMap: MetroMap

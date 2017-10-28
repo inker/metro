@@ -1,9 +1,9 @@
-const autoprefixer = require('autoprefixer')
+const cssnext = require('postcss-cssnext')
 const cssnano = require('cssnano')
 
 module.exports = {
   plugins: [
-    autoprefixer({}),
+    cssnext({}),
     cssnano({
       zindex: false,
     }),

@@ -11,25 +11,23 @@
     border-collapse: collapse;
     transform-origin: 0 0;
     user-select: none;
-}
 
-@media only screen and (max-device-width: 400px) and (-webkit-min-device-pixel-ratio: 2) {
-    .contextmenu {
+    @media only screen and (max-device-width: 400px) and (-webkit-min-device-pixel-ratio: 2) {
         font-size: 1.2em;
     }
-} 
 
-.contextmenu div {
-    padding: 5px;
-    cursor: default;
-}
+    & div {
+        padding: 5px;
+        cursor: default;
+        
+        &[disabled] {
+            color: grey;
+            /*cursor: not-allowed*/            
+        }
 
-.contextmenu div[disabled] {
-    color: grey;
-    /*cursor: not-allowed*/
-}
-
-.contextmenu div:not([disabled]):hover {
-    background-color: #82B1FF;
-    /*color: #ffffff;*/
+        &:not([disabled]):hover {
+            background-color: #82B1FF;
+            /*color: #ffffff;*/            
+        }
+    }
 }

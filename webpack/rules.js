@@ -22,7 +22,7 @@ module.exports = env => [
     exclude: /node_modules/,
   },
   { // non-global
-    test: /\.scss$/,
+    test: /\.pcss$/,
     use: [
       'style-loader',
       {

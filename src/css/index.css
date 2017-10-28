@@ -10,22 +10,22 @@ body {
 
 a {
     color: #2196F3;
-}
 
-a:hover {
-    color: #E91E63;
+    &:hover {
+        color: #E91E63;
+    }
 }
 
 #map-container {
     height: 100%; /* the map should have a defined height */
     font-size: 12px;
     cursor: default;
-}
 
-#map-container.dimmed {
-    filter: brightness(0.75);
-    transition-property: filter;
-    transition-duration: 200ms;
+    &.dimmed {
+        filter: brightness(0.75);
+        transition-property: filter;
+        transition-duration: 200ms;
+    }
 }
 
 #wait {
@@ -50,22 +50,18 @@ button {
     transition: box-shadow 100ms;
     user-select: none;
     outline-width: 0;
-}
 
-button:hover {
-    background-color: #f0f0f0;
-}
+    &:hover {
+        background-color: #f0f0f0;
+    }
 
-button:active {
-    box-shadow: none;
-}
+    &:active {
+        box-shadow: none;
+    }
 
-button:disabled {
-    background: #eaeaea;
-    color: #a8a8a8;
-    cursor: auto;
+    &:disabled {
+        background: #eaeaea;
+        color: #a8a8a8;
+        cursor: auto;
+    }
 }
-
- /*.leaflet-zoom-anim  .leaflet-zoom-animated {
-     transition-duration: 1s;
- }*/
