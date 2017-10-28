@@ -1,22 +1,28 @@
 import * as L from 'leaflet'
 import { last } from 'lodash'
 
-import { events } from '../util'
-import { RedCircle } from './Icons'
+import { RedCircle } from '../Icons'
+import { onceEscapePress } from '../../util/events'
 
-type LeafletMouseEvent = L.LeafletMouseEvent
+import styles from './styles.pcss'
 
 export default class DistanceMeasure {
     private map: L.Map
-    private readonly polyline = L.polyline([], { color: 'red'})
+    private readonly polyline = L.polyline([], {
+        color: 'red',
+    })
     private readonly markers = L.featureGroup()
-    private readonly dashedLine = L.polyline([], { color: 'red', opacity: 0.5, dashArray: '0,9' })
+    private readonly dashedLine = L.polyline([], {
+        color: 'red',
+        opacity: 0.5,
+        dashArray: '0,9',
+        className: styles['dashed-line'],
+    })
 
     onAdd(map: L.Map) {
         this.map = map
         map.fireEvent('distancemeasureinit')
         map.on('measuredistance', (e: MouseEvent) => this.measureDistance(map.mouseEventToLatLng(e)))
-        map.on('clearmeasurements', (e: MouseEvent) => this.clearMeasurements())
         return this
     }
 
@@ -66,21 +72,26 @@ export default class DistanceMeasure {
         lastMarker.openPopup()
     }
 
-    private showDashedLine() {
+    private showDashedLine = () => {
         this.dashedLine.setStyle({ opacity: 0.5 })
     }
 
-    private hideDashedLine() {
+    private hideDashedLine = () => {
         this.dashedLine.setStyle({ opacity: 0 })
     }
 
-    private onCircleClick(e: LeafletMouseEvent) {
+    private handleDrag = () => {
+        this.dashedLine.setStyle({ opacity: 0})
+        this.updateDistances()
+    }
+
+    private onCircleClick = (e: L.LeafletMouseEvent) => {
         if (e.originalEvent.button !== 0) {
             return
         }
         this.markers.removeLayer(e.target)
         if (this.markers.getLayers().length === 0) {
-            this.map.fire('clearmeasurements')
+            this.clearMeasurements()
             return
         }
         this.updateDistances()
@@ -89,32 +100,39 @@ export default class DistanceMeasure {
         }
     }
 
-    private makeMarker = (e: LeafletMouseEvent) => {
+    private makeMarker = (e: L.LeafletMouseEvent) => {
         if (e.originalEvent.button !== 0) {
             return
-        }
-        const handleDrag = e => {
-            this.dashedLine.setStyle({ opacity: 0})
-            this.updateDistances()
         }
         const marker = L.marker(e.latlng, { draggable: true })
             .setIcon(RedCircle)
             .bindPopup('')
-            .on('mouseover', e => this.hideDashedLine())
-            .on('mouseout', e => this.showDashedLine())
-            .on('drag', handleDrag)
-            .on('click', this.onCircleClick.bind(this))
+            .on('mouseover', this.hideDashedLine)
+            .on('mouseout', this.showDashedLine)
+            .on('drag', this.handleDrag)
+            .on('click', this.onCircleClick)
         // const el = { lang: { ru: 'Udaliť izmerenia', en: 'Delete measurements' } };
         // this.metroMap.contextMenu.extraItems.set(circle, new Map().set('deletemeasurements', el));
         this.markers.addLayer(marker)
         this.updateDistances()
     }
 
-    private resetDashedLine = (e: LeafletMouseEvent) => {
+    private resetDashedLine = (e: L.LeafletMouseEvent) => {
         const dashedLingLatLngs = this.dashedLine.getLatLngs()
         dashedLingLatLngs[1] = e.latlng
         this.dashedLine.setLatLngs(dashedLingLatLngs)
         this.dashedLine.redraw()
+    }
+
+    private clearMeasurements = () => {
+        this.map.fire('clearmeasurements')
+        this.map.getPanes().overlayPane.style.zIndex = '-1000'
+        this.map
+            .removeLayer(this.polyline)
+            .removeLayer(this.markers.clearLayers())
+            .removeLayer(this.dashedLine)
+            .off('mousemove', this.resetDashedLine)
+            .off('click', this.makeMarker)
     }
 
     private measureDistance(initialCoordinate: L.LatLng) {
@@ -127,16 +145,6 @@ export default class DistanceMeasure {
             .on('click', this.makeMarker)
             .on('mousemove', this.resetDashedLine)
             .fire('click', { latlng: initialCoordinate, originalEvent: { button: 0 } })
-        events.onceEscapePress(e => this.map.fire('clearmeasurements'))
-    }
-
-    private clearMeasurements() {
-        this.map.getPanes().overlayPane.style.zIndex = '-1000'
-        this.map
-            .removeLayer(this.polyline)
-            .removeLayer(this.markers.clearLayers())
-            .removeLayer(this.dashedLine)
-            .off('mousemove', this.resetDashedLine)
-            .off('click', this.makeMarker)
+        onceEscapePress(this.clearMeasurements)
     }
 }

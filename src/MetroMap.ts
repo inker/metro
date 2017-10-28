@@ -8,7 +8,6 @@ import {
     maxBy,
 } from 'lodash'
 
-import * as ui from './ui'
 import { Config, getLineRules, getJSON } from './res'
 import pool from './ObjectPool'
 
@@ -21,15 +20,32 @@ import Network, {
 } from './network'
 
 import {
+    addLayerSwitcher,
+    DistanceMeasure,
+    SvgOverlay,
+    ContextMenu,
+    RoutePlanner,
+    Tooltip,
+    FAQ,
+    // drawZones,
+} from './ui'
+
+import {
+    mapbox,
+    mapnik,
+    osmFrance,
+    openMapSurfer,
+    cartoDBNoLabels,
+    wikimapia,
+} from './ui/tilelayers'
+
+import {
     geo,
-    sfx,
     svg,
     math,
-    algorithm,
     Mediator,
     color,
     dom,
-    collections,
     MetroMapEventMap,
     getPlatformNames,
     getPlatformNamesZipped,
@@ -37,20 +53,14 @@ import {
     // drawBezierHints,
 } from './util'
 
-const {
-    mapbox,
-    mapnik,
-    osmFrance,
-    openMapSurfer,
-    cartoDBNoLabels,
-    wikimapia,
-} = ui.tileLayers
-
-const {
+import {
     tryGetFromMap,
     tryGetKeyFromBiMap,
     getOrMakeInMap,
-} = collections
+} from './util/collections'
+
+import { scale } from './util/sfx'
+import { findCycle } from './util/algorithm'
 
 const {
     mean,
@@ -58,9 +68,6 @@ const {
     unit,
     angle,
 } = math.vector
-
-const { scale } = sfx
-const { findCycle } = algorithm
 
 const GAP_BETWEEN_PARALLEL = 0 // 0 - none, 1 - line width
 const CURVE_SPLIT_NUM = 10
@@ -121,8 +128,8 @@ export default class {
     protected readonly config: Config
     protected map: L.Map
     private moving = false
-    protected overlay: ui.SvgOverlay
-    protected readonly contextMenu = new ui.ContextMenu(contextMenuArray as any)
+    protected overlay: SvgOverlay
+    protected readonly contextMenu = new ContextMenu(contextMenuArray as any)
 
     protected network: Network
     private lineRules: Map<string, CSSStyleDeclaration>
@@ -130,7 +137,7 @@ export default class {
     private readonly platformOffsets = new Map<L.Point, Map<Span, number>>()
     protected readonly platformsOnSVG = new WeakMap<Platform, L.Point>()
 
-    protected readonly tooltip = new ui.Tooltip()
+    protected readonly tooltip = new Tooltip()
 
     // private routeWorker = new Worker('js/routeworker.js');
 
@@ -172,7 +179,7 @@ export default class {
             const mapPaneStyle = this.map.getPanes().mapPane.style
             mapPaneStyle.visibility = 'hidden'
 
-            ui.addLayerSwitcher(this.map, [
+            addLayerSwitcher(this.map, [
                 mapbox,
                 mapnik,
                 osmFrance,
@@ -195,7 +202,7 @@ export default class {
             const center = geo.getCenter(platformLocations)
             config.center = [center.lat, center.lng]
             const bounds = L.latLngBounds(platformLocations)
-            this.overlay = new ui.SvgOverlay(bounds, L.point(200, 200)).addTo(this.map)
+            this.overlay = new SvgOverlay(bounds, L.point(200, 200)).addTo(this.map)
             const { defs } = this.overlay
             svg.filters.appendAll(defs)
             const { textContent } = defs
@@ -221,12 +228,12 @@ export default class {
             // TODO: fix the kludge making the grey area disappear
             this.map.invalidateSize(false)
             this.addMapListeners()
-            new ui.RoutePlanner().addTo(this)
-            new ui.DistanceMeasure().addTo(this.map)
+            new RoutePlanner().addTo(this)
+            new DistanceMeasure().addTo(this.map)
             // this.routeWorker.postMessage(this.network);
-            // ui.drawZones(this.map, this.network.platforms);
+            // drawZones(this.map, this.network.platforms);
 
-            dataPromise.then(data => new ui.FAQ(data.faq).addTo(this))
+            dataPromise.then(data => new FAQ(data.faq).addTo(this))
             // wait.textContent = 'loading tiles...';
 
             await tileLoadPromise

@@ -5,14 +5,9 @@ import MetroMap from '../MetroMap'
 import { Icons, cacheIcons } from './index'
 import Widget from './base/Widget'
 
-import {
-    sfx,
-    algorithm,
-    resetStyle,
-} from '../util'
-
-const { animation, visualizeRoute } = sfx
-const { shortestRoute } = algorithm
+import { resetStyle } from '../util'
+import { shortestRoute } from '../util/algorithm'
+import { animation, visualizeRoute } from '../util/sfx'
 
 export default class implements Widget {
     private metroMap: MetroMap

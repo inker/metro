@@ -22,16 +22,15 @@ import {
 
 import {
     svg,
-    collections,
     getPlatformNames,
     // dom,
 } from './util'
 
-const {
+import {
     intersection,
     tryGetFromMap,
     tryGetKeyFromBiMap,
-} = collections
+} from './util/collections'
 
 // const { gradients } = svg
 

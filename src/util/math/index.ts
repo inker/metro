@@ -103,7 +103,7 @@ export function wings(a: Point, b: Point, c: Point, length = 1): Point[] {
     return orthogonal(bis.multiplyBy(t))
 }
 
-export function getCircumcenter(pts: Point[]): Point|null {
+export function getCircumcenter(pts: Point[]): Point | null {
     if (pts.length !== 3) {
         throw new Error('must have 3 vertices')
     }

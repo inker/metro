@@ -1,7 +1,8 @@
 import * as L from 'leaflet'
 import { remove } from 'lodash'
 
-import { MetroMapEventMap, dom } from '../../util'
+import { MetroMapEventMap } from '../../util'
+import { removeAllChildren } from '../../util/dom'
 
 import * as styles from './styles.pcss'
 
@@ -68,7 +69,7 @@ export default class ContextMenu {
         event.preventDefault()
         const { target } = event as any as { target: Node }
         console.log('target', target, target.parentNode)
-        dom.removeAllChildren(this.container)
+        removeAllChildren(this.container)
         for (const item of this.items) {
             if (item.trigger && !item.trigger(target)) {
                 console.log(item.trigger(target))

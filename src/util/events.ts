@@ -25,7 +25,7 @@ export function onceEscapePress(handler: (ev: KeyboardEvent) => any) {
         removeEventListener('backbutton', backbuttonListener)
     }
 
-    addEventListener('keydown', keydownListener)
+    addEventListener('keydown', keydownListener, true)
     addEventListener('backbutton', backbuttonListener)
     // once(window, 'keydown', (e: KeyboardEvent) => {
     //     if (e.keyCode === 27) handler(e);
