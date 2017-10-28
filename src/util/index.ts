@@ -8,7 +8,6 @@ import {
 
 import { Platform } from '../network'
 
-import * as algorithm from './algorithm'
 import * as geo from './geo'
 import * as math from './math'
 import Mediator from './Mediator'
@@ -21,7 +20,6 @@ import * as collections from './collections'
 import MetroMapEventMap from './MetroMapEventMap'
 
 export {
-    algorithm,
     geo,
     math,
     Mediator,
