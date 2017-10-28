@@ -12,7 +12,7 @@
     "strictNullChecks": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
-    "downlevelIteration": true,
+    // "downlevelIteration": true,
     "noEmitHelpers": true,
     "importHelpers": true,
     "lib": [
