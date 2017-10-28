@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509233293362,
+  "version": 1509234079839,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4602,6 +4602,14 @@
       "location": {
         "lat": 55.78144828923086,
         "lng": 37.86103248596192
+      }
+    },
+    {
+      "name": "Gremäčevo",
+      "altNames": {},
+      "location": {
+        "lat": 55.63026730548445,
+        "lng": 37.84855484962464
       }
     }
   ],
@@ -9466,6 +9474,13 @@
       "target": 574,
       "routes": [
         27
+      ]
+    },
+    {
+      "source": 512,
+      "target": 575,
+      "routes": [
+        6
       ]
     }
   ],
