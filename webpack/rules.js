@@ -3,7 +3,7 @@ const { createLodashTransformer } = require('typescript-plugin-lodash')
 const tsOptions = env => env === 'dev' ? {
   // getCustomTransformers: () => ({ before: [styledComponentsTransformer] }),
 } : {
-  ignoreDiagnostics: [2307, 2345, 2339],
+  ignoreDiagnostics: [2345],
   getCustomTransformers: () => ({ before: [createLodashTransformer()] }),
 }
 

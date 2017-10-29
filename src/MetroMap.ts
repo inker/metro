@@ -30,6 +30,8 @@ import {
     // drawZones,
 } from './ui'
 
+import { confirm } from './ui/alertify'
+
 import {
     mapbox,
     mapbox2,
@@ -184,18 +186,20 @@ export default class {
 
             addLayerSwitcher(this.map, [
                 mapbox,
-                mapbox2,
                 mapnik,
                 osmFrance,
+                mapbox2,
                 openMapSurfer,
                 cartoDBNoLabels,
                 wikimapia,
             ])
 
-            addEventListener('keydown', e => {
-                if (e.shiftKey && e.ctrlKey && e.keyCode === 82) {
-                    this.getGraph().then(nw => this.resetNetwork(nw))
+            addEventListener('keydown', async e => {
+                if (!e.shiftKey || !e.ctrlKey || e.keyCode !== 82 || !(await confirm('Reset network?'))) {
+                    return
                 }
+                const graph = await this.getGraph()
+                this.resetNetwork(graph)
             })
             // wait.textContent = 'loading graph...';
             this.addContextMenu()

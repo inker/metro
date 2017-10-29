@@ -3,7 +3,7 @@ import { LatLngBounds, point } from 'leaflet'
 import MapOverlay from '../base/MapOverlay'
 import { createSVGElement } from '../../util/svg'
 
-import * as styles from './styles.pcss'
+import styles from './styles.pcss'
 
 export default class extends MapOverlay<'svg'> {
     readonly defs: SVGDefsElement

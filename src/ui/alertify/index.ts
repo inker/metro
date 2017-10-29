@@ -3,6 +3,8 @@ import * as alertify from 'alertifyjs'
 import 'alertify-dist/css/alertify.css'
 import 'alertify-dist/css/themes/default.css'
 
+import { transitionEnd } from '../../util/events'
+
 import './styles.css'
 
 export default alertify
@@ -19,11 +21,14 @@ export async function getPassword(...args: any[]) {
     const input = document.querySelector('.ajs-input') as HTMLInputElement
     input.type = 'password'
     const val = await prompt(...args)
-    setTimeout(() => input.type = 'text', 500)
+    const dimmer = document.querySelector('.ajs-dimmer')
+    if (dimmer) {
+        transitionEnd(dimmer).then(() => input.type = 'text')
+    }
     return val
 }
 
-export const confirm = (text: string) => new Promise((resolve) => {
+export const confirm = (text: string) => new Promise<boolean>((resolve) => {
     alertify.confirm(text, () => {
         resolve(true)
     }, () => {

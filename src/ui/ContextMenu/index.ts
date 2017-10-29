@@ -4,7 +4,7 @@ import { remove } from 'lodash'
 import { MetroMapEventMap } from '../../util'
 import { removeAllChildren } from '../../util/dom'
 
-import * as styles from './styles.pcss'
+import styles from './styles.pcss'
 
 type EventName = keyof MetroMapEventMap
 

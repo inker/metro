@@ -5,7 +5,7 @@ import Widget from '../base/Widget'
 import MetroMap from '../../MetroMap'
 import { transitionEnd, once } from '../../util/events'
 
-import * as styles from './styles.pcss'
+import styles from './styles.pcss'
 
 interface QA {
     q: string,

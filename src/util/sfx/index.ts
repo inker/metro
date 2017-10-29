@@ -1,7 +1,7 @@
 import alertify from '../../ui/alertify'
 import pool from '../../ObjectPool'
 import { filters } from '../svg'
-import { ShortestRouteObject } from '../algorithm'
+import { ShortestRouteObject } from '../algorithm/shortestRoute'
 import { formatTime as ft } from '../../util'
 import { Platform, Edge, Span } from '../../network'
 

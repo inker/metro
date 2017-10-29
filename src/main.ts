@@ -3,7 +3,7 @@ import { capitalize } from 'lodash'
 
 import './MetroMap'
 
-import * as config from './mapconfig.json'
+import config from './mapconfig.json'
 
 import './css/index.css'
 import './css/leaflet.css'
@@ -26,6 +26,6 @@ for (const url of Object.keys(config.url)) {
 }
 document.title = `${city && city !== 'spb' ? capitalize(city) : 'St Petersburg'} metro plan proposal`
 
-mapPromise.then(map => {
-    new map.default(config)
+mapPromise.then(module => {
+    new module.default(config)
 })
