@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509237220752,
+  "version": 1509306024750,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -280,8 +280,8 @@
       "name": "Smolenskaja",
       "altNames": {},
       "location": {
-        "lat": 55.747912446066614,
-        "lng": 37.58378863334656
+        "lat": 55.74779469387309,
+        "lng": 37.583815455436714
       }
     },
     {
@@ -344,8 +344,8 @@
       "name": "Smolenskaja",
       "altNames": {},
       "location": {
-        "lat": 55.74816606496865,
-        "lng": 37.58245825767517
+        "lat": 55.74876991286144,
+        "lng": 37.582554817199714
       }
     },
     {
@@ -4719,8 +4719,8 @@
       "target": 153
     },
     {
-      "source": 42,
-      "target": 153
+      "source": 35,
+      "target": 551
     },
     {
       "source": 261,
@@ -5348,10 +5348,6 @@
     },
     {
       "source": 43,
-      "target": 551
-    },
-    {
-      "source": 35,
       "target": 551
     }
   ],
