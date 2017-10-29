@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509318667399,
+  "version": 1509319073739,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -429,7 +429,7 @@
       }
     },
     {
-      "name": "Paveleckaja",
+      "name": "Koževniki",
       "altNames": {},
       "location": {
         "lat": 55.73057791520167,
@@ -701,7 +701,7 @@
       }
     },
     {
-      "name": "Paveleckaja",
+      "name": "Koževniki",
       "altNames": {},
       "location": {
         "lat": 55.731402536795514,
@@ -3021,7 +3021,7 @@
       }
     },
     {
-      "name": "Paveleckaja",
+      "name": "Koževniki",
       "altNames": {},
       "location": {
         "lat": 55.728620501896394,
