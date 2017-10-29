@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509306024750,
+  "version": 1509318667399,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -1357,7 +1357,7 @@
       }
     },
     {
-      "name": "Danilovskaja",
+      "name": "Danilovka",
       "altNames": {},
       "location": {
         "lat": 55.70872362894701,
@@ -2157,7 +2157,7 @@
       }
     },
     {
-      "name": "Danilovskaja",
+      "name": "Danilovka",
       "altNames": {},
       "location": {
         "lat": 55.706768142510896,
@@ -3029,7 +3029,7 @@
       }
     },
     {
-      "name": "Danilovskaja",
+      "name": "Danilovka",
       "altNames": {},
       "location": {
         "lat": 55.70457679336585,
