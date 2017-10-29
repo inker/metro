@@ -14,10 +14,10 @@
     "hammerjs": "^2.0.8",
     "html-tags": "^2.0.0",
     "leaflet": "^1.2.0",
-    "localforage": "^1.5.2",
+    "localforage": "^1.5.3",
     "lodash": "^4.17.4",
     "svgio": "^0.4.0",
-    "tryfunc": "^1.0.1",
+    "tryfunc": "^2.0.1",
     "tslib": "^1.8.0",
     "unblur": "^0.5.7"
   },
