@@ -1,5 +1,6 @@
 :root {
   --white: #FFFFFF;
+  --light-grey: rgb(237,237,237); // zones 2, 4, 6...
   --grey: rgb(161,165,167);
   --black: rgb(29,29,27);
   --brown: rgb(179,99,0);
@@ -10,6 +11,8 @@
   --green: rgb(0,125,50);
   --teal: rgb(0,166,170);
   --cyan: rgb(147,206,189);
+  --lightest-azure: rgb(212,237,252); // water inner
+  --lighter-azure: rgb(58,180,233); // water outer
   --light-azure: rgb(0,168,231);
   --azure: rgb(0,152,216);
   --blue: rgb(36,53,136);

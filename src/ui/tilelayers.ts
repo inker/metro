@@ -9,6 +9,11 @@ export const mapbox = tileLayer(`https://{s}.tiles.mapbox.com/v3/inker.mlo91c41/
     attribution: 'Map data &copy; <a href=\"https://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://mapbox.com\">Mapbox</a>',
 })
 
+export const mapbox2 = tileLayer(`https://api.mapbox.com/styles/v1/inker/cj9cri11x6cqg2slbyi3o3niq/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaW5rZXIiLCJhIjoiajlpYVl1YyJ9.UpoLm3kdL8SCR6GeCRzyIQ`, {
+    detectRetina: retina,
+    attribution: 'Map data &copy; <a href=\"https://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://mapbox.com\">Mapbox</a>',
+})
+
 export const mapnik = tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 })

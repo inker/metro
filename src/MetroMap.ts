@@ -32,6 +32,7 @@ import {
 
 import {
     mapbox,
+    mapbox2,
     mapnik,
     osmFrance,
     openMapSurfer,
@@ -183,6 +184,7 @@ export default class {
 
             addLayerSwitcher(this.map, [
                 mapbox,
+                mapbox2,
                 mapnik,
                 osmFrance,
                 openMapSurfer,
