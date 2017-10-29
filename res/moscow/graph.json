@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509229888691,
+  "version": 1509237220752,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -117,7 +117,7 @@
       }
     },
     {
-      "name": "Park 50-letia Okťabřa",
+      "name": "Ulica Udaľcova",
       "altNames": {},
       "location": {
         "lat": 55.67719119514953,
@@ -469,7 +469,7 @@
       }
     },
     {
-      "name": "Šadrovo",
+      "name": "Šajdrovo",
       "altNames": {},
       "location": {
         "lat": 55.635790682258055,
@@ -1877,7 +1877,7 @@
       }
     },
     {
-      "name": "Park 50-letia Okťabřa",
+      "name": "Ulica Udaľcova",
       "altNames": {},
       "location": {
         "lat": 55.67782638816487,
@@ -4603,6 +4603,14 @@
         "lat": 55.78144828923086,
         "lng": 37.86103248596192
       }
+    },
+    {
+      "name": "Gremäčevo",
+      "altNames": {},
+      "location": {
+        "lat": 55.63026730548445,
+        "lng": 37.84855484962464
+      }
     }
   ],
   "transfers": [
@@ -5333,6 +5341,18 @@
     {
       "source": 574,
       "target": 341
+    },
+    {
+      "source": 91,
+      "target": 551
+    },
+    {
+      "source": 43,
+      "target": 551
+    },
+    {
+      "source": 35,
+      "target": 551
     }
   ],
   "lines": {
@@ -9454,6 +9474,13 @@
       "target": 574,
       "routes": [
         27
+      ]
+    },
+    {
+      "source": 512,
+      "target": 575,
+      "routes": [
+        6
       ]
     }
   ],
