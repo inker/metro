@@ -8,7 +8,7 @@
     "animate-svg": "^1.1.0",
     "bim": "^1.1.1",
     "delay.js": "^1.0.2",
-    "download.js": "0.0.3",
+    "download.js": "^1.0.0",
     "fast-delete": "^1.0.1",
     "github-api": "^3.0.0",
     "hammerjs": "^2.0.8",
@@ -16,7 +16,7 @@
     "leaflet": "^1.2.0",
     "localforage": "^1.5.2",
     "lodash": "^4.17.4",
-    "svgio": "^0.3.3",
+    "svgio": "^0.4.0",
     "tryfunc": "^1.0.1",
     "tslib": "^1.8.0",
     "unblur": "^0.5.7"

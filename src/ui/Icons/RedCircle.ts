@@ -10,9 +10,10 @@ const root = createSVGElement('svg')
 root.setAttribute('width', '100')
 root.setAttribute('height', '100')
 const ci = makeCircle(point(50, 50), 40)
-ci.style.stroke = 'red'
-ci.style.strokeWidth = '20px'
-ci.style.fill = 'white'
+const { style } = ci
+style.stroke = 'red'
+style.strokeWidth = '20px'
+style.fill = 'white'
 root.appendChild(ci)
 
 export default icon({
