@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509319073739,
+  "version": 1509319603827,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4269,7 +4269,7 @@
       }
     },
     {
-      "name": "CMT",
+      "name": "Tri gory",
       "altNames": {},
       "location": {
         "lat": 55.75693301901982,
