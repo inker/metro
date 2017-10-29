@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509234079839,
+  "version": 1509237220752,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -117,7 +117,7 @@
       }
     },
     {
-      "name": "Park 50-letia Okťabřa",
+      "name": "Ulica Udaľcova",
       "altNames": {},
       "location": {
         "lat": 55.67719119514953,
@@ -1877,7 +1877,7 @@
       }
     },
     {
-      "name": "Park 50-letia Okťabřa",
+      "name": "Ulica Udaľcova",
       "altNames": {},
       "location": {
         "lat": 55.67782638816487,
