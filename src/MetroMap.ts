@@ -174,7 +174,12 @@ export default class {
             // wait.textContent = 'making map...';
 
             config.center = [0, 0]
-            const mapOptions = { ...config }
+            const mapOptions: L.MapOptions = {
+                ...config,
+                zoomDelta: 1,
+                wheelPxPerZoomLevel: 200,
+                zoomSnap: 0.25,
+            }
             const scaleControl = L.control.scale({
                 imperial: false,
             })
@@ -218,9 +223,12 @@ export default class {
             // wait.textContent = 'adding content...';
             this.resetMapView()
             this.map.addLayer(mapbox)
-            this.map.on('overlayupdate', e => {
+            this.map.on('overlayupdate', (e: any) => {
+                if (Number.isInteger(e.zoom)) {
+                    e.reset()
+                    this.redrawNetwork()
+                }
                 this.moving = true
-                this.redrawNetwork()
                 this.moving = false
                 // console.time('conversion');
                 // file.svgToPicture(document.getElementById('overlay') as any).then(img => {

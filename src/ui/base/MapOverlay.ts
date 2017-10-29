@@ -77,23 +77,23 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
     }
 
     private onZoomEnd = () => {
+        this.map.fireEvent('overlayupdate', {
+            zoom: this.map.getZoom(),
+            reset: this.updateOverlayPositioning,
+        })
+    }
+
+    private updateOverlayPositioning = () => {
         const { style } = this.overlayContainer
 
         style.transform = null
         style.transformOrigin = null
-
-        this.updateOverlayPositioning()
-        this.map.fireEvent('overlayupdate', this)
-    }
-
-    private updateOverlayPositioning() {
         const { map, bounds, margin } = this
         const nw = bounds.getNorthWest()
         const se = bounds.getSouthEast()
         this.topLeft = map.project(nw, map.getZoom()).round()
 
         const pixelBounds = L.bounds(map.latLngToLayerPoint(nw), map.latLngToLayerPoint(se))
-        const { style } = this.overlayContainer
         const topLeft = (pixelBounds.min as L.Point).subtract(margin)
         style.left = topLeft.x + 'px'
         style.top = topLeft.y + 'px'
@@ -112,8 +112,8 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
         }
         const o = this.mousePos.subtract(boxTopLeft)
         const { style } = this.overlayContainer
-        style.transformOrigin = `${o.x}px ${o.y}px`
-        style.transform = `scale(${scaleFactor})`
+        // style.transformOrigin += `${o.x}px ${o.y}px`
+        style.transform += `translate(${o.x / 2}px, ${o.y / 2}px) scale(${scaleFactor})`
     }
 
     extendBounds(point: L.LatLng) {
