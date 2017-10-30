@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509306024750,
+  "version": 1509320358643,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -429,7 +429,7 @@
       }
     },
     {
-      "name": "Paveleckaja",
+      "name": "Koževniki",
       "altNames": {},
       "location": {
         "lat": 55.73057791520167,
@@ -701,7 +701,7 @@
       }
     },
     {
-      "name": "Paveleckaja",
+      "name": "Koževniki",
       "altNames": {},
       "location": {
         "lat": 55.731402536795514,
@@ -1013,7 +1013,7 @@
       }
     },
     {
-      "name": "Spasskaja",
+      "name": "Kruticy",
       "altNames": {},
       "location": {
         "lat": 55.73182239238012,
@@ -1181,7 +1181,7 @@
       }
     },
     {
-      "name": "Rogožskaja",
+      "name": "Rogožka",
       "altNames": {},
       "location": {
         "lat": 55.74696739921181,
@@ -1357,7 +1357,7 @@
       }
     },
     {
-      "name": "Danilovskaja",
+      "name": "Danilovka",
       "altNames": {},
       "location": {
         "lat": 55.70872362894701,
@@ -1549,7 +1549,7 @@
       }
     },
     {
-      "name": "Rogožskaja",
+      "name": "Rogožka",
       "altNames": {},
       "location": {
         "lat": 55.74706099912293,
@@ -1557,7 +1557,7 @@
       }
     },
     {
-      "name": "Spasskaja",
+      "name": "Kruticy",
       "altNames": {},
       "location": {
         "lat": 55.733260137008486,
@@ -2157,7 +2157,7 @@
       }
     },
     {
-      "name": "Danilovskaja",
+      "name": "Danilovka",
       "altNames": {},
       "location": {
         "lat": 55.706768142510896,
@@ -2669,7 +2669,7 @@
       }
     },
     {
-      "name": "Rogožskaja",
+      "name": "Rogožka",
       "altNames": {},
       "location": {
         "lat": 55.7483109893153,
@@ -3021,7 +3021,7 @@
       }
     },
     {
-      "name": "Paveleckaja",
+      "name": "Koževniki",
       "altNames": {},
       "location": {
         "lat": 55.728620501896394,
@@ -3029,7 +3029,7 @@
       }
     },
     {
-      "name": "Danilovskaja",
+      "name": "Danilovka",
       "altNames": {},
       "location": {
         "lat": 55.70457679336585,
@@ -4269,7 +4269,7 @@
       }
     },
     {
-      "name": "CMT",
+      "name": "Tri gory",
       "altNames": {},
       "location": {
         "lat": 55.75693301901982,
