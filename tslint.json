@@ -20,6 +20,7 @@
     "no-duplicate-variable": true,
     "no-this-assignment": false,
     "no-unused-variable": true,
+    "no-submodule-imports": false,
     "object-literal-key-quotes": [
       true,
       "as-needed"

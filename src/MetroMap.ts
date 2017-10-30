@@ -65,7 +65,7 @@ import {
 import { scale } from './util/sfx'
 import findCycle from './util/algorithm/findCycle'
 
-import 'leaflet-dist/leaflet.css'
+import 'leaflet/dist/leaflet.css'
 
 const {
     mean,

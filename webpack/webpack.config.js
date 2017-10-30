@@ -23,8 +23,8 @@ module.exports = env => ({
       '.jsx',
     ],
     alias: {
-      'leaflet-dist': path.join(rootDir, 'node_modules/leaflet/dist'),
-      'alertify-dist': path.join(rootDir, 'node_modules/alertifyjs/build'),
+      // 'leaflet-dist': path.join(rootDir, 'node_modules/leaflet/dist'),
+      // 'alertify-dist': path.join(rootDir, 'node_modules/alertifyjs/build'),
     },
   },
   devtool: env === 'dev' ? 'source-map' : undefined,

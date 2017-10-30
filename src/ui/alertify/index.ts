@@ -1,7 +1,7 @@
 import * as alertify from 'alertifyjs'
 
-import 'alertify-dist/css/alertify.css'
-import 'alertify-dist/css/themes/default.css'
+import 'alertifyjs/build/css/alertify.css'
+import 'alertifyjs/build/css/themes/default.css'
 
 import { transitionEnd } from '../../util/events'
 
