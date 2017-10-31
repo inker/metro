@@ -23,6 +23,7 @@ export default class DistanceMeasure {
         this.map = map
         map.fireEvent('distancemeasureinit')
         map.on('measuredistance', (e: MouseEvent) => this.measureDistance(map.mouseEventToLatLng(e)))
+        map.on('clearmeasurements', this.clearMeasurements)
         return this
     }
 
@@ -46,7 +47,13 @@ export default class DistanceMeasure {
             distance += markers[i - 1].getLatLng().distanceTo(currentLatLng)
             const d = Math.round(distance)
             const str = d < 1000 ? `${d} m` : `${d < 10000 ? d / 1000 : Math.round(d / 10) / 100} km`
-            markers[i].setPopupContent(str)
+            const marker = markers[i]
+            marker.setPopupContent(str)
+            const popup = marker.getPopup()
+            if (!popup) {
+                throw new Error('no popup exists for some reason')
+            }
+            popup.options.closeButton = false
         }
         if (latlngs.length > nMarkers) {
             latlngs.length = nMarkers
@@ -91,7 +98,7 @@ export default class DistanceMeasure {
         }
         this.markers.removeLayer(e.target)
         if (this.markers.getLayers().length === 0) {
-            this.clearMeasurements()
+            this.fireClearMeasurements()
             return
         }
         this.updateDistances()
@@ -124,8 +131,11 @@ export default class DistanceMeasure {
         this.dashedLine.redraw()
     }
 
-    private clearMeasurements = () => {
+    private fireClearMeasurements = () => {
         this.map.fire('clearmeasurements')
+    }
+
+    private clearMeasurements = () => {
         this.map.getPanes().overlayPane.style.zIndex = '-1000'
         this.map
             .removeLayer(this.polyline)
@@ -145,6 +155,6 @@ export default class DistanceMeasure {
             .on('click', this.makeMarker)
             .on('mousemove', this.resetDashedLine)
             .fire('click', { latlng: initialCoordinate, originalEvent: { button: 0 } })
-        onceEscapePress(this.clearMeasurements)
+        onceEscapePress(this.fireClearMeasurements)
     }
 }

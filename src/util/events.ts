@@ -21,7 +21,7 @@ export function onceEscapePress(handler: (ev: KeyboardEvent) => any) {
         handler(e)
     }
     function removeListener() {
-        removeEventListener('keydown', keydownListener)
+        removeEventListener('keydown', keydownListener, true)
         removeEventListener('backbutton', backbuttonListener)
     }
 
