@@ -12,7 +12,17 @@ interface QA {
     a: string,
 }
 
-export default class implements Widget {
+const URL_RE = /\[\[(.+?)\|(.*?)\]\]/g
+const REPLACEMENT = '<a href="$1" target="_blank" rel="noopener">$2</a>'
+
+const qa2html = (qa: QA) => `
+    <div>
+        <span class="${styles.question}">${qa.q}</span>
+        <span class="${styles.answer}">${qa.a}</span>
+    </div>
+`
+
+export default class FAQ implements Widget {
     private readonly button: HTMLButtonElement
     private readonly card: HTMLDivElement
     private map: Map
@@ -22,26 +32,16 @@ export default class implements Widget {
         btn.textContent = 'FAQ'
         btn.classList.add('leaflet-control')
         btn.classList.add(styles['faq-button'])
-        btn.addEventListener('click', e => this.showFAQ())
+        btn.addEventListener('click', this.showFAQ)
         this.button = btn
         this.card = document.createElement('div')
         this.card.classList.add(styles['faq-card'])
 
         if (Browser.mobile) {
-            new Hammer(this.card).on('swipeleft swiperight', e => this.hideFAQ())
+            new Hammer(this.card).on('swipeleft swiperight', this.hideFAQ)
         }
 
-        const urlRe = /\[\[(.+?)\|(.*?)\]\]/g
-        const replacement = '<a href="$1" target="_blank" rel="noopener">$2</a>'
-        const questionClass = styles.question
-        const answerClass = styles.answer
-        const qa2html = (qa: QA) => `
-            <div>
-                <span class="${questionClass}">${qa.q}</span>
-                <span class="${answerClass}">${qa.a}</span>
-            </div>
-        `
-        this.card.innerHTML += faqData.map(qa2html).join('').replace(urlRe, replacement)
+        this.card.innerHTML += faqData.map(qa2html).join('').replace(URL_RE, REPLACEMENT)
     }
 
     addTo(metroMap: MetroMap) {
@@ -55,7 +55,7 @@ export default class implements Widget {
         return this
     }
 
-    showFAQ() {
+    showFAQ = () => {
         const { card, map, button } = this
         const { style } = card
         style.display = 'inline'
@@ -77,7 +77,7 @@ export default class implements Widget {
         }
     }
 
-    hideFAQ() {
+    hideFAQ = () => {
         const { card, map, button } = this
         const { style } = card
         card.getBoundingClientRect()
