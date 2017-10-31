@@ -1,5 +1,4 @@
 import { Map, Browser } from 'leaflet'
-import * as Hammer from 'hammerjs'
 
 import Widget from '../base/Widget'
 import MetroMap from '../../MetroMap'
@@ -38,7 +37,9 @@ export default class FAQ implements Widget {
         this.card.classList.add(styles['faq-card'])
 
         if (Browser.mobile) {
-            new Hammer(this.card).on('swipeleft swiperight', this.hideFAQ)
+            import('hammerjs').then(Hammer => {
+                new Hammer(this.card).on('swipeleft swiperight', this.hideFAQ)
+            })
         }
 
         this.card.innerHTML += faqData.map(qa2html).join('').replace(URL_RE, REPLACEMENT)
