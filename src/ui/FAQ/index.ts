@@ -32,7 +32,7 @@ export default class implements Widget {
         }
 
         const urlRe = /\[\[(.+?)\|(.*?)\]\]/g
-        const replacement = '<a href=\"$1\" target=\"_blank\">$2</a>'
+        const replacement = '<a href="$1" target="_blank" rel="noopener">$2</a>'
         const questionClass = styles.question
         const answerClass = styles.answer
         const qa2html = (qa: QA) => `

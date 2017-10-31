@@ -40,7 +40,7 @@ const RESET_SELECTOR = [
 ].map(i => `#${i} > *`).join(', ')
 
 export const makeLink = (url: string, text: string, newTab = false) =>
-    `<a href="${url}" ${newTab ? 'target="_blank"' : ''}>${text}</a>`
+    `<a href="${url}" ${newTab ? 'target="_blank" rel="noopener"' : ''}>${text}</a>`
 
 export function resetStyle() {
     const els = document.querySelectorAll(RESET_SELECTOR) as any as HTMLElement[]
