@@ -6,7 +6,7 @@ import { removeAllChildren } from '../../util/dom'
 
 import styles from './styles.pcss'
 
-type EventName = keyof MetroMapEventMap
+type MetroMapEvent = keyof MetroMapEventMap
 
 // TODO: merge items & extra items, introduce item index
 interface Extra {
@@ -22,10 +22,10 @@ interface ContextMenuItem<EventName> {
 
 export default class ContextMenu {
     private map: LeafletMap
-    private readonly items: ContextMenuItem<EventName>[]
+    private readonly items: ContextMenuItem<MetroMapEvent>[]
     private readonly container: HTMLDivElement
 
-    constructor(items: ContextMenuItem<EventName>[]) {
+    constructor(items: ContextMenuItem<MetroMapEvent>[]) {
         this.items = items
         // this._extraItems = new Map();
 
@@ -49,14 +49,12 @@ export default class ContextMenu {
         }
         const { mapPane } = map.getPanes()
         const mapContainer = map.getContainer()
-        const listener = e => this.handler(e)
-        const cancelListener = e => this.hide()
-        mapPane.addEventListener('contextmenu', listener, false)
+        mapPane.addEventListener('contextmenu', this.handler, false)
         // objectsPane.addEventListener('contextmenu', listener, true); // 'true' prevents propagation
-        mapContainer.addEventListener('mousedown', cancelListener)
-        mapContainer.addEventListener('touchstart', cancelListener)
+        mapContainer.addEventListener('mousedown', this.hide)
+        mapContainer.addEventListener('touchstart', this.hide)
         if (!Browser.mobile) {
-            map.on('movestart', cancelListener)
+            map.on('movestart', this.hide)
         }
         document.body.appendChild(this.container)
     }
@@ -65,7 +63,7 @@ export default class ContextMenu {
         // TODO
     }
 
-    private handler(event: MouseEvent) {
+    private handler = (event: MouseEvent) => {
         event.preventDefault()
         const { target } = event as any as { target: Node }
         console.log('target', target, target.parentNode)
@@ -104,7 +102,7 @@ export default class ContextMenu {
     }
 
     insertItem(
-        event: EventName,
+        event: MetroMapEvent,
         text: string,
         trigger?: (target: EventTarget) => boolean,
         extra?: Extra,
@@ -118,7 +116,7 @@ export default class ContextMenu {
         }
     }
 
-    removeItem(event: EventName, all = false) {
+    removeItem(event: MetroMapEvent, all = false) {
         if (all) {
             remove(this.items, item => item.event === event)
             return
@@ -130,14 +128,14 @@ export default class ContextMenu {
         this.items.splice(index, 1)
     }
 
-    private show() {
+    private show = () => {
         this.container.style.visibility = null
         if (Browser.mobile) {
             this.map.dragging.disable()
         }
     }
 
-    private hide() {
+    private hide = () => {
         this.container.style.visibility = 'hidden'
         if (Browser.mobile) {
             this.map.dragging.enable()
