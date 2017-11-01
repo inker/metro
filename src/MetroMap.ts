@@ -4,11 +4,15 @@ import {
     difference,
     intersection,
     uniqueId,
-    memoize,
     maxBy,
 } from 'lodash'
 
-import { Config, getLineRules, getJSON } from './res'
+import {
+    Config,
+    getLineRules,
+    getJSON,
+} from './res'
+
 import pool from './ObjectPool'
 
 import Network, {
@@ -19,6 +23,7 @@ import Network, {
     GraphJSON,
 } from './network'
 
+import getSvgSizesByZoom from './ui/getSvgSizesByZoom'
 import addLayerSwitcher from './ui/addLayerSwitcher'
 import DistanceMeasure from './ui/DistanceMeasure'
 import SvgOverlay from './ui/SvgOverlay'
@@ -99,31 +104,6 @@ const contextMenuArray = [{
         disabled: true,
     },
 }]
-
-function getSvgSizesByZoom(zoom: number, detailedZoom: number) {
-    const coef = zoom > 9 ? zoom : zoom > 8 ? 9.5 : 9
-    // const lineWidth = 2 ** (zoom / 4 - 1.75);
-    const lineWidth = (coef - 7) * 0.5
-    const lightLineWidth = lineWidth * 0.75
-    const circleRadius = coef < detailedZoom ? lineWidth * 1.25 : lineWidth * 1.1
-    const circleBorder = coef < detailedZoom ? circleRadius * 0.4 : circleRadius * 0.6
-    const dummyCircleRadius = circleRadius * 2
-    const transferWidth = lineWidth * 0.9
-    const transferBorder = circleBorder * 1.4
-    const fullCircleRadius = circleRadius + circleBorder / 2
-    return {
-        lineWidth,
-        lightLineWidth,
-        circleRadius,
-        circleBorder,
-        dummyCircleRadius,
-        transferWidth,
-        transferBorder,
-        fullCircleRadius,
-    }
-}
-
-const getSvgSizesByZoomMemoized = memoize(getSvgSizesByZoom)
 
 export default class {
     readonly mediator = new Mediator()
@@ -530,7 +510,7 @@ export default class {
     }
 
     private getSvgSizes() {
-        return getSvgSizesByZoomMemoized(this.map.getZoom(), this.config.detailedZoom)
+        return getSvgSizesByZoom(this.map.getZoom(), this.config.detailedZoom)
     }
 
     private makePlatformElement(platform: Platform) {
