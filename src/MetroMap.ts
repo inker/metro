@@ -21,15 +21,15 @@ import Network, {
 
 import {
     addLayerSwitcher,
-    DistanceMeasure,
-    SvgOverlay,
-    ContextMenu,
-    RoutePlanner,
-    Tooltip,
-    FAQ,
     // drawZones,
 } from './ui'
 
+import DistanceMeasure from './ui/DistanceMeasure'
+import SvgOverlay from './ui/SvgOverlay'
+import ContextMenu from './ui/ContextMenu'
+import RoutePlanner from './ui/RoutePlanner'
+import Tooltip from './ui/Tooltip'
+import FAQ from './ui/FAQ'
 import { confirm } from './ui/alertify'
 
 import {

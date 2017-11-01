@@ -7,12 +7,10 @@ import MetroMap from './MetroMap'
 import { Config } from './res'
 import pool from './ObjectPool'
 
-import {
-    MapEditor,
-    askRoutes,
-    platformRenameDialog,
-    gitHubDialog,
-} from './ui'
+import MapEditor from './ui/MapEditor'
+import askRoutes from './ui/askRoutes'
+import platformRenameDialog from './ui/platformRenameDialog'
+import gitHubDialog from './ui/GitHub'
 
 import {
     Platform,

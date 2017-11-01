@@ -2,7 +2,8 @@ import { marker, LatLng } from 'leaflet'
 
 import alertify from '../ui/alertify'
 import MetroMap from '../MetroMap'
-import { Icons, cacheIcons } from './index'
+import { cacheIcons } from './index'
+import { makeMarker } from './Icons'
 import Widget from './base/Widget'
 
 import { resetStyle } from '../util'
@@ -13,11 +14,11 @@ export default class implements Widget {
     private metroMap: MetroMap
     private readonly fromMarker = marker([0, 0], {
         draggable: true,
-        icon: Icons.makeMarker('#228822', 'A'),
+        icon: makeMarker('#228822', 'A'),
     })
     private readonly toMarker = marker([0, 0], {
         draggable: true,
-        icon: Icons.makeMarker('#dd2222', 'B'),
+        icon: makeMarker('#dd2222', 'B'),
     })
 
     constructor() {

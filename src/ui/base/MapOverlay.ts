@@ -13,8 +13,8 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
     private topLeft: L.Point
     protected readonly margin: L.Point
 
-    private minZoom: number
-    private maxZoom: number
+    // private minZoom: number
+    // private maxZoom: number
 
     private mousePos: L.Point | null
 
@@ -32,8 +32,8 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
 
     onAdd(map: L.Map) {
         this.map = map
-        this.minZoom = map.getMinZoom()
-        this.maxZoom = map.getMaxZoom()
+        // this.minZoom = map.getMinZoom()
+        // this.maxZoom = map.getMaxZoom()
 
         this.updateOverlayPositioning()
         const { markerPane, mapPane } = map.getPanes()

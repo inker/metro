@@ -1,7 +1,7 @@
 import { Browser, Icon } from 'leaflet'
 import { capitalize } from 'lodash'
 
-import './MetroMap'
+import './MetroMap' // mind this
 
 import config from './mapconfig.json'
 

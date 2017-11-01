@@ -3,25 +3,6 @@ import * as L from 'leaflet'
 import { Platform } from '../network'
 import { calculateGeoMedian } from '../util/geo'
 
-import * as Icons from './Icons'
-import * as tileLayers from './tilelayers'
-
-export { default as MapEditor } from './MapEditor'
-export { default as FAQ } from './FAQ'
-export { default as Tooltip } from './Tooltip'
-export { default as RoutePlanner } from './RoutePlanner'
-export { default as ContextMenu } from './ContextMenu'
-export { default as DistanceMeasure } from './DistanceMeasure'
-export { default as SvgOverlay } from './SvgOverlay'
-export { default as gitHubDialog } from './GitHub'
-export { default as askRoutes } from './askRoutes'
-export { default as platformRenameDialog } from './platformRenameDialog'
-
-export {
-    Icons,
-    tileLayers,
-}
-
 export function addLayerSwitcher(map: L.Map, layers: L.TileLayer[]) {
     let currentLayerIndex = 0
     addEventListener('keydown', e => {
