@@ -2,7 +2,7 @@ import { marker, LatLng } from 'leaflet'
 
 import alertify from '../ui/alertify'
 import MetroMap from '../MetroMap'
-import { cacheIcons } from './index'
+import cacheIcons from './cacheIcons'
 import { makeMarker } from './Icons'
 import Widget from './base/Widget'
 

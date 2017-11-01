@@ -19,17 +19,14 @@ import Network, {
     GraphJSON,
 } from './network'
 
-import {
-    addLayerSwitcher,
-    // drawZones,
-} from './ui'
-
+import addLayerSwitcher from './ui/addLayerSwitcher'
 import DistanceMeasure from './ui/DistanceMeasure'
 import SvgOverlay from './ui/SvgOverlay'
 import ContextMenu from './ui/ContextMenu'
 import RoutePlanner from './ui/RoutePlanner'
 import Tooltip from './ui/Tooltip'
 import FAQ from './ui/FAQ'
+// import drawZones from './ui/drawZones'
 import { confirm } from './ui/alertify'
 
 import {
