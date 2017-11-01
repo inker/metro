@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1507240825523,
+  "version": 1509495116250,
   "platforms": [
     {
       "name": "Glavnyj voxal",
@@ -805,20 +805,16 @@
       }
     },
     {
-      "name": "Putilovskij zavod",
-      "altNames": {
-        "fi": "Putilovin tehdas"
-      },
+      "name": "Jemeljanovka",
+      "altNames": {},
       "location": {
         "lat": 59.879641402464955,
         "lng": 30.26219706610092
       }
     },
     {
-      "name": "Putilovskij zavod",
-      "altNames": {
-        "fi": "Putilovin tehdas"
-      },
+      "name": "Jemeljanovka",
+      "altNames": {},
       "location": {
         "lat": 59.8762759610866,
         "lng": 30.264514494689823
