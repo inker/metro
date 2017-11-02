@@ -6,7 +6,7 @@
   "dependencies": {
     "alertifyjs": "^1.11.0",
     "animate-svg": "^1.1.0",
-    "bim": "^1.1.1",
+    "bim": "^1.1.2",
     "delay.js": "^1.0.2",
     "download.js": "^1.0.0",
     "fast-delete": "^1.0.1",
@@ -41,7 +41,7 @@
     "url-loader": "^0.6.2",
     "webpack": "^3.8.1",
     "webpack-bundle-analyzer": "^2.9.0",
-    "webpack-dev-server": "^2.9.3"
+    "webpack-dev-server": "^2.9.4"
   },
   "scripts": {
     "build:prod": "webpack --colors --config webpack/webpack.config.js --env=prod",
