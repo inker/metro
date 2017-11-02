@@ -2,6 +2,7 @@ import { Point } from 'leaflet'
 import { createSVGElement } from './index'
 
 function makeUndirectedLinear(colors: string[]): SVGLinearGradientElement {
+    // @ts-ignore
     const gradient = createSVGElement('linearGradient')
     gradient.innerHTML = `<stop style="stop-color:${colors[0]}" /><stop style="stop-color:${colors[1]}" />`
     return gradient

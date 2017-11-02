@@ -2,7 +2,7 @@ import { tryCall } from 'tryfunc'
 
 export interface Config {
     containerId: string,
-    center?: number[],
+    center?: [number, number],
     zoom: number,
     minZoom: number,
     maxZoom: number,

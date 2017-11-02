@@ -299,8 +299,7 @@ export default class {
         // const center = geo.calculateGeoMean(this.network.platforms.map(p => p.location), fitness, 0.1);
         const { center, zoom } = this.config
         const options = {
-            pan: { animate: false },
-            zoom: { animate: false },
+            animate: false,
         }
         if (!center) {
             console.error(`cannot set map to center`)

@@ -32,6 +32,7 @@ export function onceEscapePress(handler: (ev: KeyboardEvent) => any) {
     // });
 }
 
+// @ts-ignore
 export const transitionEnd = (el: Element) => once(el, 'transitionend') as Promise<Event>
 
 export function triggerMouseEvent(target: Node, eventType: string) {
