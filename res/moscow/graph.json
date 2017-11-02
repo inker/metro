@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509651049291,
+  "version": 1509651207295,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -4594,6 +4594,14 @@
       "location": {
         "lat": 55.76720692656917,
         "lng": 37.83262252807617
+      }
+    },
+    {
+      "name": "Orlovo",
+      "altNames": {},
+      "location": {
+        "lat": 55.63863079984429,
+        "lng": 37.382311820983894
       }
     }
   ],
@@ -9442,6 +9450,13 @@
       "target": 46,
       "routes": [
         3
+      ]
+    },
+    {
+      "source": 368,
+      "target": 574,
+      "routes": [
+        18
       ]
     }
   ],
