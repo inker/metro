@@ -23,6 +23,6 @@ export function setDirection(gradient: Element, vector: Point) {
 }
 
 export function setOffset(gradient: Element, offset: number) {
-    (gradient.firstChild as SVGStopElement).setAttribute('offset', offset.toString());
-    (gradient.lastChild as SVGStopElement).setAttribute('offset', (1 - offset).toString())
+    (gradient.firstElementChild as SVGStopElement).setAttribute('offset', offset.toString());
+    (gradient.lastElementChild as SVGStopElement).setAttribute('offset', (1 - offset).toString())
 }

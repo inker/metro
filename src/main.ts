@@ -1,4 +1,4 @@
-import { Browser, Icon } from 'leaflet'
+import { Browser } from 'leaflet'
 import { capitalize } from 'lodash'
 
 import './MetroMap' // mind this
@@ -8,8 +8,6 @@ import config from './mapconfig.json'
 import './css/index.css'
 import './css/leaflet.css'
 import './css/map.css'
-
-Icon.Default.imagePath = 'http://cdn.leafletjs.com/leaflet/v0.7.7/images'
 
 if (Browser.ie) {
     alert('Does not work in your browser (yet)')
