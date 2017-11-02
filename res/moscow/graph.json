@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509647240591,
+  "version": 1509648270139,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -365,11 +365,11 @@
       }
     },
     {
-      "name": "Kutuzovo",
+      "name": "Strojka",
       "altNames": {},
       "location": {
-        "lat": 55.74001924339858,
-        "lng": 37.534382343292236
+        "lat": 55.78144828923086,
+        "lng": 37.86103248596192
       }
     },
     {
@@ -2400,8 +2400,8 @@
       "name": "Kutuzovo",
       "altNames": {},
       "location": {
-        "lat": 55.73981992993342,
-        "lng": 37.53408193588256
+        "lat": 55.73994374599365,
+        "lng": 37.53423750400544
       }
     },
     {
@@ -4595,14 +4595,6 @@
         "lat": 55.76720692656917,
         "lng": 37.83262252807617
       }
-    },
-    {
-      "name": "Strojka",
-      "altNames": {},
-      "location": {
-        "lat": 55.78144828923086,
-        "lng": 37.86103248596192
-      }
     }
   ],
   "transfers": [
@@ -4959,8 +4951,8 @@
       "target": 252
     },
     {
-      "source": 45,
-      "target": 299
+      "source": 216,
+      "target": 560
     },
     {
       "source": 250,
@@ -5291,7 +5283,7 @@
       "target": 154
     },
     {
-      "source": 574,
+      "source": 45,
       "target": 341
     },
     {
@@ -5321,10 +5313,6 @@
     {
       "source": 559,
       "target": 353
-    },
-    {
-      "source": 216,
-      "target": 560
     }
   ],
   "lines": {
@@ -5672,17 +5660,17 @@
       ]
     },
     {
-      "source": 45,
-      "target": 44,
+      "source": 572,
+      "target": 573,
       "routes": [
-        3
+        27
       ]
     },
     {
-      "source": 46,
+      "source": 573,
       "target": 45,
       "routes": [
-        3
+        27
       ]
     },
     {
@@ -9435,17 +9423,17 @@
       ]
     },
     {
-      "source": 572,
-      "target": 573,
+      "source": 44,
+      "target": 299,
       "routes": [
-        27
+        3
       ]
     },
     {
-      "source": 573,
-      "target": 574,
+      "source": 299,
+      "target": 46,
       "routes": [
-        27
+        3
       ]
     }
   ],
