@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509637809859,
+  "version": 1509647240591,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -3197,7 +3197,7 @@
       }
     },
     {
-      "name": "Testovskaja",
+      "name": "Testovo",
       "altNames": {},
       "location": {
         "lat": 55.75417393535722,
