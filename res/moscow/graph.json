@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509649255877,
+  "version": 1509651049291,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -1309,7 +1309,7 @@
       }
     },
     {
-      "name": "Novoperedelkino",
+      "name": "Čoboty",
       "altNames": {},
       "location": {
         "lat": 55.64645368368984,
@@ -1317,7 +1317,7 @@
       }
     },
     {
-      "name": "Ulica Šolochova",
+      "name": "Novo-Peredelkino",
       "altNames": {},
       "location": {
         "lat": 55.63863079984429,
@@ -1328,8 +1328,8 @@
       "name": "Rasskazovka",
       "altNames": {},
       "location": {
-        "lat": 55.63318049925821,
-        "lng": 37.33448266983032
+        "lat": 55.63365288865114,
+        "lng": 37.33291625976563
       }
     },
     {
@@ -2957,7 +2957,7 @@
       }
     },
     {
-      "name": "Čoboty",
+      "name": "Peredelkino",
       "altNames": {},
       "location": {
         "lat": 55.65634509353607,
@@ -2965,7 +2965,7 @@
       }
     },
     {
-      "name": "Peredelkino",
+      "name": "Mičurinec",
       "altNames": {},
       "location": {
         "lat": 55.64618729538687,
