@@ -310,7 +310,7 @@ export default class {
     }
 
     private getGraph(): Promise<GraphJSON> {
-        return getJSON(this.config.url.graph) as any
+        return getJSON(this.config.url.graph)
     }
 
     protected resetNetwork(json: GraphJSON) {

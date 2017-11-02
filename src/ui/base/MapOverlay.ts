@@ -20,7 +20,7 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
 
     constructor(tagName: TagName, bounds: L.LatLngBounds, margin = L.point(100, 100)) {
         const ns = htmlTags.includes(tagName) && tagName !== 'svg' ? HTML_NAMESPACE : SVG_NAMESPACE
-        this.overlayContainer = document.createElementNS(ns, tagName) as any
+        this.overlayContainer = document.createElementNS(ns, tagName) as HTMLElement
         this.margin = margin.round()
         this.bounds = bounds
     }

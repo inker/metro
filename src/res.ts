@@ -19,18 +19,18 @@ export const cachelessFetch = (url: string) =>
     fetch(`${url}?${now}`)
 
 export const getJSON = (url: string) =>
-    cachelessFetch(url).then(data => data.json()) as Promise<any>
+    cachelessFetch(url).then(data => data.json())
 
 async function getColors() {
     const response = await cachelessFetch('res/colors.css')
     const text = await response.text()
     const re = /(--[\w-]+?):\s*?(\S.+?);/g
-    const pairs: string[][] = []
+    const pairs: [string, string][] = []
     let m: RegExpExecArray | null
     while ((m = re.exec(text)) !== null) {
         pairs.push([m[1], m[2]])
     }
-    return new Map<string, string>(pairs as any)
+    return new Map<string, string>(pairs)
 }
 
 function replaceStrokeColor(colors: Map<string, string>, rule: CSSStyleRule) {

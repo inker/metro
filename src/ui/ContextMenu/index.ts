@@ -65,8 +65,8 @@ export default class ContextMenu {
 
     private handler = (event: MouseEvent) => {
         event.preventDefault()
-        const { target } = event as any as { target: Node }
-        console.log('target', target, target.parentNode)
+        const { target } = event
+        console.log('target', target, (target as Node).parentNode)
         removeAllChildren(this.container)
         for (const item of this.items) {
             if (item.trigger && !item.trigger(target)) {

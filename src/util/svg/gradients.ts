@@ -4,7 +4,9 @@ import { createSVGElement } from './index'
 function makeUndirectedLinear(colors: string[]): SVGLinearGradientElement {
     // @ts-ignore
     const gradient = createSVGElement('linearGradient')
-    gradient.innerHTML = `<stop style="stop-color:${colors[0]}" /><stop style="stop-color:${colors[1]}" />`
+    gradient.innerHTML = colors.map(color => `
+        <stop style="stop-color:${color}" />
+    `).join('')
     return gradient
 }
 
