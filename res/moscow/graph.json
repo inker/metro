@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509405515088,
+  "version": 1509637502566,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -2181,11 +2181,11 @@
       }
     },
     {
-      "name": "Vystavočnaja",
+      "name": "Gremäčevo",
       "altNames": {},
       "location": {
-        "lat": 55.749458288058676,
-        "lng": 37.54360914230346
+        "lat": 55.63026730548445,
+        "lng": 37.84855484962464
       }
     },
     {
@@ -4424,8 +4424,8 @@
       "name": "Vystavočnaja",
       "altNames": {},
       "location": {
-        "lat": 55.750641781933986,
-        "lng": 37.54157066345215
+        "lat": 55.75015872754594,
+        "lng": 37.5415062904358
       }
     },
     {
@@ -4602,14 +4602,6 @@
       "location": {
         "lat": 55.78144828923086,
         "lng": 37.86103248596192
-      }
-    },
-    {
-      "name": "Gremäčevo",
-      "altNames": {},
-      "location": {
-        "lat": 55.63026730548445,
-        "lng": 37.84855484962464
       }
     }
   ],
@@ -4899,8 +4891,8 @@
       "target": 271
     },
     {
-      "source": 154,
-      "target": 272
+      "source": 43,
+      "target": 551
     },
     {
       "source": 275,
@@ -5231,8 +5223,8 @@
       "target": 531
     },
     {
-      "source": 285,
-      "target": 272
+      "source": 91,
+      "target": 551
     },
     {
       "source": 532,
@@ -5299,8 +5291,8 @@
       "target": 154
     },
     {
-      "source": 552,
-      "target": 272
+      "source": 574,
+      "target": 341
     },
     {
       "source": 553,
@@ -5337,18 +5329,6 @@
     {
       "source": 384,
       "target": 558
-    },
-    {
-      "source": 574,
-      "target": 341
-    },
-    {
-      "source": 91,
-      "target": 551
-    },
-    {
-      "source": 43,
-      "target": 551
     }
   ],
   "lines": {
@@ -7299,17 +7279,17 @@
       ]
     },
     {
-      "source": 43,
-      "target": 272,
+      "source": 552,
+      "target": 273,
       "routes": [
-        3
+        27
       ]
     },
     {
-      "source": 272,
-      "target": 273,
+      "source": 512,
+      "target": 272,
       "routes": [
-        3
+        6
       ]
     },
     {
@@ -7400,7 +7380,7 @@
       "source": 273,
       "target": 286,
       "routes": [
-        3
+        27
       ]
     },
     {
@@ -9470,13 +9450,6 @@
       "target": 574,
       "routes": [
         27
-      ]
-    },
-    {
-      "source": 512,
-      "target": 575,
-      "routes": [
-        6
       ]
     }
   ],
