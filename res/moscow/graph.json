@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509649001786,
+  "version": 1509649255877,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -3173,11 +3173,11 @@
       }
     },
     {
-      "name": "Kutuzovo",
+      "name": "Delovoj centr",
       "altNames": {},
       "location": {
-        "lat": 55.73838242691894,
-        "lng": 37.538158893585205
+        "lat": 55.74828683529491,
+        "lng": 37.53822326660157
       }
     },
     {
@@ -5051,8 +5051,8 @@
       "target": 395
     },
     {
-      "source": 299,
-      "target": 396
+      "source": 559,
+      "target": 353
     },
     {
       "source": 27,
@@ -5311,8 +5311,16 @@
       "target": 407
     },
     {
-      "source": 559,
-      "target": 353
+      "source": 396,
+      "target": 154
+    },
+    {
+      "source": 396,
+      "target": 285
+    },
+    {
+      "source": 396,
+      "target": 273
     }
   ],
   "lines": {
