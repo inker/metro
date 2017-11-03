@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509405515088,
+  "version": 1509651207295,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -365,11 +365,11 @@
       }
     },
     {
-      "name": "Kutuzovo",
+      "name": "Strojka",
       "altNames": {},
       "location": {
-        "lat": 55.74001924339858,
-        "lng": 37.534382343292236
+        "lat": 55.78144828923086,
+        "lng": 37.86103248596192
       }
     },
     {
@@ -1261,7 +1261,7 @@
       }
     },
     {
-      "name": "Ploščaď Indiry Gandhi",
+      "name": "Gladyševo",
       "altNames": {},
       "location": {
         "lat": 55.70593393304688,
@@ -1309,7 +1309,7 @@
       }
     },
     {
-      "name": "Novoperedelkino",
+      "name": "Čoboty",
       "altNames": {},
       "location": {
         "lat": 55.64645368368984,
@@ -1317,7 +1317,7 @@
       }
     },
     {
-      "name": "Ulica Šolochova",
+      "name": "Novo-Peredelkino",
       "altNames": {},
       "location": {
         "lat": 55.63863079984429,
@@ -1328,8 +1328,8 @@
       "name": "Rasskazovka",
       "altNames": {},
       "location": {
-        "lat": 55.63318049925821,
-        "lng": 37.33448266983032
+        "lat": 55.63365288865114,
+        "lng": 37.33291625976563
       }
     },
     {
@@ -2181,11 +2181,11 @@
       }
     },
     {
-      "name": "Vystavočnaja",
+      "name": "Gremäčevo",
       "altNames": {},
       "location": {
-        "lat": 55.749458288058676,
-        "lng": 37.54360914230346
+        "lat": 55.63026730548445,
+        "lng": 37.84855484962464
       }
     },
     {
@@ -2400,8 +2400,8 @@
       "name": "Kutuzovo",
       "altNames": {},
       "location": {
-        "lat": 55.73981992993342,
-        "lng": 37.53408193588256
+        "lat": 55.73994374599365,
+        "lng": 37.53423750400544
       }
     },
     {
@@ -2957,7 +2957,7 @@
       }
     },
     {
-      "name": "Čoboty",
+      "name": "Peredelkino",
       "altNames": {},
       "location": {
         "lat": 55.65634509353607,
@@ -2965,7 +2965,7 @@
       }
     },
     {
-      "name": "Peredelkino",
+      "name": "Mičurinec",
       "altNames": {},
       "location": {
         "lat": 55.64618729538687,
@@ -3173,11 +3173,11 @@
       }
     },
     {
-      "name": "Kutuzovo",
+      "name": "Delovoj centr",
       "altNames": {},
       "location": {
-        "lat": 55.73838242691894,
-        "lng": 37.538158893585205
+        "lat": 55.74828683529491,
+        "lng": 37.53822326660157
       }
     },
     {
@@ -3197,7 +3197,7 @@
       }
     },
     {
-      "name": "Testovskaja",
+      "name": "Testovo",
       "altNames": {},
       "location": {
         "lat": 55.75417393535722,
@@ -4416,16 +4416,16 @@
       "name": "Dorogomilovo",
       "altNames": {},
       "location": {
-        "lat": 55.744228747576805,
-        "lng": 37.568371295928955
+        "lat": 55.74263438334961,
+        "lng": 37.56244897842408
       }
     },
     {
       "name": "Vystavočnaja",
       "altNames": {},
       "location": {
-        "lat": 55.750641781933986,
-        "lng": 37.54157066345215
+        "lat": 55.75015872754594,
+        "lng": 37.5415062904358
       }
     },
     {
@@ -4597,19 +4597,11 @@
       }
     },
     {
-      "name": "Strojka",
+      "name": "Orlovo",
       "altNames": {},
       "location": {
-        "lat": 55.78144828923086,
-        "lng": 37.86103248596192
-      }
-    },
-    {
-      "name": "Gremäčevo",
-      "altNames": {},
-      "location": {
-        "lat": 55.63026730548445,
-        "lng": 37.84855484962464
+        "lat": 55.63863079984429,
+        "lng": 37.382311820983894
       }
     }
   ],
@@ -4899,8 +4891,8 @@
       "target": 271
     },
     {
-      "source": 154,
-      "target": 272
+      "source": 551,
+      "target": 363
     },
     {
       "source": 275,
@@ -4967,8 +4959,8 @@
       "target": 252
     },
     {
-      "source": 45,
-      "target": 299
+      "source": 216,
+      "target": 560
     },
     {
       "source": 250,
@@ -5067,8 +5059,8 @@
       "target": 395
     },
     {
-      "source": 299,
-      "target": 396
+      "source": 559,
+      "target": 353
     },
     {
       "source": 27,
@@ -5231,8 +5223,8 @@
       "target": 531
     },
     {
-      "source": 285,
-      "target": 272
+      "source": 384,
+      "target": 558
     },
     {
       "source": 532,
@@ -5299,8 +5291,8 @@
       "target": 154
     },
     {
-      "source": 552,
-      "target": 272
+      "source": 45,
+      "target": 341
     },
     {
       "source": 553,
@@ -5327,28 +5319,16 @@
       "target": 407
     },
     {
-      "source": 559,
-      "target": 353
+      "source": 396,
+      "target": 154
     },
     {
-      "source": 216,
-      "target": 560
+      "source": 396,
+      "target": 285
     },
     {
-      "source": 384,
-      "target": 558
-    },
-    {
-      "source": 574,
-      "target": 341
-    },
-    {
-      "source": 91,
-      "target": 551
-    },
-    {
-      "source": 43,
-      "target": 551
+      "source": 396,
+      "target": 273
     }
   ],
   "lines": {
@@ -5696,17 +5676,17 @@
       ]
     },
     {
-      "source": 45,
-      "target": 44,
+      "source": 572,
+      "target": 573,
       "routes": [
-        3
+        27
       ]
     },
     {
-      "source": 46,
+      "source": 573,
       "target": 45,
       "routes": [
-        3
+        27
       ]
     },
     {
@@ -7299,17 +7279,17 @@
       ]
     },
     {
-      "source": 43,
-      "target": 272,
+      "source": 552,
+      "target": 273,
       "routes": [
-        3
+        27
       ]
     },
     {
-      "source": 272,
-      "target": 273,
+      "source": 512,
+      "target": 272,
       "routes": [
-        3
+        6
       ]
     },
     {
@@ -7400,7 +7380,7 @@
       "source": 273,
       "target": 286,
       "routes": [
-        3
+        27
       ]
     },
     {
@@ -9459,24 +9439,24 @@
       ]
     },
     {
-      "source": 572,
-      "target": 573,
+      "source": 44,
+      "target": 299,
       "routes": [
-        27
+        3
       ]
     },
     {
-      "source": 573,
+      "source": 299,
+      "target": 46,
+      "routes": [
+        3
+      ]
+    },
+    {
+      "source": 368,
       "target": 574,
       "routes": [
-        27
-      ]
-    },
-    {
-      "source": 512,
-      "target": 575,
-      "routes": [
-        6
+        18
       ]
     }
   ],
