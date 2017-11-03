@@ -45,18 +45,19 @@ import {
 } from './ui/tilelayers'
 
 import {
-    geo,
     svg,
     math,
-    Mediator,
     color,
     dom,
-    MetroMapEventMap,
     getPlatformNames,
     getPlatformNamesZipped,
     // midPointsToEnds,
     // drawBezierHints,
 } from './util'
+
+import { getCenter } from './util/geo'
+import MetroMapEventMap from './util/MetroMapEventMap'
+import Mediator from './util/Mediator'
 
 import {
     tryGetFromMap,
@@ -184,7 +185,7 @@ export default class {
             const json = await networkPromise
             this.network = new Network(json)
             const platformLocations = this.network.platforms.map(p => p.location)
-            const center = geo.getCenter(platformLocations)
+            const center = getCenter(platformLocations)
             config.center = [center.lat, center.lng]
             const bounds = L.latLngBounds(platformLocations)
             this.overlay = new SvgOverlay(bounds, L.point(200, 200)).addTo(this.map)
@@ -590,7 +591,7 @@ export default class {
             const posByName = new Map<string, L.Point>()
             for (const name of nameSet) {
                 const locations = platforms.filter(p => p.name === name).map(p => p.location)
-                const geoCenter = geo.getCenter(locations)
+                const geoCenter = getCenter(locations)
                 posByName.set(name, overlay.latLngToOverlayPoint(geoCenter))
             }
             for (const platform of platforms) {
@@ -654,8 +655,8 @@ export default class {
             return whiskers
         }
 
-        const normals: L.Point[][] = [[], []]
-        const sortedSpans: Span[][] = [[], []]
+        const normals: [L.Point[], L.Point[]] = [[], []]
+        const sortedSpans: [Span[], Span[]] = [[], []]
         const distances = new WeakMap<Span, number>()
         for (const span of spans) {
             const neighbor = span.other(platform)

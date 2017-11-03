@@ -1,7 +1,7 @@
 import { Map as LeafletMap, Browser } from 'leaflet'
 import { remove } from 'lodash'
 
-import { MetroMapEventMap } from '../../util'
+import MetroMapEventMap from '../../util/MetroMapEventMap'
 import { removeAllChildren } from '../../util/dom'
 
 import styles from './styles.pcss'

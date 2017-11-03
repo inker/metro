@@ -7,28 +7,16 @@ import {
 
 import { Platform } from '../network'
 
-import * as geo from './geo'
 import * as math from './math'
-import Mediator from './Mediator'
-import * as sfx from './sfx'
 import * as svg from './svg'
 import * as color from './color'
 import * as dom from './dom'
-import * as events from './events'
-import * as collections from './collections'
-import MetroMapEventMap from './MetroMapEventMap'
 
 export {
-    geo,
     math,
-    Mediator,
-    sfx,
     svg,
     color,
     dom,
-    events,
-    collections,
-    MetroMapEventMap,
 }
 
 const RESET_SELECTOR = [

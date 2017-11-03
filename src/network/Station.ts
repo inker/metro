@@ -1,6 +1,7 @@
 import { LatLng } from './types'
 
-import { getPlatformNamesZipped, geo } from '../util'
+import { getPlatformNamesZipped } from '../util'
+import { getCenter } from '../util/geo'
 
 import Platform from './Platform'
 
@@ -16,7 +17,7 @@ export default class {
     }
 
     getCenter(): LatLng {
-        return geo.getCenter(this.platforms.map(p => p.location))
+        return getCenter(this.platforms.map(p => p.location))
     }
 
     passingLines(): Set<string> {
