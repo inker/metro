@@ -1,6 +1,6 @@
 {
   "graphVersion": "1.0",
-  "version": 1509651207295,
+  "version": 1509734337560,
   "platforms": [
     {
       "name": "Kalančovskaja",
@@ -1237,7 +1237,7 @@
       }
     },
     {
-      "name": "Vystavočnaja",
+      "name": "Delovoj centr",
       "altNames": {},
       "location": {
         "lat": 55.749971542362594,
@@ -2285,7 +2285,7 @@
       }
     },
     {
-      "name": "Vystavočnaja",
+      "name": "Delovoj centr",
       "altNames": {},
       "location": {
         "lat": 55.749760203172876,
