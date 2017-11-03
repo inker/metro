@@ -5,10 +5,8 @@
     "zoom": 11,
     "detailedZoom": 12,
     "url": {
-        "dictionary": "res/dictionary.json",
-        "graph": "res/{city}/graph.json",
-        "hints": "res/{city}/hints.json",
+        "graph": "https://rawgit.com/metrofan/metronetworks/master/{city}/graph.json",
         "data": "res/data.json",
-        "scheme": "res/{city}/scheme.css"
+        "scheme": "https://rawgit.com/metrofan/metronetworks/master/{city}/scheme.css"
     }
 }

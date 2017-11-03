@@ -7,8 +7,8 @@ import askChanges from './askChanges'
 import getPullRequest from './getPullRequest'
 import { AuthData } from './auth'
 
-const MY_NAME = 'inker'
-const REPO_NAME = 'metro'
+const MY_NAME = 'metrofan'
+const REPO_NAME = 'metronetworks'
 const MAIN_BRANCH = 'master'
 
 interface PullRequest {
@@ -34,7 +34,7 @@ export default async (json: string, { username, password }: AuthData): Promise<P
     if (permissions.push) {
         // push directly
         alertify.message('Pushing directly')
-        await repo.writeFile(MAIN_BRANCH, `res/${city}/graph.json`, json, title, {})
+        await repo.writeFile(MAIN_BRANCH, `${city}/graph.json`, json, title, {})
         alertify.success('Success')
         return {
             repo,
@@ -57,7 +57,7 @@ export default async (json: string, { username, password }: AuthData): Promise<P
     await forkedRepo.createBranch(MAIN_BRANCH, branchName)
     alertify.message('Branch created')
 
-    await forkedRepo.writeFile(branchName, `res/${city}/graph.json`, json, title, {})
+    await forkedRepo.writeFile(branchName, `${city}/graph.json`, json, title, {})
     alertify.message('File written')
 
     const body = await changesPromise
