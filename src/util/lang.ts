@@ -1,15 +1,18 @@
+import { getCity } from './index'
+
 interface CityLang {
   [city: string]: string | undefined,
 }
+
+const secondLanguageObj: CityLang = {
+  spb: 'fi',
+  qazan: 'tt',
+  helsinki: 'se',
+}
+
 export function getSecondLanguage() {
-  const tokens = location.search.match(/city=(\w+)/)
-  const city = tokens ? tokens[1] : 'spb'
-  const obj: CityLang = {
-      spb: 'fi',
-      qazan: 'tt',
-      helsinki: 'se',
-  }
-  return obj[city]
+  const city = getCity()
+  return secondLanguageObj[city]
 }
 
 function inflect(value: number, str: string) {

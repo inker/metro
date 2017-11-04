@@ -30,6 +30,11 @@ const RESET_SELECTOR = [
 export const makeLink = (url: string, text: string, newTab = false) =>
     `<a href="${url}" ${newTab ? 'target="_blank" rel="noopener"' : ''}>${text}</a>`
 
+export function getCity() {
+    const tokens = location.search.match(/city=(\w+)/)
+    return tokens ? tokens[1] : 'spb'
+}
+
 export function resetStyle() {
     const els = document.querySelectorAll(RESET_SELECTOR) as any as HTMLElement[]
     for (const { style } of els) {

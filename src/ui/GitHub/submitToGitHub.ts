@@ -1,7 +1,7 @@
 import * as GitHub from 'github-api'
 
 import alertify from '../alertify'
-import { makeLink } from '../../util'
+import { getCity, makeLink } from '../../util'
 import forkRepo from './forkRepo'
 import askChanges from './askChanges'
 import getPullRequest from './getPullRequest'
@@ -18,8 +18,7 @@ interface PullRequest {
 }
 
 export default async (json: string, { username, password }: AuthData): Promise<PullRequest | null> => {
-    const tokens = location.search.match(/city=(\w+)/)
-    const city = tokens ? tokens[1] : 'spb'
+    const city = getCity()
     const title = `modify ${city} map`
 
     const gh = new GitHub({
