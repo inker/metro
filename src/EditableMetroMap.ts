@@ -4,7 +4,7 @@ import { downloadText } from 'download.js'
 
 import MetroMap from './MetroMap'
 
-import { Config } from './res'
+import Config from './Config'
 import pool from './ObjectPool'
 
 import MapEditor from './ui/MapEditor'

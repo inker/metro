@@ -1,11 +1,11 @@
 import { Point } from 'leaflet'
 
-import { svg } from '../../util'
+import { createSVGElement } from '../../util/svg'
 
 import styles from './styles.pcss'
 
 export default class Tooltip {
-    readonly element = svg.createSVGElement('g')
+    readonly element = createSVGElement('g')
     private _disabled = false
     private _editable = false
 

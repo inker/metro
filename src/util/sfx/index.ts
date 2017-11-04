@@ -1,8 +1,8 @@
 import alertify from '../../ui/alertify'
 import pool from '../../ObjectPool'
-import { filters } from '../svg'
+import { applyDrop } from '../svg/filters'
 import { ShortestRouteObject } from '../algorithm/shortestRoute'
-import { formatTime as ft } from '../../util'
+import { formatTime } from '../../util/lang'
 import { Platform, Edge, Span } from '../../network'
 
 import * as animation from './animation'
@@ -23,7 +23,7 @@ const ANIMATION_GREYING_SELECTOR = [
 
 export async function visualizeRoute(obj: ShortestRouteObject<Platform>, shouldAnimate = true) {
     const { platforms = [], edges, time } = obj
-    const walkTo = ft(time.walkTo)
+    const walkTo = formatTime(time.walkTo)
     if (edges === undefined) {
         return alertify.success(`${walkTo} on foot!`)
     }
@@ -46,9 +46,9 @@ export async function visualizeRoute(obj: ShortestRouteObject<Platform>, shouldA
         const lines = [
             'TIME',
             `${walkTo} on foot`,
-            `${ft(time.metro)} by metro`,
-            `${ft(time.walkFrom)} on foot`,
-            `TOTAL: ${ft(time.total)}`,
+            `${formatTime(time.metro)} by metro`,
+            `${formatTime(time.walkFrom)} on foot`,
+            `TOTAL: ${formatTime(time.total)}`,
         ]
         alertify.message(lines.join('<br>'), 10)
     }
@@ -66,7 +66,7 @@ export function rehighlightEdges(edges: Edge<Platform>[]) {
             inner.style.opacity = null
         }
         if (edge instanceof Span) {
-            filters.applyDrop(outer)
+            applyDrop(outer)
         }
     }
 }

@@ -3,7 +3,7 @@ import animateSvg from 'animate-svg'
 import { last } from 'lodash'
 
 import pool from '../../ObjectPool'
-import { filters } from '../svg'
+import { applyDrop } from '../svg/filters'
 import { tryGetFromMap } from '../collections'
 import { byId } from '../dom'
 import { transitionEnd } from '../events'
@@ -62,7 +62,7 @@ async function animateCurrentRoute(platforms: Platform[], edges: Edge<Platform>[
             pathsInner.appendChild(inner)
         }
 
-        filters.applyDrop(outer)
+        applyDrop(outer)
         const speed = isTransfer ? TRANSFER_SPEED : BASE_SPEED
         const reverse = edge.source !== platforms[i]
         const animations = [animateSvg(outer, speed, reverse)]
@@ -72,7 +72,7 @@ async function animateCurrentRoute(platforms: Platform[], edges: Edge<Platform>[
 
         await Promise.all(animations)
         outerOld.style.opacity = null
-        filters.applyDrop(outerOld)
+        applyDrop(outerOld)
         pathsOuter.removeChild(outer)
         if (innerOld) {
             innerOld.style.opacity = null

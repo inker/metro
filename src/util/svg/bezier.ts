@@ -18,10 +18,11 @@ export function getPathPoints(path: Element) {
 const curveTypeLetters = ['', 'L', 'Q', 'C']
 
 function tailToString(tail: Point[]) {
-    if (tail.length > 3) {
-        throw new Error(`the tail should consist of 1-3 elements, but got ${tail.length} instead`)
+    const { length } = tail
+    if (length > 3) {
+        throw new Error(`the tail should consist of 1-3 elements, but got ${length} instead`)
     }
-    const letter = curveTypeLetters[tail.length]
+    const letter = curveTypeLetters[length]
     const coords = tail.map(pt => `${pt.x} ${pt.y}`).join(' ')
     return `${letter} ${coords}`
 }

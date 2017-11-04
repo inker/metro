@@ -1,25 +1,6 @@
 import { tryCall } from 'tryfunc'
 
-export interface Config {
-    containerId: string,
-    center?: [number, number],
-    zoom: number,
-    minZoom: number,
-    maxZoom: number,
-    detailedZoom: number,
-    url: {
-        [resource: string]: string,
-    },
-    [option: string]: any,
-}
-
-const now = Date.now()
-
-export const cachelessFetch = (url: string) =>
-    fetch(`${url}?${now}`)
-
-export const getJSON = (url: string) =>
-    cachelessFetch(url).then(data => data.json())
+import { cachelessFetch } from './util/http'
 
 async function getColors() {
     const response = await cachelessFetch('res/colors.css')
@@ -49,7 +30,7 @@ function replaceStrokeColor(colors: Map<string, string>, rule: CSSStyleRule) {
     rule.style.stroke = color
 }
 
-export async function getLineRules() {
+export default async () => {
     const colorsPromise = getColors()
     const lineRules = new Map<string, CSSStyleDeclaration>()
     const link = document.getElementById('scheme') as HTMLLinkElement

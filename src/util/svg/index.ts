@@ -1,7 +1,7 @@
 import { Point, point } from 'leaflet'
 
 import { attr } from '../dom'
-import { vector } from '../math'
+import { orthogonal } from '../math/vector'
 
 import * as filters from './filters'
 import * as gradients from './gradients'
@@ -15,9 +15,8 @@ export {
     bezier,
 }
 
-export function createSVGElement<K extends keyof ElementTagNameMap>(tagName: K): ElementTagNameMap[K] {
-    return document.createElementNS('http://www.w3.org/2000/svg', tagName)
-}
+export const createSVGElement = <K extends keyof ElementTagNameMap>(tagName: K): ElementTagNameMap[K] =>
+    document.createElementNS('http://www.w3.org/2000/svg', tagName)
 
 export function makePolygon(points: Point[]): SVGPolygonElement {
     const polygon = createSVGElement('polygon')
@@ -58,8 +57,8 @@ export function makeStadium(center: Point, distance: number, radius: number) {
 
 export function makeOvalStartEnd(start: Point, end: Point, radius: number): SVGPathElement {
     const vec = end.subtract(start)
-    const startPoints = vector.orthogonal(vec.multiplyBy(-1)).map(i => i.add(start))
-    const endPoints = vector.orthogonal(vec).map(i => i.add(end))
+    const startPoints = orthogonal(vec.multiplyBy(-1)).map(i => i.add(start))
+    const endPoints = orthogonal(vec).map(i => i.add(end))
     const arr = [
         'M',
         startPoints[0].x,
@@ -107,18 +106,25 @@ export function makeTransferLine(start: Point, end: Point): SVGLineElement[] {
     return [makeLine(start, tg), makeLine(start, tg)]
 }
 
-export function getElementOffset(circle: SVGCircleElement | SVGRectElement): Point {
+function getCircleOffset(circle: SVGCircleElement): Point {
     const cx = circle.getAttribute('cx')
     if (cx === null) {
-        const x = +attr(circle, 'x') + +attr(circle, 'width') / 2
-        const y = +attr(circle, 'y') + +attr(circle, 'height') / 2
-        const c = point(x, y)
-        const r = ~~attr(circle, 'rx')
-        const offset = point(0 + r, 4 + r)
-        return c.subtract(offset)
+        throw new Error('cx does not exist on a circle')
     }
     const c = point(+cx, +attr(circle, 'cy'))
     const iR = ~~attr(circle, 'r')
     const offset = point(0 + iR, 4 + iR)
     return c.subtract(offset)
 }
+
+function getStadiumOffset(stadium: SVGRectElement): Point {
+    const x = +attr(stadium, 'x') + +attr(stadium, 'width') / 2
+    const y = +attr(stadium, 'y') + +attr(stadium, 'height') / 2
+    const c = point(x, y)
+    const r = ~~attr(stadium, 'rx')
+    const offset = point(0 + r, 4 + r)
+    return c.subtract(offset)
+}
+
+export const getElementOffset = (oval: SVGCircleElement | SVGRectElement) =>
+    oval instanceof SVGRectElement ? getStadiumOffset(oval) : getCircleOffset(oval)

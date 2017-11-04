@@ -6,16 +6,16 @@ import {
 } from 'lodash'
 
 import { Platform } from '../network'
+import { meanColor } from './color'
+import { getSecondLanguage } from './lang'
 
 import * as math from './math'
 import * as svg from './svg'
-import * as color from './color'
 import * as dom from './dom'
 
 export {
     math,
     svg,
-    color,
     dom,
 }
 
@@ -68,40 +68,6 @@ export function midPointsToEnds(pos: Point, midPts: Point[]) {
     return midPts.map(v => math.vector.round(v.add(offset), 2))
 }
 
-interface CityLang {
-    [city: string]: string | undefined,
-}
-export function getSecondLanguage() {
-    const tokens = location.search.match(/city=(\w+)/)
-    const city = tokens ? tokens[1] : 'spb'
-    const obj: CityLang = {
-        spb: 'fi',
-        qazan: 'tt',
-        helsinki: 'se',
-    }
-    return obj[city]
-}
-
-function inflect(value: number, str: string) {
-    return value === 0 ? '' : `${value}${value > 1 ? str + 's' : str}`
-}
-
-export function formatTime(time?: number) {
-    if (time === undefined) {
-        return ''
-    }
-    if (time < 60) {
-        return `${Math.round(time)} seconds`
-    }
-    if (time < 3570) {
-        const mins = Math.round(time / 60)
-        return inflect(mins, 'min')
-    }
-    const hours = Math.floor(time / 3600)
-    const mins = Math.floor((time - hours * 3600) / 60)
-    return `${hours > 0 ? `${hours}h` : ''} ${inflect(mins, 'min')}`
-}
-
 export function drawBezierHints(parent: Element, controlPoints: Point[], linesColor?: string) {
     for (let i = 1; i < controlPoints.length; ++i) {
         const line = svg.createSVGElement('line')
@@ -113,7 +79,7 @@ export function drawBezierHints(parent: Element, controlPoints: Point[], linesCo
         if (linesColor) {
             arr.push(linesColor)
         }
-        line.style.stroke = color.meanColor(arr)
+        line.style.stroke = meanColor(arr)
         line.style.strokeOpacity = '0.75'
         line.style.strokeWidth = '1px'
         parent.appendChild(line)

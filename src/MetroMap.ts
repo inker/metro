@@ -7,13 +7,9 @@ import {
     maxBy,
 } from 'lodash'
 
-import {
-    Config,
-    getLineRules,
-    getJSON,
-} from './res'
-
+import Config from './Config'
 import pool from './ObjectPool'
+import getLineRules from './getLineRules'
 
 import Network, {
     Platform,
@@ -47,7 +43,6 @@ import {
 import {
     svg,
     math,
-    color,
     dom,
     getPlatformNames,
     getPlatformNamesZipped,
@@ -55,7 +50,9 @@ import {
     // drawBezierHints,
 } from './util'
 
+import { getJSON } from './util/http'
 import { getCenter } from './util/geo'
+import { meanColor } from './util/color'
 import MetroMapEventMap from './util/MetroMapEventMap'
 import Mediator from './util/Mediator'
 
@@ -602,7 +599,7 @@ export default class {
     }
 
     private getPlatformColor(platform: Platform): string {
-        return color.meanColor(this.linesToColors(platform.passingLines()))
+        return meanColor(this.linesToColors(platform.passingLines()))
     }
 
     private linesToColors(lines: Set<string>): string[] {
@@ -625,7 +622,7 @@ export default class {
             ci.classList.add(line[0] === 'M' ? line : line[0])
             return
         }
-        ci.style.stroke = color.meanColor(this.linesToColors(lines))
+        ci.style.stroke = meanColor(this.linesToColors(lines))
     }
 
     protected makeWhiskers(platform: Platform): Map<Span, L.Point> {

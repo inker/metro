@@ -1,7 +1,7 @@
 import alertify, { prompt, confirm } from './alertify'
 
 import { Platform } from '../network'
-import { getSecondLanguage } from '../util'
+import { getSecondLanguage } from '../util/lang'
 
 function assignNames(platform: Platform, newNames: string[]) {
   const second = getSecondLanguage()
