@@ -1,6 +1,6 @@
 import alertify from '../alertify'
 
-import { makeLink } from '../../util'
+import { makeLink } from '../../util/dom'
 import auth from './auth'
 import submitToGitHub from './submitToGitHub'
 

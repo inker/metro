@@ -2,6 +2,9 @@ import { tryUntil } from 'tryfunc'
 import { identity } from 'lodash'
 import { getOrMakeInMap } from './collections'
 
+export const makeLink = (url: string, text: string, newTab = false) =>
+    `<a href="${url}" ${newTab ? 'target="_blank" rel="noopener"' : ''}>${text}</a>`
+
 export async function tryGetElement(query: string, interval = 100, numAttempts = 100) {
     const rest = query.slice(1)
     const func = query[0] === '#' ? (() => document.getElementById(rest)) : () => document.querySelector(query)

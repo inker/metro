@@ -6,18 +6,9 @@ import {
 } from 'lodash'
 
 import { Platform } from '../network'
-import { meanColor } from './color'
 import { getSecondLanguage } from './lang'
 
-import * as math from './math'
-import * as svg from './svg'
-import * as dom from './dom'
-
-export {
-    math,
-    svg,
-    dom,
-}
+import { round as roundVector } from './math/vector'
 
 const RESET_SELECTOR = [
     'paths-inner',
@@ -26,9 +17,6 @@ const RESET_SELECTOR = [
     'transfers-outer',
     'station-circles',
 ].map(i => `#${i} > *`).join(', ')
-
-export const makeLink = (url: string, text: string, newTab = false) =>
-    `<a href="${url}" ${newTab ? 'target="_blank" rel="noopener"' : ''}>${text}</a>`
 
 export function getCity() {
     const tokens = location.search.match(/city=(\w+)/)
@@ -70,23 +58,5 @@ export function midPointsToEnds(pos: Point, midPts: Point[]) {
         .multiplyBy(lens[0] / (lens[0] + lens[1]))
         .add(midPts[0])
     const offset = pos.subtract(midOfMidsWeighted)
-    return midPts.map(v => math.vector.round(v.add(offset), 2))
-}
-
-export function drawBezierHints(parent: Element, controlPoints: Point[], linesColor?: string) {
-    for (let i = 1; i < controlPoints.length; ++i) {
-        const line = svg.createSVGElement('line')
-        line.setAttribute('x1', controlPoints[i - 1].x.toString())
-        line.setAttribute('y1', controlPoints[i - 1].y.toString())
-        line.setAttribute('x2', controlPoints[i].x.toString())
-        line.setAttribute('y2', controlPoints[i].y.toString())
-        const arr = ['#000']
-        if (linesColor) {
-            arr.push(linesColor)
-        }
-        line.style.stroke = meanColor(arr)
-        line.style.strokeOpacity = '0.75'
-        line.style.strokeWidth = '1px'
-        parent.appendChild(line)
-    }
+    return midPts.map(v => roundVector(v.add(offset), 2))
 }

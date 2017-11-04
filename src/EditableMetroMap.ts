@@ -18,11 +18,10 @@ import {
     Transfer,
 } from './network'
 
-import {
-    svg,
-    getPlatformNames,
-    // dom,
-} from './util'
+import { bezier, getElementOffset } from './util/svg'
+// import * as dom from './util/dom'
+
+import { getPlatformNames } from './util'
 
 import {
     intersection,
@@ -57,7 +56,7 @@ export default class extends MetroMap {
 
         this.subscribe('platformrename', e => {
             const platform = relatedTargetToPlatform(e.relatedTarget)
-            const bottomRight = svg.getElementOffset(e.relatedTarget as SVGCircleElement)
+            const bottomRight = getElementOffset(e.relatedTarget as SVGCircleElement)
             const names = getPlatformNames(platform)
             this.tooltip.show(bottomRight, names)
             platformRenameDialog(platform)
@@ -72,7 +71,7 @@ export default class extends MetroMap {
         this.subscribe('platformmoveend', e => {
             const platform = relatedTargetToPlatform(e.relatedTarget)
             this.tooltip.disabled = false
-            this.tooltip.show(svg.getElementOffset(e.relatedTarget as SVGCircleElement), getPlatformNames(platform))
+            this.tooltip.show(getElementOffset(e.relatedTarget as SVGCircleElement), getPlatformNames(platform))
         })
         this.subscribe('platformadd', e => {
             const { detail } = e
@@ -268,9 +267,9 @@ export default class extends MetroMap {
                     ]
                     const outer = tryGetFromMap(pool.outerEdgeBindings, span)
                     const inner = pool.innerEdgeBindings.get(span)
-                    svg.bezier.setPath(outer, controlPoints)
+                    bezier.setPath(outer, controlPoints)
                     if (inner) {
-                        svg.bezier.setPath(inner, controlPoints)
+                        bezier.setPath(inner, controlPoints)
                     }
                 }
                 for (const tr of platform.transfers) {

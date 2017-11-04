@@ -41,15 +41,19 @@ import {
 } from './ui/tilelayers'
 
 import {
-    svg,
-    math,
-    dom,
     getPlatformNames,
     getPlatformNamesZipped,
     // midPointsToEnds,
-    // drawBezierHints,
 } from './util'
 
+import {
+    byId,
+    tryGetElement,
+    removeAllChildren,
+} from './util/dom'
+
+import * as math from './util/math'
+import * as svg from './util/svg'
 import { getJSON } from './util/http'
 import { getCenter } from './util/geo'
 import { meanColor } from './util/color'
@@ -64,6 +68,7 @@ import {
 
 import { scale } from './util/sfx'
 import findCycle from './util/algorithm/findCycle'
+// import drawBezierHints from './util/dev/bezierHints'
 
 import 'leaflet/dist/leaflet.css'
 
@@ -137,7 +142,7 @@ export default class {
     protected async makeMap() {
         try {
             const { config } = this
-            const lineRulesPromise = dom.tryGetElement('#scheme').then((link: HTMLLinkElement) => {
+            const lineRulesPromise = tryGetElement('#scheme').then((link: HTMLLinkElement) => {
                 link.href = config.url.scheme
                 return getLineRules()
             })
@@ -321,7 +326,7 @@ export default class {
         const { element } = tooltip
         for (const child of (overlay.origin.childNodes as any)) {
             if (child !== element) {
-                dom.removeAllChildren(child)
+                removeAllChildren(child)
             }
         }
     }
@@ -356,7 +361,7 @@ export default class {
         const docFrags = new Map<string, DocumentFragment>()
         for (const [id, width] of Object.entries(strokeWidths)) {
             docFrags.set(id, document.createDocumentFragment())
-            dom.byId(id).style.strokeWidth = `${width}px`
+            byId(id).style.strokeWidth = `${width}px`
         }
 
         const lightRailPathStyle = tryGetFromMap(this.lineRules, 'L')
@@ -501,7 +506,7 @@ export default class {
 
         console.time('appending')
         for (const [key, val] of docFrags) {
-            dom.byId(key).appendChild(val)
+            byId(key).appendChild(val)
         }
         console.timeEnd('appending')
     }
@@ -806,7 +811,7 @@ export default class {
             this.tooltip.hide()
             scale.unscaleAll()
         }
-        const dummyCircles = dom.byId('dummy-circles')
+        const dummyCircles = byId('dummy-circles')
         dummyCircles.addEventListener('mouseover', e => {
             const dummy = e.target as SVGCircleElement
             const platform = tryGetKeyFromBiMap(pool.dummyBindings, dummy)
@@ -820,8 +825,8 @@ export default class {
             const names = getPlatformNamesZipped([source, target])
             this.highlightStation(source.station, names, [source.name, target.name])
         }
-        const transfersOuter = dom.byId('transfers-outer')
-        const transfersInner = dom.byId('transfers-inner')
+        const transfersOuter = byId('transfers-outer')
+        const transfersInner = byId('transfers-inner')
         transfersOuter.addEventListener('mouseover', onTransferOver)
         transfersInner.addEventListener('mouseover', onTransferOver)
         transfersOuter.addEventListener('mouseout', onMouseOut)
