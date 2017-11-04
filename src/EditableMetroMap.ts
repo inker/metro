@@ -18,7 +18,8 @@ import {
     Transfer,
 } from './network'
 
-import { bezier, getElementOffset } from './util/svg'
+import { getElementOffset } from './util/svg'
+import { setPath } from './util/svg/bezier'
 // import * as dom from './util/dom'
 
 import { getPlatformNames } from './util'
@@ -267,9 +268,9 @@ export default class extends MetroMap {
                     ]
                     const outer = tryGetFromMap(pool.outerEdgeBindings, span)
                     const inner = pool.innerEdgeBindings.get(span)
-                    bezier.setPath(outer, controlPoints)
+                    setPath(outer, controlPoints)
                     if (inner) {
-                        bezier.setPath(inner, controlPoints)
+                        setPath(inner, controlPoints)
                     }
                 }
                 for (const tr of platform.transfers) {

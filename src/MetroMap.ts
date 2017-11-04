@@ -28,7 +28,7 @@ import RoutePlanner from './ui/RoutePlanner'
 import Tooltip from './ui/Tooltip'
 import FAQ from './ui/FAQ'
 // import drawZones from './ui/drawZones'
-import { confirm } from './ui/alertify'
+import alertify, { confirm } from './ui/alertify'
 
 import {
     mapbox,
@@ -68,6 +68,9 @@ import {
 
 import { scale } from './util/sfx'
 import findCycle from './util/algorithm/findCycle'
+import * as gradients from './util/svg/gradients'
+import { create as createBezier } from './util/svg/bezier'
+import { appendAll as appendAllFilters } from './util/svg/filters'
 // import drawBezierHints from './util/dev/bezierHints'
 
 import {
@@ -192,10 +195,13 @@ export default class {
             const bounds = L.latLngBounds(platformLocations)
             this.overlay = new SvgOverlay(bounds, L.point(200, 200)).addTo(this.map)
             const { defs } = this.overlay
-            svg.filters.appendAll(defs)
+            appendAllFilters(defs)
             const { textContent } = defs
             if (!textContent) {
-                alert("Your browser doesn't seem to have capabilities to display some features of the map. Consider using Chrome or Firefox for the best experience.")
+                alertify.alert(`
+                    Your browser doesn't seem to have capabilities to display some features of the map.
+                    Consider using Chrome or Firefox for the best experience.
+                `)
             }
 
             this.lineRules = await lineRulesPromise
@@ -544,20 +550,23 @@ export default class {
             this.getPlatformColor(source),
             this.getPlatformColor(target),
         ]
-        // const colors = [source, target].map(i => getComputedStyle(stationCirclesFrag.childNodes[i] as Element, null).stroke)
+        // const colors = [
+        //     source,
+        //     target,
+        // ].map(i => getComputedStyle(stationCirclesFrag.childNodes[i] as Element, null).stroke)
         // console.log(colors);
         const { fullCircleRadius } = this.getSvgSizes()
         const circlePortion = fullCircleRadius / pos1.distanceTo(pos2)
         const gradientVector = pos2.subtract(pos1)
         let gradient = pool.gradientBindings.get(transfer)
         if (gradient === undefined) {
-            gradient = svg.gradients.makeLinear(gradientVector, gradientColors, circlePortion)
+            gradient = gradients.makeLinear(gradientVector, gradientColors, circlePortion)
             gradient.id = uniqueId('gradient-')
             pool.gradientBindings.set(transfer, gradient)
             this.overlay.defs.appendChild(gradient)
         } else {
-            svg.gradients.setDirection(gradient, gradientVector)
-            svg.gradients.setOffset(gradient, circlePortion)
+            gradients.setDirection(gradient, gradientVector)
+            gradients.setOffset(gradient, circlePortion)
         }
         return `url(#${gradient.id})`
     }
@@ -686,8 +695,8 @@ export default class {
         const { source, target } = transfer
         const pos1 = tryGetFromMap(platformsOnSVG, source)
         const pos2 = tryGetFromMap(platformsOnSVG, target)
-        const makeArc = (third: Platform) =>
-            svg.makeTransferArc(pos1, pos2, tryGetFromMap(platformsOnSVG, third))
+        const makeArc = (thirdPlatform: Platform) =>
+            svg.makeTransferArc(pos1, pos2, tryGetFromMap(platformsOnSVG, thirdPlatform))
         if (cluster.length === 3) {
             const third = difference(cluster, [source, target])[0]
             return makeArc(third)
@@ -739,7 +748,7 @@ export default class {
 
         // drawBezierHints(this.overlay.origin, controlPoints, get(this.lineRules.get(lineId), 'stroke') as string)
 
-        const bezier = svg.bezier.create(controlPoints[0], ...controlPoints.slice(1))
+        const bezier = createBezier(controlPoints[0], ...controlPoints.slice(1))
         // bezier.id = 'op-' + spanIndex;
         if (lineType === 'E') {
             bezier.classList.add('E')

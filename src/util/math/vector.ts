@@ -42,7 +42,7 @@ export function bisect(v1: Point, v2: Point): Point {
     return isArbitrarilySmall(sum) ? point(0, 0) : normalize(sum)
 }
 
-export function intersection([a, u]: Ray, [b, v]: Ray): Point|null {
+export function intersection([a, u]: Ray, [b, v]: Ray): Point | null {
     const div = det(u, v)
     if (Math.abs(div) < Number.EPSILON) {
         return null

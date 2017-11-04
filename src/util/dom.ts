@@ -30,9 +30,9 @@ export function byId(id: string) {
     return el
 }
 
-export function attr(el: Element, attributeName: string) {
+export function getAttribute(el: Element, attributeName: string) {
     const attribute = el.getAttribute(attributeName)
-    if (!attribute) {
+    if (attribute === null) {
         throw new Error(`no attribute ${attributeName} on element with id=${el.id} exists`)
     }
     return attribute

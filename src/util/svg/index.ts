@@ -1,19 +1,9 @@
 import { Point, point } from 'leaflet'
 
-import { attr } from '../dom'
+import { getAttribute as attr } from '../dom'
 import { orthogonal } from '../math/vector'
 
-import * as filters from './filters'
-import * as gradients from './gradients'
-import * as arc from './arc'
-import * as bezier from './bezier'
-
-export {
-    filters,
-    gradients,
-    arc,
-    bezier,
-}
+import { create as createArc } from './arc'
 
 export const createSVGElement = <K extends keyof ElementTagNameMap>(tagName: K): ElementTagNameMap[K] =>
     document.createElementNS('http://www.w3.org/2000/svg', tagName)
@@ -90,7 +80,7 @@ export function makeOvalStartEnd(start: Point, end: Point, radius: number): SVGP
 }
 
 export function makeTransferArc(start: Point, end: Point, third: Point) {
-    const outer = arc.create(start, end, third)
+    const outer = createArc(start, end, third)
     const inner = outer.cloneNode(true) as typeof outer
     return [outer, inner]
 }

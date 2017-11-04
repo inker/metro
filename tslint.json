@@ -17,6 +17,10 @@
     ],
     "no-angle-bracket-type-assertion": true,
     "no-bitwise": false,
+    "no-console": [
+      true,
+      "log"
+    ],
     "no-duplicate-variable": true,
     "no-this-assignment": false,
     "no-unused-variable": true,

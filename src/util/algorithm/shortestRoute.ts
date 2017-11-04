@@ -214,7 +214,7 @@ function shortestTransfer(p1: Platform, p2: Platform) {
     const transfers: Transfer[] = []
     const midPlatforms: Platform[] = []
     currentNode = p2
-    for (; ; ) {
+    for (; ;) {
         const prevNode = prev.get(currentNode)
         if (!prevNode) {
             break
