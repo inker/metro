@@ -70,14 +70,14 @@ import { scale } from './util/sfx'
 import findCycle from './util/algorithm/findCycle'
 // import drawBezierHints from './util/dev/bezierHints'
 
-import 'leaflet/dist/leaflet.css'
-
-const {
+import {
     mean,
     normalize,
     unit,
     angle,
-} = math.vector
+} from './util/math/vector'
+
+import 'leaflet/dist/leaflet.css'
 
 const GAP_BETWEEN_PARALLEL = 0 // 0 - none, 1 - line width
 const CURVE_SPLIT_NUM = 10

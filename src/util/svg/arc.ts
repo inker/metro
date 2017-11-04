@@ -1,6 +1,7 @@
 import { Point } from 'leaflet'
 import { createSVGElement } from './index'
-import { vector, getCircumcenter } from '../math'
+import { getCircumcenter } from '../math'
+import { dot, det } from '../math/vector'
 
 interface ArcArgs {
     radius: number,
@@ -17,11 +18,11 @@ function getArgs(start: Point, end: Point, third: Point): ArcArgs {
     }
     const a = start.subtract(third)
     const b = end.subtract(third)
-    const thirdIsBetween = vector.dot(a, b) < 0
+    const thirdIsBetween = dot(a, b) < 0
     const u = start.subtract(center)
     const v = end.subtract(center)
     // the distance is shorter when moving from start to end clockwise
-    const isClockwise = vector.det(u, v) >= 0
+    const isClockwise = det(u, v) >= 0
     return {
         radius: center.distanceTo(start),
         large: thirdIsBetween ? 1 : 0,

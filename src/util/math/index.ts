@@ -1,22 +1,14 @@
 import { Point, point } from 'leaflet'
 import { head, last } from 'lodash'
 
-import * as vector from './vector'
-import * as phys from './phys'
-
-export {
-  vector,
-  phys,
-}
-
-const {
-  bisect,
-  dot,
-  det,
-  intersection,
-  orthogonal,
-  normalize,
-} = vector
+import {
+    bisect,
+    dot,
+    det,
+    intersection,
+    orthogonal,
+    normalize,
+  } from './vector'
 
 export const isNatural = (n: number) =>
     n > 0 && Number.isInteger(n)
