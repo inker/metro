@@ -1,7 +1,7 @@
 import { point, icon } from 'leaflet'
 import { svgToDataUrl } from 'svgio'
 
-import { createSVGElement, makeCircle } from '../../util/svg'
+import { createSVGElement, makeCircle } from '../util/svg'
 
 const SVG_SIZE = 100
 
