@@ -12,7 +12,7 @@ export default (radius: number) => {
     root.setAttribute('height', sizeStr)
 
     const halfSize = SVG_SIZE / 2
-    const offset = halfSize / 10
+    const offset = SVG_SIZE / 10
 
     const ci = makeCircle(point(halfSize, halfSize), halfSize - offset)
     const { style } = ci
