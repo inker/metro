@@ -48,7 +48,6 @@ import {
 
 import {
     byId,
-    tryGetElement,
     removeAllChildren,
 } from './util/dom'
 
@@ -145,16 +144,14 @@ export default class {
     protected async makeMap() {
         try {
             const { config } = this
-            const lineRulesPromise = tryGetElement('#scheme').then((link: HTMLLinkElement) => {
-                link.href = config.url.scheme
-                return getLineRules()
-            })
             const networkPromise = this.getGraph()
+            const lineRulesPromise = getLineRules(config.url.scheme)
+            const dataPromise = getJSON(config.url.data)
+
             const tileLoadPromise = new Promise(resolve => {
                 mapbox.once('load', resolve)
                 setTimeout(resolve, 5000)
             })
-            const dataPromise = getJSON(config.url.data)
 
             // wait.textContent = 'making map...';
 
