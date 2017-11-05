@@ -22,8 +22,8 @@ export default class implements Widget {
     })
 
     constructor() {
-        for (const marker of [this.fromMarker, this.toMarker]) {
-            marker
+        for (const m of [this.fromMarker, this.toMarker]) {
+            m
                 .on('drag', e => this.visualizeShortestRoute(false))
                 .on('dragend', e => this.visualizeShortestRoute(true))
         }
