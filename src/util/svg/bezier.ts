@@ -1,4 +1,5 @@
 import { Point, point } from 'leaflet'
+
 import { createSVGElement } from './index'
 
 export function getPathPoints(path: Element) {

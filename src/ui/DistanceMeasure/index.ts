@@ -1,7 +1,7 @@
 import * as L from 'leaflet'
 import { last } from 'lodash'
 
-import { RedCircle } from '../Icons'
+import redCircle from '../Icons/redCircle'
 import { onceEscapePress } from '../../util/events'
 
 import styles from './styles.pcss'
@@ -112,7 +112,7 @@ export default class DistanceMeasure {
             return
         }
         const marker = L.marker(e.latlng, { draggable: true })
-            .setIcon(RedCircle)
+            .setIcon(redCircle(5))
             .bindPopup('')
             .on('mouseover', this.hideDashedLine)
             .on('mouseout', this.showDashedLine)

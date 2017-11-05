@@ -1,5 +1,6 @@
 import { tryUntil } from 'tryfunc'
 import { identity } from 'lodash'
+
 import { getOrMakeInMap } from './collections'
 
 export const makeLink = (url: string, text: string, newTab = false) =>

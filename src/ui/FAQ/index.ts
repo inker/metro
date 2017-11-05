@@ -1,4 +1,4 @@
-import { Map, Browser } from 'leaflet'
+import { Map as LeafletMap, Browser } from 'leaflet'
 
 import Widget from '../base/Widget'
 import MetroMap from '../../MetroMap'
@@ -24,7 +24,7 @@ const qa2html = (qa: QA) => `
 export default class FAQ implements Widget {
     private readonly button: HTMLButtonElement
     private readonly card: HTMLDivElement
-    private map: Map
+    private map: LeafletMap
 
     constructor(faqData: QA[]) {
         const btn = document.createElement('button')

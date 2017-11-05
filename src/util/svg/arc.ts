@@ -1,4 +1,5 @@
 import { Point } from 'leaflet'
+
 import { createSVGElement } from './index'
 import { getCircumcenter } from '../math'
 import { dot, det } from '../math/vector'

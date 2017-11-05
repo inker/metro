@@ -1,4 +1,5 @@
 import { Point } from 'leaflet'
+
 import { createSVGElement } from './index'
 
 function makeUndirectedLinear(colors: string[]): SVGLinearGradientElement {

@@ -1,4 +1,9 @@
-import { Map as LeafletMap, polyline, circle } from 'leaflet'
+import {
+    Map as LeafletMap,
+    polyline,
+    circle,
+} from 'leaflet'
+
 import { Platform } from '../network'
 import { calculateGeoMedian } from '../util/geo'
 

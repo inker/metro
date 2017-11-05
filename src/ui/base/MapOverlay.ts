@@ -1,6 +1,6 @@
 import * as L from 'leaflet'
-import { get } from 'lodash'
 import * as htmlTags from 'html-tags'
+import { get } from 'lodash'
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'

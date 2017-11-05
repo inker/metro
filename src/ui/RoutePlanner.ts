@@ -3,7 +3,7 @@ import { marker, LatLng } from 'leaflet'
 import alertify from '../ui/alertify'
 import MetroMap from '../MetroMap'
 import cacheIcons from './cacheIcons'
-import { makeMarker } from './Icons'
+import makeMarker from './Icons/marker'
 import Widget from './base/Widget'
 
 import { resetStyle } from '../util'
@@ -22,8 +22,8 @@ export default class implements Widget {
     })
 
     constructor() {
-        for (const m of [this.fromMarker, this.toMarker]) {
-            m
+        for (const marker of [this.fromMarker, this.toMarker]) {
+            marker
                 .on('drag', e => this.visualizeShortestRoute(false))
                 .on('dragend', e => this.visualizeShortestRoute(true))
         }
