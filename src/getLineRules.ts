@@ -2,6 +2,15 @@ import { tryCall } from 'tryfunc'
 
 import { cachelessFetch } from './util/http'
 
+function makeStyleLink(url: string) {
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    // @ts-ignore
+    link.crossOrigin = ''
+    link.href = url
+    return link
+}
+
 async function getColors() {
     const response = await cachelessFetch('res/colors.css')
     const text = await response.text()
@@ -30,10 +39,12 @@ function replaceStrokeColor(colors: Map<string, string>, rule: CSSStyleRule) {
     rule.style.stroke = color
 }
 
-export default async () => {
+export default async (url: string) => {
+    const link = makeStyleLink(url)
+    document.head.appendChild(link)
+
     const colorsPromise = getColors()
     const lineRules = new Map<string, CSSStyleDeclaration>()
-    const link = document.getElementById('scheme') as HTMLLinkElement
 
     const cssRules = await tryCall(() => (link.sheet as CSSStyleSheet).cssRules, {
         interval: 100,
