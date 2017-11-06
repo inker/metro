@@ -19,8 +19,8 @@ const mapPromise = Browser.mobile ? import('./MetroMap') : import('./EditableMet
 const tokens = location.search.match(/city=(\w+)/)
 const city = tokens ? tokens[1] : 'spb'
 
-for (const url of Object.keys(config.url)) {
-    config.url[url] = config.url[url].replace(/\{city\}/g, city)
+for (const key of Object.keys(config.url)) {
+    config.url[key] = config.url[key].replace(/\{city\}/g, city)
 }
 document.title = `${city && city !== 'spb' ? capitalize(city) : 'St Petersburg'} metro plan proposal`
 
