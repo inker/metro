@@ -1,8 +1,8 @@
 import Network, { Route } from '../network'
 import { prompt } from './alertify'
 
-export default async (network: Network, defSet = new Set<Route>()) => {
-  const def = defSet === undefined ? undefined : Array.from(defSet).map(r => r.line + r.branch).join('|')
+export default async (network: Network, defSet: Set<Route>) => {
+  const def = Array.from(defSet).map(r => r.line + r.branch).join('|')
   const routeSet = new Set<Route>()
   const routeString = await prompt('routes', def)
   if (routeString === null) {

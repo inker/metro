@@ -1,7 +1,5 @@
 import { Map as LeafletMap, Browser } from 'leaflet'
 
-import Widget from '../base/Widget'
-import MetroMap from '../../MetroMap'
 import { transitionEnd, once } from '../../util/events'
 
 import styles from './styles.pcss'
@@ -21,7 +19,7 @@ const qa2html = (qa: QA) => `
     </div>
 `
 
-export default class FAQ implements Widget {
+export default class FAQ {
     private readonly button: HTMLButtonElement
     private readonly card: HTMLDivElement
     private map: LeafletMap
@@ -45,8 +43,8 @@ export default class FAQ implements Widget {
         this.card.innerHTML += faqData.map(qa2html).join('').replace(URL_RE, REPLACEMENT)
     }
 
-    addTo(metroMap: MetroMap) {
-        this.map = metroMap.getMap()
+    addTo(map: LeafletMap) {
+        this.map = map
         const leafletTopRight = document.querySelector('.leaflet-right.leaflet-top')
         document.body.appendChild(this.card)
         if (!leafletTopRight) {

@@ -93,22 +93,27 @@ const groupIds = [
     'dummy-circles',
 ]
 
-const contextMenuArray = [{
-    event: 'routefrom',
-    text: 'Route from here',
-}, {
-    event: 'routeto',
-    text: 'Route to here',
-}, {
-    event: 'clearroute',
-    text: 'Clear route',
-}, {
-    event: 'showheatmap',
-    text: 'Show heatmap',
-    extra: {
-        disabled: true,
+const contextMenuArray = [
+    {
+        event: 'routefrom',
+        text: 'Route from here',
     },
-}]
+    {
+        event: 'routeto',
+        text: 'Route to here',
+    },
+    {
+        event: 'clearroute',
+        text: 'Clear route',
+    },
+    {
+        event: 'showheatmap',
+        text: 'Show heatmap',
+        extra: {
+            disabled: true,
+        },
+    },
+]
 
 export default class {
     readonly mediator = new Mediator()
@@ -224,7 +229,7 @@ export default class {
             // this.routeWorker.postMessage(this.network);
             // drawZones(this.map, this.network.platforms);
 
-            dataPromise.then(data => new FAQ(data.faq).addTo(this))
+            dataPromise.then(data => new FAQ(data.faq).addTo(this.map))
             // wait.textContent = 'loading tiles...';
 
             await tileLoadPromise
