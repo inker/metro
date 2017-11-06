@@ -229,7 +229,7 @@ export default class {
             // this.routeWorker.postMessage(this.network);
             // drawZones(this.map, this.network.platforms);
 
-            dataPromise.then(data => new FAQ(data.faq).addTo(this.map))
+            dataPromise.then(data => new FAQ(data).addTo(this.map))
             // wait.textContent = 'loading tiles...';
 
             await tileLoadPromise
