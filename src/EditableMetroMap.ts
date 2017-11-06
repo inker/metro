@@ -1,4 +1,3 @@
-import fastDelete from 'fast-delete'
 import { downloadText } from 'download.js'
 // import { difference } from 'lodash'
 
@@ -25,6 +24,7 @@ import { setPath } from './util/svg/bezier'
 import { getPlatformNames } from './util'
 
 import {
+    slowDelete,
     intersection,
     tryGetFromMap,
     tryGetKeyFromBiMap,
@@ -136,7 +136,7 @@ export default class extends MetroMap {
                 return
             }
             const span = relatedTargetToSpan(e.relatedTarget)
-            fastDelete(this.network.spans, span)
+            slowDelete(this.network.spans, span)
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
         this.subscribe('transferend', e => {
@@ -153,7 +153,7 @@ export default class extends MetroMap {
             }
             const path = e.relatedTarget as SVGPathElement | SVGLineElement
             const transfer = (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as Transfer
-            fastDelete(this.network.transfers, transfer)
+            slowDelete(this.network.transfers, transfer)
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
         this.subscribe('editmapstart', e => {
