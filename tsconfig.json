@@ -16,7 +16,9 @@
     "noEmitHelpers": true,
     "importHelpers": true,
     "lib": [
-      "dom", "dom.iterable", "es2017"
+      "es2017",
+      "dom",
+      "dom.iterable"
     ]
   },
   "awesomeTypescriptLoaderOptions": {
