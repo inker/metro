@@ -1,8 +1,6 @@
 import { latLng } from 'leaflet'
 import fastDelete from 'fast-delete'
 
-import { slowDelete } from '../util/collections'
-
 import Platform from './Platform'
 import Station from './Station'
 import Edge from './Edge'
@@ -105,14 +103,14 @@ export default class {
         console.log('removing platform', platform)
         const { transfers, spans, station } = platform
         for (const transfer of transfers) {
-            slowDelete(this.transfers, transfer)
+            fastDelete(this.transfers, transfer)
         }
         transfers.length = 0
         if (spans.length === 1) {
             const span = spans[0]
             const neighbor = span.other(platform)
             fastDelete(neighbor.spans, span)
-            slowDelete(this.spans, span)
+            fastDelete(this.spans, span)
         } else if (spans.length === 2) {
             const [first, second] = spans
             const end = second.other(platform)
@@ -122,19 +120,19 @@ export default class {
             if (platform.passingRoutes().size === 2) {
                 const otherPlatform = first.other(platform)
                 fastDelete(otherPlatform.spans, first)
-                slowDelete(this.spans, first)
+                fastDelete(this.spans, first)
             } else if (first.source === platform) {
                 first.source = end
             } else {
                 first.target = end
             }
             fastDelete(end.spans, second)
-            slowDelete(this.spans, second)
+            fastDelete(this.spans, second)
         } else {
             for (const span of spans) {
                 const neighbor = span.other(platform)
                 fastDelete(neighbor.spans, span)
-                slowDelete(this.spans, span)
+                fastDelete(this.spans, span)
             }
         }
         if (station.platforms.length === 1) {
@@ -142,7 +140,7 @@ export default class {
         } else {
             fastDelete(station.platforms, platform)
         }
-        slowDelete(this.platforms, platform)
+        fastDelete(this.platforms, platform)
     }
 
 }
