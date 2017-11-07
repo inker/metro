@@ -31,14 +31,6 @@ export function byId(id: string) {
     return el
 }
 
-export function getAttribute(el: Element, attributeName: string) {
-    const attribute = el.getAttribute(attributeName)
-    if (attribute === null) {
-        throw new Error(`no attribute ${attributeName} on element with id=${el.id} exists`)
-    }
-    return attribute
-}
-
 interface StringToString {
     [attr: string]: string,
 }

@@ -1,6 +1,5 @@
 import { Point, point } from 'leaflet'
 
-import { getAttribute as attr } from '../dom'
 import { orthogonal } from '../math/vector'
 
 import { create as createArc } from './arc'
@@ -101,17 +100,22 @@ function getCircleOffset(circle: SVGCircleElement): Point {
     if (cx === null) {
         throw new Error('cx does not exist on a circle')
     }
-    const c = point(+cx, +attr(circle, 'cy'))
-    const iR = ~~attr(circle, 'r')
+    // @ts-ignore
+    const c = point(+cx, +circle.getAttribute('cy'))
+    // @ts-ignore
+    const iR = ~~circle.getAttribute('r')
     const offset = point(0 + iR, 4 + iR)
     return c.subtract(offset)
 }
 
 function getStadiumOffset(stadium: SVGRectElement): Point {
-    const x = +attr(stadium, 'x') + +attr(stadium, 'width') / 2
-    const y = +attr(stadium, 'y') + +attr(stadium, 'height') / 2
+    // @ts-ignore
+    const x = +stadium.getAttribute('x') + +stadium.getAttribute('width') / 2
+    // @ts-ignore
+    const y = +stadium.getAttribute('y') + +stadium.getAttribute('height') / 2
     const c = point(x, y)
-    const r = ~~attr(stadium, 'rx')
+    // @ts-ignore
+    const r = ~~+stadium.getAttribute('rx')
     const offset = point(0 + r, 4 + r)
     return c.subtract(offset)
 }
