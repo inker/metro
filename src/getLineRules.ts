@@ -28,7 +28,7 @@ function replaceStrokeColor(colors: Map<string, string>, rule: CSSStyleRule) {
     if (!stroke) {
         return
     }
-    const tokens = stroke.match(/\s*?var\((.+?)\)$/)
+    const tokens = stroke.match(/\bvar\((.+?)\)\b/)
     if (!tokens || !tokens[1]) {
         return
     }
