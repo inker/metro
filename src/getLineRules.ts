@@ -40,17 +40,19 @@ function replaceStrokeColor(colors: Map<string, string>, rule: CSSStyleRule) {
 }
 
 export default async (url: string) => {
+    const colorsPromise = getColors()
+
     const link = makeStyleLink(url)
     document.head.appendChild(link)
 
-    const colorsPromise = getColors()
     const lineRules = new Map<string, CSSStyleDeclaration>()
+
+    const colors = await colorsPromise
 
     const cssRules = await tryCall(() => (link.sheet as CSSStyleSheet).cssRules, {
         interval: 100,
         numAttempts: 100,
     })
-    const colors = await colorsPromise
     for (const rule of (cssRules as any)) {
         if (!(rule instanceof CSSStyleRule)) {
             continue
