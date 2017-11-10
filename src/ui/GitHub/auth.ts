@@ -1,7 +1,7 @@
 import delay from 'delay.js'
 
-import askUsername from './askUsername'
-import askPassword from './askPassword'
+import askUsername from './form/askUsername'
+import askPassword from './form/askPassword'
 
 export interface AuthData {
     username: string,

@@ -4,8 +4,8 @@ import alertify from '../alertify'
 import { getCity } from '../../util'
 import { makeLink } from '../../util/dom'
 
+import askChanges from './form/askChanges'
 import forkRepo from './forkRepo'
-import askChanges from './askChanges'
 import getPullRequest from './getPullRequest'
 import { AuthData } from './auth'
 
