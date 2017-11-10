@@ -1,5 +1,5 @@
-import { prompt } from '../alertify'
-import { makeLink } from '../../util/dom'
+import { prompt } from '../../alertify'
+import { makeLink } from '../../../util/dom'
 
 const TITLE = 'GitHub username'
 const GITHUB_URL = 'https://github.com'

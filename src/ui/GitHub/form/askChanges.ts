@@ -1,4 +1,4 @@
-import { prompt } from '../alertify'
+import { prompt } from '../../alertify'
 
 const TITLE = 'What did you change?'
 const ON_REFUSAL = 'Please provide the description of your changes'
