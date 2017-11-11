@@ -6,12 +6,6 @@ import { formatTime } from '../../util/lang'
 import { Platform, Edge, Span } from '../../network'
 
 import * as animation from './animation'
-import * as scale from './scale'
-
-export {
-  animation,
-  scale,
-}
 
 const ANIMATION_GREYING_SELECTOR = [
     'paths-inner',

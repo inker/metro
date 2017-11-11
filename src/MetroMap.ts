@@ -65,7 +65,7 @@ import {
     getOrMakeInMap,
 } from './util/collections'
 
-import { scale } from './util/sfx'
+import * as scale from './util/sfx/scale'
 import findCycle from './util/algorithm/findCycle'
 import * as gradients from './util/svg/gradients'
 import { create as createBezier } from './util/svg/bezier'

@@ -8,7 +8,8 @@ import Widget from './base/Widget'
 
 import { resetStyle } from '../util'
 import shortestRoute from '../util/algorithm/shortestRoute'
-import { animation, visualizeRoute } from '../util/sfx'
+import { visualizeRoute } from '../util/sfx'
+import * as animation from '../util/sfx/animation'
 
 export default class implements Widget {
     private metroMap: MetroMap
