@@ -22,8 +22,11 @@ const city = tokens ? tokens[1] : 'spb'
 for (const key of Object.keys(config.url)) {
     config.url[key] = config.url[key].replace(/\{city\}/g, city)
 }
-document.title = `${city && city !== 'spb' ? capitalize(city) : 'St Petersburg'} metro plan proposal`
 
 mapPromise.then(module => {
     new module.default(config)
 })
+
+document.title = `${city && city !== 'spb' ? capitalize(city) : 'St Petersburg'} metro plan proposal`
+const favicon = document.getElementById('favicon') as HTMLLinkElement
+favicon.href = config.favicons[city]
