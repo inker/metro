@@ -11,7 +11,6 @@ const {
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 // const { CheckerPlugin } = require('awesome-typescript-loader')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
@@ -65,8 +64,6 @@ module.exports = env => [
       minifyURLs: true,
     },
   }),
-
-  new ExtractTextPlugin('styles.[contenthash].css'),
 
   new CopyWebpackPlugin([
     {

@@ -32,8 +32,7 @@ module.exports = env => ({
     rules: rules(env),
   },
   plugins: plugins(env),
-  devServer: {
-    compress: env !== 'dev',
+  devServer: env !== 'dev' ? undefined : {
     contentBase: distDir,
     port: 9080,
     open: true,
