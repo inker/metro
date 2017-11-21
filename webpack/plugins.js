@@ -4,8 +4,8 @@ const {
     CommonsChunkPlugin,
     OccurrenceOrderPlugin,
   },
-	NamedModulesPlugin,
-	HashedModuleIdsPlugin,
+  NamedModulesPlugin,
+  HashedModuleIdsPlugin,
 } = require('webpack')
 
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
@@ -26,26 +26,26 @@ module.exports = env => [
     },
   }),
 
-	// new (env === 'dev' ? NamedModulesPlugin : HashedModuleIdsPlugin)(),
+  // new (env === 'dev' ? NamedModulesPlugin : HashedModuleIdsPlugin)(),
 
-	env !== 'dev' && new CommonsChunkPlugin({
-		name: 'app',
-		children: true,
-		minChunks: 2,
-		async: 'commons',
-	}),
+  env !== 'dev' && new CommonsChunkPlugin({
+    name: 'app',
+    children: true,
+    minChunks: 2,
+    async: 'commons',
+  }),
 
-	env !== 'dev' && new CommonsChunkPlugin({
-		name: 'vendor',
-		// names: 'vendor',
-		// chunks: 'app',
-		minChunks: ({ context }) => context && context.includes('node_modules'),
-	}),
+  env !== 'dev' && new CommonsChunkPlugin({
+    name: 'vendor',
+    // names: 'vendor',
+    // chunks: 'app',
+    minChunks: ({ context }) => context && context.includes('node_modules'),
+  }),
 
-	// env !== 'dev' && new CommonsChunkPlugin({
-	// 	name: 'runtime',
-	// 	minChunks: Infinity,
-	// }),
+  // env !== 'dev' && new CommonsChunkPlugin({
+  //   name: 'runtime',
+  //   minChunks: Infinity,
+  // }),
 
   new HtmlWebpackPlugin({
     filename: 'index.html',
