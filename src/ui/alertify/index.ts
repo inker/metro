@@ -1,4 +1,4 @@
-import * as alertify from 'alertifyjs'
+import alertify from 'alertifyjs'
 
 import 'alertifyjs/build/css/alertify.css'
 import 'alertifyjs/build/css/themes/default.css'

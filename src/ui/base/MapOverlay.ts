@@ -1,5 +1,5 @@
-import * as L from 'leaflet'
-import * as htmlTags from 'html-tags'
+import L from 'leaflet'
+import htmlTags from 'html-tags'
 import { get } from 'lodash'
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'

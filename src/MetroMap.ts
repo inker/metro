@@ -1,4 +1,4 @@
-import * as L from 'leaflet'
+import L from 'leaflet'
 import unblur from 'unblur'
 import {
     difference,

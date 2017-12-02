@@ -1,5 +1,5 @@
 import { LeafletMouseEvent } from 'leaflet'
-import * as localForage from 'localforage'
+import localForage from 'localforage'
 import { throttle } from 'lodash'
 
 import MetroMap from '../../MetroMap'

@@ -1,4 +1,4 @@
-import * as GitHub from 'github-api'
+import GitHub from 'github-api'
 
 import alertify from '../alertify'
 import { getCity } from '../../util'

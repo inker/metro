@@ -1,4 +1,4 @@
-import * as L from 'leaflet'
+import L from 'leaflet'
 import { last } from 'lodash'
 
 import redCircle from '../Icons/redCircle'
