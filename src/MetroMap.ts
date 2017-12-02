@@ -54,7 +54,8 @@ import {
 import * as math from './util/math'
 import * as svg from './util/svg'
 import { getJSON } from './util/http'
-import { getCenter } from './util/geo'
+import getCenter from './util/geo/getCenter'
+// import calculateGeoMean from './util/geo/calculateGeoMean'
 import { meanColor } from './util/color'
 import MetroMapEventMap from './util/MetroMapEventMap'
 import Mediator from './util/Mediator'
@@ -307,7 +308,7 @@ export default class {
 
     private resetMapView() {
         // const fitness = (points, pt) => points.reduce((prev, cur) => this.bounds., 0);
-        // const center = geo.calculateGeoMean(this.network.platforms.map(p => p.location), fitness, 0.1);
+        // const center = calculateGeoMean(this.network.platforms.map(p => p.location), fitness, 0.1);
         const { center, zoom } = this.config
         const options = {
             animate: false,

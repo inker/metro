@@ -2,7 +2,7 @@ import { LatLng } from 'leaflet'
 import { last } from 'lodash'
 
 import { timeToTravel } from '../math/phys'
-import { findClosestObject } from '../geo'
+import findClosestObject from '../geo/findClosestObject'
 import { tryGetFromMap } from '../collections'
 
 import {

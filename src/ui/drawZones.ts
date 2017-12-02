@@ -5,7 +5,7 @@ import {
 } from 'leaflet'
 
 import { Platform } from '../network'
-import { calculateGeoMedian } from '../util/geo'
+import calculateGeoMedian from '../util/geo/calculateGeoMean'
 
 const MAIN_STATION_NAME = 'Glavnyj voxal'
 

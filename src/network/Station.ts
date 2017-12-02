@@ -1,7 +1,7 @@
 import { LatLng } from './types'
 
 import { getPlatformNamesZipped } from '../util'
-import { getCenter } from '../util/geo'
+import getCenter from '../util/geo/getCenter'
 
 import Platform from './Platform'
 

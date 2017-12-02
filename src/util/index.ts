@@ -6,7 +6,7 @@ import {
 } from 'lodash'
 
 import { Platform } from '../network'
-import { getSecondLanguage } from './lang'
+import getSecondLanguage from './lang/getSecondLanguage'
 
 import { round as roundVector } from './math/vector'
 

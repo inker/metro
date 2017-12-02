@@ -2,7 +2,7 @@ import alertify from '../../ui/alertify'
 import pool from '../../ObjectPool'
 import { applyDrop } from '../svg/filters'
 import { ShortestRouteObject } from '../algorithm/shortestRoute'
-import { formatTime } from '../../util/lang'
+import formatTime from '../../util/lang/formatTime'
 import { Platform, Edge, Span } from '../../network'
 
 import * as animation from './animation'

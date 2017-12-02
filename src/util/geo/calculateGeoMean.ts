@@ -1,42 +1,15 @@
 import { LatLng, latLng, latLngBounds } from 'leaflet'
-import { meanBy } from 'lodash'
 
-export const getCenter = (points: LatLng[]) => latLng(
-    meanBy(points, p => p.lat),
-    meanBy(points, p => p.lng),
-)
-
-interface Locatable {
-    location: LatLng,
-}
-
-export function findClosestObject<T extends Locatable | LatLng>(point: LatLng, objects: T[]): T {
-    const { length } = objects
-    if (length < 1) {
-        throw new Error('an objects array must contain at least 1 object')
-    }
-    let closest = objects[0]
-    const loc = (o: T) => ((o as Locatable).location || o) as LatLng
-    let closestDistance = point.distanceTo(loc(closest))
-    for (let i = 1; i < length; ++i) {
-        const obj = objects[i]
-        const tempDist = point.distanceTo(loc(obj))
-        if (tempDist < closestDistance) {
-            closest = obj
-            closestDistance = tempDist
-        }
-    }
-    return closest
-}
+import getCenter from './getCenter'
 
 const DECREASE_RATE = 2 / (1 + Math.sqrt(5))
 
-export function calculateGeoMedian(
+export default (
     points: LatLng[],
     fitnessFunc: (current: LatLng) => number,
     minStep = 0.00001,
     onClimb?: (coordinate: LatLng) => void,
-): LatLng {
+): LatLng => {
     let point = getCenter(points)
     let fitness = fitnessFunc(point)
     const bounds = latLngBounds(points)
