@@ -10,7 +10,6 @@ import pool from './ObjectPool'
 import MapEditor from './ui/MapEditor'
 import askRoutes from './ui/askRoutes'
 import platformRenameDialog from './ui/platformRenameDialog'
-import gitHubDialog from './ui/GitHub'
 
 import {
     Platform,
@@ -31,6 +30,8 @@ import {
 } from './util/collections'
 
 // const { gradients } = svg
+
+const gitHubDialogPromise = import('./ui/GitHub')
 
 export default class extends MetroMap {
     constructor(config: Config) {
@@ -209,6 +210,7 @@ export default class extends MetroMap {
         })
         this.subscribe('mapsave', async e => {
             const json = this.network.toJSON()
+            const { default: gitHubDialog } = await gitHubDialogPromise
             const uploaded = await gitHubDialog(json)
             if (uploaded) {
                 return
