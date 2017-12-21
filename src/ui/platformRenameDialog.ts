@@ -32,7 +32,7 @@ export default async (platform: Platform) => {
   const oldNamesStr = names.slice(1).join(', ')
   const newNamesStr = newNames.slice(1).join(', ')
   alertify.success(`${ru} (${oldNamesStr}) renamed to ${newNames[0]} (${newNamesStr})`)
-  const station = platform.station
+  const { station } = platform
   if (station.platforms.length < 2) {
       return
   }
