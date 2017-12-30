@@ -1,6 +1,5 @@
 import { marker, LatLng } from 'leaflet'
 
-import alertify from '../ui/alertify'
 import MetroMap from '../MetroMap'
 import cacheIcons from './cacheIcons'
 import makeMarker from './Icons/marker'
@@ -10,6 +9,8 @@ import { resetStyle } from '../util'
 import shortestRoute from '../util/algorithm/shortestRoute'
 import { visualizeRoute } from '../util/sfx'
 import * as animation from '../util/sfx/animation'
+
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ './alertify')
 
 export default class implements Widget {
     private metroMap: MetroMap
@@ -79,18 +80,20 @@ export default class implements Widget {
         )
     }
 
-    private visualizeRouteBetween(from: LatLng, to: LatLng, shouldAnimate: boolean) {
+    private async visualizeRouteBetween(from: LatLng, to: LatLng, shouldAnimate: boolean) {
         resetStyle()
-        alertify.dismissAll()
+        const mod = await alertifyPromise
+        mod.default.dismissAll()
         const route = shortestRoute(this.metroMap.getNetwork().platforms, from, to)
         visualizeRoute(route, shouldAnimate)
     }
 
-    private clearRoute = () => {
+    private clearRoute = async () => {
         const map = this.metroMap.getMap()
         const terminate = animation.terminateAnimations()
         map.removeLayer(this.fromMarker).removeLayer(this.toMarker)
-        alertify.dismissAll()
+        const mod = await alertifyPromise
+        mod.default.dismissAll()
         terminate.then(resetStyle)
     }
 

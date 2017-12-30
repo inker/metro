@@ -1,14 +1,15 @@
-import alertify from '../alertify'
-
 import { makeLink } from '../../util/dom'
 import auth from './auth'
 import submitToGitHub from './submitToGitHub'
+
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ '../alertify')
 
 export default async function githubDialog(json: string): Promise<boolean> {
     const authData = await auth()
     if (!authData) {
         return false
     }
+    const alertify = (await alertifyPromise).default
     alertify.message('Wait...')
     try {
         const pr = await submitToGitHub(json, authData)

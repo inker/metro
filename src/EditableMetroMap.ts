@@ -31,7 +31,7 @@ import {
 
 // const { gradients } = svg
 
-const gitHubDialogPromise = import('./ui/GitHub')
+const gitHubDialogPromise = import(/* webpackChunkName: "GitHub" */ './ui/GitHub')
 
 export default class extends MetroMap {
     constructor(config: Config) {

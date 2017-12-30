@@ -1,9 +1,10 @@
-import alertify from '../alertify'
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ '../alertify')
 
 export default async (gh, baseRepo, baseBranch) => {
     const head = `heads/${baseBranch}`
     const ref = await baseRepo.getRef(head)
     const { sha } = ref.data.object
+    const alertify = (await alertifyPromise).default
     alertify.message('Forking repo')
 
     const fork = await baseRepo.fork()

@@ -35,7 +35,7 @@ export default class FAQ {
         this.card.classList.add(styles['faq-card'])
 
         if (Browser.mobile) {
-            import('hammerjs').then(Hammer => {
+            import(/* webpackChunkName: "hammer" */ 'hammerjs').then(Hammer => {
                 new Hammer(this.card).on('swipeleft swiperight', this.hideFAQ)
             })
         }

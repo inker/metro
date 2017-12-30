@@ -1,9 +1,11 @@
 import Network, { Route } from '../network'
-import { prompt } from './alertify'
+
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ './alertify')
 
 export default async (network: Network, defSet: Set<Route>) => {
   const def = Array.from(defSet).map(r => r.line + r.branch).join('|')
   const routeSet = new Set<Route>()
+  const { prompt } = await alertifyPromise
   const routeString = await prompt('routes', def)
   if (routeString === null) {
       return defSet

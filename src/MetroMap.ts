@@ -28,7 +28,6 @@ import RoutePlanner from './ui/RoutePlanner'
 import Tooltip from './ui/Tooltip'
 import FAQ from './ui/FAQ'
 // import drawZones from './ui/drawZones'
-import alertify, { confirm } from './ui/alertify'
 
 import {
     mapbox,
@@ -81,6 +80,8 @@ import {
 } from './util/math/vector'
 
 import 'leaflet/dist/leaflet.css'
+
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ './ui/alertify')
 
 const GAP_BETWEEN_PARALLEL = 0 // 0 - none, 1 - line width
 const CURVE_SPLIT_NUM = 10
@@ -180,13 +181,6 @@ export default class {
                 wikimapia,
             ])
 
-            addEventListener('keydown', async e => {
-                if (!e.shiftKey || !e.ctrlKey || e.keyCode !== 82 || !(await confirm('Reset network?'))) {
-                    return
-                }
-                const graph = await this.getGraph()
-                this.resetNetwork(graph)
-            })
             // wait.textContent = 'loading graph...';
             this.addContextMenu()
 
@@ -199,6 +193,19 @@ export default class {
             this.overlay = new SvgOverlay(bounds, L.point(200, 200)).addTo(this.map)
             const { defs } = this.overlay
             appendAllFilters(defs)
+
+            const {
+                default: alertify,
+                confirm,
+            } = await alertifyPromise
+            addEventListener('keydown', async e => {
+                if (!e.shiftKey || !e.ctrlKey || e.keyCode !== 82 || !(await confirm('Reset network?'))) {
+                    return
+                }
+                const graph = await this.getGraph()
+                this.resetNetwork(graph)
+            })
+
             const { textContent } = defs
             if (!textContent) {
                 alertify.alert(`

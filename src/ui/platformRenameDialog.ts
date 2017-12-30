@@ -1,7 +1,7 @@
-import alertify, { prompt, confirm } from './alertify'
-
 import { Platform } from '../network'
 import getSecondLanguage from '../util/lang/getSecondLanguage'
+
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ './alertify')
 
 function assignNames(platform: Platform, newNames: string[]) {
   const second = getSecondLanguage()
@@ -18,6 +18,12 @@ export default async (platform: Platform) => {
   const { fi, en } = platform.altNames
   const names = en ? [ru, fi, en] : fi ? [ru, fi] : [ru]
   const nameString = names.join('|')
+
+  const {
+    default: alertify,
+    prompt,
+    confirm,
+  } = await alertifyPromise
 
   const val = await prompt('New name', nameString)
   if (val === null) {

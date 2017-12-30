@@ -1,4 +1,3 @@
-import alertify from '../../ui/alertify'
 import pool from '../../ObjectPool'
 import { applyDrop } from '../svg/filters'
 import { ShortestRouteObject } from '../algorithm/shortestRoute'
@@ -6,6 +5,8 @@ import formatTime from '../../util/lang/formatTime'
 import { Platform, Edge, Span } from '../../network'
 
 import * as animation from './animation'
+
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ '../../ui/alertify')
 
 const ANIMATION_GREYING_SELECTOR = [
     'paths-inner',
@@ -18,6 +19,7 @@ const ANIMATION_GREYING_SELECTOR = [
 export async function visualizeRoute(obj: ShortestRouteObject<Platform>, shouldAnimate = true) {
     const { platforms = [], edges, time } = obj
     const walkTo = formatTime(time.walkTo)
+    const alertify = (await alertifyPromise).default
     if (edges === undefined) {
         return alertify.success(`${walkTo} on foot!`)
     }

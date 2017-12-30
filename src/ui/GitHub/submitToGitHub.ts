@@ -1,6 +1,5 @@
 import GitHub from 'github-api'
 
-import alertify from '../alertify'
 import { getCity } from '../../util'
 import { makeLink } from '../../util/dom'
 
@@ -8,6 +7,8 @@ import askChanges from './form/askChanges'
 import forkRepo from './forkRepo'
 import getPullRequest from './getPullRequest'
 import { AuthData } from './auth'
+
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ '../alertify')
 
 const MY_NAME = 'metrofan'
 const REPO_NAME = 'metronetworks'
@@ -22,6 +23,8 @@ interface PullRequest {
 export default async (json: string, { username, password }: AuthData): Promise<PullRequest | null> => {
     const city = getCity()
     const title = `modify ${city} map`
+
+    const alertify = (await alertifyPromise).default
 
     const gh = new GitHub({
         username,
