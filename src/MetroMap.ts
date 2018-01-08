@@ -340,7 +340,7 @@ export default class {
     private cleanElements() {
         const { overlay, tooltip } = this
         const { element } = tooltip
-        for (const child of (overlay.origin.childNodes as any)) {
+        for (const child of overlay.origin.childNodes) {
             if (child !== element) {
                 removeAllChildren(child)
             }
