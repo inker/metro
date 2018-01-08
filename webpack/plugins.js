@@ -2,6 +2,7 @@ const path = require('path')
 
 const {
   DefinePlugin,
+  HotModuleReplacementPlugin,
   optimize: {
     CommonsChunkPlugin,
     OccurrenceOrderPlugin,
@@ -47,6 +48,8 @@ module.exports = env => [
     },
     __VERSION__: JSON.stringify(new Date().toUTCString()),
   }),
+
+  env === 'dev' && new HotModuleReplacementPlugin(),
 
   new NamedChunksPlugin(chunkToName),
 
