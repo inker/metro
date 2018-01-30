@@ -47,9 +47,8 @@ export default class ContextMenu {
         if (map === undefined) {
             throw new Error('cannot add map editor to metro map: leaflet map is missing')
         }
-        const { mapPane } = map.getPanes()
         const mapContainer = map.getContainer()
-        mapPane.addEventListener('contextmenu', this.handler, false)
+        mapContainer.addEventListener('contextmenu', this.handler)
         // objectsPane.addEventListener('contextmenu', listener, true); // 'true' prevents propagation
         mapContainer.addEventListener('mousedown', this.hide)
         mapContainer.addEventListener('touchstart', this.hide)
@@ -64,9 +63,13 @@ export default class ContextMenu {
     }
 
     private handler = (event: MouseEvent) => {
-        event.preventDefault()
         const { target } = event
         console.log('target', target, (target as Node).parentNode)
+        const { className } = target as Element
+        if (typeof className === 'string' && className.includes('leaflet-control')) {
+            return
+        }
+        event.preventDefault()
         removeAllChildren(this.container)
         for (const item of this.items) {
             if (item.trigger && !item.trigger(target)) {
