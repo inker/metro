@@ -36,6 +36,7 @@ export default class FAQ {
 
         if (Browser.mobile) {
             import(/* webpackChunkName: "hammer" */ 'hammerjs').then(Hammer => {
+                // @ts-ignore
                 new Hammer(this.card).on('swipeleft swiperight', this.hideFAQ)
             })
         }
