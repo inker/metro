@@ -19,6 +19,7 @@ export function makeCircle(center: Point, radius: number): SVGCircleElement {
     circle.setAttribute('r', radius.toString())
     circle.setAttribute('cy', center.y.toString())
     circle.setAttribute('cx', center.x.toString())
+    circle.style.transformOrigin = `${center.x}px ${center.y}px`
     return circle
 }
 
