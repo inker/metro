@@ -17,7 +17,8 @@ const getCssLoader = global => global ? 'css-loader' : {
   },
 }
 
-const getCssRule = (env, global) => env === 'dev' ? [
+// TODO: fix this shit
+const getCssRule = (env, global) => env === 'dev' || global ? [
   'style-loader',
   getCssLoader(global),
   'postcss-loader',

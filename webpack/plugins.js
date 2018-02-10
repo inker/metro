@@ -66,9 +66,9 @@ module.exports = env => [
   new CommonsChunkPlugin({
     name: 'vendor',
     // names: 'vendor',
-    // chunks: 'app',
+    // chunks: ['app'],
     minChunks: ({ context }) => context && context.includes('node_modules'),
-    async: true,
+    // async: true,
   }),
 
   new CommonsChunkPlugin({
