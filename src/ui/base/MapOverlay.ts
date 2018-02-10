@@ -7,7 +7,7 @@ const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
 
 export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
     private map: L.Map
-    protected overlayContainer: ElementTagNameMap[TagName]
+    protected readonly overlayContainer: ElementTagNameMap[TagName]
 
     private readonly bounds: L.LatLngBounds
     private topLeft: L.Point
