@@ -41,7 +41,7 @@ export function makeStadium(center: Point, distance: number, radius: number) {
     rect.setAttribute('height', diameter.toString())
     rect.setAttribute('rx', radius.toString())
     rect.setAttribute('ry', radius.toString())
-    rect.style.transformOrigin = '50% 50%'
+    rect.style.transformOrigin = `${center.x}px ${center.y}px`
     return rect
 }
 
