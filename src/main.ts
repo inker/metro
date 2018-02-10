@@ -1,3 +1,4 @@
+import 'normalize.css'
 import { Browser } from 'leaflet'
 import { capitalize } from 'lodash'
 
