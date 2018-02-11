@@ -9,10 +9,11 @@
     // "watch": true, // not needed when assembled with webpack
     "pretty": true,
     "experimentalDecorators": true,
+    "jsx": "react",
     "strictNullChecks": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
-    // "downlevelIteration": true,
+    "downlevelIteration": true,
     "noEmitHelpers": true,
     "importHelpers": true,
     "lib": [

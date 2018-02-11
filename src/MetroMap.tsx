@@ -1,3 +1,5 @@
+import React from 'react'
+import ReactDom from 'react-dom'
 import L from 'leaflet'
 import unblur from 'unblur'
 import {
@@ -66,6 +68,10 @@ import {
     unit,
     angle,
 } from 'utils/math/vector'
+
+import TooltipReact from 'components/Tooltip'
+import StationReact from 'components/Station'
+import Bezier from 'components/Bezier'
 
 import 'leaflet/dist/leaflet.css'
 
@@ -192,27 +198,26 @@ export default class {
             const bounds = L.latLngBounds(platformLocations)
             this.overlay = new SvgOverlay(bounds, L.point(200, 200)).addTo(this.map)
             const { defs } = this.overlay
-            appendAllFilters(defs)
 
             const {
                 default: alertify,
                 confirm,
             } = await alertifyPromise
-            addEventListener('keydown', async e => {
-                if (!e.shiftKey || !e.ctrlKey || e.keyCode !== 82 || !(await confirm('Reset network?'))) {
-                    return
-                }
-                const graph = await this.getGraph()
-                this.resetNetwork(graph)
-            })
+            // addEventListener('keydown', async e => {
+            //     if (!e.shiftKey || !e.ctrlKey || e.keyCode !== 82 || !(await confirm('Reset network?'))) {
+            //         return
+            //     }
+            //     const graph = await this.getGraph()
+            //     this.resetNetwork(graph)
+            // })
 
-            const { textContent } = defs
-            if (!textContent) {
-                alertify.alert(`
-                    Your browser doesn't seem to have capabilities to display some features of the map.
-                    Consider using Chrome or Firefox for the best experience.
-                `)
-            }
+            // const { textContent } = defs
+            // if (!textContent) {
+            //     alertify.alert(`
+            //         Your browser doesn't seem to have capabilities to display some features of the map.
+            //         Consider using Chrome or Firefox for the best experience.
+            //     `)
+            // }
 
             this.lineRules = await lineRulesPromise
             // wait.textContent = 'adding content...';
@@ -220,7 +225,7 @@ export default class {
             this.map.addLayer(mapbox)
             this.map.on('overlayupdate', e => {
                 this.moving = true
-                this.redrawNetwork()
+                this.render()
                 this.moving = false
                 // console.time('conversion');
                 // file.svgToPicture(document.getElementById('overlay') as any).then(img => {
@@ -232,7 +237,7 @@ export default class {
             // TODO: fix the kludge making the grey area disappear
             this.map.invalidateSize(false)
             this.addMapListeners()
-            new RoutePlanner().addTo(this)
+            // new RoutePlanner().addTo(this)
             new DistanceMeasure().addTo(this.map)
             // this.routeWorker.postMessage(this.network);
             // drawZones(this.map, this.network.platforms);
@@ -309,7 +314,7 @@ export default class {
         }
 
         origin.insertBefore(this.tooltip.element, document.getElementById('dummy-circles'))
-        this.redrawNetwork()
+        this.render()
         this.addStationListeners()
     }
 
@@ -334,7 +339,7 @@ export default class {
 
     protected resetNetwork(json: GraphJSON) {
         this.network = new Network(json)
-        this.redrawNetwork()
+        this.render()
     }
 
     private cleanElements() {
@@ -345,6 +350,226 @@ export default class {
                 removeAllChildren(child)
             }
         }
+    }
+
+    render() {
+        this.updatePlatformsPositionOnOverlay()
+        const {
+            network,
+        } = this
+        const { detailedZoom } = this.config
+        const zoom = this.map.getZoom()
+        // const lineWidth = 2 ** (zoom / 4 - 1.75);
+        const {
+            lineWidth,
+            lightLineWidth,
+            circleBorder,
+            circleRadius,
+            dummyCircleRadius,
+            transferWidth,
+            transferBorder,
+        } = this.getSvgSizes()
+
+        const lightRailPathStyle = tryGetFromMap(this.lineRules, 'L')
+        lightRailPathStyle.strokeWidth = `${lightLineWidth}px`
+
+        const stationCircumpoints = new Map<Station, Platform[]>()
+
+        const isDetailed = zoom >= detailedZoom
+
+        this.platformOffsets.clear()
+        const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * lineWidth
+
+        for (const span of this.network.spans) {
+            const { source, target, routes } = span
+            const parallel = this.network.spans.filter(s => s.isOf(source, target))
+            if (parallel.length === 1) {
+                continue
+            }
+            if (parallel.length === 0) {
+                throw new Error(`some error with span ${source.name}-${target.name}: it probably does not exist`)
+            }
+
+            const i = parallel.indexOf(span)
+            if (i === -1) {
+                throw new Error(`some error with span ${source.name}-${target.name}`)
+            }
+            const leftShift = (parallel.length - 1) / 2
+            const totalOffset = (i - leftShift) * lineWidthPlusGapPx
+            for (const p of [source, target]) {
+                const pos = tryGetFromMap(this.platformsOnSVG, p)
+                const spanRouteSpans = p.spans.filter(s => intersection(s.routes, routes).length > 0)
+                for (const s of spanRouteSpans) {
+                    const map = getOrMakeInMap(this.platformOffsets, pos, () => new Map<Span, number>())
+                    map.set(s, totalOffset)
+                }
+            }
+        }
+
+        for (const station of this.network.stations) {
+            const circumpoints: L.Point[] = []
+            // const stationMeanColor: string
+            // if (zoom < 12) {
+            //     stationMeanColor = color.mean(this.linesToColors(this.passingLinesStation(station)));
+            // }
+            for (const platform of station.platforms) {
+                const pos = tryGetFromMap(this.platformsOnSVG, platform)
+                // const posOnSVG = this.overlay.latLngToSvgPoint(platform.location);
+                const whiskers = this.makeWhiskers(platform)
+                this.whiskers.set(platform, whiskers)
+            }
+
+            const circular = findCycle(this.network, station)
+            if (circular.length > 0) {
+                for (const platform of station.platforms) {
+                    if (circular.includes(platform)) {
+                        const pos = tryGetFromMap(this.platformsOnSVG, platform)
+                        circumpoints.push(pos)
+                    }
+                }
+                stationCircumpoints.set(station, circular)
+            }
+
+        }
+
+        ReactDom.render((
+            <>
+                <defs>
+                    <filter
+                        id="shadow"
+                        width="200%"
+                        height="200%"
+                    >
+                        <feOffset
+                            result="offOut"
+                            in="SourceAlpha"
+                            dx="0"
+                            dy="4"
+                        />
+                        <feColorMatrix
+                            result="matrixOut"
+                            in="offOut"
+                            type="matrix"
+                            values="
+                                0 0 0 0   0
+                                0 0 0 0   0
+                                0 0 0 0   0
+                                0 0 0 0.5 0
+                            "
+                        />
+                        <feGaussianBlur
+                            result="blurOut"
+                            in="matrixOut"
+                            stdDeviation="2"
+                        />
+                        <feBlend
+                            in="SourceGraphic"
+                            in2="blurOut"
+                            mode="normal"
+                        />
+                    </filter>
+                    <filter id="black-glow">
+                        <feColorMatrix
+                            type="matrix"
+                            values="
+                                0 0 0 0   0
+                                0 0 0 0   0
+                                0 0 0 0   0
+                                0 0 0 0.3 0
+                            "
+                        />
+                        <feGaussianBlur
+                            stdDeviation="2.5"
+                            result="coloredBlur"
+                        />
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                    <filter id="opacity">
+                        <feComponentTransfer>
+                            <feFuncA
+                                type="table"
+                                tableValues="0 0.5"
+                            />
+                        </feComponentTransfer>
+                    </filter>
+                    <filter id="gray">
+                        <feColorMatrix
+                            type="matrix"
+                            values="
+                                0.2126 0.7152 0.0722 0 0
+                                0.2126 0.7152 0.0722 0 0
+                                0.2126 0.7152 0.0722 0 0
+                                0 0 0 1 0
+                            "
+                        />
+                    </filter>
+                </defs>
+                <g
+                    id="paths-outer"
+                    style={{
+                        strokeWidth: `${lineWidth}px`,
+                    }}
+                >
+                    {network.spans.map(span => {
+                        const [foo] = this.makePath(span)
+                        return foo
+                    })}
+                </g>
+                <g
+                    id="paths-inner"
+                    style={{
+                        strokeWidth: `${lineWidth / 2}px`,
+                    }}
+                >
+                    {}
+                </g>
+                <g
+                    id="transfers-outer"
+                    style={{
+                        strokeWidth: `${transferWidth + transferBorder / 2}px`,
+                    }}
+                >
+                    {}
+                </g>
+                <g
+                    id="station-circles"
+                    style={{
+                        strokeWidth: `${circleBorder}px`,
+                    }}
+                >
+                    {network && network.stations.map(station => {
+                        return (
+                            <StationReact
+                                key={station.id}
+                                platformsOnSVG={this.platformsOnSVG}
+                                station={station}
+                                radius={circleRadius}
+                                dummyParent={document.getElementById('dummy-circles')}
+                            />
+                        )
+                    })}
+                </g>
+                <g
+                    id="transfers-inner"
+                    style={{
+                        strokeWidth: `${transferWidth - transferBorder / 2}px`,
+                    }}
+                >
+                    {}
+                </g>
+                <TooltipReact
+                    names={['foo', 'bar']}
+                />
+                <g
+                    id="dummy-circles"
+                >
+                    {}
+                </g>
+            </>
+        ), this.overlay.origin)
     }
 
     protected redrawNetwork() {
@@ -760,30 +985,41 @@ export default class {
         const controlPoints = this.getControlPoints(span)
 
         // drawBezierHints(this.overlay.origin, controlPoints, get(this.lineRules.get(lineId), 'stroke') as string)
-
-        const bezier = createBezier(controlPoints[0], ...controlPoints.slice(1))
+        const foo = this.lineRules.get(routes[0].line)
+        const bezier = (
+            <Bezier
+                controlPoints={controlPoints[0]}
+                tails={controlPoints.slice(1)}
+                color={foo && foo.stroke}
+            />
+        )
         // bezier.id = 'op-' + spanIndex;
         if (lineType === 'E') {
-            bezier.classList.add('E')
+            // bezier.classList.add('E')
             // const { branch } = span.routes[0];
             // if (branch !== undefined) {
             //     bezier.classList.add('E' + branch);
             // }
-            const inner = bezier.cloneNode(true) as typeof bezier
+            const inner = (
+                <Bezier
+                    controlPoints={controlPoints[0]}
+                    tails={controlPoints.slice(1)}
+                />
+            )
             // inner.id = 'ip-' + spanIndex;
-            pool.outerEdgeBindings.set(span, bezier)
-            pool.innerEdgeBindings.set(span, inner)
+            // pool.outerEdgeBindings.set(span, bezier)
+            // pool.innerEdgeBindings.set(span, inner)
             return [bezier, inner]
         }
-        if (lineId !== undefined) {
-            bezier.classList.add(lineId)
-        }
-        if (lineType !== undefined) {
-            bezier.classList.add(lineType)
-        } else {
-            bezier.style.stroke = 'black'
-        }
-        pool.outerEdgeBindings.set(span, bezier)
+        // if (lineId !== undefined) {
+        //     bezier.classList.add(lineId)
+        // }
+        // if (lineType !== undefined) {
+        //     bezier.classList.add(lineType)
+        // } else {
+        //     bezier.style.stroke = 'black'
+        // }
+        // pool.outerEdgeBindings.set(span, bezier)
         return [bezier]
     }
 
