@@ -9,6 +9,7 @@ import {
 
 import Modal from './Modal'
 import PlatformReact from './Platform'
+import Circle from './Circle'
 
 interface Props {
   platformsOnSVG: WeakMap<Platform, L.Point>,
@@ -27,6 +28,7 @@ class StationReact extends PureComponent<Props> {
       dummyParent,
       onMouseOver,
     } = this.props
+
     return (
       <>
         {station.platforms.map(platform => {
@@ -43,12 +45,11 @@ class StationReact extends PureComponent<Props> {
                     tagName="g"
                     modalRoot={dummyParent}
                   >
-                    <PlatformReact
+                    <Circle
                       key={platform.id}
-                      position={pos}
+                      center={pos}
                       radius={radius * 2}
-                      platform={platform}
-                      onMouseOver={onMouseOver}
+                      onMouseOver={e => onMouseOver(platform)}
                     />
                   </Modal>
                 }
