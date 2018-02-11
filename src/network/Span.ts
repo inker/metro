@@ -1,13 +1,17 @@
 import fastDelete from 'fast-delete'
+import { uniqueId } from 'lodash'
 
 import Platform from './Platform'
 import Edge from './Edge'
 import Route from './Route'
 
 export default class Span extends Edge<Platform> {
+    readonly id: string
     routes: Route[]
+
     constructor(source: Platform, target: Platform, routes: Route[]) {
         super(source, target)
+        this.id = uniqueId('span-')
         source.spans.push(this)
         target.spans.push(this)
         this.routes = routes

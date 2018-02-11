@@ -1,3 +1,5 @@
+import { uniqueId } from 'lodash'
+
 import { LatLng } from './types'
 
 import { getPlatformNamesZipped } from '../util'
@@ -6,7 +8,12 @@ import getCenter from '../util/geo/getCenter'
 import Platform from './Platform'
 
 export default class {
-    constructor(public platforms: Platform[]) {
+    readonly id: string
+    platforms: Platform[]
+
+    constructor(platforms: Platform[]) {
+        this.id = uniqueId()
+        this.platforms = platforms
         for (const platform of platforms) {
             (platform as any)._station = this
         }

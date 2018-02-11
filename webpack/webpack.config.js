@@ -8,7 +8,7 @@ const distDir = path.join(rootDir, 'docs')
 module.exports = env => ({
   target: 'web',
   entry: {
-    app: './src/main.ts',
+    app: './src/index.ts',
   },
   output: {
     path: distDir,
@@ -22,10 +22,14 @@ module.exports = env => ({
       '.js',
       '.jsx',
     ],
-    alias: {
-      // 'leaflet-dist': path.join(rootDir, 'node_modules/leaflet/dist'),
-      // 'alertify-dist': path.join(rootDir, 'node_modules/alertifyjs/build'),
-    },
+    modules: [
+      path.resolve(rootDir, 'src'),
+      'node_modules',
+    ],
+    // alias: env === 'dev' ? undefined : {
+    //   'react': path.join(rootDir, 'node_modules/react/dist/react.min.js'),
+    //   'react-dom': path.join(rootDir, 'node_modules/react-dom/dist/react-dom.min.js'),
+    // },
   },
   devtool: env === 'dev' ? 'source-map' : undefined,
   module: {
@@ -36,6 +40,14 @@ module.exports = env => ({
     contentBase: distDir,
     port: 9080,
     compress: env !== 'dev',
+    historyApiFallback: {
+      rewrites: [
+        {
+          from: /./,
+          to: '/404.html',
+        },
+      ],
+    },
     open: true,
   },
 })

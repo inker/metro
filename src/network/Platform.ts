@@ -1,3 +1,5 @@
+import { uniqueId } from 'lodash'
+
 import { AltNames, LatLng } from './types'
 
 import Span from './Span'
@@ -6,6 +8,7 @@ import Station from './Station'
 import Route from './Route'
 
 export default class {
+    readonly id: string
     name: string
     altNames: AltNames
     location: LatLng
@@ -19,6 +22,7 @@ export default class {
     }
 
     constructor(name: string, location: LatLng, altNames: AltNames = {}, elevation?: number) {
+        this.id = uniqueId('platform-')
         this.name = name
         this.altNames = altNames
         this.location = location

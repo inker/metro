@@ -1,6 +1,7 @@
 {
   "extends": [
-    "tslint:latest"
+    "tslint:latest",
+    "tslint-react"
   ],
   "rules": {
     "array-type": [
@@ -11,6 +12,8 @@
     "interface-name": [
       false
     ],
+    "jsx-boolean-value": false,
+    "jsx-no-multiline-js": false,
     "member-access": false,
     "member-ordering": [
       false
@@ -22,6 +25,7 @@
       "log"
     ],
     "no-duplicate-variable": true,
+    "no-implicit-dependencies": false,
     "no-this-assignment": false,
     "no-unused-variable": true,
     "no-submodule-imports": false,
