@@ -15,6 +15,7 @@ interface Props {
   station: Station,
   radius: number,
   dummyParent?: Element | null,
+  onMouseOver?: (platform: Platform) => void,
 }
 
 class StationReact extends PureComponent<Props> {
@@ -24,6 +25,7 @@ class StationReact extends PureComponent<Props> {
       station,
       radius,
       dummyParent,
+      onMouseOver,
     } = this.props
     return (
       <>
@@ -37,15 +39,19 @@ class StationReact extends PureComponent<Props> {
                   radius={radius}
                 />
                 {dummyParent &&
-                  <Modal modalRoot={dummyParent}>
+                  <Modal
+                    tagName="g"
+                    modalRoot={dummyParent}
+                  >
                     <PlatformReact
                       key={platform.id}
                       position={pos}
-                      radius={radius}
+                      radius={radius * 2}
+                      platform={platform}
+                      onMouseOver={onMouseOver}
                     />
                   </Modal>
                 }
-
               </>
             )
           })}

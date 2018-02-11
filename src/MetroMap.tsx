@@ -546,7 +546,8 @@ export default class {
                                 platformsOnSVG={this.platformsOnSVG}
                                 station={station}
                                 radius={circleRadius}
-                                dummyParent={document.getElementById('dummy-circles')}
+                                dummyParent={this.overlay.dummy}
+                                onMouseOver={console.log}
                             />
                         )
                     })}

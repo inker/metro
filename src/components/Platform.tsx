@@ -2,6 +2,8 @@ import React, { PureComponent } from 'react'
 import styled from 'styled-components'
 import { Point } from 'leaflet'
 
+import Platform from '../network/Platform'
+
 const Circle = styled.circle`
   transform-origin: ${({ center }) => `${center.x}px ${center.y}px`};
 `
@@ -9,9 +11,21 @@ const Circle = styled.circle`
 interface Props {
   position: Point,
   radius: number,
+  platform?: Platform,
+  onMouseOver?: (platform?: Platform) => void,
 }
 
-class Platform extends PureComponent<Props> {
+class PlatformReact extends PureComponent<Props> {
+  onMouseOver = (e: React.MouseEvent<SVGCircleElement>) => {
+    const {
+      platform,
+      onMouseOver,
+    } = this.props
+    if (onMouseOver) {
+      onMouseOver(platform)
+    }
+  }
+
   render() {
     const {
       position,
@@ -23,9 +37,10 @@ class Platform extends PureComponent<Props> {
         cy={position.y}
         r={radius}
         center={position}
+        onMouseOver={this.onMouseOver}
       />
     )
   }
 }
 
-export default Platform
+export default PlatformReact

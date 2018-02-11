@@ -7,7 +7,7 @@ import Transfer from './Transfer'
 import Station from './Station'
 import Route from './Route'
 
-export default class {
+export default class Platform {
     readonly id: string
     name: string
     altNames: AltNames
