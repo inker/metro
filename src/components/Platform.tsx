@@ -4,9 +4,7 @@ import { Point } from 'leaflet'
 
 import Platform from '../network/Platform'
 
-const Circle = styled.circle`
-  transform-origin: ${({ center }) => `${center.x}px ${center.y}px`};
-`
+import Circle from './Circle'
 
 interface Props {
   position: Point,
@@ -30,14 +28,17 @@ class PlatformReact extends PureComponent<Props> {
     const {
       position,
       radius,
+      platform,
+      onMouseOver,
     } = this.props
+
+    
+
     return (
       <Circle
-        cx={position.x}
-        cy={position.y}
-        r={radius}
         center={position}
-        onMouseOver={this.onMouseOver}
+        radius={radius}
+        onMouseOver={e => onMouseOver && onMouseOver(platform)}
       />
     )
   }
