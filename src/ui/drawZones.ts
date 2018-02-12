@@ -5,7 +5,7 @@ import {
 } from 'leaflet'
 
 import { Platform } from '../network'
-import calculateGeoMedian from '../util/geo/calculateGeoMean'
+import geometricMedian from '../util/geo/geometricMedian'
 
 const MAIN_STATION_NAME = 'Glavnyj voxal'
 
@@ -18,7 +18,7 @@ export default (map: LeafletMap, platforms: Platform[]) => {
     const poly = polyline([], {
         color: 'red',
     })
-    const metroMean = calculateGeoMedian(metroPoints, fitnessFunc, 1, cur => poly.addLatLng(cur))
+    const metroMean = geometricMedian(metroPoints, fitnessFunc, 1, cur => poly.addLatLng(cur))
     map.addLayer(poly)
     for (let i = 5000; i < 20000; i += 5000) {
         circle(metroMean, i - 250, { weight: 1 }).addTo(map)
