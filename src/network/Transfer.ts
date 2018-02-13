@@ -3,7 +3,7 @@ import fastDelete from 'fast-delete'
 import Platform from './Platform'
 import Edge from './Edge'
 
-export default class extends Edge<Platform> {
+export default class Transfer extends Edge<Platform> {
     constructor(source: Platform, target: Platform) {
         super(source, target)
         source.transfers.push(this)

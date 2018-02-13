@@ -7,7 +7,7 @@ import getCenter from '../util/geo/getCenter'
 
 import Platform from './Platform'
 
-export default class {
+export default class Station {
     readonly id: string
     platforms: Platform[]
 

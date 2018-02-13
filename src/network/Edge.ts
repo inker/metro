@@ -1,4 +1,7 @@
+import { uniqueId } from 'lodash'
+
 export default class<V> {
+    readonly id = uniqueId('edge-')
     protected _source: V
     protected _target: V
 

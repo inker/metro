@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 
 import TooltipReact from 'components/Tooltip'
 import StationReact from 'components/Station'
+import TransferReact from 'components/Transfer'
 import Bezier from 'components/Bezier'
 
 import SvgOverlay from './ui/SvgOverlay'
@@ -274,7 +275,19 @@ class Metro extends PureComponent<Props, State> {
             strokeWidth: `${transferWidth + transferBorder / 2}px`,
           }}
         >
-          {}
+          {network && network.transfers.map(transfer => {
+            return (
+              <TransferReact
+                key={transfer.id}
+                start={tryGetFromMap(platformsOnSVG, transfer.source)}
+                end={tryGetFromMap(platformsOnSVG, transfer.target)}
+                transfer={transfer}
+                innerParent={document.getElementById('transfers-inner')}
+                dummyParent={overlay.dummy}
+                onMouseOver={console.log}
+              />
+            )
+          })}
         </g>
         <g
           id="station-circles"
