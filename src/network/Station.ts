@@ -6,7 +6,7 @@ import { LatLng } from './types'
 
 import Platform from './Platform'
 
-export default class {
+export default class Station {
     readonly id: string
     platforms: Platform[]
 

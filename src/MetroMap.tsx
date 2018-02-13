@@ -842,19 +842,17 @@ export default class {
     }
 
     private addStationListeners() {
-        const onMouseOut = (e: MouseEvent) => {
-            this.tooltip.hide()
-            scale.unscaleAll()
-        }
-        const dummyCircles = byId('dummy-circles')
-        dummyCircles.addEventListener('mouseover', e => {
-            const dummy = e.target as SVGCircleElement
-            const platform = tryGetKeyFromBiMap(pool.dummyBindings, dummy)
-            this.highlightStation(platform.station, getPlatformNames(platform), [platform.name])
-        })
-        dummyCircles.addEventListener('mouseout', onMouseOut)
-
-        // TODO: replace with rect
+        // const onMouseOut = (e: MouseEvent) => {
+        //     this.tooltip.hide()
+        //     scale.unscaleAll()
+        // }
+        // const dummyCircles = byId('dummy-circles')
+        // dummyCircles.addEventListener('mouseover', e => {
+        //     const dummy = e.target as SVGCircleElement
+        //     const platform = tryGetKeyFromBiMap(pool.dummyBindings, dummy)
+        //     this.highlightStation(platform.station, getPlatformNames(platform), [platform.name])
+        // })
+        // dummyCircles.addEventListener('mouseout', onMouseOut)
         // const onTransferOver = (e: MouseEvent) => {
         //     const el = e.target as SVGPathElement | SVGLineElement
         //     const { source, target } = pool.outerEdgeBindings.getKey(el)
