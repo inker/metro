@@ -312,7 +312,6 @@ export default class {
 
         origin.insertBefore(this.tooltip.element, document.getElementById('dummy-circles'))
         this.render()
-        this.addStationListeners()
     }
 
     private resetMapView() {
@@ -839,33 +838,6 @@ export default class {
             throw new Error('111FUUFF')
         }
         return makeArc(third)
-    }
-
-    private addStationListeners() {
-        // const onMouseOut = (e: MouseEvent) => {
-        //     this.tooltip.hide()
-        //     scale.unscaleAll()
-        // }
-        // const dummyCircles = byId('dummy-circles')
-        // dummyCircles.addEventListener('mouseover', e => {
-        //     const dummy = e.target as SVGCircleElement
-        //     const platform = tryGetKeyFromBiMap(pool.dummyBindings, dummy)
-        //     this.highlightStation(platform.station, getPlatformNames(platform), [platform.name])
-        // })
-        // dummyCircles.addEventListener('mouseout', onMouseOut)
-        // const onTransferOver = (e: MouseEvent) => {
-        //     const el = e.target as SVGPathElement | SVGLineElement
-        //     const { source, target } = pool.outerEdgeBindings.getKey(el)
-        //         || tryGetKeyFromBiMap(pool.innerEdgeBindings, el)
-        //     const names = getPlatformNamesZipped([source, target])
-        //     this.highlightStation(source.station, names, [source.name, target.name])
-        // }
-        // const transfersOuter = byId('transfers-outer')
-        // const transfersInner = byId('transfers-inner')
-        // transfersOuter.addEventListener('mouseover', onTransferOver)
-        // transfersInner.addEventListener('mouseover', onTransferOver)
-        // transfersOuter.addEventListener('mouseout', onMouseOut)
-        // transfersInner.addEventListener('mouseout', onMouseOut)
     }
 
     private highlightStation(station: Station, namesOnPlate: string[], filteredNames: string[]) {
