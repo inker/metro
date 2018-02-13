@@ -32,7 +32,27 @@ interface Props {
   svgSizes: any,
 }
 
-class Metro extends PureComponent<Props> {
+interface State {
+  currentPlatform: Platform | null,
+}
+
+class Metro extends PureComponent<Props, State> {
+  state: State = {
+    currentPlatform: null,
+  }
+
+  private setCurrentPlatform = (platform: Platform) => {
+    this.setState({
+      currentPlatform: platform,
+    })
+  }
+
+  private unsetCurrentPlatform = () => {
+    this.setState({
+      currentPlatform: null,
+    })
+  }
+
   private makePath(span: Span) {
     const { routes, source, target } = span
     if (routes.length === 0) {
@@ -150,6 +170,10 @@ class Metro extends PureComponent<Props> {
       transferBorder,
     } = svgSizes
 
+    const {
+      currentPlatform,
+    } = this.state
+
     return (
       <>
         <defs>
@@ -266,7 +290,8 @@ class Metro extends PureComponent<Props> {
                 station={station}
                 radius={circleRadius}
                 dummyParent={overlay.dummy}
-                onMouseOver={console.log}
+                onMouseOver={this.setCurrentPlatform}
+                onMouseOut={this.unsetCurrentPlatform}
               />
             )
           })}
@@ -280,7 +305,8 @@ class Metro extends PureComponent<Props> {
           {}
         </g>
         <TooltipReact
-          names={['foo', 'bar']}
+          position={currentPlatform && platformsOnSVG.get(currentPlatform) || null}
+          names={currentPlatform && [currentPlatform.name, ...Object.values(currentPlatform.altNames)]}
         />
         <g
           id="dummy-circles"

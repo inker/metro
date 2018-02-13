@@ -17,9 +17,23 @@ interface Props {
   radius: number,
   dummyParent?: Element | null,
   onMouseOver?: (platform: Platform) => void,
+  onMouseOut?: () => void,
 }
 
 class StationReact extends PureComponent<Props> {
+  onFoo = (e) => {
+    const { station, onMouseOver } = this.props
+    if (!onMouseOver) {
+      return
+    }
+    const { id } = e.target.dataset
+    const platform = station.platforms.find(p => p.id === id)
+    if (!platform) {
+      throw new Error(`no platform with id=${id} found`)
+    }
+    onMouseOver(platform)
+  }
+
   render() {
     const {
       platformsOnSVG,
@@ -27,6 +41,7 @@ class StationReact extends PureComponent<Props> {
       radius,
       dummyParent,
       onMouseOver,
+      onMouseOut,
     } = this.props
 
     return (
@@ -47,9 +62,11 @@ class StationReact extends PureComponent<Props> {
                   >
                     <Circle
                       key={platform.id}
+                      data-id={platform.id}
                       center={pos}
                       radius={radius * 2}
-                      onMouseOver={e => onMouseOver(platform)}
+                      onMouseOver={this.onFoo}
+                      onMouseOut={onMouseOut}
                     />
                   </Modal>
                 }

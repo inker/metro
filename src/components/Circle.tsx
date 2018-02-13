@@ -3,21 +3,21 @@ import styled from 'styled-components'
 import { Point } from 'leaflet'
 
 const Root = styled.circle`
-  transform-origin: ${({ transformOrigin }) => `${transformOrigin.x}px ${transformOrigin.y}px`};
 `
 
 interface Props {
   center: Point,
   radius: number,
-  onMouseOver?: (e?: React.MouseEvent<SVGCircleElement>) => void,
+  [prop: string]: any,
 }
 
 class Circle extends PureComponent<Props> {
   render() {
     const {
+      id,
       center,
       radius,
-      onMouseOver,
+      ...otherProps
     } = this.props
 
     return (
@@ -25,8 +25,8 @@ class Circle extends PureComponent<Props> {
         cx={center.x}
         cy={center.y}
         r={radius}
-        transformOrigin={center}
-        onMouseOver={onMouseOver}
+        transform-origin={center}
+        {...otherProps}
       />
     )
   }
