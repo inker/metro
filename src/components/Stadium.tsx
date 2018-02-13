@@ -3,14 +3,13 @@ import styled from 'styled-components'
 import { Point } from 'leaflet'
 
 const Root = styled.rect`
-  transform-origin: ${({ transformOrigin }) => `${transformOrigin.x}px ${transformOrigin.y}px`};
 `
 
 interface Props {
   center: Point,
   distance: number,
   radius: number,
-  onMouseOver?: (e?: React.MouseEvent<SVGRectElement>) => void,
+  [prop: string]: any,
 }
 
 class Circle extends PureComponent<Props> {
@@ -20,6 +19,7 @@ class Circle extends PureComponent<Props> {
       distance,
       radius,
       onMouseOver,
+      ...otherProps
     } = this.props
 
     const diameter = radius * 2
@@ -32,8 +32,8 @@ class Circle extends PureComponent<Props> {
         height={diameter}
         rx={radius}
         ry={radius}
-        transformOrigin={position}
-        onMouseOver={onMouseOver}
+        transform-origin={center}
+        {...otherProps}
       />
     )
   }

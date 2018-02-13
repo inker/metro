@@ -1,10 +1,15 @@
 import React, { PureComponent } from 'react'
 import styled from 'styled-components'
+import { Point } from 'leaflet'
+
+const WIDTH = 300
+const HALF_WIDTH = WIDTH / 2
+
+const GAP = 10
 
 const PlateBox = styled.div`
   color: #000000;
-  text-anchor: end;
-  text-align: right;
+  text-align: center;
   font-family: Corbel, Candara, Calibri, 'Trebuchet MS', Ubuntu, sans-serif;
   font-weight: bold;
   opacity: 1;
@@ -17,31 +22,46 @@ const PlateBox = styled.div`
   background-color: white; /* for div */
   padding: 1px 3px 1px 3px;
   line-height: 1.3em;
-  display: inline-block;
+  display: ${props => props.display ? 'inline-block' : 'none'};
+  margin-bottom: ${GAP}px;
   /*float: left;*/
+`
+
+const Foobar = styled.div`
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  align-items: flex-end;
 `
 
 interface Props {
   names: string[] | null,
+  position: Point | null,
 }
 
 class Tooltip extends PureComponent<Props> {
   render() {
-    const { names } = this.props
+    const {
+      position,
+      names,
+    } = this.props
+
     return (
       <g id="plaaaaate">
         <foreignObject
-            x="0"
-            y="0"
-            width="100%"
-            height="100%"
-            transform=""
+            x={-HALF_WIDTH}
+            y={-WIDTH}
+            width={WIDTH}
+            height={WIDTH}
+            transform={position ? `translate(${position.x}, ${position.y})` : ''}
         >
-          <PlateBox>
-            {names && names.map(name => (
-              <span>{name}</span>
-            ))}
-          </PlateBox>
+          <Foobar>
+            <PlateBox display={position}>
+              {names && names.map(name => (
+                <div>{name}</div>
+              ))}
+            </PlateBox>
+          </Foobar>
         </foreignObject>
       </g>
     )
