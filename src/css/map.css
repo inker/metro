@@ -9,32 +9,3 @@ circle {
         transform-origin: 0% 0%;
     }
 }
-
-#station-circles {
-    fill: white;
-    stroke: black;
-}
-
-#dummy-circles {
-    opacity: 0;
-    stroke: blue;
-    stroke-width: 0.5px;
-}
-
-#paths-outer, #paths-inner, #transfers-outer, #transfers-inner {
-    fill: none;
-}
-
-#paths-outer, #transfers-outer {
-    & > path {
-        pointer-events: stroke;
-    }
-}
-
-#transfers-outer {
-    stroke: #404040;
-}
-
-#transfers-inner {
-    stroke: #FFFFFF;
-}

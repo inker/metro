@@ -47,7 +47,7 @@ class Tooltip extends PureComponent<Props> {
     } = this.props
 
     return (
-      <g id="plaaaaate">
+      <g>
         <foreignObject
             x={-HALF_WIDTH}
             y={-WIDTH}
