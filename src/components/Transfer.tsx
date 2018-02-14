@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 import { Point } from 'leaflet'
 
 import Transfer from '../network/Transfer'
+import Platform from '../network/Platform'
 
 import Modal from './Modal'
 import Line from './Line'
@@ -10,13 +11,65 @@ interface Props {
   start: Point,
   end: Point,
   transfer: Transfer,
+  fullCircleRadius: number,
+  defs: SVGDefsElement | null,
   innerParent: Element | null,
   dummyParent: Element | null,
+  getPlatformColor: (platform: Platform) => string,
   onMouseOver?: (transfer: Transfer) => void,
   onMouseOut?: () => void,
 }
 
+export function setDirection(gradient: Element, vector: Point) {
+  const rotate = `rotate(${Math.atan2(vector.y, vector.x) * 180 / Math.PI}, 0.5, 0.5)`
+  gradient.setAttribute('gradientTransform', rotate)
+}
+
+export function setOffset(gradient: Element, offset: number) {
+  (gradient.firstElementChild as SVGStopElement).setAttribute('offset', offset.toString());
+  (gradient.lastElementChild as SVGStopElement).setAttribute('offset', (1 - offset).toString())
+}
+
 class TransferReact extends PureComponent<Props> {
+  private getGradient() {
+    const {
+      start,
+      end,
+      transfer,
+      fullCircleRadius,
+      getPlatformColor,
+    } = this.props
+    const { source, target } = transfer
+
+    const gradientColors = [
+      getPlatformColor(source),
+      getPlatformColor(target),
+    ]
+
+    const vector = end.subtract(start)
+
+    const circlePortion = fullCircleRadius / start.distanceTo(end)
+
+    return (
+      <linearGradient
+        id={`gradient-${transfer.id}`}
+        gradientTransform={`rotate(${Math.atan2(vector.y, vector.x) * 180 / Math.PI}, 0.5, 0.5)`}
+      >
+        <stop
+          style={{
+            stopColor: gradientColors[0],
+          }}
+          offset={circlePortion}
+        />
+        <stop
+          style={{
+            stopColor: gradientColors[1],
+          }}
+          offset={1 - circlePortion}
+        />
+      </linearGradient>
+    )
+  }
   onMouseOver = (e) => {
     const { transfer, onMouseOver } = this.props
     if (!onMouseOver) {
@@ -30,6 +83,7 @@ class TransferReact extends PureComponent<Props> {
       start,
       end,
       transfer,
+      defs,
       innerParent,
       dummyParent,
       onMouseOut,
@@ -40,6 +94,9 @@ class TransferReact extends PureComponent<Props> {
         <Line
           start={start}
           end={end}
+          style={{
+            stroke: `url(#${`gradient-${transfer.id}`})`,
+          }}
         />
         {innerParent &&
           <Modal
@@ -53,6 +110,14 @@ class TransferReact extends PureComponent<Props> {
               onMouseOver={this.onMouseOver}
               onMouseOut={onMouseOut}
             />
+          </Modal>
+        }
+        {defs &&
+          <Modal
+            tagName="g"
+            modalRoot={defs}
+          >
+            {this.getGradient()}
           </Modal>
         }
         {dummyParent &&

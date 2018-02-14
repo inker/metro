@@ -422,6 +422,7 @@ export default class {
 
         ReactDom.render((
             <Metro
+                isDetailed={isDetailed}
                 lineRules={this.lineRules}
                 network={network}
                 overlay={this.overlay}

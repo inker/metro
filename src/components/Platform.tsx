@@ -6,6 +6,7 @@ import Circle from './Circle'
 interface Props {
   position: Point,
   radius: number,
+  color?: string,
 }
 
 class PlatformReact extends PureComponent<Props> {
@@ -13,12 +14,14 @@ class PlatformReact extends PureComponent<Props> {
     const {
       position,
       radius,
+      color,
     } = this.props
 
     return (
       <Circle
         center={position}
         radius={radius}
+        stroke={color}
       />
     )
   }
