@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react'
+import styled from 'styled-components'
 
 import TooltipReact from 'components/Tooltip'
 import StationReact from 'components/Station'
@@ -23,6 +24,53 @@ import Network, {
 
 const CURVE_SPLIT_NUM = 10
 
+const Paths = styled.g`
+  fill: none;
+`
+
+const Inner = styled(Paths)`
+`
+
+const Outer = styled(Paths)`
+  & path {
+    pointer-events: stroke;
+  }
+`
+
+const PathsOuter = styled(Outer)`
+  stroke-width: ${props => props.strokeWidth};
+`
+
+const PathsInner = styled(Inner)`
+  stroke-width: ${props => props.strokeWidth};
+`
+
+const TransfersOuter = styled(Outer)`
+  stroke: #404040;
+  stroke-width: ${props => props.strokeWidth};
+`
+
+const TransfersInner = styled(Inner)`
+  stroke: #FFFFFF;
+  stroke-width: ${props => props.strokeWidth};
+`
+
+const DummyPlatforms = styled.g`
+  opacity: 0;
+  /* stroke: blue; */
+  /* stroke-width: 0.5px; */
+`
+
+const DummyTransfers = styled.g`
+  opacity: 0;
+`
+
+interface Containers {
+  transfersInner?: SVGGElement,
+  dummyTransfers?: SVGGElement,
+  dummyPlatforms?: SVGGElement,
+}
+
 interface Props {
   lineRules: Map<string, CSSStyleDeclaration>,
   network: Network,
@@ -34,12 +82,62 @@ interface Props {
 }
 
 interface State {
+  containers: Containers,
   currentPlatform: Platform | null,
 }
 
 class Metro extends PureComponent<Props, State> {
   state: State = {
+    containers: {},
     currentPlatform: null,
+  }
+
+  private mountTransfersInner = (g: SVGGElement) => {
+    console.log('mounting transfers inner', g)
+    this.setState(state => ({
+      containers: {
+        ...state.containers,
+        transfersInner: g,
+      },
+    }))
+    // this.setState({
+    //   containers: {
+    //     ...this.state.containers,
+    //     transfersInner: g,
+    //   },
+    // })
+  }
+
+  private mountDummyTransfers = (g: SVGGElement) => {
+    console.log('mounting dummy transfers', g)
+    this.setState(state => ({
+      containers: {
+        ...state.containers,
+        dummyTransfers: g,
+      },
+    }))
+    // this.setState({
+    //   containers: {
+    //     ...this.state.containers,
+    //     dummyTransfers: g,
+    //   },
+    // })
+  }
+
+  private mountDummyPlatforms = (g: SVGGElement) => {
+    console.log('mounting dummy platforms')
+    this.setState(state => ({
+      containers: {
+        ...state.containers,
+        dummyPlatforms: g,
+      },
+    }))
+    // this.setState({
+    //   containers: {
+    //     ...this.state.containers,
+    //     dummyPlatforms: g,
+    //   },
+    // })
   }
 
   private setCurrentPlatform = (platform: Platform) => {
@@ -57,12 +155,12 @@ class Metro extends PureComponent<Props, State> {
   private makePath(span: Span) {
     const { routes, source, target } = span
     if (routes.length === 0) {
-        console.error(span, 'span has no routes!')
-        throw new Error('span has no routes!')
+      console.error(span, 'span has no routes!')
+      throw new Error('span has no routes!')
     }
     const tokens = routes[0].line.match(/([MEL])(\d{0,2})/)
     if (!tokens) {
-        throw new Error(`match failed for ${source.name}-${target.name}`)
+      throw new Error(`match failed for ${source.name}-${target.name}`)
     }
     const [lineId, lineType] = tokens
 
@@ -71,29 +169,29 @@ class Metro extends PureComponent<Props, State> {
     // drawBezierHints(this.overlay.origin, controlPoints, get(this.lineRules.get(lineId), 'stroke') as string)
     const foo = this.props.lineRules.get(routes[0].line)
     const bezier = (
-        <Bezier
-            controlPoints={controlPoints[0]}
-            tails={controlPoints.slice(1)}
-            color={foo && foo.stroke}
-        />
+      <Bezier
+        controlPoints={controlPoints[0]}
+        tails={controlPoints.slice(1)}
+        color={foo && foo.stroke}
+      />
     )
     // bezier.id = 'op-' + spanIndex;
     if (lineType === 'E') {
-        // bezier.classList.add('E')
-        // const { branch } = span.routes[0];
-        // if (branch !== undefined) {
-        //     bezier.classList.add('E' + branch);
-        // }
-        const inner = (
-            <Bezier
-                controlPoints={controlPoints[0]}
-                tails={controlPoints.slice(1)}
-            />
-        )
-        // inner.id = 'ip-' + spanIndex;
-        // pool.outerEdgeBindings.set(span, bezier)
-        // pool.innerEdgeBindings.set(span, inner)
-        return [bezier, inner]
+      // bezier.classList.add('E')
+      // const { branch } = span.routes[0];
+      // if (branch !== undefined) {
+      //     bezier.classList.add('E' + branch);
+      // }
+      const inner = (
+        <Bezier
+          controlPoints={controlPoints[0]}
+          tails={controlPoints.slice(1)}
+        />
+      )
+      // inner.id = 'ip-' + spanIndex;
+      // pool.outerEdgeBindings.set(span, bezier)
+      // pool.innerEdgeBindings.set(span, inner)
+      return [bezier, inner]
     }
     // if (lineId !== undefined) {
     //     bezier.classList.add(lineId)
@@ -173,6 +271,11 @@ class Metro extends PureComponent<Props, State> {
 
     const {
       currentPlatform,
+      containers: {
+        transfersInner,
+        dummyTransfers,
+        dummyPlatforms,
+      },
     } = this.state
 
     return (
@@ -250,8 +353,7 @@ class Metro extends PureComponent<Props, State> {
             />
           </filter>
         </defs>
-        <g
-          id="paths-outer"
+        <PathsOuter
           style={{
             strokeWidth: `${lineWidth}px`,
           }}
@@ -260,72 +362,71 @@ class Metro extends PureComponent<Props, State> {
             const [foo] = this.makePath(span)
             return foo
           })}
-        </g>
-        <g
-          id="paths-inner"
+        </PathsOuter>
+        <PathsInner
           style={{
             strokeWidth: `${lineWidth / 2}px`,
           }}
         >
           {}
-        </g>
-        <g
-          id="transfers-outer"
+        </PathsInner>
+        <TransfersOuter
           style={{
             strokeWidth: `${transferWidth + transferBorder / 2}px`,
           }}
         >
-          {network && network.transfers.map(transfer => {
+          {transfersInner && dummyTransfers && network && network.transfers.map(transfer => {
             return (
               <TransferReact
                 key={transfer.id}
                 start={tryGetFromMap(platformsOnSVG, transfer.source)}
                 end={tryGetFromMap(platformsOnSVG, transfer.target)}
                 transfer={transfer}
-                innerParent={document.getElementById('transfers-inner')}
-                dummyParent={overlay.dummy}
+                innerParent={transfersInner}
+                dummyParent={dummyTransfers}
                 onMouseOver={console.log}
               />
             )
           })}
-        </g>
+        </TransfersOuter>
         <g
           id="station-circles"
           style={{
             strokeWidth: `${circleBorder}px`,
           }}
         >
-          {network && network.stations.map(station => {
+          {dummyPlatforms && network && network.stations.map(station => {
             return (
               <StationReact
                 key={station.id}
                 platformsOnSVG={platformsOnSVG}
                 station={station}
                 radius={circleRadius}
-                dummyParent={overlay.dummy}
+                dummyParent={dummyPlatforms}
                 onMouseOver={this.setCurrentPlatform}
                 onMouseOut={this.unsetCurrentPlatform}
               />
             )
           })}
         </g>
-        <g
-          id="transfers-inner"
+        <TransfersInner
+          innerRef={this.mountTransfersInner}
           style={{
             strokeWidth: `${transferWidth - transferBorder / 2}px`,
           }}
         >
           {}
-        </g>
+        </TransfersInner>
         <TooltipReact
           position={currentPlatform && platformsOnSVG.get(currentPlatform) || null}
           names={currentPlatform && [currentPlatform.name, ...Object.values(currentPlatform.altNames)]}
         />
-        <g
-          id="dummy-circles"
-        >
-          {}
-        </g>
+        <DummyTransfers
+          innerRef={this.mountDummyTransfers}
+        />
+        <DummyPlatforms
+          innerRef={this.mountDummyPlatforms}
+        />
       </>
     )
   }

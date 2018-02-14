@@ -302,15 +302,6 @@ export default class {
 
     /** call only once! */
     private initNetwork() {
-        const { origin } = this.overlay
-
-        for (const groupId of groupIds) {
-            const g = svg.createSVGElement('g')
-            g.id = groupId
-            origin.appendChild(g)
-        }
-
-        origin.insertBefore(this.tooltip.element, document.getElementById('dummy-circles'))
         this.render()
     }
 

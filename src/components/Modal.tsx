@@ -47,7 +47,7 @@ class Modal extends PureComponent<Props> {
   render() {
     return ReactDOM.createPortal(
       this.props.children,
-      this.el,
+      this.el, // this.props.modalRoot is possible
     )
   }
 }
