@@ -377,17 +377,17 @@ class Metro extends PureComponent<Props, State> {
           }}
         >
           {network.spans.map(span => {
-            const [foo] = this.makePath(span)
-            return foo
+            const [outer] = this.makePath(span)
+            return outer
           })}
         </PathsOuter>
+
         <PathsInner
           style={{
             strokeWidth: `${lineWidth / 2}px`,
           }}
-        >
-          {}
-        </PathsInner>
+        />
+
         <TransfersOuter
           style={{
             strokeWidth: `${transferWidth + transferBorder / 2}px`,
@@ -410,6 +410,7 @@ class Metro extends PureComponent<Props, State> {
             )
           })}
         </TransfersOuter>
+
         <StationCircles
           style={{
             strokeWidth: `${circleBorder}px`,
@@ -431,21 +432,23 @@ class Metro extends PureComponent<Props, State> {
             )
           })}
         </StationCircles>
+
         <TransfersInner
           innerRef={this.mountTransfersInner}
           style={{
             strokeWidth: `${transferWidth - transferBorder / 2}px`,
           }}
-        >
-          {}
-        </TransfersInner>
+        />
+
         <TooltipReact
           position={currentPlatform && platformsOnSVG.get(currentPlatform) || null}
           names={currentPlatform && [currentPlatform.name, ...Object.values(currentPlatform.altNames)]}
         />
+
         <DummyTransfers
           innerRef={this.mountDummyTransfers}
         />
+
         <DummyPlatforms
           innerRef={this.mountDummyPlatforms}
         />
