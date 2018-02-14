@@ -9,6 +9,7 @@ import Bezier from 'components/Bezier'
 import SvgOverlay from './ui/SvgOverlay'
 
 import * as math from './util/math'
+import { meanColor } from './util/color'
 
 import {
   tryGetFromMap,
@@ -23,6 +24,11 @@ import Network, {
 } from './network'
 
 const CURVE_SPLIT_NUM = 10
+
+const StationCircles = styled.g`
+  fill: white;
+  stroke: black;
+`
 
 const Paths = styled.g`
   fill: none;
@@ -67,11 +73,13 @@ const DummyTransfers = styled.g`
 
 interface Containers {
   transfersInner?: SVGGElement,
+  defs?: SVGDefsElement,
   dummyTransfers?: SVGGElement,
   dummyPlatforms?: SVGGElement,
 }
 
 interface Props {
+  isDetailed: boolean,
   lineRules: Map<string, CSSStyleDeclaration>,
   network: Network,
   overlay: SvgOverlay,
@@ -100,12 +108,6 @@ class Metro extends PureComponent<Props, State> {
         transfersInner: g,
       },
     }))
-    // this.setState({
-    //   containers: {
-    //     ...this.state.containers,
-    //     transfersInner: g,
-    //   },
-    // })
   }
 
   private mountDummyTransfers = (g: SVGGElement) => {
@@ -116,12 +118,6 @@ class Metro extends PureComponent<Props, State> {
         dummyTransfers: g,
       },
     }))
-    // this.setState({
-    //   containers: {
-    //     ...this.state.containers,
-    //     dummyTransfers: g,
-    //   },
-    // })
   }
 
   private mountDummyPlatforms = (g: SVGGElement) => {
@@ -132,12 +128,16 @@ class Metro extends PureComponent<Props, State> {
         dummyPlatforms: g,
       },
     }))
-    // this.setState({
-    //   containers: {
-    //     ...this.state.containers,
-    //     dummyPlatforms: g,
-    //   },
-    // })
+  }
+
+  private mountDefs = (defs: SVGDefsElement) => {
+    console.log('mounting dummy platforms')
+    this.setState(state => ({
+      containers: {
+        ...state.containers,
+        defs,
+      },
+    }))
   }
 
   private setCurrentPlatform = (platform: Platform) => {
@@ -150,6 +150,21 @@ class Metro extends PureComponent<Props, State> {
     this.setState({
       currentPlatform: null,
     })
+  }
+
+  private getPlatformColor = (platform: Platform) =>
+    meanColor(this.linesToColors(platform.passingLines()))
+
+  private linesToColors(lines: Set<string>): string[] {
+    const { lineRules } = this.props
+    const rgbs: string[] = []
+    for (const line of lines) {
+      const { stroke } = tryGetFromMap(lineRules, line[0] === 'M' ? line : line[0])
+      if (stroke) {
+          rgbs.push(stroke)
+      }
+    }
+    return rgbs
   }
 
   private makePath(span: Span) {
@@ -216,43 +231,44 @@ class Metro extends PureComponent<Props, State> {
     const targetPos = tryGetFromMap(platformsOnSVG, target)
 
     const controlPoints = [
-        sourcePos,
-        tryGetFromMap(tryGetFromMap(whiskers, source), span),
-        tryGetFromMap(tryGetFromMap(whiskers, target), span),
-        targetPos,
+      sourcePos,
+      tryGetFromMap(tryGetFromMap(whiskers, source), span),
+      tryGetFromMap(tryGetFromMap(whiskers, target), span),
+      targetPos,
     ]
 
     const sourceMap = platformOffsets.get(sourcePos)
     const targetMap = platformOffsets.get(targetPos)
     if (sourceMap) {
-        const offset = sourceMap.get(span)
-        if (!offset) {
-            return [controlPoints]
-        }
-        if (targetMap) {
-            const curves = math.split(controlPoints, CURVE_SPLIT_NUM)
-            const [head, ...tail] = curves.map(pa => math.offsetPath(pa, offset))
-            return [head, ...tail.map(arr => arr.slice(1))]
-        }
-        const lineO = math.offsetLine(controlPoints.slice(0, 2), offset)
-        controlPoints[0] = lineO[0]
-        controlPoints[1] = lineO[1]
+      const offset = sourceMap.get(span)
+      if (!offset) {
         return [controlPoints]
+      }
+      if (targetMap) {
+        const curves = math.split(controlPoints, CURVE_SPLIT_NUM)
+        const [head, ...tail] = curves.map(pa => math.offsetPath(pa, offset))
+        return [head, ...tail.map(arr => arr.slice(1))]
+      }
+      const lineO = math.offsetLine(controlPoints.slice(0, 2), offset)
+      controlPoints[0] = lineO[0]
+      controlPoints[1] = lineO[1]
+      return [controlPoints]
     }
     if (targetMap) {
-        const offset = targetMap.get(span)
-        if (!offset) {
-            return [controlPoints]
-        }
-        const lineO = math.offsetLine(controlPoints.slice(2, 4), offset)
-        controlPoints[2] = lineO[0]
-        controlPoints[3] = lineO[1]
+      const offset = targetMap.get(span)
+      if (!offset) {
+        return [controlPoints]
+      }
+      const lineO = math.offsetLine(controlPoints.slice(2, 4), offset)
+      controlPoints[2] = lineO[0]
+      controlPoints[3] = lineO[1]
     }
     return [controlPoints]
-}
+  }
 
   render() {
     const {
+      isDetailed,
       network,
       overlay,
       platformsOnSVG,
@@ -267,6 +283,7 @@ class Metro extends PureComponent<Props, State> {
       dummyCircleRadius,
       transferWidth,
       transferBorder,
+      fullCircleRadius,
     } = svgSizes
 
     const {
@@ -275,12 +292,13 @@ class Metro extends PureComponent<Props, State> {
         transfersInner,
         dummyTransfers,
         dummyPlatforms,
+        defs,
       },
     } = this.state
 
     return (
       <>
-        <defs>
+        <defs ref={this.mountDefs}>
           <filter
             id="shadow"
             width="200%"
@@ -375,22 +393,24 @@ class Metro extends PureComponent<Props, State> {
             strokeWidth: `${transferWidth + transferBorder / 2}px`,
           }}
         >
-          {transfersInner && dummyTransfers && network && network.transfers.map(transfer => {
+          {transfersInner && dummyTransfers && defs && network && network.transfers.map(transfer => {
             return (
               <TransferReact
                 key={transfer.id}
                 start={tryGetFromMap(platformsOnSVG, transfer.source)}
                 end={tryGetFromMap(platformsOnSVG, transfer.target)}
                 transfer={transfer}
+                fullCircleRadius={fullCircleRadius}
+                defs={defs}
                 innerParent={transfersInner}
                 dummyParent={dummyTransfers}
+                getPlatformColor={this.getPlatformColor}
                 onMouseOver={console.log}
               />
             )
           })}
         </TransfersOuter>
-        <g
-          id="station-circles"
+        <StationCircles
           style={{
             strokeWidth: `${circleBorder}px`,
           }}
@@ -399,16 +419,18 @@ class Metro extends PureComponent<Props, State> {
             return (
               <StationReact
                 key={station.id}
+                isDetailed={isDetailed}
                 platformsOnSVG={platformsOnSVG}
                 station={station}
                 radius={circleRadius}
                 dummyParent={dummyPlatforms}
+                getPlatformColor={this.getPlatformColor}
                 onMouseOver={this.setCurrentPlatform}
                 onMouseOut={this.unsetCurrentPlatform}
               />
             )
           })}
-        </g>
+        </StationCircles>
         <TransfersInner
           innerRef={this.mountTransfersInner}
           style={{

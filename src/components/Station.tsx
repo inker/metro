@@ -12,10 +12,12 @@ import PlatformReact from './Platform'
 import Circle from './Circle'
 
 interface Props {
+  isDetailed: boolean,
   platformsOnSVG: WeakMap<Platform, L.Point>,
   station: Station,
   radius: number,
   dummyParent?: Element | null,
+  getPlatformColor: (platform: Platform) => string,
   onMouseOver?: (platform: Platform) => void,
   onMouseOut?: () => void,
 }
@@ -36,10 +38,12 @@ class StationReact extends PureComponent<Props> {
 
   render() {
     const {
+      isDetailed,
       platformsOnSVG,
       station,
       radius,
       dummyParent,
+      getPlatformColor,
       onMouseOver,
       onMouseOut,
     } = this.props
@@ -54,6 +58,7 @@ class StationReact extends PureComponent<Props> {
                   key={platform.id}
                   position={pos}
                   radius={radius}
+                  color={isDetailed ? getPlatformColor(platform) : undefined}
                 />
                 {dummyParent &&
                   <Modal
