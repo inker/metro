@@ -57,8 +57,10 @@ class Tooltip extends PureComponent<Props> {
         >
           <Foobar>
             <PlateBox display={position}>
-              {names && names.map(name => (
-                <div>{name}</div>
+              {names && names.map((name, i) => (
+                <div key={`${name}_${i}`}>
+                  {name}
+                </div>
               ))}
             </PlateBox>
           </Foobar>

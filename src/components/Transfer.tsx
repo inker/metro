@@ -10,8 +10,8 @@ interface Props {
   start: Point,
   end: Point,
   transfer: Transfer,
-  innerParent?: Element | null,
-  dummyParent?: Element | null,
+  innerParent: Element | null,
+  dummyParent: Element | null,
   onMouseOver?: (transfer: Transfer) => void,
   onMouseOut?: () => void,
 }
