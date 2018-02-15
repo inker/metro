@@ -1,19 +1,26 @@
 import React, { PureComponent } from 'react'
 import styled from 'styled-components'
+import L from 'leaflet'
+import { difference } from 'lodash'
 
 import TooltipReact from 'components/Tooltip'
 import StationReact from 'components/Station'
 import TransferReact from 'components/Transfer'
 import Bezier from 'components/Bezier'
 
-import SvgOverlay from './ui/SvgOverlay'
+import SvgOverlay from 'ui/SvgOverlay'
 
-import * as math from './util/math'
-import { meanColor } from './util/color'
+import findCycle from 'util/algorithm/findCycle'
+import * as math from 'util/math'
+import { meanColor } from 'util/color'
+import {
+  mean,
+  normalize,
+} from 'util/math/vector'
 
 import {
   tryGetFromMap,
-} from './util/collections'
+} from 'util/collections'
 
 import Network, {
   Platform,
@@ -100,6 +107,8 @@ class Metro extends PureComponent<Props, State> {
     currentPlatform: null,
   }
 
+  whiskers: WeakMap<Platform, Map<Span, L.Point>>
+
   private mountTransfersInner = (g: SVGGElement) => {
     console.log('mounting transfers inner', g)
     this.setState(state => ({
@@ -167,6 +176,61 @@ class Metro extends PureComponent<Props, State> {
     return rgbs
   }
 
+  protected makeWhiskers(platform: Platform): Map<Span, L.Point> {
+    const {
+      platformsOnSVG,
+    } = this.props
+
+    const PART = 0.5
+    const pos = tryGetFromMap(platformsOnSVG, platform)
+    const whiskers = new Map<Span, L.Point>()
+    const { spans } = platform
+    if (spans.length === 0) {
+        return whiskers
+    }
+    if (spans.length === 1) {
+        return whiskers.set(spans[0], pos)
+    }
+    if (spans.length === 2) {
+        if (platform.passingLines().size === 2) {
+            return whiskers.set(spans[0], pos).set(spans[1], pos)
+        }
+        const neighborPositions = spans.map(span => tryGetFromMap(platformsOnSVG, span.other(platform)))
+        const [prevPos, nextPos] = neighborPositions
+        const wings = math.wings(prevPos, pos, nextPos, 1)
+        const t = Math.min(pos.distanceTo(prevPos), pos.distanceTo(nextPos)) * PART
+        for (let i = 0; i < 2; ++i) {
+            // const t = pos.distanceTo(neighborPositions[i]) * PART
+            const end = wings[i].multiplyBy(t).add(pos)
+            whiskers.set(spans[i], end)
+        }
+        return whiskers
+    }
+
+    const normals: [L.Point[], L.Point[]] = [[], []]
+    const sortedSpans: [Span[], Span[]] = [[], []]
+    const distances = new WeakMap<Span, number>()
+    for (const span of spans) {
+        const neighbor = span.other(platform)
+        const neighborPos = tryGetFromMap(platformsOnSVG, neighbor)
+        const dirIdx = span.source === platform ? 0 : 1
+        normals[dirIdx].push(normalize(neighborPos.subtract(pos)))
+        sortedSpans[dirIdx].push(span)
+        distances.set(span, pos.distanceTo(neighborPos))
+    }
+    const [prevPos, nextPos] = normals.map(ns => mean(ns).add(pos))
+    const wings = math.wings(prevPos, pos, nextPos, 1)
+    for (let i = 0; i < 2; ++i) {
+        const wing = wings[i]
+        for (const span of sortedSpans[i]) {
+            const t = tryGetFromMap(distances, span) * PART
+            const end = wing.multiplyBy(t).add(pos)
+            whiskers.set(span, end)
+        }
+    }
+    return whiskers
+  }
+
   private makePath(span: Span) {
     const { routes, source, target } = span
     if (routes.length === 0) {
@@ -224,7 +288,6 @@ class Metro extends PureComponent<Props, State> {
     const {
       platformsOnSVG,
       platformOffsets,
-      whiskers,
     } = this.props
     const { source, target } = span
     const sourcePos = tryGetFromMap(platformsOnSVG, source)
@@ -232,8 +295,8 @@ class Metro extends PureComponent<Props, State> {
 
     const controlPoints = [
       sourcePos,
-      tryGetFromMap(tryGetFromMap(whiskers, source), span),
-      tryGetFromMap(tryGetFromMap(whiskers, target), span),
+      tryGetFromMap(tryGetFromMap(this.whiskers, source), span),
+      tryGetFromMap(tryGetFromMap(this.whiskers, target), span),
       targetPos,
     ]
 
@@ -295,6 +358,34 @@ class Metro extends PureComponent<Props, State> {
         defs,
       },
     } = this.state
+
+    this.whiskers = new WeakMap<Platform, Map<Span, L.Point>>()
+    const stationCircumpoints = new Map<Station, Platform[]>()
+
+    for (const station of network.stations) {
+      const circumpoints: L.Point[] = []
+      // const stationMeanColor: string
+      // if (zoom < 12) {
+      //     stationMeanColor = color.mean(this.linesToColors(this.passingLinesStation(station)));
+      // }
+      for (const platform of station.platforms) {
+        const pos = tryGetFromMap(platformsOnSVG, platform)
+        // const posOnSVG = this.overlay.latLngToSvgPoint(platform.location);
+        const wh = this.makeWhiskers(platform)
+        this.whiskers.set(platform, wh)
+      }
+
+      const circular = findCycle(network, station)
+      if (circular.length > 0) {
+        for (const platform of station.platforms) {
+          if (circular.includes(platform)) {
+            const pos = tryGetFromMap(platformsOnSVG, platform)
+            circumpoints.push(pos)
+          }
+        }
+        stationCircumpoints.set(station, circular)
+      }
+    }
 
     return (
       <>
@@ -394,11 +485,17 @@ class Metro extends PureComponent<Props, State> {
           }}
         >
           {transfersInner && dummyTransfers && defs && network && network.transfers.map(transfer => {
+            const { source, target } = transfer
+            const scp = stationCircumpoints.get(source.station)
+            const includes = scp && scp.includes(source) && scp.includes(target)
+            const third = includes && difference(scp, [transfer.source, transfer.target])[0] || undefined
+            const thirdPosition = third && platformsOnSVG.get(third)
             return (
               <TransferReact
                 key={transfer.id}
-                start={tryGetFromMap(platformsOnSVG, transfer.source)}
-                end={tryGetFromMap(platformsOnSVG, transfer.target)}
+                start={tryGetFromMap(platformsOnSVG, source)}
+                end={tryGetFromMap(platformsOnSVG, target)}
+                third={thirdPosition}
                 transfer={transfer}
                 fullCircleRadius={fullCircleRadius}
                 defs={defs}

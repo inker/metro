@@ -394,32 +394,6 @@ export default class {
             }
         }
 
-        for (const station of this.network.stations) {
-            const circumpoints: L.Point[] = []
-            // const stationMeanColor: string
-            // if (zoom < 12) {
-            //     stationMeanColor = color.mean(this.linesToColors(this.passingLinesStation(station)));
-            // }
-            for (const platform of station.platforms) {
-                const pos = tryGetFromMap(this.platformsOnSVG, platform)
-                // const posOnSVG = this.overlay.latLngToSvgPoint(platform.location);
-                const whiskers = this.makeWhiskers(platform)
-                this.whiskers.set(platform, whiskers)
-            }
-
-            const circular = findCycle(this.network, station)
-            if (circular.length > 0) {
-                for (const platform of station.platforms) {
-                    if (circular.includes(platform)) {
-                        const pos = tryGetFromMap(this.platformsOnSVG, platform)
-                        circumpoints.push(pos)
-                    }
-                }
-                stationCircumpoints.set(station, circular)
-            }
-
-        }
-
         ReactDom.render((
             <Metro
                 isDetailed={isDetailed}
