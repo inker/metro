@@ -124,8 +124,6 @@ class TransferReact extends PureComponent<Props> {
               start={start}
               end={newEnd}
               third={third}
-              onMouseOver={this.onMouseOver}
-              onMouseOut={onMouseOut}
             />
           </Modal>
         }

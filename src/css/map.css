@@ -9,3 +9,9 @@ circle {
         transform-origin: 0% 0%;
     }
 }
+
+#map-container {
+    & path {
+        pointer-events: initial;
+    }
+}
