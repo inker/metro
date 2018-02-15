@@ -94,12 +94,21 @@ class TransferReact extends PureComponent<Props> {
     } = this.props
 
     const Path = third ? Arc : Line
+    const newEnd = end.clone()
+    if (!third) {
+      if (start.x === end.x) {
+        newEnd.x += 0.01
+      }
+      if (start.y === end.y) {
+        newEnd.y += 0.01
+      }
+    }
 
     return (
       <>
         <Path
           start={start}
-          end={end}
+          end={newEnd}
           third={third}
           style={{
             stroke: `url(#${`gradient-${transfer.id}`})`,
@@ -113,7 +122,7 @@ class TransferReact extends PureComponent<Props> {
             <Path
               data-id={transfer.id}
               start={start}
-              end={end}
+              end={newEnd}
               third={third}
               onMouseOver={this.onMouseOver}
               onMouseOut={onMouseOut}
@@ -136,7 +145,7 @@ class TransferReact extends PureComponent<Props> {
             <Path
               data-id={transfer.id}
               start={start}
-              end={end}
+              end={newEnd}
               third={third}
               onMouseOver={this.onMouseOver}
               onMouseOut={onMouseOut}
