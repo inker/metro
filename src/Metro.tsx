@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import styled from 'styled-components'
 import L from 'leaflet'
-import { difference } from 'lodash'
+import { difference, maxBy } from 'lodash'
 
 import TooltipReact from 'components/Tooltip'
 import StationReact from 'components/Station'
@@ -45,9 +45,6 @@ const Inner = styled(Paths)`
 `
 
 const Outer = styled(Paths)`
-  & path {
-    pointer-events: stroke;
-  }
 `
 
 const PathsOuter = styled(Outer)`
@@ -76,6 +73,10 @@ const DummyPlatforms = styled.g`
 
 const DummyTransfers = styled.g`
   opacity: 0;
+  & path {
+    fill: none;
+    pointer-events: stroke;
+  }
 `
 
 interface Containers {
@@ -98,13 +99,13 @@ interface Props {
 
 interface State {
   containers: Containers,
-  currentPlatform: Platform | null,
+  featuredPlatforms: Platform[] | null,
 }
 
 class Metro extends PureComponent<Props, State> {
   state: State = {
     containers: {},
-    currentPlatform: null,
+    featuredPlatforms: null,
   }
 
   whiskers: WeakMap<Platform, Map<Span, L.Point>>
@@ -149,15 +150,19 @@ class Metro extends PureComponent<Props, State> {
     }))
   }
 
-  private setCurrentPlatform = (platform: Platform) => {
+  private setTooltipByPlatform = (platform: Platform) => {
     this.setState({
-      currentPlatform: platform,
+      featuredPlatforms: platform.station.platforms,
     })
   }
 
-  private unsetCurrentPlatform = () => {
+  private setTooltipByTransfer = (transfer: Transfer) => {
+    this.setTooltipByPlatform(transfer.source)
+  }
+
+  private unsetTooltip = () => {
     this.setState({
-      currentPlatform: null,
+      featuredPlatforms: null,
     })
   }
 
@@ -186,47 +191,47 @@ class Metro extends PureComponent<Props, State> {
     const whiskers = new Map<Span, L.Point>()
     const { spans } = platform
     if (spans.length === 0) {
-        return whiskers
+      return whiskers
     }
     if (spans.length === 1) {
-        return whiskers.set(spans[0], pos)
+      return whiskers.set(spans[0], pos)
     }
     if (spans.length === 2) {
-        if (platform.passingLines().size === 2) {
-            return whiskers.set(spans[0], pos).set(spans[1], pos)
-        }
-        const neighborPositions = spans.map(span => tryGetFromMap(platformsOnSVG, span.other(platform)))
-        const [prevPos, nextPos] = neighborPositions
-        const wings = math.wings(prevPos, pos, nextPos, 1)
-        const t = Math.min(pos.distanceTo(prevPos), pos.distanceTo(nextPos)) * PART
-        for (let i = 0; i < 2; ++i) {
-            // const t = pos.distanceTo(neighborPositions[i]) * PART
-            const end = wings[i].multiplyBy(t).add(pos)
-            whiskers.set(spans[i], end)
-        }
-        return whiskers
+      if (platform.passingLines().size === 2) {
+          return whiskers.set(spans[0], pos).set(spans[1], pos)
+      }
+      const neighborPositions = spans.map(span => tryGetFromMap(platformsOnSVG, span.other(platform)))
+      const [prevPos, nextPos] = neighborPositions
+      const wings = math.wings(prevPos, pos, nextPos, 1)
+      const t = Math.min(pos.distanceTo(prevPos), pos.distanceTo(nextPos)) * PART
+      for (let i = 0; i < 2; ++i) {
+          // const t = pos.distanceTo(neighborPositions[i]) * PART
+          const end = wings[i].multiplyBy(t).add(pos)
+          whiskers.set(spans[i], end)
+      }
+      return whiskers
     }
 
     const normals: [L.Point[], L.Point[]] = [[], []]
     const sortedSpans: [Span[], Span[]] = [[], []]
     const distances = new WeakMap<Span, number>()
     for (const span of spans) {
-        const neighbor = span.other(platform)
-        const neighborPos = tryGetFromMap(platformsOnSVG, neighbor)
-        const dirIdx = span.source === platform ? 0 : 1
-        normals[dirIdx].push(normalize(neighborPos.subtract(pos)))
-        sortedSpans[dirIdx].push(span)
-        distances.set(span, pos.distanceTo(neighborPos))
+      const neighbor = span.other(platform)
+      const neighborPos = tryGetFromMap(platformsOnSVG, neighbor)
+      const dirIdx = span.source === platform ? 0 : 1
+      normals[dirIdx].push(normalize(neighborPos.subtract(pos)))
+      sortedSpans[dirIdx].push(span)
+      distances.set(span, pos.distanceTo(neighborPos))
     }
     const [prevPos, nextPos] = normals.map(ns => mean(ns).add(pos))
     const wings = math.wings(prevPos, pos, nextPos, 1)
     for (let i = 0; i < 2; ++i) {
-        const wing = wings[i]
-        for (const span of sortedSpans[i]) {
-            const t = tryGetFromMap(distances, span) * PART
-            const end = wing.multiplyBy(t).add(pos)
-            whiskers.set(span, end)
-        }
+      const wing = wings[i]
+      for (const span of sortedSpans[i]) {
+        const t = tryGetFromMap(distances, span) * PART
+        const end = wing.multiplyBy(t).add(pos)
+        whiskers.set(span, end)
+      }
     }
     return whiskers
   }
@@ -350,7 +355,7 @@ class Metro extends PureComponent<Props, State> {
     } = svgSizes
 
     const {
-      currentPlatform,
+      featuredPlatforms,
       containers: {
         transfersInner,
         dummyTransfers,
@@ -361,6 +366,10 @@ class Metro extends PureComponent<Props, State> {
 
     this.whiskers = new WeakMap<Platform, Map<Span, L.Point>>()
     const stationCircumpoints = new Map<Station, Platform[]>()
+
+    const topmostPlatform = featuredPlatforms && maxBy(featuredPlatforms, p => p.location.lat)
+    const topmostPosition = topmostPlatform && platformsOnSVG.get(topmostPlatform)
+    const tooltipStrings = topmostPlatform && [topmostPlatform.name, ...Object.values(topmostPlatform.altNames)]
 
     for (const station of network.stations) {
       const circumpoints: L.Point[] = []
@@ -502,7 +511,8 @@ class Metro extends PureComponent<Props, State> {
                 innerParent={transfersInner}
                 dummyParent={dummyTransfers}
                 getPlatformColor={this.getPlatformColor}
-                onMouseOver={console.log}
+                onMouseOver={this.setTooltipByTransfer}
+                onMouseOut={this.unsetTooltip}
               />
             )
           })}
@@ -523,8 +533,8 @@ class Metro extends PureComponent<Props, State> {
                 radius={circleRadius}
                 dummyParent={dummyPlatforms}
                 getPlatformColor={this.getPlatformColor}
-                onMouseOver={this.setCurrentPlatform}
-                onMouseOut={this.unsetCurrentPlatform}
+                onMouseOver={this.setTooltipByPlatform}
+                onMouseOut={this.unsetTooltip}
               />
             )
           })}
@@ -538,12 +548,16 @@ class Metro extends PureComponent<Props, State> {
         />
 
         <TooltipReact
-          position={currentPlatform && platformsOnSVG.get(currentPlatform) || null}
-          names={currentPlatform && [currentPlatform.name, ...Object.values(currentPlatform.altNames)]}
+          position={topmostPosition || null}
+          names={tooltipStrings || null}
         />
 
         <DummyTransfers
           innerRef={this.mountDummyTransfers}
+          style={{
+            stroke: 'black',
+            strokeWidth: `${transferWidth * 2 + transferBorder}px`,
+          }}
         />
 
         <DummyPlatforms
