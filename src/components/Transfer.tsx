@@ -6,10 +6,12 @@ import Platform from '../network/Platform'
 
 import Modal from './Modal'
 import Line from './Line'
+import Arc from './Arc'
 
 interface Props {
   start: Point,
   end: Point,
+  third?: Point,
   transfer: Transfer,
   fullCircleRadius: number,
   defs: SVGDefsElement | null,
@@ -70,6 +72,7 @@ class TransferReact extends PureComponent<Props> {
       </linearGradient>
     )
   }
+
   onMouseOver = (e) => {
     const { transfer, onMouseOver } = this.props
     if (!onMouseOver) {
@@ -82,6 +85,7 @@ class TransferReact extends PureComponent<Props> {
     const {
       start,
       end,
+      third,
       transfer,
       defs,
       innerParent,
@@ -89,11 +93,14 @@ class TransferReact extends PureComponent<Props> {
       onMouseOut,
     } = this.props
 
+    const Path = third ? Arc : Line
+
     return (
       <>
-        <Line
+        <Path
           start={start}
           end={end}
+          third={third}
           style={{
             stroke: `url(#${`gradient-${transfer.id}`})`,
           }}
@@ -103,10 +110,11 @@ class TransferReact extends PureComponent<Props> {
             tagName="g"
             modalRoot={innerParent}
           >
-            <Line
+            <Path
               data-id={transfer.id}
               start={start}
               end={end}
+              third={third}
               onMouseOver={this.onMouseOver}
               onMouseOut={onMouseOut}
             />
@@ -125,10 +133,11 @@ class TransferReact extends PureComponent<Props> {
             tagName="g"
             modalRoot={dummyParent}
           >
-            <Line
+            <Path
               data-id={transfer.id}
               start={start}
               end={end}
+              third={third}
               onMouseOver={this.onMouseOver}
               onMouseOut={onMouseOut}
             />
