@@ -4,9 +4,14 @@ import L from 'leaflet'
 import { difference, maxBy } from 'lodash'
 
 import TooltipReact from 'components/Tooltip'
-import StationReact from 'components/Station'
+import PlatformReact from 'components/Platform'
 import TransferReact from 'components/Transfer'
 import Bezier from 'components/Bezier'
+
+import ShadowFilter from 'components/filters/Shadow'
+import BlackGlowFilter from 'components/filters/BlackGlow'
+import GrayFilter from 'components/filters/Gray'
+import OpacityFilter from 'components/filters/Opacity'
 
 import SvgOverlay from 'ui/SvgOverlay'
 
@@ -32,7 +37,7 @@ import Network, {
 
 const CURVE_SPLIT_NUM = 10
 
-const StationCircles = styled.g`
+const PlatformCircles = styled.g`
   fill: white;
   stroke: black;
 `
@@ -364,6 +369,8 @@ class Metro extends PureComponent<Props, State> {
       },
     } = this.state
 
+    const featuredPlatformsSet = featuredPlatforms && new Set(featuredPlatforms)
+
     this.whiskers = new WeakMap<Platform, Map<Span, L.Point>>()
     const stationCircumpoints = new Map<Station, Platform[]>()
 
@@ -399,78 +406,12 @@ class Metro extends PureComponent<Props, State> {
     return (
       <>
         <defs ref={this.mountDefs}>
-          <filter
-            id="shadow"
-            width="200%"
-            height="200%"
-          >
-            <feOffset
-              result="offOut"
-              in="SourceAlpha"
-              dx="0"
-              dy="4"
-            />
-            <feColorMatrix
-              result="matrixOut"
-              in="offOut"
-              type="matrix"
-              values="
-                0 0 0 0   0
-                0 0 0 0   0
-                0 0 0 0   0
-                0 0 0 0.5 0
-              "
-            />
-            <feGaussianBlur
-              result="blurOut"
-              in="matrixOut"
-              stdDeviation="2"
-            />
-            <feBlend
-              in="SourceGraphic"
-              in2="blurOut"
-              mode="normal"
-            />
-          </filter>
-          <filter id="black-glow">
-            <feColorMatrix
-              type="matrix"
-              values="
-                0 0 0 0   0
-                0 0 0 0   0
-                0 0 0 0   0
-                0 0 0 0.3 0
-              "
-            />
-            <feGaussianBlur
-              stdDeviation="2.5"
-              result="coloredBlur"
-            />
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <filter id="opacity">
-            <feComponentTransfer>
-              <feFuncA
-                type="table"
-                tableValues="0 0.5"
-              />
-            </feComponentTransfer>
-          </filter>
-          <filter id="gray">
-            <feColorMatrix
-              type="matrix"
-              values="
-                0.2126 0.7152 0.0722 0 0
-                0.2126 0.7152 0.0722 0 0
-                0.2126 0.7152 0.0722 0 0
-                0 0 0 1 0
-              "
-            />
-          </filter>
+          <ShadowFilter />
+          <BlackGlowFilter />
+          <OpacityFilter />
+          <GrayFilter />
         </defs>
+
         <PathsOuter
           style={{
             strokeWidth: `${lineWidth}px`,
@@ -490,6 +431,7 @@ class Metro extends PureComponent<Props, State> {
 
         <TransfersOuter
           style={{
+            display: isDetailed ? '' : 'none',
             strokeWidth: `${transferWidth + transferBorder / 2}px`,
           }}
         >
@@ -499,6 +441,11 @@ class Metro extends PureComponent<Props, State> {
             const includes = scp && scp.includes(source) && scp.includes(target)
             const third = includes && difference(scp, [transfer.source, transfer.target])[0] || undefined
             const thirdPosition = third && platformsOnSVG.get(third)
+
+            const isFeatured = featuredPlatformsSet
+              && featuredPlatformsSet.has(source)
+              && featuredPlatformsSet.has(target)
+
             return (
               <TransferReact
                 key={transfer.id}
@@ -507,6 +454,7 @@ class Metro extends PureComponent<Props, State> {
                 third={thirdPosition}
                 transfer={transfer}
                 fullCircleRadius={fullCircleRadius}
+                strokeWidth={isFeatured ? (transferWidth * 1.25 + transferBorder * 0.625) : undefined}
                 defs={defs}
                 innerParent={transfersInner}
                 dummyParent={dummyTransfers}
@@ -518,31 +466,34 @@ class Metro extends PureComponent<Props, State> {
           })}
         </TransfersOuter>
 
-        <StationCircles
+        <PlatformCircles
           style={{
             strokeWidth: `${circleBorder}px`,
           }}
         >
-          {dummyPlatforms && network && network.stations.map(station => {
+          {dummyPlatforms && network && network.platforms.map(platform => {
+            const pos = tryGetFromMap(platformsOnSVG, platform)
+            const isFeatured = featuredPlatformsSet && featuredPlatformsSet.has(platform)
+            const radius = isFeatured ? circleRadius * 1.25 : circleRadius
             return (
-              <StationReact
-                key={station.id}
-                isDetailed={isDetailed}
-                platformsOnSVG={platformsOnSVG}
-                station={station}
-                radius={circleRadius}
+              <PlatformReact
+                key={platform.id}
+                position={pos}
+                radius={radius}
+                color={isDetailed ? this.getPlatformColor(platform) : undefined}
+                platform={platform}
                 dummyParent={dummyPlatforms}
-                getPlatformColor={this.getPlatformColor}
                 onMouseOver={this.setTooltipByPlatform}
                 onMouseOut={this.unsetTooltip}
               />
             )
           })}
-        </StationCircles>
+        </PlatformCircles>
 
         <TransfersInner
           innerRef={this.mountTransfersInner}
           style={{
+            display: isDetailed ? '' : 'none',
             strokeWidth: `${transferWidth - transferBorder / 2}px`,
           }}
         />
@@ -562,6 +513,9 @@ class Metro extends PureComponent<Props, State> {
 
         <DummyPlatforms
           innerRef={this.mountDummyPlatforms}
+          style={{
+            strokeWidth: `${circleBorder * 2}px`,
+          }}
         />
       </>
     )
