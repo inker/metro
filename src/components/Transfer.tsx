@@ -14,6 +14,7 @@ interface Props {
   third?: Point,
   transfer: Transfer,
   fullCircleRadius: number,
+  strokeWidth?: number,
   defs: SVGDefsElement | null,
   innerParent: Element | null,
   dummyParent: Element | null,
@@ -50,7 +51,8 @@ class TransferReact extends PureComponent<Props> {
 
     const vector = end.subtract(start)
 
-    const circlePortion = fullCircleRadius / start.distanceTo(end)
+    const transferLength = start.distanceTo(end)
+    const circlePortion = transferLength === 0 ? 0 : fullCircleRadius / transferLength
 
     return (
       <linearGradient
@@ -87,6 +89,7 @@ class TransferReact extends PureComponent<Props> {
       end,
       third,
       transfer,
+      strokeWidth,
       defs,
       innerParent,
       dummyParent,
@@ -112,6 +115,7 @@ class TransferReact extends PureComponent<Props> {
           third={third}
           style={{
             stroke: `url(#${`gradient-${transfer.id}`})`,
+            strokeWidth: strokeWidth && `${strokeWidth}px`,
           }}
         />
         {innerParent &&
@@ -145,6 +149,9 @@ class TransferReact extends PureComponent<Props> {
               start={start}
               end={newEnd}
               third={third}
+              style={{
+                strokeWidth: strokeWidth && `${strokeWidth}px`,
+              }}
               onMouseOver={this.onMouseOver}
               onMouseOut={onMouseOut}
             />
