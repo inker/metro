@@ -47,7 +47,7 @@ class Bezier extends PureComponent<Props> {
     const { color } = this.props
     return (
       <Path
-        color={color}
+        color={color || undefined}
         d={this.makePath()}
       />
     )

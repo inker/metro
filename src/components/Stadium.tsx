@@ -1,9 +1,5 @@
 import React, { PureComponent } from 'react'
-import styled from 'styled-components'
 import { Point } from 'leaflet'
-
-const Root = styled.rect`
-`
 
 interface Props {
   center: Point,
@@ -12,31 +8,30 @@ interface Props {
   [prop: string]: any,
 }
 
-class Circle extends PureComponent<Props> {
+class Stadium extends PureComponent<Props> {
   render() {
     const {
       center,
       distance,
       radius,
-      onMouseOver,
       ...otherProps
     } = this.props
 
     const diameter = radius * 2
 
     return (
-      <Root
+      <rect
         x={center.x - distance * 0.5 - radius}
         y={center.y - radius}
         width={distance + diameter}
         height={diameter}
         rx={radius}
         ry={radius}
-        transform-origin={center}
+        transform-origin={`${center.x}px ${center.y}px`}
         {...otherProps}
       />
     )
   }
 }
 
-export default Circle
+export default Stadium

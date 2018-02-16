@@ -5,10 +5,13 @@ import Platform from 'network/Platform'
 
 import Modal from './Modal'
 import Circle from './Circle'
+import Stadium from './Stadium'
 
 interface Props {
   position: Point,
   radius: number,
+  width?: number, // distance between centers, 0 for circle
+  rotation?: number,
   color?: string,
   platform: Platform,
   dummyParent: Element | null,
@@ -30,16 +33,23 @@ class PlatformReact extends PureComponent<Props> {
       position,
       radius,
       color,
+      width,
+      rotation,
       platform,
       dummyParent,
       onMouseOut,
     } = this.props
 
+    const El = width ? Stadium : Circle
+    const rotationDeg = rotation && rotation * 180 / Math.PI
+
     return (
       <>
-        <Circle
+        <El
           center={position}
           radius={radius}
+          distance={width}
+          transform={rotationDeg && `rotate(${rotationDeg})`}
           stroke={color}
         />
         {dummyParent &&
@@ -47,11 +57,13 @@ class PlatformReact extends PureComponent<Props> {
             tagName="g"
             modalRoot={dummyParent}
           >
-            <Circle
+            <El
               key={platform.id}
               data-id={platform.id}
               center={position}
               radius={radius * 2}
+              distance={width}
+              transform={rotationDeg && `rotate(${rotationDeg})`}
               onMouseOver={this.onMouseOver}
               onMouseOut={onMouseOut}
             />

@@ -22,6 +22,8 @@ import { meanColor } from 'util/color'
 import {
   mean,
   normalize,
+  unit,
+  angle,
 } from 'util/math/vector'
 
 import {
@@ -33,7 +35,6 @@ import Network, {
   Station,
   Span,
   Transfer,
-  GraphJSON,
 } from './network'
 
 const CURVE_SPLIT_NUM = 10
@@ -93,13 +94,13 @@ interface Containers {
 }
 
 interface Props {
-  isDetailed: boolean,
+  config: any,
+  zoom: number,
   lineRules: Map<string, CSSStyleDeclaration>,
   network: Network,
   overlay: SvgOverlay,
   platformsOnSVG: WeakMap<Platform, L.Point>,
   platformOffsets: Map<L.Point, Map<Span, number>>,
-  whiskers: WeakMap<Platform, Map<Span, L.Point>>,
   svgSizes: any,
 }
 
@@ -350,10 +351,12 @@ class Metro extends PureComponent<Props, State> {
 
   render() {
     const {
-      isDetailed,
+      config,
+      zoom,
       network,
       overlay,
       platformsOnSVG,
+      platformOffsets,
       svgSizes,
     } = this.props
 
@@ -377,6 +380,8 @@ class Metro extends PureComponent<Props, State> {
         defs,
       },
     } = this.state
+
+    const isDetailed = zoom >= config.detailedZoom
 
     const featuredPlatformsSet = featuredPlatforms && new Set(featuredPlatforms)
 
@@ -484,11 +489,24 @@ class Metro extends PureComponent<Props, State> {
             const pos = tryGetFromMap(platformsOnSVG, platform)
             const isFeatured = featuredPlatformsSet && featuredPlatformsSet.has(platform)
             const radius = isFeatured ? circleRadius * 1.25 : circleRadius
+
+            const offsetsMap = platformOffsets.get(pos)
+            const stadiumProps = {}
+            if (offsetsMap) {
+              const offsets = Array.from(offsetsMap).map(([k, v]) => v)
+              const width = Math.max(...offsets) - Math.min(...offsets)
+
+              const { value } = tryGetFromMap(this.whiskers, platform).values().next()
+              stadiumProps.width = width
+              stadiumProps.rotation = angle(value.subtract(pos), unit)
+            }
+
             return (
               <PlatformReact
                 key={platform.id}
                 position={pos}
                 radius={radius}
+                {...stadiumProps}
                 color={isDetailed ? this.getPlatformColor(platform) : undefined}
                 platform={platform}
                 dummyParent={dummyPlatforms}
