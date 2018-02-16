@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import styled from 'styled-components'
 import L from 'leaflet'
-import { difference, maxBy } from 'lodash'
+import { difference, maxBy, uniq } from 'lodash'
 
 import TooltipReact from 'components/Tooltip'
 import PlatformReact from 'components/Platform'
@@ -15,6 +15,7 @@ import OpacityFilter from 'components/filters/Opacity'
 
 import SvgOverlay from 'ui/SvgOverlay'
 
+import { getPlatformNamesZipped } from 'util/index'
 import findCycle from 'util/algorithm/findCycle'
 import * as math from 'util/math'
 import { meanColor } from 'util/color'
@@ -156,13 +157,21 @@ class Metro extends PureComponent<Props, State> {
   }
 
   private setTooltipByPlatform = (platform: Platform) => {
+    const { name } = platform
     this.setState({
-      featuredPlatforms: platform.station.platforms,
+      featuredPlatforms: platform.station.platforms.filter(p => p.name === name),
     })
   }
 
   private setTooltipByTransfer = (transfer: Transfer) => {
-    this.setTooltipByPlatform(transfer.source)
+    const { source, target } = transfer
+    const sourceName = source.name
+    const targetName = target.name
+    const sourceFeaturedPlatforms = source.station.platforms.filter(p => p.name === sourceName)
+    const targetFeaturedPlatforms = target.station.platforms.filter(p => p.name === targetName)
+    this.setState({
+      featuredPlatforms: uniq([...sourceFeaturedPlatforms, ...targetFeaturedPlatforms]),
+    })
   }
 
   private unsetTooltip = () => {
@@ -374,9 +383,9 @@ class Metro extends PureComponent<Props, State> {
     this.whiskers = new WeakMap<Platform, Map<Span, L.Point>>()
     const stationCircumpoints = new Map<Station, Platform[]>()
 
+    const tooltipStrings = featuredPlatforms && getPlatformNamesZipped(featuredPlatforms)
     const topmostPlatform = featuredPlatforms && maxBy(featuredPlatforms, p => p.location.lat)
     const topmostPosition = topmostPlatform && platformsOnSVG.get(topmostPlatform)
-    const tooltipStrings = topmostPlatform && [topmostPlatform.name, ...Object.values(topmostPlatform.altNames)]
 
     for (const station of network.stations) {
       const circumpoints: L.Point[] = []
