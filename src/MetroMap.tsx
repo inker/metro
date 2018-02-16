@@ -3,14 +3,10 @@ import ReactDom from 'react-dom'
 import L from 'leaflet'
 import unblur from 'unblur'
 import {
-    difference,
     intersection,
-    uniqueId,
-    maxBy,
 } from 'lodash'
 
 import Config from './Config'
-import pool from './ObjectPool'
 import getLineRules from './getLineRules'
 
 import Network, {
@@ -41,43 +37,21 @@ import {
     wikimapia,
 } from './ui/tilelayers'
 
-import {
-    getPlatformNames,
-    getPlatformNamesZipped,
-    // midPointsToEnds,
-} from './util'
-
-import {
-    byId,
-    removeAllChildren,
-} from './util/dom'
-
 import * as math from './util/math'
-import * as svg from './util/svg'
 import { getJSON } from './util/http'
 import getCenter from './util/geo/getCenter'
 // import geometricMedian from './util/geo/geometricMedian'
-import { meanColor } from './util/color'
 import MetroMapEventMap from './util/MetroMapEventMap'
 import Mediator from './util/Mediator'
 
 import {
     tryGetFromMap,
-    tryGetKeyFromBiMap,
     getOrMakeInMap,
 } from './util/collections'
-
-import * as scale from './util/sfx/scale'
-import findCycle from './util/algorithm/findCycle'
-import * as gradients from './util/svg/gradients'
-import { create as createBezier } from './util/svg/bezier'
-// import drawBezierHints from './util/dev/bezierHints'
 
 import {
     mean,
     normalize,
-    unit,
-    angle,
 } from './util/math/vector'
 
 import Metro from './Metro'
@@ -87,15 +61,6 @@ import 'leaflet/dist/leaflet.css'
 const alertifyPromise = import(/* webpackChunkName: "alertify" */ './ui/alertify')
 
 const GAP_BETWEEN_PARALLEL = 0 // 0 - none, 1 - line width
-
-const groupIds = [
-    'paths-outer',
-    'paths-inner',
-    'transfers-outer',
-    'station-circles',
-    'transfers-inner',
-    'dummy-circles',
-]
 
 const contextMenuArray = [
     {
@@ -328,41 +293,21 @@ export default class {
         this.render()
     }
 
-    private cleanElements() {
-        const { overlay, tooltip } = this
-        const { element } = tooltip
-        for (const child of overlay.origin.childNodes) {
-            if (child !== element) {
-                removeAllChildren(child)
-            }
-        }
-    }
-
     render() {
         this.updatePlatformsPositionOnOverlay()
         const {
             network,
         } = this
-        const { detailedZoom } = this.config
         const zoom = this.map.getZoom()
         // const lineWidth = 2 ** (zoom / 4 - 1.75);
         const svgSizes = this.getSvgSizes()
         const {
             lineWidth,
             lightLineWidth,
-            circleBorder,
-            circleRadius,
-            dummyCircleRadius,
-            transferWidth,
-            transferBorder,
         } = svgSizes
 
         const lightRailPathStyle = tryGetFromMap(this.lineRules, 'L')
         lightRailPathStyle.strokeWidth = `${lightLineWidth}px`
-
-        const stationCircumpoints = new Map<Station, Platform[]>()
-
-        const isDetailed = zoom >= detailedZoom
 
         this.platformOffsets.clear()
         const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * lineWidth
@@ -395,250 +340,20 @@ export default class {
 
         ReactDom.render((
             <Metro
-                isDetailed={isDetailed}
+                config={this.config}
+                zoom={zoom}
                 lineRules={this.lineRules}
                 network={network}
                 overlay={this.overlay}
                 platformsOnSVG={this.platformsOnSVG}
                 platformOffsets={this.platformOffsets}
-                whiskers={this.whiskers}
                 svgSizes={svgSizes}
             />
         ), this.overlay.origin)
     }
 
-    protected redrawNetwork() {
-        console.time('pre')
-        this.cleanElements()
-        this.updatePlatformsPositionOnOverlay()
-        console.timeEnd('pre')
-        console.time('preparation')
-        const { detailedZoom } = this.config
-        const zoom = this.map.getZoom()
-        // const lineWidth = 2 ** (zoom / 4 - 1.75);
-        const {
-            lineWidth,
-            lightLineWidth,
-            circleBorder,
-            dummyCircleRadius,
-            transferWidth,
-            transferBorder,
-        } = this.getSvgSizes()
-
-        const strokeWidths = {
-            'station-circles': circleBorder,
-            'dummy-circles': 0,
-            'transfers-outer': transferWidth + transferBorder / 2,
-            'transfers-inner': transferWidth - transferBorder / 2,
-            'paths-outer': lineWidth,
-            'paths-inner': lineWidth / 2,
-        }
-
-        const docFrags = new Map<string, DocumentFragment>()
-        for (const [id, width] of Object.entries(strokeWidths)) {
-            docFrags.set(id, document.createDocumentFragment())
-            byId(id).style.strokeWidth = `${width}px`
-        }
-
-        const lightRailPathStyle = tryGetFromMap(this.lineRules, 'L')
-        lightRailPathStyle.strokeWidth = `${lightLineWidth}px`
-
-        // 11 - 11, 12 - 11.5, 13 - 12, 14 - 12.5
-        this.tooltip.setFontSize(Math.max((zoom + 10) * 0.5, 11))
-
-        const stationCircumpoints = new Map<Station, Platform[]>()
-
-        console.timeEnd('preparation')
-
-        // station circles
-
-        console.time('circle preparation')
-
-        const stationCirclesFrag = tryGetFromMap(docFrags, 'station-circles')
-        const dummyCirclesFrag = tryGetFromMap(docFrags, 'dummy-circles')
-
-        const isDetailed = zoom >= detailedZoom
-
-        this.platformOffsets.clear()
-        const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * lineWidth
-        for (const span of this.network.spans) {
-            const { source, target, routes } = span
-            const parallel = this.network.spans.filter(s => s.isOf(source, target))
-            if (parallel.length === 1) {
-                continue
-            }
-            if (parallel.length === 0) {
-                throw new Error(`some error with span ${source.name}-${target.name}: it probably does not exist`)
-            }
-
-            const i = parallel.indexOf(span)
-            if (i === -1) {
-                throw new Error(`some error with span ${source.name}-${target.name}`)
-            }
-            const leftShift = (parallel.length - 1) / 2
-            const totalOffset = (i - leftShift) * lineWidthPlusGapPx
-            for (const p of [source, target]) {
-                const pos = tryGetFromMap(this.platformsOnSVG, p)
-                const spanRouteSpans = p.spans.filter(s => intersection(s.routes, routes).length > 0)
-                for (const s of spanRouteSpans) {
-                    const map = getOrMakeInMap(this.platformOffsets, pos, () => new Map<Span, number>())
-                    map.set(s, totalOffset)
-                }
-            }
-        }
-
-        for (const station of this.network.stations) {
-            const circumpoints: L.Point[] = []
-            // const stationMeanColor: string
-            // if (zoom < 12) {
-            //     stationMeanColor = color.mean(this.linesToColors(this.passingLinesStation(station)));
-            // }
-            for (const platform of station.platforms) {
-                const pos = tryGetFromMap(this.platformsOnSVG, platform)
-                // const posOnSVG = this.overlay.latLngToSvgPoint(platform.location);
-                const whiskers = this.makeWhiskers(platform)
-                this.whiskers.set(platform, whiskers)
-
-                if (zoom > 9) {
-                    const ci = this.makePlatformElement(platform)
-                    // ci.id = 'p-' + platformIndex;
-
-                    if (isDetailed) {
-                        this.colorizePlatformElement(ci, platform.passingLines())
-                    }
-                    // else {
-                    //     ci.style.stroke = stationMeanColor;
-                    // }
-                    const dummyCircle = svg.makeCircle(pos, dummyCircleRadius)
-                    // dummyCircle.id = 'd-' + platformIndex;
-
-                    stationCirclesFrag.appendChild(ci)
-                    pool.platformBindings.set(platform, ci)
-                    dummyCirclesFrag.appendChild(dummyCircle)
-                    pool.dummyBindings.set(platform, dummyCircle)
-                }
-
-            }
-
-            const circular = findCycle(this.network, station)
-            if (circular.length > 0) {
-                for (const platform of station.platforms) {
-                    if (circular.includes(platform)) {
-                        const pos = tryGetFromMap(this.platformsOnSVG, platform)
-                        circumpoints.push(pos)
-                    }
-                }
-                stationCircumpoints.set(station, circular)
-            }
-
-        }
-
-        console.timeEnd('circle preparation')
-        console.time('transfer preparation')
-
-        // transfers
-
-        const transfersOuterFrag = tryGetFromMap(docFrags, 'transfers-outer')
-        const transfersInnerFrag = tryGetFromMap(docFrags, 'transfers-inner')
-        for (const transfer of this.network.transfers) {
-            const { source, target } = transfer
-            if (!isDetailed && source.name === target.name) {
-                continue
-            }
-            const scp = stationCircumpoints.get(source.station)
-            const paths = scp !== undefined
-                && scp.includes(source)
-                && scp.includes(target) ? this.makeTransferArc(
-                    transfer,
-                    scp,
-                ) : svg.makeTransferLine(
-                    tryGetFromMap(this.platformsOnSVG, source),
-                    tryGetFromMap(this.platformsOnSVG, target),
-                )
-            pool.outerEdgeBindings.set(transfer, paths[0])
-            pool.innerEdgeBindings.set(transfer, paths[1])
-            paths[0].style.stroke = isDetailed ? this.makeGradient(transfer) : '#000'
-            transfersOuterFrag.appendChild(paths[0])
-            transfersInnerFrag.appendChild(paths[1])
-            // this.transferToModel(transfer, paths);
-        }
-
-        console.timeEnd('transfer preparation')
-        console.time('span preparation')
-        // paths
-
-        const pathsOuterFrag = tryGetFromMap(docFrags, 'paths-outer')
-        const pathsInnerFrag = tryGetFromMap(docFrags, 'paths-inner')
-
-        for (const span of this.network.spans) {
-            const [outer, inner] = this.makePath(span)
-            pathsOuterFrag.appendChild(outer)
-            if (inner) {
-                pathsInnerFrag.appendChild(inner)
-            }
-        }
-
-        console.timeEnd('span preparation')
-
-        console.time('appending')
-        for (const [key, val] of docFrags) {
-            byId(key).appendChild(val)
-        }
-        console.timeEnd('appending')
-    }
-
     private getSvgSizes() {
         return getSvgSizesByZoom(this.map.getZoom(), this.config.detailedZoom)
-    }
-
-    private makePlatformElement(platform: Platform) {
-        const pos = tryGetFromMap(this.platformsOnSVG, platform)
-        const { circleRadius } = this.getSvgSizes()
-        const offsetsMap = this.platformOffsets.get(pos)
-        if (!offsetsMap) {
-            return svg.makeCircle(pos, circleRadius)
-        }
-
-        const offsets = Array.from(offsetsMap).map(([k, v]) => v)
-        const width = Math.max(...offsets) - Math.min(...offsets)
-
-        const stadium = svg.makeStadium(pos, width, circleRadius)
-        const { value } = tryGetFromMap(this.whiskers, platform).values().next()
-        const rotationAngle = angle(value.subtract(pos), unit)
-        const deg = rotationAngle * 180 / Math.PI
-        stadium.setAttribute('transform', `rotate(${deg})`)
-        return stadium
-    }
-
-    private makeGradient(transfer: Transfer) {
-        const { source, target } = transfer
-        const pos1 = tryGetFromMap(this.platformsOnSVG, source)
-        const pos2 = tryGetFromMap(this.platformsOnSVG, target)
-        // paths[0].id = 'ot-' + transferIndex;
-        // paths[1].id = 'it-' + transferIndex;
-        const gradientColors = [
-            this.getPlatformColor(source),
-            this.getPlatformColor(target),
-        ]
-        // const colors = [
-        //     source,
-        //     target,
-        // ].map(i => getComputedStyle(stationCirclesFrag.childNodes[i] as Element, null).stroke)
-        // console.log(colors);
-        const { fullCircleRadius } = this.getSvgSizes()
-        const circlePortion = fullCircleRadius / pos1.distanceTo(pos2)
-        const gradientVector = pos2.subtract(pos1)
-        let gradient = pool.gradientBindings.get(transfer)
-        if (gradient === undefined) {
-            gradient = gradients.makeLinear(gradientVector, gradientColors, circlePortion)
-            gradient.id = uniqueId('gradient-')
-            pool.gradientBindings.set(transfer, gradient)
-            this.overlay.defs.appendChild(gradient)
-        } else {
-            gradients.setDirection(gradient, gradientVector)
-            gradients.setOffset(gradient, circlePortion)
-        }
-        return `url(#${gradient.id})`
     }
 
     private updatePlatformsPositionOnOverlay(zoom = this.map.getZoom()) {
@@ -680,33 +395,6 @@ export default class {
                 platformsOnSVG.set(platform, pos)
             }
         }
-    }
-
-    private getPlatformColor(platform: Platform): string {
-        return meanColor(this.linesToColors(platform.passingLines()))
-    }
-
-    private linesToColors(lines: Set<string>): string[] {
-        const rgbs: string[] = []
-        for (const line of lines) {
-            const { stroke } = tryGetFromMap(this.lineRules, line[0] === 'M' ? line : line[0])
-            if (stroke) {
-                rgbs.push(stroke)
-            }
-        }
-        return rgbs
-    }
-
-    private colorizePlatformElement(ci: SVGElement, lines: Set<string>) {
-        if (lines.size === 0) {
-            return
-        }
-        if (lines.size === 1) {
-            const line = lines.values().next().value
-            ci.classList.add(line[0] === 'M' ? line : line[0])
-            return
-        }
-        ci.style.stroke = meanColor(this.linesToColors(lines))
     }
 
     protected makeWhiskers(platform: Platform): Map<Span, L.Point> {
@@ -759,69 +447,4 @@ export default class {
         }
         return whiskers
     }
-
-    private makeTransferArc(transfer: Transfer, cluster: Platform[]): SVGLineElement[] | SVGPathElement[] {
-        const { network, platformsOnSVG } = this
-        const { source, target } = transfer
-        const pos1 = tryGetFromMap(platformsOnSVG, source)
-        const pos2 = tryGetFromMap(platformsOnSVG, target)
-        const makeArc = (thirdPlatform: Platform) =>
-            svg.makeTransferArc(pos1, pos2, tryGetFromMap(platformsOnSVG, thirdPlatform))
-        if (cluster.length === 3) {
-            const third = difference(cluster, [source, target])[0]
-            return makeArc(third)
-        }
-        if (source === cluster[2] && target === cluster[3] || source === cluster[3] && target === cluster[2]) {
-            return svg.makeTransferLine(pos1, pos2)
-        }
-        // const s = transfer.source;
-        // const pl1neighbors = network.transfers.filter(t => t.source === s || t.target === s);
-        // const pl1deg = pl1neighbors.length;
-        const rarr: Platform[] = []
-        for (const t of network.transfers) {
-            if (t === transfer) {
-                continue
-            }
-            if (transfer.has(t.source)) {
-                rarr.push(t.target)
-            } else if (transfer.has(t.target)) {
-                rarr.push(t.source)
-            }
-        }
-        let third: Platform
-        if (rarr.length === 2) {
-            if (rarr[0] !== rarr[1]) {
-                throw Error('FFFFUC')
-            }
-            third = rarr[0]
-        } else if (rarr.length === 3) {
-            third = rarr[0] === rarr[1] ? rarr[2] : rarr[0] === rarr[2] ? rarr[1] : rarr[0]
-        } else {
-            throw new Error('111FUUFF')
-        }
-        return makeArc(third)
-    }
-
-    private highlightStation(station: Station, namesOnPlate: string[], filteredNames: string[]) {
-        const scaleFactor = 1.25
-        const platforms = station.platforms.filter(p => filteredNames.includes(p.name))
-        for (const platform of platforms) {
-            const circle = tryGetFromMap(pool.platformBindings, platform)
-            scale.scaleElement(circle, scaleFactor, true)
-        }
-        if (this.map.getZoom() >= this.config.detailedZoom) {
-            for (const transfer of this.network.transfers) {
-                const shouldScale = platforms.some(p => transfer.has(p))
-                    && filteredNames.includes(transfer.source.name)
-                    && filteredNames.includes(transfer.target.name)
-                if (shouldScale) {
-                    scale.scaleTransfer(transfer, scaleFactor)
-                }
-            }
-        }
-        const topmostPlatform = maxBy(platforms, p => p.location.lat)
-        const topmostCircle = tryGetFromMap(pool.platformBindings, topmostPlatform)
-        this.tooltip.show(svg.getElementOffset(topmostCircle), namesOnPlate)
-    }
-
 }
