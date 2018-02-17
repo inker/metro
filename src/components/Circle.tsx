@@ -1,11 +1,7 @@
 import React, { PureComponent } from 'react'
-import styled from 'styled-components'
 import { Point } from 'leaflet'
 
-const Root = styled.circle`
-`
-
-interface Props {
+interface Props extends React.SVGProps<SVGCircleElement> {
   center: Point,
   radius: number,
   [prop: string]: any,
@@ -14,14 +10,13 @@ interface Props {
 class Circle extends PureComponent<Props> {
   render() {
     const {
-      id,
       center,
       radius,
       ...otherProps
     } = this.props
 
     return (
-      <Root
+      <circle
         cx={center.x}
         cy={center.y}
         r={radius}

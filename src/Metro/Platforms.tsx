@@ -1,12 +1,13 @@
 import React, { PureComponent } from 'react'
 import styled from 'styled-components'
 import { Point } from 'leaflet'
+import { memoize } from 'lodash'
 
 import PlatformReact from 'components/Platform'
 
 import {
-  unit,
-  angle,
+  orthogonal,
+  normalize,
 } from 'util/math/vector'
 
 import {
@@ -17,6 +18,14 @@ const PlatformCircles = styled.g`
   fill: white;
   stroke: black;
 `
+
+const  getPositions = memoize((pos, value, minOffset, maxOffset) => {
+  const ortho = normalize(orthogonal(value.subtract(pos))[0])
+  return [
+    ortho.multiplyBy(minOffset).add(pos),
+    ortho.multiplyBy(maxOffset).add(pos),
+  ]
+}, (pos, value, minOffset, maxOffset) => `${pos.x};${pos.y};${value.x};${value.y};${minOffset};${maxOffset}`)
 
 interface Props {
   platforms: Platform[],
@@ -40,21 +49,19 @@ class Platforms extends PureComponent<Props> {
     this.props.setFeaturedPlatforms(featuredPlatforms)
   }
 
-  private getStadiumProps(platform: Platform) {
+  private getPlatformPositions(platform: Platform) {
     const { props } = this
     const pos = props.getPlatformPosition(platform)
     const offsetsMap = props.getPlatformOffset(pos)
     if (!offsetsMap) {
-      return null
+      return pos
     }
 
     const offsets = Array.from(offsetsMap).map(([k, v]) => v)
     const value = props.getFirstWhisker(platform)
-
-    return {
-      width: Math.max(...offsets) - Math.min(...offsets),
-      rotation: angle(value.subtract(pos), unit),
-    }
+    const minOffset = Math.min(...offsets)
+    const maxOffset = Math.max(...offsets)
+    return getPositions(pos, value, minOffset, maxOffset)
   }
 
   render() {
@@ -65,7 +72,6 @@ class Platforms extends PureComponent<Props> {
       circleRadius,
       dummyPlatforms,
       featuredPlatforms,
-      getPlatformPosition,
       getPlatformColor,
       unsetFeaturedPlatforms,
     } = this.props
@@ -79,16 +85,14 @@ class Platforms extends PureComponent<Props> {
         }}
       >
         {dummyPlatforms && platforms.map(platform => {
-          const pos = getPlatformPosition(platform)
+          const pos = this.getPlatformPositions(platform)
           const isFeatured = !!featuredPlatformsSet && featuredPlatformsSet.has(platform)
-          const stadiumProps = this.getStadiumProps(platform)
 
           return (
             <PlatformReact
               key={platform.id}
               position={pos}
               radius={circleRadius}
-              {...stadiumProps}
               color={isDetailed ? getPlatformColor(platform) : undefined}
               isFeatured={isFeatured}
               platform={platform}
