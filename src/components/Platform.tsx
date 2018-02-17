@@ -13,6 +13,7 @@ interface Props {
   width?: number, // distance between centers, 0 for circle
   rotation?: number,
   color?: string,
+  isFeatured?: boolean,
   platform: Platform,
   dummyParent: Element | null,
   onMouseOver?: (platform: Platform) => void,
@@ -35,6 +36,7 @@ class PlatformReact extends PureComponent<Props> {
       color,
       width,
       rotation,
+      isFeatured,
       platform,
       dummyParent,
       onMouseOut,
@@ -42,12 +44,14 @@ class PlatformReact extends PureComponent<Props> {
 
     const El = width ? Stadium : Circle
     const rotationDeg = rotation && rotation * 180 / Math.PI
+    const realRadius = isFeatured ? radius * 1.25 : radius
+    const dummyRadius = radius * 2
 
     return (
       <>
         <El
           center={position}
-          radius={radius}
+          radius={realRadius}
           distance={width}
           transform={rotationDeg && `rotate(${rotationDeg})`}
           stroke={color}
@@ -61,7 +65,7 @@ class PlatformReact extends PureComponent<Props> {
               key={platform.id}
               data-id={platform.id}
               center={position}
-              radius={radius * 2}
+              radius={dummyRadius}
               distance={width}
               transform={rotationDeg && `rotate(${rotationDeg})`}
               onMouseOver={this.onMouseOver}

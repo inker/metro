@@ -40,6 +40,23 @@ class Platforms extends PureComponent<Props> {
     this.props.setFeaturedPlatforms(featuredPlatforms)
   }
 
+  private getStadiumProps(platform: Platform) {
+    const { props } = this
+    const pos = props.getPlatformPosition(platform)
+    const offsetsMap = props.getPlatformOffset(pos)
+    if (!offsetsMap) {
+      return null
+    }
+
+    const offsets = Array.from(offsetsMap).map(([k, v]) => v)
+    const value = props.getFirstWhisker(platform)
+
+    return {
+      width: Math.max(...offsets) - Math.min(...offsets),
+      rotation: angle(value.subtract(pos), unit),
+    }
+  }
+
   render() {
     const {
       isDetailed,
@@ -49,8 +66,6 @@ class Platforms extends PureComponent<Props> {
       dummyPlatforms,
       featuredPlatforms,
       getPlatformPosition,
-      getPlatformOffset,
-      getFirstWhisker,
       getPlatformColor,
       unsetFeaturedPlatforms,
     } = this.props
@@ -65,27 +80,17 @@ class Platforms extends PureComponent<Props> {
       >
         {dummyPlatforms && platforms.map(platform => {
           const pos = getPlatformPosition(platform)
-          const isFeatured = featuredPlatformsSet && featuredPlatformsSet.has(platform)
-          const radius = isFeatured ? circleRadius * 1.25 : circleRadius
-
-          const offsetsMap = getPlatformOffset(pos)
-          const stadiumProps: any = {}
-          if (offsetsMap) {
-            const offsets = Array.from(offsetsMap).map(([k, v]) => v)
-            const width = Math.max(...offsets) - Math.min(...offsets)
-
-            const value = getFirstWhisker(platform)
-            stadiumProps.width = width
-            stadiumProps.rotation = angle(value.subtract(pos), unit)
-          }
+          const isFeatured = !!featuredPlatformsSet && featuredPlatformsSet.has(platform)
+          const stadiumProps = this.getStadiumProps(platform)
 
           return (
             <PlatformReact
               key={platform.id}
               position={pos}
-              radius={radius}
+              radius={circleRadius}
               {...stadiumProps}
               color={isDetailed ? getPlatformColor(platform) : undefined}
+              isFeatured={isFeatured}
               platform={platform}
               dummyParent={dummyPlatforms}
               onMouseOver={this.setFeaturedPlatforms}
