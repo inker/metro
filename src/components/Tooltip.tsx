@@ -27,7 +27,7 @@ const PlateBox = styled.div`
   /*float: left;*/
 `
 
-const Foobar = styled.div`
+const PlateBoxWrapper = styled.div`
   display: flex;
   justify-content: center;
   height: 100%;
@@ -37,6 +37,7 @@ const Foobar = styled.div`
 interface Props {
   names: string[] | null,
   position: Point | null,
+  fontSize: number,
 }
 
 class Tooltip extends PureComponent<Props> {
@@ -44,26 +45,32 @@ class Tooltip extends PureComponent<Props> {
     const {
       position,
       names,
+      fontSize,
     } = this.props
 
     return (
       <g>
         <foreignObject
-            x={-HALF_WIDTH}
-            y={-WIDTH}
-            width={WIDTH}
-            height={WIDTH}
-            transform={position ? `translate(${position.x}, ${position.y})` : ''}
+          x={-HALF_WIDTH}
+          y={-WIDTH}
+          width={WIDTH}
+          height={WIDTH}
+          transform={position ? `translate(${position.x}, ${position.y})` : ''}
         >
-          <Foobar>
-            <PlateBox display={position}>
+          <PlateBoxWrapper>
+            <PlateBox
+              display={position}
+              style={{
+                fontSize,
+              }}
+            >
               {names && names.map((name, i) => (
                 <div key={`${name}_${i}`}>
                   {name}
                 </div>
               ))}
             </PlateBox>
-          </Foobar>
+          </PlateBoxWrapper>
         </foreignObject>
       </g>
     )
