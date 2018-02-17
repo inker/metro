@@ -7,11 +7,17 @@ const HALF_WIDTH = WIDTH / 2
 
 const GAP = 10
 
+const PlateBoxWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  align-items: flex-end;
+`
+
 const PlateBox = styled.div`
   color: #000000;
   text-align: center;
   font-family: Corbel, Candara, Calibri, 'Trebuchet MS', Ubuntu, sans-serif;
-  font-weight: bold;
   opacity: 1;
   user-select: none;
 
@@ -27,11 +33,8 @@ const PlateBox = styled.div`
   /*float: left;*/
 `
 
-const PlateBoxWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  height: 100%;
-  align-items: flex-end;
+const Textling = styled.div`
+  font-weight: ${props => props.primary && 'bold'};
 `
 
 interface Props {
@@ -48,6 +51,10 @@ class Tooltip extends PureComponent<Props> {
       fontSize,
     } = this.props
 
+    const style = {
+      fontSize,
+    }
+
     return (
       <g>
         <foreignObject
@@ -58,16 +65,15 @@ class Tooltip extends PureComponent<Props> {
           transform={position ? `translate(${position.x}, ${position.y})` : ''}
         >
           <PlateBoxWrapper>
-            <PlateBox
-              display={position}
-              style={{
-                fontSize,
-              }}
-            >
+            <PlateBox display={position}>
               {names && names.map((name, i) => (
-                <div key={`${name}_${i}`}>
+                <Textling
+                  key={`${name}_${i}`}
+                  primary={i === 0}
+                  style={style}
+                >
                   {name}
-                </div>
+                </Textling>
               ))}
             </PlateBox>
           </PlateBoxWrapper>

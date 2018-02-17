@@ -57,7 +57,7 @@ interface State {
 class MapContainer extends PureComponent<Props> {
   constructor(props) {
     super(props)
-    this.updateOffsets(props)
+    this.updateParameters(props)
   }
 
   state: State = {
@@ -66,6 +66,7 @@ class MapContainer extends PureComponent<Props> {
 
   private whiskers = new WeakMap<Platform, Map<Span, Point>>()
   private readonly platformOffsets = new Map<L.Point, Map<Span, number>>()
+  private readonly stationCircumpoints = new Map<Station, Platform[]>()
 
   componentWillReceiveProps(props: Props) {
     const oldProps = this.props
@@ -73,7 +74,13 @@ class MapContainer extends PureComponent<Props> {
       return
     }
 
+    this.updateParameters(props)
+  }
+
+  private updateParameters(props: Props) {
+    this.updateWhiskers(props)
     this.updateOffsets(props)
+    this.updateCircumcircles(props)
   }
 
   private mountTransfersInner = (g: SVGGElement) => {
@@ -179,12 +186,12 @@ class MapContainer extends PureComponent<Props> {
     return whiskers
   }
 
-  private updateOffsets(nextProps: Props) {
+  private updateOffsets(props: Props) {
     const {
       network,
       platformsOnSVG,
       svgSizes,
-    } = nextProps
+    } = props
 
     this.platformOffsets.clear()
     const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * svgSizes.lineWidth
@@ -216,13 +223,52 @@ class MapContainer extends PureComponent<Props> {
     }
   }
 
+  private updateCircumcircles(props: Props) {
+    const {
+      network,
+      platformsOnSVG,
+    } = props
+
+    this.stationCircumpoints.clear()
+
+    for (const station of network.stations) {
+      const circumpoints: Point[] = []
+
+      const circular = findCycle(network, station)
+      if (circular.length > 0) {
+        for (const platform of station.platforms) {
+          if (circular.includes(platform)) {
+            const pos = tryGetFromMap(platformsOnSVG, platform)
+            circumpoints.push(pos)
+          }
+        }
+        this.stationCircumpoints.set(station, circular)
+      }
+    }
+  }
+
+  private updateWhiskers(props: Props) {
+    const { network } = this.props
+
+    for (const station of network.stations) {
+      // const stationMeanColor: string
+      // if (zoom < 12) {
+      //     stationMeanColor = color.mean(this.linesToColors(this.passingLinesStation(station)));
+      // }
+      for (const platform of station.platforms) {
+        // const posOnSVG = this.overlay.latLngToSvgPoint(platform.location);
+        const wh = this.makeWhiskers(platform)
+        this.whiskers.set(platform, wh)
+      }
+    }
+  }
+
   render() {
     const {
       config,
       zoom,
       network,
       lineRules,
-      platformsOnSVG,
       svgSizes,
       featuredPlatforms,
       setFeaturedPlatforms,
@@ -238,7 +284,6 @@ class MapContainer extends PureComponent<Props> {
       lightLineWidth,
       circleBorder,
       circleRadius,
-      dummyCircleRadius,
       transferWidth,
       transferBorder,
       fullCircleRadius,
@@ -257,37 +302,6 @@ class MapContainer extends PureComponent<Props> {
 
     const lightRailPathStyle = tryGetFromMap(lineRules, 'L')
     lightRailPathStyle.strokeWidth = `${lightLineWidth}px`
-
-    const stationCircumpoints = new Map<Station, Platform[]>()
-
-    for (const platform of network.platforms) {
-      this.whiskers.delete(platform)
-    }
-
-    for (const station of network.stations) {
-      const circumpoints: Point[] = []
-      // const stationMeanColor: string
-      // if (zoom < 12) {
-      //     stationMeanColor = color.mean(this.linesToColors(this.passingLinesStation(station)));
-      // }
-      for (const platform of station.platforms) {
-        const pos = tryGetFromMap(platformsOnSVG, platform)
-        // const posOnSVG = this.overlay.latLngToSvgPoint(platform.location);
-        const wh = this.makeWhiskers(platform)
-        this.whiskers.set(platform, wh)
-      }
-
-      const circular = findCycle(network, station)
-      if (circular.length > 0) {
-        for (const platform of station.platforms) {
-          if (circular.includes(platform)) {
-            const pos = tryGetFromMap(platformsOnSVG, platform)
-            circumpoints.push(pos)
-          }
-        }
-        stationCircumpoints.set(station, circular)
-      }
-    }
 
     return (
       <>
@@ -311,7 +325,7 @@ class MapContainer extends PureComponent<Props> {
           <Transfers
             transfers={network.transfers}
             isDetailed={isDetailed}
-            stationCircumpoints={stationCircumpoints}
+            stationCircumpoints={this.stationCircumpoints}
             featuredPlatforms={featuredPlatforms}
             transferWidth={transferWidth}
             transferBorder={transferBorder}

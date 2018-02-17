@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react'
 import ReactDOM from 'react-dom'
 import htmlTags from 'html-tags'
-import { get } from 'lodash'
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
