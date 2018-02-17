@@ -45,7 +45,7 @@ interface Props {
   getPlatformOffset: (position: Point) => Map<any, number> | null,
 }
 
-class PathsContainer extends PureComponent<Props> {
+class Spans extends PureComponent<Props> {
   state = {
     pathsInner: null,
   }
@@ -198,4 +198,4 @@ class PathsContainer extends PureComponent<Props> {
   }
 }
 
-export default PathsContainer
+export default Spans

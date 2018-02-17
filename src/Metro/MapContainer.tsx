@@ -28,7 +28,7 @@ import Config from '../Config'
 import { Containers as MetroContainers } from './index'
 import Platforms from './Platforms'
 import Transfers from './Transfers'
-import PathsContainer from './Paths'
+import Spans from './Spans'
 
 const GAP_BETWEEN_PARALLEL = 0 // 0 - none, 1 - line width
 
@@ -282,7 +282,7 @@ class MapContainer extends PureComponent<Props> {
     return (
       <>
         {pathsInner && network.spans &&
-          <PathsContainer
+          <Spans
             spans={network.spans}
             lineWidth={lineWidth}
             whiskers={this.whiskers}
