@@ -7,7 +7,7 @@ import PlatformReact from 'components/Platform'
 import {
   unit,
   angle,
-} from 'util/math/vector'
+} from 'utils/math/vector'
 
 import {
   Platform,

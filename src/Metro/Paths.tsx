@@ -5,10 +5,10 @@ import { Point } from 'leaflet'
 import Modal from 'components/Modal'
 import Bezier from 'components/Bezier'
 
-import * as math from 'util/math'
+import * as math from 'utils/math'
 import {
   tryGetFromMap,
-} from 'util/collections'
+} from 'utils/collections'
 
 import {
   Span,

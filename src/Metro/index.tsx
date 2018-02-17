@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { Point, point } from 'leaflet'
+import { Point, point, LatLng } from 'leaflet'
 import { maxBy, meanBy } from 'lodash'
 
 import TooltipReact from 'components/Tooltip'
@@ -9,17 +9,19 @@ import BlackGlowFilter from 'components/filters/BlackGlow'
 import GrayFilter from 'components/filters/Gray'
 import OpacityFilter from 'components/filters/Opacity'
 
-import SvgOverlay from 'ui/SvgOverlay'
+import getSvgSizesByZoom from 'ui/getSvgSizesByZoom'
 
-import { getPlatformNamesZipped } from 'util/index'
+import { getPlatformNamesZipped } from 'utils/misc'
+import getCenter from 'utils/geo/getCenter'
 import {
   tryGetFromMap,
-} from 'util/collections'
+} from 'utils/collections'
 
 import Network, {
   Platform,
-  Span,
 } from '../network'
+
+import Config from '../Config'
 
 import DummyContainer from './DummyContainer'
 import MapContainer from './MapContainer'
@@ -31,14 +33,11 @@ export interface Containers {
 }
 
 interface Props {
-  config: any,
+  config: Config,
   zoom: number,
   lineRules: Map<string, CSSStyleDeclaration>,
   network: Network,
-  overlay: SvgOverlay,
-  platformsOnSVG: WeakMap<Platform, Point>,
-  platformOffsets: Map<Point, Map<Span, number>>,
-  svgSizes: any,
+  latLngToOverlayPoint: (latLng: LatLng) => Point,
 }
 
 interface State {
@@ -47,6 +46,7 @@ interface State {
 }
 
 class Metro extends PureComponent<Props, State> {
+  protected readonly platformsOnSVG = new WeakMap<Platform, L.Point>()
   state: State = {
     containers: {},
     featuredPlatforms: null,
@@ -88,13 +88,61 @@ class Metro extends PureComponent<Props, State> {
     })
   }
 
+  private updatePlatformsPositionOnOverlay = () => {
+    const { platformsOnSVG } = this
+    const {
+      config,
+      zoom,
+      network,
+      latLngToOverlayPoint,
+    } = this.props
+
+    // all platforms are in their place
+    if (zoom >= config.detailedZoom) {
+      for (const station of network.stations) {
+        for (const platform of station.platforms) {
+          const pos = latLngToOverlayPoint(platform.location)
+          platformsOnSVG.set(platform, pos)
+        }
+      }
+      return
+    }
+    for (const station of network.stations) {
+      const nameSet = new Set<string>()
+      const center = latLngToOverlayPoint(station.getCenter())
+      const { platforms } = station
+      for (const platform of platforms) {
+        nameSet.add(platform.name)
+        platformsOnSVG.set(platform, center)
+      }
+      if (nameSet.size === 1) {
+        continue
+      }
+      // unless...
+      if (nameSet.size < 1) {
+        console.error(station)
+        throw new Error(`station has no names`)
+      }
+      const posByName = new Map<string, L.Point>()
+      for (const name of nameSet) {
+        const locations = platforms.filter(p => p.name === name).map(p => p.location)
+        const geoCenter = getCenter(locations)
+        posByName.set(name, latLngToOverlayPoint(geoCenter))
+      }
+      for (const platform of platforms) {
+        const pos = tryGetFromMap(posByName, platform.name)
+        platformsOnSVG.set(platform, pos)
+      }
+    }
+  }
+
   private getTooltipPosition() {
     const { featuredPlatforms } = this.state
     if (!featuredPlatforms) {
       return null
     }
 
-    const { platformsOnSVG } = this.props
+    const { platformsOnSVG } = this
 
     const topmostPlatform = maxBy(featuredPlatforms, p => p.location.lat)
     const topmostPosition = tryGetFromMap(platformsOnSVG, topmostPlatform)
@@ -103,17 +151,21 @@ class Metro extends PureComponent<Props, State> {
     return topmostPosition ? point(x, topmostPosition.y) : null
   }
 
+  private getSvgSizes() {
+    const { props } = this
+    return getSvgSizesByZoom(props.zoom, props.config.detailedZoom)
+  }
+
   render() {
     const {
       config,
       zoom,
       lineRules,
       network,
-      overlay,
-      platformsOnSVG,
-      platformOffsets,
-      svgSizes,
+      latLngToOverlayPoint,
     } = this.props
+
+    const svgSizes = this.getSvgSizes()
 
     const {
       circleBorder,
@@ -143,13 +195,13 @@ class Metro extends PureComponent<Props, State> {
           zoom={zoom}
           lineRules={lineRules}
           network={network}
-          overlay={overlay}
-          platformsOnSVG={platformsOnSVG}
-          platformOffsets={platformOffsets}
+          platformsOnSVG={this.platformsOnSVG}
           svgSizes={svgSizes}
           containers={containers}
           featuredPlatforms={featuredPlatforms}
           setFeaturedPlatforms={this.setFeaturedPlatforms}
+          latLngToOverlayPoint={latLngToOverlayPoint}
+          updatePlatformsPositionOnOverlay={this.updatePlatformsPositionOnOverlay}
         />
 
         <TooltipReact

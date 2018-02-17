@@ -2,8 +2,8 @@ import React, { PureComponent } from 'react'
 import styled from 'styled-components'
 import { Point } from 'leaflet'
 
-import { getCircumcenter } from 'util/math'
-import { dot, det } from 'util/math/vector'
+import { getCircumcenter } from 'utils/math'
+import { dot, det } from 'utils/math/vector'
 
 interface ArcArgs {
   radius: number,
