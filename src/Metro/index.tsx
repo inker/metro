@@ -46,10 +46,25 @@ interface State {
 }
 
 class Metro extends PureComponent<Props, State> {
-  protected readonly platformsOnSVG = new WeakMap<Platform, L.Point>()
+  private platformsOnSVG = new WeakMap<Platform, L.Point>()
+
+  constructor(props) {
+    super(props)
+    this.updatePlatformsPositionOnOverlay(props)
+  }
+
   state: State = {
     containers: {},
     featuredPlatforms: null,
+  }
+
+  componentWillReceiveProps(props: Props) {
+    const oldProps = this.props
+    if (props.zoom === oldProps.zoom) {
+      return
+    }
+
+    this.updatePlatformsPositionOnOverlay(props)
   }
 
   private mountDummyTransfers = (g: SVGGElement) => {
@@ -88,14 +103,14 @@ class Metro extends PureComponent<Props, State> {
     })
   }
 
-  private updatePlatformsPositionOnOverlay = () => {
+  private updatePlatformsPositionOnOverlay(nextProps: Props) {
     const { platformsOnSVG } = this
     const {
       config,
       zoom,
       network,
       latLngToOverlayPoint,
-    } = this.props
+    } = nextProps
 
     // all platforms are in their place
     if (zoom >= config.detailedZoom) {
@@ -201,7 +216,6 @@ class Metro extends PureComponent<Props, State> {
           featuredPlatforms={featuredPlatforms}
           setFeaturedPlatforms={this.setFeaturedPlatforms}
           latLngToOverlayPoint={latLngToOverlayPoint}
-          updatePlatformsPositionOnOverlay={this.updatePlatformsPositionOnOverlay}
         />
 
         <TooltipReact

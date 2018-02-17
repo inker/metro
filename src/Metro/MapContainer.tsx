@@ -48,7 +48,6 @@ interface Props {
   featuredPlatforms: Platform[] | null,
   setFeaturedPlatforms: (platforms: Platform[] | null) => void,
   latLngToOverlayPoint: (latLng: LatLng) => Point,
-  updatePlatformsPositionOnOverlay: () => void,
 }
 
 interface State {
@@ -56,12 +55,26 @@ interface State {
 }
 
 class MapContainer extends PureComponent<Props> {
+  constructor(props) {
+    super(props)
+    this.updateOffsets(props)
+  }
+
   state: State = {
     containers: {},
   }
 
   private whiskers = new WeakMap<Platform, Map<Span, Point>>()
   private readonly platformOffsets = new Map<L.Point, Map<Span, number>>()
+
+  componentWillReceiveProps(props: Props) {
+    const oldProps = this.props
+    if (props.zoom === oldProps.zoom) {
+      return
+    }
+
+    this.updateOffsets(props)
+  }
 
   private mountTransfersInner = (g: SVGGElement) => {
     console.log('mounting transfers inner', g)
@@ -166,12 +179,12 @@ class MapContainer extends PureComponent<Props> {
     return whiskers
   }
 
-  private updateOffsets() {
+  private updateOffsets(nextProps: Props) {
     const {
       network,
       platformsOnSVG,
       svgSizes,
-    } = this.props
+    } = nextProps
 
     this.platformOffsets.clear()
     const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * svgSizes.lineWidth
@@ -213,7 +226,6 @@ class MapContainer extends PureComponent<Props> {
       svgSizes,
       featuredPlatforms,
       setFeaturedPlatforms,
-      updatePlatformsPositionOnOverlay,
       containers: {
         dummyTransfers,
         dummyPlatforms,
@@ -241,8 +253,6 @@ class MapContainer extends PureComponent<Props> {
 
     const isDetailed = zoom >= config.detailedZoom
 
-    updatePlatformsPositionOnOverlay()
-    this.updateOffsets()
     // const lineWidth = 2 ** (zoom / 4 - 1.75);
 
     const lightRailPathStyle = tryGetFromMap(lineRules, 'L')
