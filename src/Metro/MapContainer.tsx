@@ -55,7 +55,7 @@ class MapContainer extends PureComponent<Props> {
     containers: {},
   }
 
-  whiskers: WeakMap<Platform, Map<Span, L.Point>>
+  private whiskers = new WeakMap<Platform, Map<Span, L.Point>>()
 
   private mountTransfersInner = (g: SVGGElement) => {
     console.log('mounting transfers inner', g)
@@ -212,8 +212,11 @@ class MapContainer extends PureComponent<Props> {
 
     const isDetailed = zoom >= config.detailedZoom
 
-    this.whiskers = new WeakMap<Platform, Map<Span, L.Point>>()
     const stationCircumpoints = new Map<Station, Platform[]>()
+
+    for (const platform of network.platforms) {
+      this.whiskers.delete(platform)
+    }
 
     for (const station of network.stations) {
       const circumpoints: L.Point[] = []
