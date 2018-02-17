@@ -149,9 +149,6 @@ class TransferReact extends PureComponent<Props> {
               start={start}
               end={newEnd}
               third={third}
-              style={{
-                strokeWidth: strokeWidth && `${strokeWidth}px`,
-              }}
               onMouseOver={this.onMouseOver}
               onMouseOut={onMouseOut}
             />
