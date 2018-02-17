@@ -1,31 +1,19 @@
 import React, { PureComponent } from 'react'
 import styled from 'styled-components'
 import { Point } from 'leaflet'
-import { memoize } from 'lodash'
 
 import PlatformReact from 'components/Platform'
-
-import {
-  orthogonal,
-  normalize,
-} from 'util/math/vector'
 
 import {
   Platform,
 } from '../network'
 
+import getPlatformPositions from './getPlatformPositions'
+
 const PlatformCircles = styled.g`
   fill: white;
   stroke: black;
 `
-
-const  getPositions = memoize((pos, value, minOffset, maxOffset) => {
-  const ortho = normalize(orthogonal(value.subtract(pos))[0])
-  return [
-    ortho.multiplyBy(minOffset).add(pos),
-    ortho.multiplyBy(maxOffset).add(pos),
-  ]
-}, (pos, value, minOffset, maxOffset) => `${pos.x};${pos.y};${value.x};${value.y};${minOffset};${maxOffset}`)
 
 interface Props {
   platforms: Platform[],
@@ -51,17 +39,12 @@ class Platforms extends PureComponent<Props> {
 
   private getPlatformPositions(platform: Platform) {
     const { props } = this
-    const pos = props.getPlatformPosition(platform)
-    const offsetsMap = props.getPlatformOffset(pos)
-    if (!offsetsMap) {
-      return pos
-    }
-
-    const offsets = Array.from(offsetsMap).map(([k, v]) => v)
-    const value = props.getFirstWhisker(platform)
-    const minOffset = Math.min(...offsets)
-    const maxOffset = Math.max(...offsets)
-    return getPositions(pos, value, minOffset, maxOffset)
+    return getPlatformPositions(
+      platform,
+      props.getPlatformPosition,
+      props.getPlatformOffset,
+      props.getFirstWhisker,
+    )
   }
 
   render() {

@@ -226,22 +226,13 @@ class MapContainer extends PureComponent<Props> {
   private updateCircumcircles(props: Props) {
     const {
       network,
-      platformsOnSVG,
     } = props
 
     this.stationCircumpoints.clear()
 
     for (const station of network.stations) {
-      const circumpoints: Point[] = []
-
       const circular = findCycle(network, station)
       if (circular.length > 0) {
-        for (const platform of station.platforms) {
-          if (circular.includes(platform)) {
-            const pos = tryGetFromMap(platformsOnSVG, platform)
-            circumpoints.push(pos)
-          }
-        }
         this.stationCircumpoints.set(station, circular)
       }
     }
