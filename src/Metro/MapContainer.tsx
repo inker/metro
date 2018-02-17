@@ -64,7 +64,7 @@ class MapContainer extends PureComponent<Props> {
     containers: {},
   }
 
-  private whiskers = new WeakMap<Platform, Map<Span, Point>>()
+  private readonly whiskers = new WeakMap<Platform, Map<Span, Point>>()
   private readonly platformOffsets = new Map<Point, Map<Span, number>>()
   private readonly stationCircumpoints = new Map<Station, Platform[]>()
 
@@ -84,8 +84,8 @@ class MapContainer extends PureComponent<Props> {
   }
 
   private mountTransfersInner = (g: SVGGElement) => {
-    console.log('mounting transfers inner', g)
-    this.setState(state => ({
+    console.info('mounting transfers inner', g)
+    this.setState((state: State) => ({
       containers: {
         ...state.containers,
         transfersInner: g,
@@ -94,8 +94,8 @@ class MapContainer extends PureComponent<Props> {
   }
 
   private mountPathsInner = (g: SVGGElement) => {
-    console.log('mounting paths inner', g)
-    this.setState(state => ({
+    console.info('mounting paths inner', g)
+    this.setState((state: State) => ({
       containers: {
         ...state.containers,
         pathsInner: g,

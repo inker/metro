@@ -24,12 +24,10 @@ const Outer = styled(Paths)`
 
 const TransfersOuter = styled(Outer)`
   stroke: #404040;
-  stroke-width: ${props => props.strokeWidth};
 `
 
 const TransfersInner = styled(Inner)`
   stroke: #FFFFFF;
-  stroke-width: ${props => props.strokeWidth};
 `
 
 interface Props {
