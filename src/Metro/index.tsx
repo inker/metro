@@ -221,6 +221,7 @@ class Metro extends PureComponent<Props, State> {
         <TooltipReact
           position={tooltipPos}
           names={tooltipStrings || null}
+          fontSize={Math.max((zoom + 10) * 0.5, 11)}
         />
 
         <DummyContainer
