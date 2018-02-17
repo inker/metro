@@ -65,7 +65,7 @@ class MapContainer extends PureComponent<Props> {
   }
 
   private whiskers = new WeakMap<Platform, Map<Span, Point>>()
-  private readonly platformOffsets = new Map<L.Point, Map<Span, number>>()
+  private readonly platformOffsets = new Map<Point, Map<Span, number>>()
   private readonly stationCircumpoints = new Map<Station, Platform[]>()
 
   componentWillReceiveProps(props: Props) {

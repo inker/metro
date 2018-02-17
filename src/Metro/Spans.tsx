@@ -38,7 +38,7 @@ const PathsInner = styled(Inner)`
 interface Props {
   spans: Span[],
   lineWidth: number,
-  whiskers: WeakMap<Platform, Map<Span, L.Point>>,
+  whiskers: WeakMap<Platform, Map<Span, Point>>,
   lineRules: Map<string, CSSStyleDeclaration>,
   pathsInnerWrapper: SVGGElement,
   getPlatformPosition: (platform: Platform) => Point,

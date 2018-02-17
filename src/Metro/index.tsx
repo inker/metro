@@ -46,7 +46,7 @@ interface State {
 }
 
 class Metro extends PureComponent<Props, State> {
-  private platformsOnSVG = new WeakMap<Platform, L.Point>()
+  private platformsOnSVG = new WeakMap<Platform, Point>()
 
   constructor(props) {
     super(props)
@@ -138,7 +138,7 @@ class Metro extends PureComponent<Props, State> {
         console.error(station)
         throw new Error(`station has no names`)
       }
-      const posByName = new Map<string, L.Point>()
+      const posByName = new Map<string, Point>()
       for (const name of nameSet) {
         const locations = platforms.filter(p => p.name === name).map(p => p.location)
         const geoCenter = getCenter(locations)
