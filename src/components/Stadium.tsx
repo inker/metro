@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { Point } from 'leaflet'
 
 interface Props extends React.SVGProps<SVGRectElement> {
@@ -8,7 +8,7 @@ interface Props extends React.SVGProps<SVGRectElement> {
   [prop: string]: any,
 }
 
-class Stadium extends Component<Props> {
+class Stadium extends PureComponent<Props> {
   render() {
     const {
       c1,
