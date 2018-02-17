@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react'
-import { Point } from 'leaflet'
-
-import SvgOverlay from 'ui/SvgOverlay'
+import { Point, LatLng } from 'leaflet'
+import {
+  intersection,
+} from 'lodash'
 
 import { meanColor } from 'util/color'
 import findCycle from 'util/algorithm/findCycle'
@@ -13,6 +14,7 @@ import {
 
 import {
   tryGetFromMap,
+  getOrMakeInMap,
 } from 'util/collections'
 
 import Network, {
@@ -21,10 +23,14 @@ import Network, {
   Span,
 } from '../network'
 
+import Config from '../Config'
+
 import { Containers as MetroContainers } from './index'
 import Platforms from './Platforms'
 import Transfers from './Transfers'
 import PathsContainer from './Paths'
+
+const GAP_BETWEEN_PARALLEL = 0 // 0 - none, 1 - line width
 
 interface Containers {
   transfersInner?: SVGGElement,
@@ -32,17 +38,17 @@ interface Containers {
 }
 
 interface Props {
-  config: any,
+  config: Config,
   zoom: number,
   lineRules: Map<string, CSSStyleDeclaration>,
   network: Network,
-  overlay: SvgOverlay,
   platformsOnSVG: WeakMap<Platform, Point>,
-  platformOffsets: Map<Point, Map<Span, number>>,
   svgSizes: any,
   containers: MetroContainers,
   featuredPlatforms: Platform[] | null,
   setFeaturedPlatforms: (platforms: Platform[] | null) => void,
+  latLngToOverlayPoint: (latLng: LatLng) => Point,
+  updatePlatformsPositionOnOverlay: () => void,
 }
 
 interface State {
@@ -55,6 +61,7 @@ class MapContainer extends PureComponent<Props> {
   }
 
   private whiskers = new WeakMap<Platform, Map<Span, Point>>()
+  private readonly platformOffsets = new Map<L.Point, Map<Span, number>>()
 
   private mountTransfersInner = (g: SVGGElement) => {
     console.log('mounting transfers inner', g)
@@ -80,7 +87,7 @@ class MapContainer extends PureComponent<Props> {
     tryGetFromMap(this.props.platformsOnSVG, platform)
 
   private getPosOffset = (pos: Point) =>
-    this.props.platformOffsets.get(pos) || null
+    this.platformOffsets.get(pos) || null
 
   private getFirstWhisker = (platform: Platform) =>
     tryGetFromMap(this.whiskers, platform).values().next().value
@@ -159,6 +166,43 @@ class MapContainer extends PureComponent<Props> {
     return whiskers
   }
 
+  private updateOffsets() {
+    const {
+      network,
+      platformsOnSVG,
+      svgSizes,
+    } = this.props
+
+    this.platformOffsets.clear()
+    const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * svgSizes.lineWidth
+
+    for (const span of network.spans) {
+      const { source, target, routes } = span
+      const parallel = network.spans.filter(s => s.isOf(source, target))
+      if (parallel.length === 1) {
+        continue
+      }
+      if (parallel.length === 0) {
+        throw new Error(`some error with span ${source.name}-${target.name}: it probably does not exist`)
+      }
+
+      const i = parallel.indexOf(span)
+      if (i === -1) {
+        throw new Error(`some error with span ${source.name}-${target.name}`)
+      }
+      const leftShift = (parallel.length - 1) / 2
+      const totalOffset = (i - leftShift) * lineWidthPlusGapPx
+      for (const p of [source, target]) {
+        const pos = tryGetFromMap(platformsOnSVG, p)
+        const spanRouteSpans = p.spans.filter(s => intersection(s.routes, routes).length > 0)
+        for (const s of spanRouteSpans) {
+          const map = getOrMakeInMap(this.platformOffsets, pos, () => new Map<Span, number>())
+          map.set(s, totalOffset)
+        }
+      }
+    }
+  }
+
   render() {
     const {
       config,
@@ -169,6 +213,7 @@ class MapContainer extends PureComponent<Props> {
       svgSizes,
       featuredPlatforms,
       setFeaturedPlatforms,
+      updatePlatformsPositionOnOverlay,
       containers: {
         dummyTransfers,
         dummyPlatforms,
@@ -195,6 +240,13 @@ class MapContainer extends PureComponent<Props> {
     } = this.state
 
     const isDetailed = zoom >= config.detailedZoom
+
+    updatePlatformsPositionOnOverlay()
+    this.updateOffsets()
+    // const lineWidth = 2 ** (zoom / 4 - 1.75);
+
+    const lightRailPathStyle = tryGetFromMap(lineRules, 'L')
+    lightRailPathStyle.strokeWidth = `${lightLineWidth}px`
 
     const stationCircumpoints = new Map<Station, Platform[]>()
 
