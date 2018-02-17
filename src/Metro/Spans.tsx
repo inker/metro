@@ -15,7 +15,7 @@ import {
   Platform,
 } from '../network'
 
-const CURVE_SPLIT_NUM = 10
+const CURVE_SPLIT_NUM = 8
 
 const Paths = styled.g`
   fill: none;
@@ -57,7 +57,12 @@ class Spans extends PureComponent<Props> {
   }
 
   private makePath(span: Span) {
-    const { routes, source, target } = span
+    const {
+      routes,
+      source,
+      target,
+    } = span
+
     if (routes.length === 0) {
       console.error(span, 'span has no routes!')
       throw new Error('span has no routes!')
@@ -70,13 +75,18 @@ class Spans extends PureComponent<Props> {
 
     const controlPoints = this.getControlPoints(span)
 
+    const {
+      lineRules,
+    } = this.props
+
     // drawBezierHints(this.overlay.origin, controlPoints, get(this.lineRules.get(lineId), 'stroke') as string)
-    const foo = this.props.lineRules.get(routes[0].line)
+    const lineStyle = lineRules.get(lineType === 'M' ? routes[0].line : lineType)
     const bezier = (
       <Bezier
+        key={span.id}
         controlPoints={controlPoints[0]}
         tails={controlPoints.slice(1)}
-        color={foo && foo.stroke}
+        color={lineStyle && lineStyle.stroke}
       />
     )
     // bezier.id = 'op-' + spanIndex;
