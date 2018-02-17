@@ -68,7 +68,7 @@ class Metro extends PureComponent<Props, State> {
   }
 
   private mountDummyTransfers = (g: SVGGElement) => {
-    console.log('mounting dummy transfers', g)
+    console.info('mounting dummy transfers', g)
     this.setState(state => ({
       containers: {
         ...state.containers,
@@ -78,7 +78,7 @@ class Metro extends PureComponent<Props, State> {
   }
 
   private mountDummyPlatforms = (g: SVGGElement) => {
-    console.log('mounting dummy platforms')
+    console.info('mounting dummy platforms')
     this.setState(state => ({
       containers: {
         ...state.containers,
@@ -88,7 +88,7 @@ class Metro extends PureComponent<Props, State> {
   }
 
   private mountDefs = (defs: SVGDefsElement) => {
-    console.log('mounting dummy platforms')
+    console.info('mounting dummy platforms')
     this.setState(state => ({
       containers: {
         ...state.containers,

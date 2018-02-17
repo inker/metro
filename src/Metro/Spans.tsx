@@ -28,11 +28,9 @@ const Outer = styled(Paths)`
 `
 
 const PathsOuter = styled(Outer)`
-  stroke-width: ${props => props.strokeWidth};
 `
 
 const PathsInner = styled(Inner)`
-  stroke-width: ${props => props.strokeWidth};
 `
 
 interface Props {
