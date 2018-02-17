@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import L from 'leaflet'
+import { Point } from 'leaflet'
 import { maxBy } from 'lodash'
 
 import TooltipReact from 'components/Tooltip'
@@ -15,14 +15,11 @@ import { getPlatformNamesZipped } from 'util/index'
 
 import Network, {
   Platform,
-  Station,
   Span,
-} from './network'
+} from '../network'
 
 import DummyContainer from './DummyContainer'
 import MapContainer from './MapContainer'
-
-import Platforms from './Platforms'
 
 export interface Containers {
   defs?: SVGDefsElement,
@@ -36,8 +33,8 @@ interface Props {
   lineRules: Map<string, CSSStyleDeclaration>,
   network: Network,
   overlay: SvgOverlay,
-  platformsOnSVG: WeakMap<Platform, L.Point>,
-  platformOffsets: Map<L.Point, Map<Span, number>>,
+  platformsOnSVG: WeakMap<Platform, Point>,
+  platformOffsets: Map<Point, Map<Span, number>>,
   svgSizes: any,
 }
 

@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { uniq } from 'lodash'
+import { Point } from 'leaflet'
 
 import SvgOverlay from 'ui/SvgOverlay'
 
@@ -19,7 +19,6 @@ import Network, {
   Platform,
   Station,
   Span,
-  Transfer,
 } from '../network'
 
 import { Containers as MetroContainers } from './index'
@@ -38,8 +37,8 @@ interface Props {
   lineRules: Map<string, CSSStyleDeclaration>,
   network: Network,
   overlay: SvgOverlay,
-  platformsOnSVG: WeakMap<Platform, L.Point>,
-  platformOffsets: Map<L.Point, Map<Span, number>>,
+  platformsOnSVG: WeakMap<Platform, Point>,
+  platformOffsets: Map<Point, Map<Span, number>>,
   svgSizes: any,
   containers: MetroContainers,
   featuredPlatforms: Platform[] | null,
@@ -55,7 +54,7 @@ class MapContainer extends PureComponent<Props> {
     containers: {},
   }
 
-  private whiskers = new WeakMap<Platform, Map<Span, L.Point>>()
+  private whiskers = new WeakMap<Platform, Map<Span, Point>>()
 
   private mountTransfersInner = (g: SVGGElement) => {
     console.log('mounting transfers inner', g)
@@ -80,27 +79,11 @@ class MapContainer extends PureComponent<Props> {
   private getPlatformPosition = (platform: Platform) =>
     tryGetFromMap(this.props.platformsOnSVG, platform)
 
-  private getPosOffset = (pos: L.Point) =>
+  private getPosOffset = (pos: Point) =>
     this.props.platformOffsets.get(pos) || null
 
   private getFirstWhisker = (platform: Platform) =>
     tryGetFromMap(this.whiskers, platform).values().next().value
-
-  private setFeaturedPlatformsByPlatform = (platform: Platform) => {
-    const { name } = platform
-    const featuredPlatforms = platform.station.platforms.filter(p => p.name === name)
-    this.props.setFeaturedPlatforms(featuredPlatforms)
-  }
-
-  private setFeaturedPlatformsByTransfer = (transfer: Transfer) => {
-    const { source, target } = transfer
-    const sourceName = source.name
-    const targetName = target.name
-    const sourceFeaturedPlatforms = source.station.platforms.filter(p => p.name === sourceName)
-    const targetFeaturedPlatforms = target.station.platforms.filter(p => p.name === targetName)
-    const featuredPlatforms = uniq([...sourceFeaturedPlatforms, ...targetFeaturedPlatforms])
-    this.props.setFeaturedPlatforms(featuredPlatforms)
-  }
 
   private unsetFeaturedPlatforms = () => {
     this.props.setFeaturedPlatforms(null)
@@ -121,14 +104,14 @@ class MapContainer extends PureComponent<Props> {
     return rgbs
   }
 
-  protected makeWhiskers(platform: Platform): Map<Span, L.Point> {
+  protected makeWhiskers(platform: Platform): Map<Span, Point> {
     const {
       platformsOnSVG,
     } = this.props
 
     const PART = 0.5
     const pos = tryGetFromMap(platformsOnSVG, platform)
-    const whiskers = new Map<Span, L.Point>()
+    const whiskers = new Map<Span, Point>()
     const { spans } = platform
     if (spans.length === 0) {
       return whiskers
@@ -152,7 +135,7 @@ class MapContainer extends PureComponent<Props> {
       return whiskers
     }
 
-    const normals: [L.Point[], L.Point[]] = [[], []]
+    const normals: [Point[], Point[]] = [[], []]
     const sortedSpans: [Span[], Span[]] = [[], []]
     const distances = new WeakMap<Span, number>()
     for (const span of spans) {
@@ -185,6 +168,7 @@ class MapContainer extends PureComponent<Props> {
       platformsOnSVG,
       svgSizes,
       featuredPlatforms,
+      setFeaturedPlatforms,
       containers: {
         dummyTransfers,
         dummyPlatforms,
@@ -219,7 +203,7 @@ class MapContainer extends PureComponent<Props> {
     }
 
     for (const station of network.stations) {
-      const circumpoints: L.Point[] = []
+      const circumpoints: Point[] = []
       // const stationMeanColor: string
       // if (zoom < 12) {
       //     stationMeanColor = color.mean(this.linesToColors(this.passingLinesStation(station)));
@@ -248,8 +232,7 @@ class MapContainer extends PureComponent<Props> {
         {pathsInner && network.spans &&
           <PathsContainer
             spans={network.spans}
-            outerStrokeWidth={lineWidth}
-            innerStrokeWidth={lineWidth / 2}
+            lineWidth={lineWidth}
             whiskers={this.whiskers}
             lineRules={lineRules}
             pathsInnerWrapper={pathsInner}
@@ -268,15 +251,15 @@ class MapContainer extends PureComponent<Props> {
             isDetailed={isDetailed}
             stationCircumpoints={stationCircumpoints}
             featuredPlatforms={featuredPlatforms}
-            outerStrokeWidth={transferWidth + transferBorder / 2}
-            innerStrokeWidth={transferWidth - transferBorder / 2}
+            transferWidth={transferWidth}
+            transferBorder={transferBorder}
             fullCircleRadius={fullCircleRadius}
             transfersInnerWrapper={transfersInner}
             dummyTransfers={dummyTransfers}
             defs={defs}
             getPlatformPosition={this.getPlatformPosition}
             getPlatformColor={this.getPlatformColor}
-            setFeaturedPlatformsByTransfer={this.setFeaturedPlatformsByTransfer}
+            setFeaturedPlatforms={setFeaturedPlatforms}
             unsetFeaturedPlatforms={this.unsetFeaturedPlatforms}
           />
         }
@@ -293,7 +276,7 @@ class MapContainer extends PureComponent<Props> {
             getPlatformOffset={this.getPosOffset}
             getFirstWhisker={this.getFirstWhisker}
             getPlatformColor={this.getPlatformColor}
-            setFeaturedPlatformsByPlatform={this.setFeaturedPlatformsByPlatform}
+            setFeaturedPlatforms={setFeaturedPlatforms}
             unsetFeaturedPlatforms={this.unsetFeaturedPlatforms}
           />
         }
