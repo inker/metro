@@ -50,7 +50,7 @@ class PathsContainer extends PureComponent<Props> {
     pathsInner: null,
   }
 
-  mountInner = (g: SVGGElement) => {
+  private mountInner = (g: SVGGElement) => {
     this.setState({
       pathsInner: g,
     })

@@ -54,7 +54,7 @@ class Transfers extends PureComponent<Props> {
     transfersInner: null,
   }
 
-  mountInner = (g: SVGGElement) => {
+  private mountInner = (g: SVGGElement) => {
     this.setState({
       transfersInner: g,
     })

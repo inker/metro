@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
-import { Point } from 'leaflet'
-import { maxBy } from 'lodash'
+import { Point, point } from 'leaflet'
+import { maxBy, meanBy } from 'lodash'
 
 import TooltipReact from 'components/Tooltip'
 
@@ -12,6 +12,9 @@ import OpacityFilter from 'components/filters/Opacity'
 import SvgOverlay from 'ui/SvgOverlay'
 
 import { getPlatformNamesZipped } from 'util/index'
+import {
+  tryGetFromMap,
+} from 'util/collections'
 
 import Network, {
   Platform,
@@ -79,10 +82,25 @@ class Metro extends PureComponent<Props, State> {
     }))
   }
 
-  setFeaturedPlatforms = (featuredPlatforms: Platform[] | null) => {
+  private setFeaturedPlatforms = (featuredPlatforms: Platform[] | null) => {
     this.setState({
       featuredPlatforms,
     })
+  }
+
+  private getTooltipPosition() {
+    const { featuredPlatforms } = this.state
+    if (!featuredPlatforms) {
+      return null
+    }
+
+    const { platformsOnSVG } = this.props
+
+    const topmostPlatform = maxBy(featuredPlatforms, p => p.location.lat)
+    const topmostPosition = tryGetFromMap(platformsOnSVG, topmostPlatform)
+
+    const x = meanBy(featuredPlatforms, p => tryGetFromMap(platformsOnSVG, p).x)
+    return topmostPosition ? point(x, topmostPosition.y) : null
   }
 
   render() {
@@ -108,9 +126,8 @@ class Metro extends PureComponent<Props, State> {
       containers,
     } = this.state
 
+    const tooltipPos = this.getTooltipPosition()
     const tooltipStrings = featuredPlatforms && getPlatformNamesZipped(featuredPlatforms)
-    const topmostPlatform = featuredPlatforms && maxBy(featuredPlatforms, p => p.location.lat)
-    const topmostPosition = topmostPlatform && platformsOnSVG.get(topmostPlatform)
 
     return (
       <>
@@ -136,7 +153,7 @@ class Metro extends PureComponent<Props, State> {
         />
 
         <TooltipReact
-          position={topmostPosition || null}
+          position={tooltipPos}
           names={tooltipStrings || null}
         />
 
