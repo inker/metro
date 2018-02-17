@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import styled from 'styled-components'
 import { Point } from 'leaflet'
-import { difference } from 'lodash'
+import { difference, uniq } from 'lodash'
 
 import Modal from 'components/Modal'
 import TransferReact from 'components/Transfer'
@@ -37,15 +37,15 @@ interface Props {
   isDetailed: boolean,
   stationCircumpoints: Map<Station, Platform[]>,
   featuredPlatforms: Platform[] | null,
-  outerStrokeWidth: number,
-  innerStrokeWidth: number,
+  transferWidth: number,
+  transferBorder: number,
   fullCircleRadius: number,
   transfersInnerWrapper: SVGGElement,
   dummyTransfers: SVGGElement,
   defs: SVGDefsElement,
   getPlatformPosition: (platform: Platform) => Point,
   getPlatformColor: (platform: Platform) => string,
-  setFeaturedPlatformsByTransfer: (transfer: Transfer) => void,
+  setFeaturedPlatforms: (platforms: Platform[]) => void,
   unsetFeaturedPlatforms: () => void,
 }
 
@@ -60,27 +60,39 @@ class Transfers extends PureComponent<Props> {
     })
   }
 
+  private setFeaturedPlatforms = (transfer: Transfer) => {
+    const { source, target } = transfer
+    const sourceName = source.name
+    const targetName = target.name
+    const sourceFeaturedPlatforms = source.station.platforms.filter(p => p.name === sourceName)
+    const targetFeaturedPlatforms = target.station.platforms.filter(p => p.name === targetName)
+    const featuredPlatforms = uniq([...sourceFeaturedPlatforms, ...targetFeaturedPlatforms])
+    this.props.setFeaturedPlatforms(featuredPlatforms)
+  }
+
   render() {
     const {
       transfers,
       isDetailed,
       stationCircumpoints,
       featuredPlatforms,
-      outerStrokeWidth,
-      innerStrokeWidth,
+      transferWidth,
+      transferBorder,
       fullCircleRadius,
       transfersInnerWrapper,
       dummyTransfers,
       defs,
       getPlatformPosition,
       getPlatformColor,
-      setFeaturedPlatformsByTransfer,
       unsetFeaturedPlatforms,
     } = this.props
 
     const {
       transfersInner,
     } = this.state
+
+    const outerStrokeWidth = transferWidth + transferBorder / 2
+    const innerStrokeWidth = transferWidth - transferBorder / 2
 
     const featuredPlatformsSet = featuredPlatforms && new Set(featuredPlatforms)
 
@@ -116,7 +128,7 @@ class Transfers extends PureComponent<Props> {
                 innerParent={transfersInner}
                 dummyParent={dummyTransfers}
                 getPlatformColor={getPlatformColor}
-                onMouseOver={setFeaturedPlatformsByTransfer}
+                onMouseOver={this.setFeaturedPlatforms}
                 onMouseOut={unsetFeaturedPlatforms}
               />
             )

@@ -29,11 +29,17 @@ interface Props {
   getPlatformOffset: (position: Point) => Map<any, number> | null,
   getFirstWhisker: (platform: Platform) => Point,
   getPlatformColor: (platform: Platform) => string,
-  setFeaturedPlatformsByPlatform: (platform: Platform) => void,
+  setFeaturedPlatforms: (platform: Platform[]) => void,
   unsetFeaturedPlatforms: () => void,
 }
 
 class Platforms extends PureComponent<Props> {
+  private setFeaturedPlatforms = (platform: Platform) => {
+    const { name } = platform
+    const featuredPlatforms = platform.station.platforms.filter(p => p.name === name)
+    this.props.setFeaturedPlatforms(featuredPlatforms)
+  }
+
   render() {
     const {
       isDetailed,
@@ -46,7 +52,6 @@ class Platforms extends PureComponent<Props> {
       getPlatformOffset,
       getFirstWhisker,
       getPlatformColor,
-      setFeaturedPlatformsByPlatform,
       unsetFeaturedPlatforms,
     } = this.props
 
@@ -64,7 +69,7 @@ class Platforms extends PureComponent<Props> {
           const radius = isFeatured ? circleRadius * 1.25 : circleRadius
 
           const offsetsMap = getPlatformOffset(pos)
-          const stadiumProps = {}
+          const stadiumProps: any = {}
           if (offsetsMap) {
             const offsets = Array.from(offsetsMap).map(([k, v]) => v)
             const width = Math.max(...offsets) - Math.min(...offsets)
@@ -83,7 +88,7 @@ class Platforms extends PureComponent<Props> {
               color={isDetailed ? getPlatformColor(platform) : undefined}
               platform={platform}
               dummyParent={dummyPlatforms}
-              onMouseOver={setFeaturedPlatformsByPlatform}
+              onMouseOver={this.setFeaturedPlatforms}
               onMouseOut={unsetFeaturedPlatforms}
             />
           )

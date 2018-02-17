@@ -37,8 +37,7 @@ const PathsInner = styled(Inner)`
 
 interface Props {
   spans: Span[],
-  outerStrokeWidth: number,
-  innerStrokeWidth: number,
+  lineWidth: number,
   whiskers: WeakMap<Platform, Map<Span, L.Point>>,
   lineRules: Map<string, CSSStyleDeclaration>,
   pathsInnerWrapper: SVGGElement,
@@ -159,14 +158,16 @@ class PathsContainer extends PureComponent<Props> {
   render() {
     const {
       spans,
-      outerStrokeWidth,
-      innerStrokeWidth,
+      lineWidth,
       pathsInnerWrapper,
     } = this.props
 
     const {
       pathsInner,
     } = this.state
+
+    const outerStrokeWidth = lineWidth
+    const innerStrokeWidth = lineWidth / 2
 
     return (
       <>
