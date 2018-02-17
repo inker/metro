@@ -5,11 +5,6 @@ import { Point } from 'leaflet'
 import PlatformReact from 'components/Platform'
 
 import {
-  unit,
-  angle,
-} from 'utils/math/vector'
-
-import {
   Platform,
 } from '../network'
 
@@ -25,52 +20,80 @@ interface Props {
   circleRadius: number,
   dummyPlatforms: SVGGElement,
   featuredPlatforms: Platform[] | null,
-  getPlatformPosition: (platform: Platform) => Point,
-  getPlatformOffset: (position: Point) => Map<any, number> | null,
-  getFirstWhisker: (platform: Platform) => Point,
+  getPlatformPositions: (platform: Platform) => Point | Point[],
   getPlatformColor: (platform: Platform) => string,
   setFeaturedPlatforms: (platform: Platform[]) => void,
   unsetFeaturedPlatforms: () => void,
 }
 
 class Platforms extends PureComponent<Props> {
-  private setFeaturedPlatforms = (platform: Platform) => {
+  private setFeaturedPlatforms = (platforms: Platform[]) => {
+    const {
+      isDetailed,
+      setFeaturedPlatforms,
+    } = this.props
+
+    if (!isDetailed) {
+      setFeaturedPlatforms(platforms)
+      return
+    }
+
+    const platform = platforms[0]
     const { name } = platform
     const featuredPlatforms = platform.station.platforms.filter(p => p.name === name)
-    this.props.setFeaturedPlatforms(featuredPlatforms)
+    setFeaturedPlatforms(featuredPlatforms)
   }
 
-  private getStadiumProps(platform: Platform) {
-    const { props } = this
-    const pos = props.getPlatformPosition(platform)
-    const offsetsMap = props.getPlatformOffset(pos)
-    if (!offsetsMap) {
-      return null
+  private getDisplayedPlatforms() {
+    const {
+      platforms,
+      isDetailed,
+    } = this.props
+
+    const map = new WeakMap<Platform, Platform[]>()
+
+    if (isDetailed) {
+      // show all platforms
+      for (const p of platforms) {
+        map.set(p, [p])
+      }
+    } else {
+      const stations = Array.from(new Set(platforms.map(p => p.station)))
+      for (const s of stations) {
+        const names = new Set(s.platforms.map(p => p.name))
+        for (const name of names) {
+          const namesakes = s.platforms.filter(p => p.name === name)
+
+          const firstEPlatform = namesakes.find(
+            p => p.name === name && Array.from(p.passingLines()).some(l => l.startsWith('E')),
+          )
+          const platform = firstEPlatform || namesakes[0]
+          if (!platform) {
+            throw new Error('could not find platform, wtf')
+          }
+
+          map.set(platform, namesakes)
+        }
+      }
     }
 
-    const offsets = Array.from(offsetsMap).map(([k, v]) => v)
-    const value = props.getFirstWhisker(platform)
-
-    return {
-      width: Math.max(...offsets) - Math.min(...offsets),
-      rotation: angle(value.subtract(pos), unit),
-    }
+    return map
   }
 
   render() {
     const {
-      isDetailed,
       platforms,
       strokeWidth,
       circleRadius,
       dummyPlatforms,
       featuredPlatforms,
-      getPlatformPosition,
+      getPlatformPositions,
       getPlatformColor,
       unsetFeaturedPlatforms,
     } = this.props
 
-    const featuredPlatformsSet = featuredPlatforms && new Set(featuredPlatforms)
+    const displayedMap = this.getDisplayedPlatforms()
+    const featuredSet = featuredPlatforms && new Set(featuredPlatforms)
 
     return (
       <PlatformCircles
@@ -79,19 +102,19 @@ class Platforms extends PureComponent<Props> {
         }}
       >
         {dummyPlatforms && platforms.map(platform => {
-          const pos = getPlatformPosition(platform)
-          const isFeatured = !!featuredPlatformsSet && featuredPlatformsSet.has(platform)
-          const stadiumProps = this.getStadiumProps(platform)
+          const pos = getPlatformPositions(platform)
+          const representedPlatforms = displayedMap.get(platform)
+          const radius = representedPlatforms ? circleRadius : 0
+          const isFeatured = !!featuredSet && featuredSet.has(platform)
 
           return (
             <PlatformReact
               key={platform.id}
               position={pos}
-              radius={circleRadius}
-              {...stadiumProps}
-              color={isDetailed ? getPlatformColor(platform) : undefined}
+              radius={radius}
+              color={getPlatformColor(platform)}
               isFeatured={isFeatured}
-              platform={platform}
+              platforms={representedPlatforms || []}
               dummyParent={dummyPlatforms}
               onMouseOver={this.setFeaturedPlatforms}
               onMouseOut={unsetFeaturedPlatforms}

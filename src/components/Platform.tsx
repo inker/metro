@@ -8,10 +8,8 @@ import Circle from './Circle'
 import Stadium from './Stadium'
 
 interface Props {
-  position: Point,
+  position: Point | Point[],
   radius: number,
-  width?: number, // distance between centers, 0 for circle
-  rotation?: number,
   color?: string,
   isFeatured?: boolean,
   platform: Platform,
@@ -29,31 +27,40 @@ class PlatformReact extends PureComponent<Props> {
     onMouseOver(platform)
   }
 
+  private getPlatformElement = (props) => {
+    const { position } = this.props
+    return Array.isArray(position) ? (
+      <Stadium
+        {...props}
+        c1={position[0]}
+        c2={position[1]}
+      />
+    ) : (
+      <Circle
+        {...props}
+        center={position}
+      />
+    )
+  }
+
   render() {
     const {
-      position,
       radius,
       color,
-      width,
-      rotation,
       isFeatured,
       platform,
       dummyParent,
       onMouseOut,
     } = this.props
 
-    const El = width ? Stadium : Circle
-    const rotationDeg = rotation && rotation * 180 / Math.PI
+    const El = this.getPlatformElement
     const realRadius = isFeatured ? radius * 1.25 : radius
     const dummyRadius = radius * 2
 
     return (
       <>
         <El
-          center={position}
           radius={realRadius}
-          distance={width}
-          transform={rotationDeg && `rotate(${rotationDeg})`}
           stroke={color}
         />
         {dummyParent &&
@@ -62,12 +69,8 @@ class PlatformReact extends PureComponent<Props> {
             modalRoot={dummyParent}
           >
             <El
-              key={platform.id}
               data-id={platform.id}
-              center={position}
               radius={dummyRadius}
-              distance={width}
-              transform={rotationDeg && `rotate(${rotationDeg})`}
               onMouseOver={this.onMouseOver}
               onMouseOut={onMouseOut}
             />
