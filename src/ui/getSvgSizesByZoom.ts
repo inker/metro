@@ -4,7 +4,6 @@ const memoizeFunc = (...args) =>
     args.join(':')
 
 function getSvgSizesByZoom(zoom: number, detailedZoom: number) {
-    console.log('zoom', zoom)
     const coef = zoom > 9 ? zoom : zoom > 8 ? 9.5 : 9
     // const lineWidth = 2 ** (zoom / 4 - 1.75);
     const lineWidth = (coef - 7) * 0.5
