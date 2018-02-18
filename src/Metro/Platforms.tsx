@@ -24,7 +24,7 @@ interface Props {
   dummyPlatforms: SVGGElement,
   featuredPlatforms: Platform[] | null,
   getPlatformPosition: (platform: Platform) => Point,
-  getPlatformOffset: (platform: Platform) => Map<Route, number> | null,
+  getPlatformSlot: (platform: Platform) => Map<Route, number> | null,
   getFirstWhisker: (platform: Platform) => Point,
   getPlatformColor: (platform: Platform) => string,
   setFeaturedPlatforms: (platform: Platform[]) => void,
@@ -54,7 +54,7 @@ class Platforms extends PureComponent<Props> {
     return getPlatformPositions(
       platform,
       props.getPlatformPosition,
-      props.getPlatformOffset,
+      props.getPlatformSlot,
       props.getFirstWhisker,
     )
   }

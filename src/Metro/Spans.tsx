@@ -55,7 +55,7 @@ interface Props {
   detailedE: boolean,
   pathsInnerWrapper: SVGGElement,
   getPlatformPosition: (platform: Platform) => Point,
-  getPlatformOffset: (platform: Platform) => Map<Route, number> | null,
+  getPlatformSlot: (platform: Platform) => Map<Route, number> | null,
 }
 
 class Spans extends PureComponent<Props> {
@@ -141,7 +141,7 @@ class Spans extends PureComponent<Props> {
     const {
       whiskers,
       getPlatformPosition,
-      getPlatformOffset,
+      getPlatformSlot,
     } = this.props
     const { source, target } = span
     const sourcePos = getPlatformPosition(source)
@@ -157,32 +157,37 @@ class Spans extends PureComponent<Props> {
       targetPos,
     ]
 
-    const sourceMap = getPlatformOffset(source)
-    const targetMap = getPlatformOffset(target)
+    const sourceMap = getPlatformSlot(source)
+    const targetMap = getPlatformSlot(target)
+    // if (!sourceMap || !targetMap) {
+    //   return [controlPoints]
+    // }
+
     const firstRoute = span.routes[0]
 
     if (sourceMap) {
-      const offset = sourceMap.get(firstRoute)
+      const sourceSlot = sourceMap.get(firstRoute)
       // TODO should be multiple offsets! target, too!
-      if (!offset) {
+      // temporary
+      if (!sourceSlot) {
         return [controlPoints]
       }
       if (targetMap) {
         const curves = math.split(controlPoints, CURVE_SPLIT_NUM)
-        const [head, ...tail] = curves.map(pa => math.offsetPath(pa, offset))
+        const [head, ...tail] = curves.map(pa => math.offsetPath(pa, sourceSlot))
         return [head, ...tail.map(arr => arr.slice(1))]
       }
-      const lineO = math.offsetLine(controlPoints.slice(0, 2), offset)
+      const lineO = math.offsetLine(controlPoints.slice(0, 2), sourceSlot)
       controlPoints[0] = lineO[0]
       controlPoints[1] = lineO[1]
       return [controlPoints]
     }
     if (targetMap) {
-      const offset = targetMap.get(firstRoute)
-      if (!offset) {
+      const targetSlot = targetMap.get(firstRoute)
+      if (!targetSlot) {
         return [controlPoints]
       }
-      const lineO = math.offsetLine(controlPoints.slice(2, 4), offset)
+      const lineO = math.offsetLine(controlPoints.slice(2, 4), targetSlot)
       controlPoints[2] = lineO[0]
       controlPoints[3] = lineO[1]
     }

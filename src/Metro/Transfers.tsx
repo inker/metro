@@ -53,7 +53,7 @@ interface Props {
   dummyTransfers: SVGGElement,
   defs: SVGDefsElement,
   getPlatformPosition: (platform: Platform) => Point,
-  getPlatformOffset: (platform: Platform) => Map<Route, number> | null,
+  getPlatformSlot: (platform: Platform) => Map<Route, number> | null,
   getFirstWhisker: (platform: Platform) => Point,
   getPlatformColor: (platform: Platform) => string,
   setFeaturedPlatforms: (platforms: Platform[]) => void,
@@ -86,7 +86,7 @@ class Transfers extends PureComponent<Props> {
     return getPlatformPositions(
       platform,
       props.getPlatformPosition,
-      props.getPlatformOffset,
+      props.getPlatformSlot,
       props.getFirstWhisker,
     )
   }

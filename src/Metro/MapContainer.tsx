@@ -71,7 +71,7 @@ class MapContainer extends PureComponent<Props> {
   }
 
   private readonly whiskers = new WeakMap<Platform, Map<Span, Point>>()
-  private readonly platformOffsets = new WeakMap<Platform, Map<Route, number>>()
+  private readonly platformSlots = new WeakMap<Platform, Map<Route, number>>()
   private readonly platformBatches = new WeakMap<Platform, Map<Span, number>>()
   private readonly stationCircumpoints = new WeakMap<Station, Platform[]>()
 
@@ -86,7 +86,7 @@ class MapContainer extends PureComponent<Props> {
 
   private updateParameters(props: Props) {
     this.updateWhiskers(props)
-    this.updateOffsets(props)
+    this.updateSlots(props)
     this.updateCircumcircles(props)
   }
 
@@ -113,8 +113,8 @@ class MapContainer extends PureComponent<Props> {
   private getPlatformPosition = (platform: Platform) =>
     tryGetFromMap(this.props.platformsOnSVG, platform)
 
-  private getPlatformOffset = (platform: Platform) =>
-    this.platformOffsets.get(platform) || null
+  private getPlatformSlot = (platform: Platform) =>
+    this.platformSlots.get(platform) || null
 
   private getFirstWhisker = (platform: Platform) =>
     tryGetFromMap(this.whiskers, platform).values().next().value
@@ -220,30 +220,34 @@ class MapContainer extends PureComponent<Props> {
     return whiskers
   }
 
-  private updateOffsets(props: Props) {
+  private updateSlots(props: Props) {
     const {
       network,
       svgSizes,
     } = props
 
-    const { platformOffsets } = this
+    const { platformSlots } = this
     const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * svgSizes.lineWidth
 
     for (const platform of network.platforms) {
-      const routes = Array.from(platform.passingRoutes())
+      const routeSet = platform.passingRoutes()
+      if (routeSet.size === 1) {
+        continue
+      }
+      const routes = Array.from(routeSet)
       const leftShift = (routes.length - 1) / 2
 
       for (let i = 0; i < routes.length; ++i) {
-        const totalOffset = (i - leftShift) * lineWidthPlusGapPx
-        const map = getOrMakeInMap(platformOffsets, platform, () => new Map<Route, number>())
+        const slot = (i - leftShift) * lineWidthPlusGapPx
+        const map = getOrMakeInMap(platformSlots, platform, () => new Map<Route, number>())
         const route = routes[i]
-        map.set(route, totalOffset)
+        map.set(route, slot)
       }
 
       // TODO batches
 
       // if (platform.name === 'Jablonovka' && Array.from(platform.passingLines())[0].startsWith('E')) {
-      //   const map = getOrMakeInMap(platformOffsets, platform, () => new Map<Route, number>())
+      //   const map = getOrMakeInMap(platformSlotss, platform, () => new Map<Route, number>())
       //   console.log('jab', map)
       // }
     }
@@ -332,7 +336,7 @@ class MapContainer extends PureComponent<Props> {
             detailedE={config.detailedE}
             pathsInnerWrapper={pathsInner}
             getPlatformPosition={this.getPlatformPosition}
-            getPlatformOffset={this.getPlatformOffset}
+            getPlatformSlot={this.getPlatformSlot}
           />
         }
 
@@ -353,7 +357,7 @@ class MapContainer extends PureComponent<Props> {
             dummyTransfers={dummyTransfers}
             defs={defs}
             getPlatformPosition={this.getPlatformPosition}
-            getPlatformOffset={this.getPlatformOffset}
+            getPlatformSlot={this.getPlatformSlot}
             getFirstWhisker={this.getFirstWhisker}
             getPlatformColor={this.getPlatformColor}
             setFeaturedPlatforms={setFeaturedPlatforms}
@@ -370,7 +374,7 @@ class MapContainer extends PureComponent<Props> {
             dummyPlatforms={dummyPlatforms}
             featuredPlatforms={featuredPlatforms}
             getPlatformPosition={this.getPlatformPosition}
-            getPlatformOffset={this.getPlatformOffset}
+            getPlatformSlot={this.getPlatformSlot}
             getFirstWhisker={this.getFirstWhisker}
             getPlatformColor={this.getPlatformColor}
             setFeaturedPlatforms={setFeaturedPlatforms}
