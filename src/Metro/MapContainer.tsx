@@ -153,7 +153,7 @@ class MapContainer extends PureComponent<Props> {
     } = this.props
 
     const PART = 0.5
-    const pos = tryGetFromMap(platformsOnSVG, platform)
+    const pos = this.getPlatformPosition(platform)
     const whiskers = new Map<Span, Point>()
     const { spans } = platform
     if (spans.length === 0) {
@@ -183,7 +183,7 @@ class MapContainer extends PureComponent<Props> {
     const distances = new WeakMap<Span, number>()
     for (const span of spans) {
       const neighbor = span.other(platform)
-      const neighborPos = tryGetFromMap(platformsOnSVG, neighbor)
+      const neighborPos = this.getPlatformPosition(neighbor)
       const dirIdx = span.source === platform ? 0 : 1
       normals[dirIdx].push(normalize(neighborPos.subtract(pos)))
       sortedSpans[dirIdx].push(span)
@@ -229,7 +229,7 @@ class MapContainer extends PureComponent<Props> {
       const leftShift = (parallel.length - 1) / 2
       const totalOffset = (i - leftShift) * lineWidthPlusGapPx
       for (const p of [source, target]) {
-        const pos = tryGetFromMap(platformsOnSVG, p)
+        const pos = this.getPlatformPosition(p)
         const spanRouteSpans = p.spans.filter(s => intersection(s.routes, routes).length > 0)
         for (const s of spanRouteSpans) {
           const map = getOrMakeInMap(this.platformOffsets, pos, () => new Map<Span, number>())
