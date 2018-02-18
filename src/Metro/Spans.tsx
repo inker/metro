@@ -5,6 +5,8 @@ import { Point } from 'leaflet'
 import Modal from 'components/Modal'
 import Bezier from 'components/Bezier'
 
+import Route from 'network/Route'
+
 import * as math from 'util/math'
 import {
   tryGetFromMap,
@@ -53,7 +55,7 @@ interface Props {
   detailedE: boolean,
   pathsInnerWrapper: SVGGElement,
   getPlatformPosition: (platform: Platform) => Point,
-  getPlatformOffset: (platform: Platform) => Map<any, number> | null,
+  getPlatformOffset: (platform: Platform) => Map<Route, number> | null,
 }
 
 class Spans extends PureComponent<Props> {
@@ -145,6 +147,9 @@ class Spans extends PureComponent<Props> {
     const sourcePos = getPlatformPosition(source)
     const targetPos = getPlatformPosition(target)
 
+    // TODO
+    // if (source.name === 'Glavnyj voxal' && target.name === 'Jablonovka') debugger
+
     const controlPoints = [
       sourcePos,
       tryGetFromMap(tryGetFromMap(whiskers, source), span),
@@ -154,8 +159,11 @@ class Spans extends PureComponent<Props> {
 
     const sourceMap = getPlatformOffset(source)
     const targetMap = getPlatformOffset(target)
+    const firstRoute = span.routes[0]
+
     if (sourceMap) {
-      const offset = sourceMap.get(span)
+      const offset = sourceMap.get(firstRoute)
+      // TODO should be multiple offsets! target, too!
       if (!offset) {
         return [controlPoints]
       }
@@ -170,7 +178,7 @@ class Spans extends PureComponent<Props> {
       return [controlPoints]
     }
     if (targetMap) {
-      const offset = targetMap.get(span)
+      const offset = targetMap.get(firstRoute)
       if (!offset) {
         return [controlPoints]
       }

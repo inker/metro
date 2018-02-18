@@ -6,6 +6,7 @@ import PlatformReact from 'components/Platform'
 
 import {
   Platform,
+  Route,
 } from '../network'
 
 import getPlatformPositions from './getPlatformPositions'
@@ -23,7 +24,7 @@ interface Props {
   dummyPlatforms: SVGGElement,
   featuredPlatforms: Platform[] | null,
   getPlatformPosition: (platform: Platform) => Point,
-  getPlatformOffset: (platform: Platform) => Map<any, number> | null,
+  getPlatformOffset: (platform: Platform) => Map<Route, number> | null,
   getFirstWhisker: (platform: Platform) => Point,
   getPlatformColor: (platform: Platform) => string,
   setFeaturedPlatforms: (platform: Platform[]) => void,

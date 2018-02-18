@@ -1,8 +1,5 @@
 import React, { PureComponent } from 'react'
 import { Point, LatLng } from 'leaflet'
-import {
-  intersection,
-} from 'lodash'
 
 import { meanColor } from 'util/color'
 import findCycle from 'util/algorithm/findCycle'
@@ -21,6 +18,7 @@ import Network, {
   Platform,
   Station,
   Span,
+  Route,
 } from '../network'
 
 import Config from '../Config'
@@ -30,7 +28,7 @@ import Platforms from './Platforms'
 import Transfers from './Transfers'
 import Spans from './Spans'
 
-const GAP_BETWEEN_PARALLEL = 0.25 // 0 - none, 1 - line width
+const GAP_BETWEEN_PARALLEL = 0 // 0 - none, 1 - line width
 
 type Bound = 'inbound' | 'outbound'
 const SPAN_PROPS = Object.freeze(['inbound', 'outbound'] as Bound[])
@@ -73,7 +71,8 @@ class MapContainer extends PureComponent<Props> {
   }
 
   private readonly whiskers = new WeakMap<Platform, Map<Span, Point>>()
-  private readonly platformOffsets = new WeakMap<Platform, Map<Span, number>>()
+  private readonly platformOffsets = new WeakMap<Platform, Map<Route, number>>()
+  private readonly platformBatches = new WeakMap<Platform, Map<Span, number>>()
   private readonly stationCircumpoints = new WeakMap<Station, Platform[]>()
 
   componentWillReceiveProps(props: Props) {
@@ -231,20 +230,26 @@ class MapContainer extends PureComponent<Props> {
     const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * svgSizes.lineWidth
 
     for (const platform of network.platforms) {
-      for (const bound of SPAN_PROPS) {
-        const boundSpans = platform.spans[bound]
-        if (boundSpans.length < 2) {
-          continue
-        }
-        const leftShift = (boundSpans.length - 1) / 2
-        for (let i = 0; i < boundSpans.length; ++i) {
-          const totalOffset = (i - leftShift) * lineWidthPlusGapPx
-          const map = getOrMakeInMap(platformOffsets, platform, () => new Map<Span, number>())
-          const span = boundSpans[i]
-          map.set(span, totalOffset)
-        }
+      const routes = Array.from(platform.passingRoutes())
+      const leftShift = (routes.length - 1) / 2
+
+      for (let i = 0; i < routes.length; ++i) {
+        const totalOffset = (i - leftShift) * lineWidthPlusGapPx
+        const map = getOrMakeInMap(platformOffsets, platform, () => new Map<Route, number>())
+        const route = routes[i]
+        map.set(route, totalOffset)
       }
+
+      // TODO batches
+
+      // if (platform.name === 'Jablonovka' && Array.from(platform.passingLines())[0].startsWith('E')) {
+      //   const map = getOrMakeInMap(platformOffsets, platform, () => new Map<Route, number>())
+      //   console.log('jab', map)
+      // }
     }
+
+    // batches
+
   }
 
   private updateCircumcircles(props: Props) {
