@@ -12,19 +12,19 @@ interface Props {
   radius: number,
   color?: string,
   isFeatured?: boolean,
-  platform: Platform,
+  platforms: Platform[], // platforms it represents
   dummyParent: Element | null,
-  onMouseOver?: (platform: Platform) => void,
+  onMouseOver?: (platforms: Platform[]) => void,
   onMouseOut?: () => void,
 }
 
 class PlatformReact extends PureComponent<Props> {
-  onMouseOver = (e) => {
-    const { platform, onMouseOver } = this.props
+  private onMouseOver = () => {
+    const { platforms, onMouseOver } = this.props
     if (!onMouseOver) {
       return
     }
-    onMouseOver(platform)
+    onMouseOver(platforms)
   }
 
   private getPlatformElement = (props) => {
@@ -48,7 +48,6 @@ class PlatformReact extends PureComponent<Props> {
       radius,
       color,
       isFeatured,
-      platform,
       dummyParent,
       onMouseOut,
     } = this.props
@@ -69,7 +68,6 @@ class PlatformReact extends PureComponent<Props> {
             modalRoot={dummyParent}
           >
             <El
-              data-id={platform.id}
               radius={dummyRadius}
               onMouseOver={this.onMouseOver}
               onMouseOut={onMouseOut}
