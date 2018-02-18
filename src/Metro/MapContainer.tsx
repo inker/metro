@@ -130,9 +130,7 @@ class MapContainer extends PureComponent<Props> {
     if (line !== 'E') {
       return '#999'
     }
-    return passingLines.size === 1
-      ? tryGetFromMap(lineRules, line)
-      : '#000'
+    return passingLines.size === 1 && tryGetFromMap(lineRules, line).stroke || '#000'
   }
 
   private linesToColors(lines: Set<string>): string[] {
