@@ -25,22 +25,22 @@ const getPositionsMemoized = memoize(
 export default (
   platform: Platform,
   getPlatformPosition: (platform: Platform) => Point,
-  getPlatformOffset: (platform: Platform) => Map<Route, number> | null,
+  getPlatformSlot: (platform: Platform) => Map<Route, number> | null,
   getFirstWhisker: (platform: Platform) => Point,
 ) => {
   const pos = getPlatformPosition(platform)
-  const offsetsMap = getPlatformOffset(platform)
-  if (!offsetsMap) {
+  const slotsMap = getPlatformSlot(platform)
+  if (!slotsMap) {
     return pos
   }
 
-  const offsets = Array.from(offsetsMap).map(([k, v]) => v)
+  const slots = Array.from(slotsMap).map(([k, v]) => v)
   const value = getFirstWhisker(platform)
   if (pos.equals(value)) {
     // TODO WTF
     return pos
   }
-  const minOffset = Math.min(...offsets)
-  const maxOffset = Math.max(...offsets)
-  return getPositionsMemoized(pos, value, minOffset, maxOffset)
+  const minSlot = Math.min(...slots)
+  const maxSlot = Math.max(...slots)
+  return getPositionsMemoized(pos, value, minSlot, maxSlot)
 }
