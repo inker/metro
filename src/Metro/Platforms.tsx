@@ -31,10 +31,21 @@ interface Props {
 }
 
 class Platforms extends PureComponent<Props> {
-  private setFeaturedPlatforms = (platform: Platform) => {
+  private setFeaturedPlatforms = (platforms: Platform[]) => {
+    const {
+      isDetailed,
+      setFeaturedPlatforms,
+    } = this.props
+
+    if (!isDetailed) {
+      setFeaturedPlatforms(platforms)
+      return
+    }
+
+    const platform = platforms[0]
     const { name } = platform
     const featuredPlatforms = platform.station.platforms.filter(p => p.name === name)
-    this.props.setFeaturedPlatforms(featuredPlatforms)
+    setFeaturedPlatforms(featuredPlatforms)
   }
 
   private getPlatformPositions(platform: Platform) {
@@ -45,6 +56,42 @@ class Platforms extends PureComponent<Props> {
       props.getPlatformOffset,
       props.getFirstWhisker,
     )
+  }
+
+  private getDisplayedPlatforms() {
+    const {
+      platforms,
+      isDetailed,
+    } = this.props
+
+    const map = new WeakMap<Platform, Platform[]>()
+
+    if (isDetailed) {
+      // show all platforms
+      for (const p of platforms) {
+        map.set(p, [p])
+      }
+    } else {
+      const stations = Array.from(new Set(platforms.map(p => p.station)))
+      for (const s of stations) {
+        const names = new Set(s.platforms.map(p => p.name))
+        for (const name of names) {
+          const namesakes = s.platforms.filter(p => p.name === name)
+
+          const firstEPlatform = namesakes.find(
+            p => p.name === name && Array.from(p.passingLines()).some(l => l.startsWith('E')),
+          )
+          const platform = firstEPlatform || namesakes[0]
+          if (!platform) {
+            throw new Error('could not find platform, wtf')
+          }
+
+          map.set(platform, namesakes)
+        }
+      }
+    }
+
+    return map
   }
 
   render() {
@@ -59,7 +106,8 @@ class Platforms extends PureComponent<Props> {
       unsetFeaturedPlatforms,
     } = this.props
 
-    const featuredPlatformsSet = featuredPlatforms && new Set(featuredPlatforms)
+    const displayedMap = this.getDisplayedPlatforms()
+    const featuredSet = featuredPlatforms && new Set(featuredPlatforms)
 
     return (
       <PlatformCircles
@@ -69,12 +117,9 @@ class Platforms extends PureComponent<Props> {
       >
         {dummyPlatforms && platforms.map(platform => {
           const pos = this.getPlatformPositions(platform)
-          const isFeatured = !!featuredPlatformsSet && featuredPlatformsSet.has(platform)
-          const passingLines = platform.passingLines()
-          const omitted = !isDetailed
-            && Array.from(passingLines).every(line => !line.startsWith('E'))
-            && platform.station.platforms.some(p => Array.from(p.passingLines()).some(line => line.startsWith('E')))
-          const radius = omitted ? 0 : circleRadius
+          const representedPlatforms = displayedMap.get(platform)
+          const radius = representedPlatforms ? circleRadius : 0
+          const isFeatured = !!featuredSet && featuredSet.has(platform)
 
           return (
             <PlatformReact
@@ -83,7 +128,7 @@ class Platforms extends PureComponent<Props> {
               radius={radius}
               color={isDetailed ? getPlatformColor(platform) : undefined}
               isFeatured={isFeatured}
-              platform={platform}
+              platforms={representedPlatforms || []}
               dummyParent={dummyPlatforms}
               onMouseOver={this.setFeaturedPlatforms}
               onMouseOut={unsetFeaturedPlatforms}
