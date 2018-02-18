@@ -325,6 +325,8 @@ class MapContainer extends PureComponent<Props> {
             dummyTransfers={dummyTransfers}
             defs={defs}
             getPlatformPosition={this.getPlatformPosition}
+            getPlatformOffset={this.getPosOffset}
+            getFirstWhisker={this.getFirstWhisker}
             getPlatformColor={this.getPlatformColor}
             setFeaturedPlatforms={setFeaturedPlatforms}
             unsetFeaturedPlatforms={this.unsetFeaturedPlatforms}
