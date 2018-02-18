@@ -11,7 +11,7 @@ import Arc from './Arc'
 interface Props {
   start: Point,
   end: Point,
-  third?: Point,
+  third?: Point | null,
   transfer: Transfer,
   fullCircleRadius: number,
   strokeWidth?: number,

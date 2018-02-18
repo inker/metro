@@ -1,16 +1,26 @@
 import React, { PureComponent } from 'react'
 import styled from 'styled-components'
 import { Point } from 'leaflet'
-import { difference, uniq } from 'lodash'
+import {
+  castArray,
+  difference,
+  uniq,
+  minBy,
+} from 'lodash'
 
 import Modal from 'components/Modal'
 import TransferReact from 'components/Transfer'
+
+import { getCircumcenter } from 'util/math'
 
 import {
   Platform,
   Station,
   Transfer,
 } from '../network'
+
+import cartesian from './cartesian'
+import getPlatformPositions from './getPlatformPositions'
 
 const Paths = styled.g`
   fill: none;
@@ -42,6 +52,8 @@ interface Props {
   dummyTransfers: SVGGElement,
   defs: SVGDefsElement,
   getPlatformPosition: (platform: Platform) => Point,
+  getPlatformOffset: (position: Point) => Map<any, number> | null,
+  getFirstWhisker: (platform: Platform) => Point,
   getPlatformColor: (platform: Platform) => string,
   setFeaturedPlatforms: (platforms: Platform[]) => void,
   unsetFeaturedPlatforms: () => void,
@@ -68,11 +80,72 @@ class Transfers extends PureComponent<Props> {
     this.props.setFeaturedPlatforms(featuredPlatforms)
   }
 
+  private getPlatformPositions(platform: Platform) {
+    const { props } = this
+    return getPlatformPositions(
+      platform,
+      props.getPlatformPosition,
+      props.getPlatformOffset,
+      props.getFirstWhisker,
+    )
+  }
+
+  private bestPair(sourcePositionArr: Point[], targetPositionArr: Point[]) {
+    const combos = cartesian(sourcePositionArr, targetPositionArr) as Point[][]
+    return minBy(combos, ([p1, p2]) => p1.distanceTo(p2))
+  }
+
+  private bestTriplet(sourcePositionArr: Point[], targetPositionArr: Point[], thirdPos: Point) {
+    const thirdPositions = [thirdPos]
+    const combos = cartesian(sourcePositionArr, targetPositionArr, thirdPositions) as Point[][]
+    return minBy(combos, combo => {
+      const c = getCircumcenter(combo)
+      return c ? c.distanceTo(combo[0]) : Infinity
+    })
+  }
+
+  private getPositions(transfer: Transfer) {
+    const { source, target } = transfer
+    const sourcePos = this.getPlatformPositions(source)
+    const targetPos = this.getPlatformPositions(target)
+    const thirdPos = this.getThirdPosition(transfer)
+
+    if (!Array.isArray(sourcePos) && !Array.isArray(targetPos)) {
+      return [sourcePos, targetPos, thirdPos]
+    }
+
+    const sourcePositionArr = castArray(sourcePos)
+    const targetPositionArr = castArray(targetPos)
+    const bestCombo = thirdPos
+      ? this.bestTriplet(sourcePositionArr, targetPositionArr, thirdPos)
+      : this.bestPair(sourcePositionArr, targetPositionArr)
+
+    if (!bestCombo) {
+      throw new Error('somehow best combo sucks')
+    }
+    return bestCombo
+  }
+
+  private getThirdPosition(transfer: Transfer) {
+    const {
+      stationCircumpoints,
+      getPlatformPosition,
+    } = this.props
+
+    const { source, target } = transfer
+    const scp = stationCircumpoints.get(source.station)
+    const includes = scp && scp.includes(source) && scp.includes(target)
+    if (!includes) {
+      return null
+    }
+    const third = difference(scp, [source, target])[0] || undefined
+    return getPlatformPosition(third)
+  }
+
   render() {
     const {
       transfers,
       isDetailed,
-      stationCircumpoints,
       featuredPlatforms,
       transferWidth,
       transferBorder,
@@ -80,7 +153,6 @@ class Transfers extends PureComponent<Props> {
       transfersInnerWrapper,
       dummyTransfers,
       defs,
-      getPlatformPosition,
       getPlatformColor,
       unsetFeaturedPlatforms,
     } = this.props
@@ -103,11 +175,12 @@ class Transfers extends PureComponent<Props> {
           }}
         >
           {transfersInner && dummyTransfers && defs && transfers.map(transfer => {
+            const [
+              sourcePos,
+              targetPos,
+              thirdPos,
+            ] = this.getPositions(transfer) as [Point, Point, Point | undefined]
             const { source, target } = transfer
-            const scp = stationCircumpoints.get(source.station)
-            const includes = scp && scp.includes(source) && scp.includes(target)
-            const third = includes && difference(scp, [transfer.source, transfer.target])[0] || undefined
-            const thirdPosition = third && getPlatformPosition(third)
 
             const isFeatured = featuredPlatformsSet
               && featuredPlatformsSet.has(source)
@@ -116,9 +189,9 @@ class Transfers extends PureComponent<Props> {
             return (
               <TransferReact
                 key={transfer.id}
-                start={getPlatformPosition(source)}
-                end={getPlatformPosition(target)}
-                third={thirdPosition}
+                start={sourcePos}
+                end={targetPos}
+                third={thirdPos}
                 transfer={transfer}
                 fullCircleRadius={fullCircleRadius}
                 strokeWidth={isFeatured ? outerStrokeWidth * 1.25 : undefined}
