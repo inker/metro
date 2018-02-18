@@ -95,7 +95,7 @@ class Spans extends PureComponent<Props> {
     // drawBezierHints(this.overlay.origin, controlPoints, get(this.lineRules.get(lineId), 'stroke') as string)
     const lineStyle = lineRules.get(lineType === 'M' ? routes[0].line : lineType)
     const color = detailedE
-      ? (lineType === 'E' ? E_COLORS[routes[0].branch] : '#808080')
+      ? (lineType === 'E' ? E_COLORS[routes[0].branch] : '#999')
       : lineStyle && lineStyle.stroke
     const bezier = (
       <Bezier
