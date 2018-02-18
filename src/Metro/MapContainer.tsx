@@ -128,7 +128,7 @@ class MapContainer extends PureComponent<Props> {
     }
     const line = passingLines.values().next().value
     if (line !== 'E') {
-      return '#808080'
+      return '#999'
     }
     return passingLines.size === 1
       ? tryGetFromMap(lineRules, line)
