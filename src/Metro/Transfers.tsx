@@ -43,7 +43,7 @@ const TransfersInner = styled(Inner)`
 interface Props {
   transfers: Transfer[],
   isDetailed: boolean,
-  stationCircumpoints: Map<Station, Platform[]>,
+  stationCircumpoints: WeakMap<Station, Platform[]>,
   featuredPlatforms: Platform[] | null,
   transferWidth: number,
   transferBorder: number,
