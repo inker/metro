@@ -70,12 +70,17 @@ class Platforms extends PureComponent<Props> {
         {dummyPlatforms && platforms.map(platform => {
           const pos = this.getPlatformPositions(platform)
           const isFeatured = !!featuredPlatformsSet && featuredPlatformsSet.has(platform)
+          const passingLines = platform.passingLines()
+          const omitted = !isDetailed
+            && Array.from(passingLines).every(line => !line.startsWith('E'))
+            && platform.station.platforms.some(p => Array.from(p.passingLines()).some(line => line.startsWith('E')))
+          const radius = omitted ? 0 : circleRadius
 
           return (
             <PlatformReact
               key={platform.id}
               position={pos}
-              radius={circleRadius}
+              radius={radius}
               color={isDetailed ? getPlatformColor(platform) : undefined}
               isFeatured={isFeatured}
               platform={platform}
