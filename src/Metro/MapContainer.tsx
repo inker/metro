@@ -30,7 +30,7 @@ import Platforms from './Platforms'
 import Transfers from './Transfers'
 import Spans from './Spans'
 
-const GAP_BETWEEN_PARALLEL = 0.5 // 0 - none, 1 - line width
+const GAP_BETWEEN_PARALLEL = 0.25 // 0 - none, 1 - line width
 
 interface Containers {
   transfersInner?: SVGGElement,
@@ -116,8 +116,24 @@ class MapContainer extends PureComponent<Props> {
     this.props.setFeaturedPlatforms(null)
   }
 
-  private getPlatformColor = (platform: Platform) =>
-    meanColor(this.linesToColors(platform.passingLines()))
+  private getPlatformColor = (platform: Platform) => {
+    const {
+      config,
+      lineRules,
+    } = this.props
+
+    const passingLines = platform.passingLines()
+    if (!config.detailedE) {
+      return meanColor(this.linesToColors(passingLines))
+    }
+    const line = passingLines.values().next().value
+    if (line !== 'E') {
+      return '#808080'
+    }
+    return passingLines.size === 1
+      ? tryGetFromMap(lineRules, line)
+      : '#000'
+  }
 
   private linesToColors(lines: Set<string>): string[] {
     const { lineRules } = this.props
