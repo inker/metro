@@ -53,7 +53,7 @@ interface Props {
   detailedE: boolean,
   pathsInnerWrapper: SVGGElement,
   getPlatformPosition: (platform: Platform) => Point,
-  getPlatformOffset: (position: Point) => Map<any, number> | null,
+  getPlatformOffset: (platform: Platform) => Map<any, number> | null,
 }
 
 class Spans extends PureComponent<Props> {
@@ -152,8 +152,8 @@ class Spans extends PureComponent<Props> {
       targetPos,
     ]
 
-    const sourceMap = getPlatformOffset(sourcePos)
-    const targetMap = getPlatformOffset(targetPos)
+    const sourceMap = getPlatformOffset(source)
+    const targetMap = getPlatformOffset(target)
     if (sourceMap) {
       const offset = sourceMap.get(span)
       if (!offset) {

@@ -65,7 +65,7 @@ class MapContainer extends PureComponent<Props> {
   }
 
   private readonly whiskers = new WeakMap<Platform, Map<Span, Point>>()
-  private readonly platformOffsets = new Map<Point, Map<Span, number>>()
+  private readonly platformOffsets = new Map<Platform, Map<Span, number>>()
   private readonly stationCircumpoints = new Map<Station, Platform[]>()
 
   componentWillReceiveProps(props: Props) {
@@ -106,8 +106,8 @@ class MapContainer extends PureComponent<Props> {
   private getPlatformPosition = (platform: Platform) =>
     tryGetFromMap(this.props.platformsOnSVG, platform)
 
-  private getPosOffset = (pos: Point) =>
-    this.platformOffsets.get(pos) || null
+  private getPlatformOffset = (platform: Platform) =>
+    this.platformOffsets.get(platform) || null
 
   private getFirstWhisker = (platform: Platform) =>
     tryGetFromMap(this.whiskers, platform).values().next().value
@@ -203,7 +203,6 @@ class MapContainer extends PureComponent<Props> {
   private updateOffsets(props: Props) {
     const {
       network,
-      platformsOnSVG,
       svgSizes,
     } = props
 
@@ -230,7 +229,7 @@ class MapContainer extends PureComponent<Props> {
         const pos = this.getPlatformPosition(p)
         const spanRouteSpans = p.spans.filter(s => intersection(s.routes, routes).length > 0)
         for (const s of spanRouteSpans) {
-          const map = getOrMakeInMap(this.platformOffsets, pos, () => new Map<Span, number>())
+          const map = getOrMakeInMap(this.platformOffsets, p, () => new Map<Span, number>())
           map.set(s, totalOffset)
         }
       }
@@ -319,7 +318,7 @@ class MapContainer extends PureComponent<Props> {
             detailedE={config.detailedE}
             pathsInnerWrapper={pathsInner}
             getPlatformPosition={this.getPlatformPosition}
-            getPlatformOffset={this.getPosOffset}
+            getPlatformOffset={this.getPlatformOffset}
           />
         }
 
@@ -340,7 +339,7 @@ class MapContainer extends PureComponent<Props> {
             dummyTransfers={dummyTransfers}
             defs={defs}
             getPlatformPosition={this.getPlatformPosition}
-            getPlatformOffset={this.getPosOffset}
+            getPlatformOffset={this.getPlatformOffset}
             getFirstWhisker={this.getFirstWhisker}
             getPlatformColor={this.getPlatformColor}
             setFeaturedPlatforms={setFeaturedPlatforms}
@@ -357,7 +356,7 @@ class MapContainer extends PureComponent<Props> {
             dummyPlatforms={dummyPlatforms}
             featuredPlatforms={featuredPlatforms}
             getPlatformPosition={this.getPlatformPosition}
-            getPlatformOffset={this.getPosOffset}
+            getPlatformOffset={this.getPlatformOffset}
             getFirstWhisker={this.getFirstWhisker}
             getPlatformColor={this.getPlatformColor}
             setFeaturedPlatforms={setFeaturedPlatforms}

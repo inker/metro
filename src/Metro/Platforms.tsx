@@ -23,7 +23,7 @@ interface Props {
   dummyPlatforms: SVGGElement,
   featuredPlatforms: Platform[] | null,
   getPlatformPosition: (platform: Platform) => Point,
-  getPlatformOffset: (position: Point) => Map<any, number> | null,
+  getPlatformOffset: (platform: Platform) => Map<any, number> | null,
   getFirstWhisker: (platform: Platform) => Point,
   getPlatformColor: (platform: Platform) => string,
   setFeaturedPlatforms: (platform: Platform[]) => void,
