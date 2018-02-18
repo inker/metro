@@ -73,8 +73,8 @@ class MapContainer extends PureComponent<Props> {
   }
 
   private readonly whiskers = new WeakMap<Platform, Map<Span, Point>>()
-  private readonly platformOffsets = new Map<Platform, Map<Span, number>>()
-  private readonly stationCircumpoints = new Map<Station, Platform[]>()
+  private readonly platformOffsets = new WeakMap<Platform, Map<Span, number>>()
+  private readonly stationCircumpoints = new WeakMap<Station, Platform[]>()
 
   componentWillReceiveProps(props: Props) {
     const oldProps = this.props
@@ -227,19 +227,19 @@ class MapContainer extends PureComponent<Props> {
       svgSizes,
     } = props
 
-    this.platformOffsets.clear()
+    const { platformOffsets } = this
     const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * svgSizes.lineWidth
 
-    for (const p of network.platforms) {
+    for (const platform of network.platforms) {
       for (const bound of SPAN_PROPS) {
-        const boundSpans = p.spans[bound]
+        const boundSpans = platform.spans[bound]
         if (boundSpans.length < 2) {
           continue
         }
         const leftShift = (boundSpans.length - 1) / 2
         for (let i = 0; i < boundSpans.length; ++i) {
           const totalOffset = (i - leftShift) * lineWidthPlusGapPx
-          const map = getOrMakeInMap(this.platformOffsets, p, () => new Map<Span, number>())
+          const map = getOrMakeInMap(platformOffsets, platform, () => new Map<Span, number>())
           const span = boundSpans[i]
           map.set(span, totalOffset)
         }
@@ -251,8 +251,6 @@ class MapContainer extends PureComponent<Props> {
     const {
       network,
     } = props
-
-    this.stationCircumpoints.clear()
 
     for (const station of network.stations) {
       const circular = findCycle(network, station)
