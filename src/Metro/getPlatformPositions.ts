@@ -35,6 +35,10 @@ export default (
 
   const offsets = Array.from(offsetsMap).map(([k, v]) => v)
   const value = getFirstWhisker(platform)
+  if (pos === value) {
+    // TODO WTF
+    return pos
+  }
   const minOffset = Math.min(...offsets)
   const maxOffset = Math.max(...offsets)
   return getPositionsMemoized(pos, value, minOffset, maxOffset)

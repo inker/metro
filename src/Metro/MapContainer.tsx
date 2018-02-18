@@ -39,7 +39,7 @@ import Platforms from './Platforms'
 import Transfers from './Transfers'
 import Spans from './Spans'
 
-const GAP_BETWEEN_PARALLEL = 0 // 0 - none, 1 - line width
+const GAP_BETWEEN_PARALLEL = 0.5 // 0 - none, 1 - line width
 
 const GRAY = '#999'
 const BLACK = '#000'
