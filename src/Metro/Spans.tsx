@@ -3,9 +3,10 @@ import styled from 'styled-components'
 import { Point } from 'leaflet'
 
 import Modal from 'components/Modal'
-import Bezier from 'components/Bezier'
+import Bezier from 'components/primitives/Bezier'
 
 import * as math from 'utils/math'
+
 import {
   tryGetFromMap,
 } from 'utils/collections'
@@ -16,15 +17,15 @@ import {
 } from '../network'
 
 const E_COLORS = [
-  '#f0f',
-  '#f00',
-  '#00f',
-  '#080',
-  '#f80',
-  '#808',
-  '#ff0',
-  '#840',
-  '#4af',
+  '#000',
+  '#f00', // 1
+  '#4af', // 2
+  '#00f', // 3
+  '#ff0', // 4
+  '#080', // 5
+  '#840', // 6
+  '#808', // 7
+  '#f80', // 8
 ]
 
 const CURVE_SPLIT_NUM = 8
@@ -48,12 +49,13 @@ const PathsInner = styled(Inner)`
 interface Props {
   spans: Span[],
   lineWidth: number,
-  whiskers: WeakMap<Platform, Map<Span, Point>>,
   lineRules: Map<string, CSSStyleDeclaration>,
   detailedE: boolean,
   pathsInnerWrapper: SVGGElement,
   getPlatformPosition: (platform: Platform) => Point,
-  getPlatformOffset: (platform: Platform) => Map<any, number> | null,
+  getPlatformWhiskers: (platform: Platform) => Map<Span, Point>,
+  getSpanSlots: (span: Span) => { source: number, target: number },
+  getSpanOffset: (span: Span) => number,
 }
 
 class Spans extends PureComponent<Props> {
@@ -137,48 +139,60 @@ class Spans extends PureComponent<Props> {
 
   private getControlPoints(span: Span) {
     const {
-      whiskers,
       getPlatformPosition,
-      getPlatformOffset,
+      getPlatformWhiskers,
+      getSpanSlots,
+      getSpanOffset,
     } = this.props
     const { source, target } = span
     const sourcePos = getPlatformPosition(source)
     const targetPos = getPlatformPosition(target)
 
+    const sourceControlPoint = tryGetFromMap(getPlatformWhiskers(source), span)
+    const targetControlPoint = tryGetFromMap(getPlatformWhiskers(target), span)
+
     const controlPoints = [
       sourcePos,
-      tryGetFromMap(tryGetFromMap(whiskers, source), span),
-      tryGetFromMap(tryGetFromMap(whiskers, target), span),
+      sourceControlPoint,
+      targetControlPoint,
       targetPos,
     ]
 
-    const sourceMap = getPlatformOffset(source)
-    const targetMap = getPlatformOffset(target)
-    if (sourceMap) {
-      const offset = sourceMap.get(span)
-      if (!offset) {
-        return [controlPoints]
-      }
-      if (targetMap) {
-        const curves = math.split(controlPoints, CURVE_SPLIT_NUM)
-        const [head, ...tail] = curves.map(pa => math.offsetPath(pa, offset))
-        return [head, ...tail.map(arr => arr.slice(1))]
-      }
-      const lineO = math.offsetLine(controlPoints.slice(0, 2), offset)
-      controlPoints[0] = lineO[0]
-      controlPoints[1] = lineO[1]
+    const {
+      source: sourceSlot,
+      target: targetSlot,
+    } = getSpanSlots(span)
+
+    const offset = getSpanOffset(span)
+
+    if (sourceSlot === 0 && targetSlot === 0 && offset === 0) {
       return [controlPoints]
     }
-    if (targetMap) {
-      const offset = targetMap.get(span)
-      if (!offset) {
-        return [controlPoints]
-      }
-      const lineO = math.offsetLine(controlPoints.slice(2, 4), offset)
-      controlPoints[2] = lineO[0]
-      controlPoints[3] = lineO[1]
+
+    const sourceLine = controlPoints.slice(0, 2)
+    const targetLine = controlPoints.slice(2, 4)
+
+    // TODO: figure out what to do with zero lines
+    const offsetSourceLine = sourceLine[0].equals(sourceLine[1])
+      ? sourceLine
+      : math.offsetLine(sourceLine, sourceSlot - offset)
+
+    const offsetTargetLine = targetLine[0].equals(targetLine[1])
+      ? targetLine
+      : math.offsetLine(targetLine, targetSlot - offset)
+
+    controlPoints[0] = offsetSourceLine[0]
+    controlPoints[1] = offsetSourceLine[1]
+    controlPoints[2] = offsetTargetLine[0]
+    controlPoints[3] = offsetTargetLine[1]
+
+    if (offset === 0) {
+      return [controlPoints]
     }
-    return [controlPoints]
+
+    const curves = math.split(controlPoints, CURVE_SPLIT_NUM)
+    const [head, ...tail] = curves.map(pa => math.offsetPath(pa, offset))
+    return [head, ...tail.map(arr => arr.slice(1))]
   }
 
   render() {

@@ -7,6 +7,7 @@ import {
 } from 'util/math/vector'
 
 import Platform from 'network/Platform'
+import Route from 'network/Route'
 
 function getPositions(pos, value, minOffset, maxOffset) {
   const ortho = normalize(orthogonal(value.subtract(pos))[0])
@@ -24,7 +25,7 @@ const getPositionsMemoized = memoize(
 export default (
   platform: Platform,
   getPlatformPosition: (platform: Platform) => Point,
-  getPlatformOffset: (platform: Platform) => Map<any, number> | null,
+  getPlatformOffset: (platform: Platform) => Map<Route, number> | null,
   getFirstWhisker: (platform: Platform) => Point,
 ) => {
   const pos = getPlatformPosition(platform)
@@ -35,7 +36,7 @@ export default (
 
   const offsets = Array.from(offsetsMap).map(([k, v]) => v)
   const value = getFirstWhisker(platform)
-  if (pos === value) {
+  if (pos.equals(value)) {
     // TODO WTF
     return pos
   }

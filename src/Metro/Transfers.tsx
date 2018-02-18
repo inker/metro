@@ -17,6 +17,7 @@ import {
   Platform,
   Station,
   Transfer,
+  Route,
 } from '../network'
 
 import cartesian from './cartesian'
@@ -52,7 +53,7 @@ interface Props {
   dummyTransfers: SVGGElement,
   defs: SVGDefsElement,
   getPlatformPosition: (platform: Platform) => Point,
-  getPlatformOffset: (platform: Platform) => Map<any, number> | null,
+  getPlatformOffset: (platform: Platform) => Map<Route, number> | null,
   getFirstWhisker: (platform: Platform) => Point,
   getPlatformColor: (platform: Platform) => string,
   setFeaturedPlatforms: (platforms: Platform[]) => void,

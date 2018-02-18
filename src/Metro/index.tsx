@@ -153,7 +153,7 @@ class Metro extends PureComponent<Props, State> {
 
   private getTooltipPosition() {
     const { featuredPlatforms } = this.state
-    if (!featuredPlatforms) {
+    if (!featuredPlatforms || featuredPlatforms.length === 0) {
       return null
     }
 
