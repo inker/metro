@@ -90,6 +90,22 @@ class Transfers extends PureComponent<Props> {
     )
   }
 
+  private getThirdPosition(transfer: Transfer) {
+    const {
+      stationCircumpoints,
+      getPlatformPosition,
+    } = this.props
+
+    const { source, target } = transfer
+    const scp = stationCircumpoints.get(source.station)
+    const includes = scp && scp.includes(source) && scp.includes(target)
+    if (!includes) {
+      return null
+    }
+    const third = difference(scp, [source, target])[0] || undefined
+    return getPlatformPosition(third)
+  }
+
   private bestPair(sourcePositionArr: Point[], targetPositionArr: Point[]) {
     const combos = cartesian(sourcePositionArr, targetPositionArr) as Point[][]
     return minBy(combos, ([p1, p2]) => p1.distanceTo(p2))
@@ -124,22 +140,6 @@ class Transfers extends PureComponent<Props> {
       throw new Error('somehow best combo sucks')
     }
     return bestCombo
-  }
-
-  private getThirdPosition(transfer: Transfer) {
-    const {
-      stationCircumpoints,
-      getPlatformPosition,
-    } = this.props
-
-    const { source, target } = transfer
-    const scp = stationCircumpoints.get(source.station)
-    const includes = scp && scp.includes(source) && scp.includes(target)
-    if (!includes) {
-      return null
-    }
-    const third = difference(scp, [source, target])[0] || undefined
-    return getPlatformPosition(third)
   }
 
   render() {
