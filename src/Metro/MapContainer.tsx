@@ -32,6 +32,14 @@ import Spans from './Spans'
 
 const GAP_BETWEEN_PARALLEL = 0.25 // 0 - none, 1 - line width
 
+type Bound = 'inbound' | 'outbound'
+const SPAN_PROPS = Object.freeze(['inbound', 'outbound'] as Bound[])
+
+interface Normals {
+  inbound: Point[],
+  outbound: Point[],
+}
+
 interface Containers {
   transfersInner?: SVGGElement,
   pathsInner?: SVGGElement,
@@ -146,52 +154,65 @@ class MapContainer extends PureComponent<Props> {
   }
 
   protected makeWhiskers(platform: Platform): Map<Span, Point> {
-    const {
-      platformsOnSVG,
-    } = this.props
-
     const PART = 0.5
     const pos = this.getPlatformPosition(platform)
     const whiskers = new Map<Span, Point>()
     const { spans } = platform
-    if (spans.length === 0) {
-      return whiskers
-    }
-    if (spans.length === 1) {
-      return whiskers.set(spans[0], pos)
-    }
-    if (spans.length === 2) {
-      if (platform.passingLines().size === 2) {
-          return whiskers.set(spans[0], pos).set(spans[1], pos)
-      }
-      const neighborPositions = spans.map(span => tryGetFromMap(platformsOnSVG, span.other(platform)))
-      const [prevPos, nextPos] = neighborPositions
-      const wings = math.wings(prevPos, pos, nextPos, 1)
-      const t = Math.min(pos.distanceTo(prevPos), pos.distanceTo(nextPos)) * PART
-      for (let i = 0; i < 2; ++i) {
-          // const t = pos.distanceTo(neighborPositions[i]) * PART
-          const end = wings[i].multiplyBy(t).add(pos)
-          whiskers.set(spans[i], end)
-      }
+    const allSpans = platform.getAllSpans()
+
+    if (allSpans.length === 0) {
       return whiskers
     }
 
-    const normals: [Point[], Point[]] = [[], []]
-    const sortedSpans: [Span[], Span[]] = [[], []]
-    const distances = new WeakMap<Span, number>()
-    for (const span of spans) {
-      const neighbor = span.other(platform)
-      const neighborPos = this.getPlatformPosition(neighbor)
-      const dirIdx = span.source === platform ? 0 : 1
-      normals[dirIdx].push(normalize(neighborPos.subtract(pos)))
-      sortedSpans[dirIdx].push(span)
-      distances.set(span, pos.distanceTo(neighborPos))
+    if (allSpans.length === 1) {
+      return whiskers.set(allSpans[0], pos)
     }
-    const [prevPos, nextPos] = normals.map(ns => mean(ns).add(pos))
+
+    if (allSpans.length === 2) {
+      const { inbound, outbound } = spans
+      const boundSpans = inbound.length === 2 ? inbound : outbound.length === 2 ? outbound : null
+      if (boundSpans) {
+          return whiskers.set(boundSpans[0], pos).set(boundSpans[1], pos)
+      }
+
+      const prevPos = this.getPlatformPosition(inbound[0].other(platform))
+      const nextPos = this.getPlatformPosition(outbound[0].other(platform))
+      const wings = math.wings(prevPos, pos, nextPos, 1)
+      const t = Math.min(pos.distanceTo(prevPos), pos.distanceTo(nextPos)) * PART
+      whiskers.set(spans.inbound[0], wings[0].multiplyBy(t).add(pos))
+      whiskers.set(spans.outbound[0], wings[1].multiplyBy(t).add(pos))
+      return whiskers
+    }
+
+    const normals: Normals = {
+      inbound: [],
+      outbound: [],
+    }
+
+    const distances = new WeakMap<Span, number>()
+
+    for (const bound of SPAN_PROPS) {
+      const boundSpans = platform.spans[bound]
+      for (const span of boundSpans) {
+        const neighbor = span.other(platform)
+        const neighborPos = this.getPlatformPosition(neighbor)
+        normals[bound].push(normalize(neighborPos.subtract(pos)))
+        distances.set(span, pos.distanceTo(neighborPos))
+      }
+    }
+
+    const prevPos = mean(normals.inbound).add(pos)
+    const nextPos = mean(normals.outbound).add(pos)
     const wings = math.wings(prevPos, pos, nextPos, 1)
-    for (let i = 0; i < 2; ++i) {
-      const wing = wings[i]
-      for (const span of sortedSpans[i]) {
+    const wObj = {
+      inbound: wings[0],
+      outbound: wings[1],
+    }
+
+    for (const bound of SPAN_PROPS) {
+      const boundSpans = platform.spans[bound]
+      const wing = wObj[bound]
+      for (const span of boundSpans) {
         const t = tryGetFromMap(distances, span) * PART
         const end = wing.multiplyBy(t).add(pos)
         whiskers.set(span, end)
@@ -209,28 +230,18 @@ class MapContainer extends PureComponent<Props> {
     this.platformOffsets.clear()
     const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * svgSizes.lineWidth
 
-    for (const span of network.spans) {
-      const { source, target, routes } = span
-      const parallel = network.spans.filter(s => s.isOf(source, target))
-      if (parallel.length === 1) {
-        continue
-      }
-      if (parallel.length === 0) {
-        throw new Error(`some error with span ${source.name}-${target.name}: it probably does not exist`)
-      }
-
-      const i = parallel.indexOf(span)
-      if (i === -1) {
-        throw new Error(`some error with span ${source.name}-${target.name}`)
-      }
-      const leftShift = (parallel.length - 1) / 2
-      const totalOffset = (i - leftShift) * lineWidthPlusGapPx
-      for (const p of [source, target]) {
-        const pos = this.getPlatformPosition(p)
-        const spanRouteSpans = p.spans.filter(s => intersection(s.routes, routes).length > 0)
-        for (const s of spanRouteSpans) {
+    for (const p of network.platforms) {
+      for (const bound of SPAN_PROPS) {
+        const boundSpans = p.spans[bound]
+        if (boundSpans.length < 2) {
+          continue
+        }
+        const leftShift = (boundSpans.length - 1) / 2
+        for (let i = 0; i < boundSpans.length; ++i) {
+          const totalOffset = (i - leftShift) * lineWidthPlusGapPx
           const map = getOrMakeInMap(this.platformOffsets, p, () => new Map<Span, number>())
-          map.set(s, totalOffset)
+          const span = boundSpans[i]
+          map.set(span, totalOffset)
         }
       }
     }
