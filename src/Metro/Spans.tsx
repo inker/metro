@@ -15,6 +15,19 @@ import {
   Platform,
 } from '../network'
 
+const E_COLORS = [
+  '#f0f',
+  '#f00',
+  '#00f',
+  '#080',
+  '#f80',
+  '#808',
+  '#840',
+  '#08f',
+  '#888',
+  '#ff0',
+]
+
 const CURVE_SPLIT_NUM = 8
 
 const Paths = styled.g`
@@ -38,6 +51,7 @@ interface Props {
   lineWidth: number,
   whiskers: WeakMap<Platform, Map<Span, Point>>,
   lineRules: Map<string, CSSStyleDeclaration>,
+  detailedE: boolean,
   pathsInnerWrapper: SVGGElement,
   getPlatformPosition: (platform: Platform) => Point,
   getPlatformOffset: (position: Point) => Map<any, number> | null,
@@ -55,6 +69,8 @@ class Spans extends PureComponent<Props> {
   }
 
   private makePath(span: Span) {
+    const { detailedE } = this.props
+
     const {
       routes,
       source,
@@ -84,7 +100,7 @@ class Spans extends PureComponent<Props> {
         key={span.id}
         controlPoints={controlPoints[0]}
         tails={controlPoints.slice(1)}
-        color={lineStyle && lineStyle.stroke}
+        color={detailedE && lineType === 'E' ? E_COLORS[routes[0].branch] : lineStyle && lineStyle.stroke}
       />
     )
     // bezier.id = 'op-' + spanIndex;

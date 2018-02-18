@@ -31,7 +31,7 @@ export default class {
     readonly transfers: Transfer[]
     readonly spans: Span[]
     readonly routes: Route[]
-    constructor(json: GraphJSON) {
+    constructor(json: GraphJSON, detailedE?: boolean) {
         console.time('restore')
         const objectifyLatLng = (obj: LatLngJSON) => latLng(obj.lat, obj.lng)
         this.platforms = json.platforms.map(p => new Platform(p.name, objectifyLatLng(p.location), p.altNames))
@@ -40,7 +40,23 @@ export default class {
         this.lines = json.lines
         this.transfers = json.transfers.map(s => new Transfer(this.platforms[s.source], this.platforms[s.target]))
         const spanRoutes = (s: SpanJSON) => s.routes.map(i => this.routes[i])
-        this.spans = json.spans.map(s => new Span(this.platforms[s.source], this.platforms[s.target], spanRoutes(s)))
+
+        if (detailedE) {
+            this.spans = []
+            for (const s of json.spans) {
+                const pSource = this.platforms[s.source]
+                const pTarget = this.platforms[s.target]
+                const isE = s.routes.every(r => json.routes[r].line === 'E')
+                if (!isE) {
+                    this.spans.push(new Span(pSource, pTarget, spanRoutes(s)))
+                    continue
+                }
+                const spans = s.routes.map(r => new Span(pSource, pTarget, [json.routes[r]]))
+                this.spans.push(...spans)
+            }
+        } else {
+            this.spans = json.spans.map(s => new Span(this.platforms[s.source], this.platforms[s.target], spanRoutes(s)))
+        }
 
         const transferSet = new Set(this.transfers)
         const platformsCopy = new Set(this.platforms)

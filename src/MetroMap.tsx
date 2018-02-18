@@ -123,7 +123,7 @@ export default class {
             this.addContextMenu()
 
             const json = await networkPromise
-            this.network = new Network(json)
+            this.network = new Network(json, config.detailedE)
             const platformLocations = this.network.platforms.map(p => p.location)
             const center = getCenter(platformLocations)
             config.center = [center.lat, center.lng]

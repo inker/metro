@@ -30,7 +30,7 @@ import Platforms from './Platforms'
 import Transfers from './Transfers'
 import Spans from './Spans'
 
-const GAP_BETWEEN_PARALLEL = 0 // 0 - none, 1 - line width
+const GAP_BETWEEN_PARALLEL = 0.5 // 0 - none, 1 - line width
 
 interface Containers {
   transfersInner?: SVGGElement,
@@ -302,6 +302,7 @@ class MapContainer extends PureComponent<Props> {
             lineWidth={lineWidth}
             whiskers={this.whiskers}
             lineRules={lineRules}
+            detailedE={config.detailedE}
             pathsInnerWrapper={pathsInner}
             getPlatformPosition={this.getPlatformPosition}
             getPlatformOffset={this.getPosOffset}
