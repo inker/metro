@@ -50,12 +50,13 @@ const PathsInner = styled(Inner)`
 interface Props {
   spans: Span[],
   lineWidth: number,
-  whiskers: WeakMap<Platform, Map<Span, Point>>,
   lineRules: Map<string, CSSStyleDeclaration>,
   detailedE: boolean,
   pathsInnerWrapper: SVGGElement,
   getPlatformPosition: (platform: Platform) => Point,
+  getPlatformWhiskers: (platform: Platform) => Map<Span, Point>,
   getPlatformSlot: (platform: Platform) => Map<Route, number> | null,
+  getSpanOffset: (span: Span) => number,
 }
 
 class Spans extends PureComponent<Props> {
@@ -139,9 +140,10 @@ class Spans extends PureComponent<Props> {
 
   private getControlPoints(span: Span) {
     const {
-      whiskers,
       getPlatformPosition,
+      getPlatformWhiskers,
       getPlatformSlot,
+      getSpanOffset,
     } = this.props
     const { source, target } = span
     const sourcePos = getPlatformPosition(source)
@@ -152,8 +154,8 @@ class Spans extends PureComponent<Props> {
 
     const controlPoints = [
       sourcePos,
-      tryGetFromMap(tryGetFromMap(whiskers, source), span),
-      tryGetFromMap(tryGetFromMap(whiskers, target), span),
+      tryGetFromMap(getPlatformWhiskers(source), span),
+      tryGetFromMap(getPlatformWhiskers(target), span),
       targetPos,
     ]
 

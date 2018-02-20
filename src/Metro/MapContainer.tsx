@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react'
 import { Point, LatLng } from 'leaflet'
+import { meanBy } from 'lodash'
 
 import { meanColor } from 'util/color'
 import findCycle from 'util/algorithm/findCycle'
@@ -72,7 +73,7 @@ class MapContainer extends PureComponent<Props> {
 
   private readonly whiskers = new WeakMap<Platform, Map<Span, Point>>()
   private readonly platformSlots = new WeakMap<Platform, Map<Route, number>>()
-  private readonly platformBatches = new WeakMap<Platform, Map<Span, number>>()
+  private readonly spanBatches = new WeakMap<Span, number>()
   private readonly stationCircumpoints = new WeakMap<Station, Platform[]>()
 
   componentWillReceiveProps(props: Props) {
@@ -113,11 +114,17 @@ class MapContainer extends PureComponent<Props> {
   private getPlatformPosition = (platform: Platform) =>
     tryGetFromMap(this.props.platformsOnSVG, platform)
 
+  private getPlatformWhiskers = (platform: Platform) =>
+    tryGetFromMap(this.whiskers, platform)
+
   private getPlatformSlot = (platform: Platform) =>
     this.platformSlots.get(platform) || null
 
+  private getSpanOffset = (span: Span) =>
+    this.spanBatches.get(span) || 0
+
   private getFirstWhisker = (platform: Platform) =>
-    tryGetFromMap(this.whiskers, platform).values().next().value
+    this.getPlatformWhiskers(platform).values().next().value
 
   private unsetFeaturedPlatforms = () => {
     this.props.setFeaturedPlatforms(null)
@@ -221,12 +228,18 @@ class MapContainer extends PureComponent<Props> {
   }
 
   private updateSlots(props: Props) {
+    console.time('batches')
+
     const {
       network,
       svgSizes,
+      config,
     } = props
 
-    const { platformSlots } = this
+    const {
+      platformSlots,
+      spanBatches,
+    } = this
     const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * svgSizes.lineWidth
 
     for (const platform of network.platforms) {
@@ -235,6 +248,31 @@ class MapContainer extends PureComponent<Props> {
         continue
       }
       const routes = Array.from(routeSet)
+
+      // if (!config.detailedE) {
+      //   const lineSet = platform.passingLines()
+      //   if (lineSet.size === 1) {
+      //     continue
+      //   }
+      //   const lines = Array.from(lineSet)
+      //   const leftShift = (routes.length - 1) / 2
+
+      //   for (let i = 0; i < lines.length; ++i) {
+      //     const slot = (i - leftShift) * lineWidthPlusGapPx
+      //     const map = getOrMakeInMap(platformSlots, platform, () => new Map<Route, number>())
+      //     const line = lines[i]
+      //     for (const route of routes) {
+      //       if (route.line !== line) {
+      //         continue
+      //       }
+      //       map.set(route, slot)
+      //     }
+      //     const route = routes[i]
+      //     map.set(route, slot)
+      //   }
+      //   return
+      // }
+
       const leftShift = (routes.length - 1) / 2
 
       for (let i = 0; i < routes.length; ++i) {
@@ -243,16 +281,56 @@ class MapContainer extends PureComponent<Props> {
         const route = routes[i]
         map.set(route, slot)
       }
-
-      // TODO batches
-
-      // if (platform.name === 'Jablonovka' && Array.from(platform.passingLines())[0].startsWith('E')) {
-      //   const map = getOrMakeInMap(platformSlotss, platform, () => new Map<Route, number>())
-      //   console.log('jab', map)
-      // }
     }
 
-    // batches
+    const remainingSpans = new Set<Span>(network.spans)
+    for (const span of network.spans) {
+      if (!remainingSpans.has(span)) {
+        continue
+      }
+      remainingSpans.delete(span)
+
+      const slots = (() => {
+        const sourceMap = platformSlots.get(span.source)
+        const targetMap = platformSlots.get(span.target)
+        const route = span.routes[0]
+        const sourceSlot = sourceMap && sourceMap.get(route) || 0
+        const targetSlot = targetMap && targetMap.get(route) || 0
+        return [sourceSlot, targetSlot]
+      })()
+
+      const diff = slots[1] - slots[0]
+
+      const entries: [Span, number][] = [
+        [span, slots[0]],
+      ]
+
+      const parallelSpans = span.parallelSpans()
+      for (const ps of parallelSpans) {
+        if (!remainingSpans.has(ps)) {
+          throw new Error('span was deleted!')
+        }
+        remainingSpans.delete(ps)
+        const isInverted = ps.source === span.target
+        const sourceMap = platformSlots.get(span[isInverted ? 'target' : 'source'])
+        const targetMap = platformSlots.get(span[isInverted ? 'source' : 'target'])
+        const route = ps.routes[0]
+        const sourceSlot = sourceMap && sourceMap.get(route) || 0
+        const targetSlot = targetMap && targetMap.get(route) || 0
+        const d = targetSlot - sourceSlot
+        if (d === diff) {
+          entries.push([ps, sourceSlot])
+        }
+      }
+
+      // normalize
+      const avg = meanBy(entries, pair => pair[1])
+      for (const [s, d] of entries) {
+        spanBatches.set(s, d - avg)
+      }
+    }
+
+    console.timeEnd('batches')
 
   }
 
@@ -331,12 +409,13 @@ class MapContainer extends PureComponent<Props> {
           <Spans
             spans={network.spans}
             lineWidth={lineWidth}
-            whiskers={this.whiskers}
+            getPlatformWhiskers={this.getPlatformWhiskers}
             lineRules={lineRules}
             detailedE={config.detailedE}
             pathsInnerWrapper={pathsInner}
             getPlatformPosition={this.getPlatformPosition}
             getPlatformSlot={this.getPlatformSlot}
+            getSpanOffset={this.getSpanOffset}
           />
         }
 
