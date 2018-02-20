@@ -45,6 +45,10 @@ export default class<V> {
         return this.has(edge._source) || this.has(edge._target)
     }
 
+    isParallel(edge: this) {
+        return edge.isOf(this._source, this._target)
+    }
+
     invert() {
         const t = this._source
         this._source = this._target

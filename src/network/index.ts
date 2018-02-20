@@ -1,5 +1,6 @@
 import { latLng } from 'leaflet'
 import fastDelete from 'fast-delete'
+// import { orderBy } from 'lodash'
 
 import Platform from './Platform'
 import Station from './Station'
@@ -54,6 +55,7 @@ export default class {
                 const spans = s.routes.map(r => new Span(pSource, pTarget, [json.routes[r]]))
                 this.spans.push(...spans)
             }
+            // this.spans = orderBy(this.spans, a => a.source.passingLines().has('E') ? -1 : 0)
         } else {
             this.spans = json.spans.map(s => new Span(this.platforms[s.source], this.platforms[s.target], spanRoutes(s)))
         }

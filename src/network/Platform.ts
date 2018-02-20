@@ -37,6 +37,11 @@ export default class Platform {
         this.elevation = elevation
     }
 
+    hasSpan(span: Span) {
+        const { spans } = this
+        return spans.inbound.includes(span) || spans.outbound.includes(span)
+    }
+
     getAllSpans() {
         const { spans } = this
         return [...spans.inbound, ...spans.outbound]
@@ -67,4 +72,19 @@ export default class Platform {
         return lines
     }
 
+    adjacentPlatformsBySpans() {
+        return this.getAllSpans().map(s => s.other(this))
+    }
+
+    adjacentPlatformsByTransfers() {
+        return this.transfers.map(t => t.other(this))
+    }
+
+    isAdjacentBySpan(platform: Platform) {
+        return this.getAllSpans().some(s => s.has(platform))
+    }
+
+    isAdjacentByTransfer(platform: Platform) {
+       return this.transfers.some(t => t.has(platform))
+    }
 }

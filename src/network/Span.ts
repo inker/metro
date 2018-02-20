@@ -49,4 +49,14 @@ export default class Span extends Edge<Platform> {
         this._target = vertex
         vertex.spans.inbound.push(this)
     }
+
+    parallelSpans() {
+        const {
+            _source,
+            _target,
+        } = this
+        const spans = new Set([..._source.getAllSpans(), ..._target.getAllSpans()])
+        spans.delete(this)
+        return Array.from(spans).filter(s => s.isOf(_source, _target))
+    }
 }
