@@ -30,6 +30,9 @@ import Spans from './Spans'
 
 const GAP_BETWEEN_PARALLEL = 0 // 0 - none, 1 - line width
 
+const GRAY = '#999'
+const BLACK = '#000'
+
 type Bound = 'inbound' | 'outbound'
 const SPAN_PROPS = Object.freeze(['inbound', 'outbound'] as Bound[])
 
@@ -132,20 +135,28 @@ class MapContainer extends PureComponent<Props> {
   private getPlatformColor = (platform: Platform) => {
     const {
       config,
+      zoom,
       lineRules,
     } = this.props
 
     const passingLines = platform.passingLines()
+
+    const isDetailed = zoom >= config.detailedZoom
+    if (!isDetailed) {
+      // return BLACK
+      return config.detailedE && !platform.passingLines().has('E') ? GRAY : BLACK
+    }
+
     if (!config.detailedE) {
       return meanColor(this.linesToColors(passingLines))
     }
     if (!passingLines.has('E')) {
-      return '#999'
+      return GRAY
     }
     // TODO: temp
-    return '#000'
+    return BLACK
     const line = passingLines.values().next().value
-    return passingLines.size === 1 && tryGetFromMap(lineRules, line).stroke || '#000'
+    return passingLines.size === 1 && tryGetFromMap(lineRules, line).stroke || BLACK
   }
 
   private linesToColors(lines: Set<string>): string[] {

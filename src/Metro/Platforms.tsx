@@ -97,7 +97,6 @@ class Platforms extends PureComponent<Props> {
 
   render() {
     const {
-      isDetailed,
       platforms,
       strokeWidth,
       circleRadius,
@@ -127,7 +126,7 @@ class Platforms extends PureComponent<Props> {
               key={platform.id}
               position={pos}
               radius={radius}
-              color={isDetailed ? getPlatformColor(platform) : undefined}
+              color={getPlatformColor(platform)}
               isFeatured={isFeatured}
               platforms={representedPlatforms || []}
               dummyParent={dummyPlatforms}
