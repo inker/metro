@@ -139,10 +139,12 @@ class MapContainer extends PureComponent<Props> {
     if (!config.detailedE) {
       return meanColor(this.linesToColors(passingLines))
     }
-    const line = passingLines.values().next().value
-    if (line !== 'E') {
+    if (!passingLines.has('E')) {
       return '#999'
     }
+    // TODO: temp
+    return '#000'
+    const line = passingLines.values().next().value
     return passingLines.size === 1 && tryGetFromMap(lineRules, line).stroke || '#000'
   }
 
@@ -152,7 +154,7 @@ class MapContainer extends PureComponent<Props> {
     for (const line of lines) {
       const { stroke } = tryGetFromMap(lineRules, line[0] === 'M' ? line : line[0])
       if (stroke) {
-          rgbs.push(stroke)
+        rgbs.push(stroke)
       }
     }
     return rgbs
@@ -177,7 +179,7 @@ class MapContainer extends PureComponent<Props> {
       const { inbound, outbound } = spans
       const boundSpans = inbound.length === 2 ? inbound : outbound.length === 2 ? outbound : null
       if (boundSpans) {
-          return whiskers.set(boundSpans[0], pos).set(boundSpans[1], pos)
+        return whiskers.set(boundSpans[0], pos).set(boundSpans[1], pos)
       }
 
       const prevPos = this.getPlatformPosition(inbound[0].other(platform))
