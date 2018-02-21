@@ -3,9 +3,10 @@ import { Point } from 'leaflet'
 
 import Platform from 'network/Platform'
 
+import Circle from './primitives/Circle'
+import Stadium from './primitives/Stadium'
+
 import Modal from './Modal'
-import Circle from './Circle'
-import Stadium from './Stadium'
 
 interface Props {
   position: Point | Point[],

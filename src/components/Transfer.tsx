@@ -4,9 +4,10 @@ import { Point } from 'leaflet'
 import Transfer from '../network/Transfer'
 import Platform from '../network/Platform'
 
+import Line from './primitives/Line'
+import Arc from './primitives/Arc'
+
 import Modal from './Modal'
-import Line from './Line'
-import Arc from './Arc'
 
 interface Props {
   start: Point,

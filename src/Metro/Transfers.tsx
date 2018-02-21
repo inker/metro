@@ -20,8 +20,8 @@ import {
   Route,
 } from '../network'
 
-import cartesian from './cartesian'
-import getPlatformPositions from './getPlatformPositions'
+import cartesian from './utils/cartesian'
+import getPlatformPositions from './utils/getPlatformPositions'
 
 const Paths = styled.g`
   fill: none;
