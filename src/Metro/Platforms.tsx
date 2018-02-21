@@ -9,7 +9,7 @@ import {
   Route,
 } from '../network'
 
-import getPlatformPositions from './getPlatformPositions'
+import getPlatformPositions from './utils/getPlatformPositions'
 
 const PlatformCircles = styled.g`
   fill: white;

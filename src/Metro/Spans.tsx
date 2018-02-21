@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Point } from 'leaflet'
 
 import Modal from 'components/Modal'
-import Bezier from 'components/Bezier'
+import Bezier from 'components/primitives/Bezier'
 
 import Route from 'network/Route'
 
