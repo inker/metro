@@ -12,7 +12,6 @@ import {
 
 import {
   tryGetFromMap,
-  getOrMakeInMap,
 } from 'util/collections'
 
 import Network, {
@@ -274,15 +273,18 @@ class MapContainer extends PureComponent<Props> {
       // }
 
       const leftShift = (routes.length - 1) / 2
+      const map = new Map<Route, number>()
 
       for (let i = 0; i < routes.length; ++i) {
         const slot = (i - leftShift) * lineWidthPlusGapPx
-        const map = getOrMakeInMap(platformSlots, platform, () => new Map<Route, number>())
         const route = routes[i]
         map.set(route, slot)
       }
+
+      platformSlots.set(platform, map)
     }
 
+    // batches
     const remainingSpans = new Set<Span>(network.spans)
     for (const span of network.spans) {
       if (!remainingSpans.has(span)) {

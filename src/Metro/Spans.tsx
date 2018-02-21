@@ -8,6 +8,7 @@ import Bezier from 'components/Bezier'
 import Route from 'network/Route'
 
 import * as math from 'util/math'
+
 import {
   tryGetFromMap,
 } from 'util/collections'
@@ -149,51 +150,53 @@ class Spans extends PureComponent<Props> {
     const sourcePos = getPlatformPosition(source)
     const targetPos = getPlatformPosition(target)
 
-    // TODO
-    // if (source.name === 'Glavnyj voxal' && target.name === 'Jablonovka') debugger
+    const sourceControlPoint = tryGetFromMap(getPlatformWhiskers(source), span)
+    const targetControlPoint = tryGetFromMap(getPlatformWhiskers(target), span)
 
     const controlPoints = [
       sourcePos,
-      tryGetFromMap(getPlatformWhiskers(source), span),
-      tryGetFromMap(getPlatformWhiskers(target), span),
+      sourceControlPoint,
+      targetControlPoint,
       targetPos,
     ]
 
-    const sourceMap = getPlatformSlot(source)
-    const targetMap = getPlatformSlot(target)
-    // if (!sourceMap || !targetMap) {
-    //   return [controlPoints]
-    // }
-
     const firstRoute = span.routes[0]
 
-    if (sourceMap) {
-      const sourceSlot = sourceMap.get(firstRoute)
-      // TODO should be multiple offsets! target, too!
-      // temporary
-      if (!sourceSlot) {
-        return [controlPoints]
-      }
-      if (targetMap) {
-        const curves = math.split(controlPoints, CURVE_SPLIT_NUM)
-        const [head, ...tail] = curves.map(pa => math.offsetPath(pa, sourceSlot))
-        return [head, ...tail.map(arr => arr.slice(1))]
-      }
-      const lineO = math.offsetLine(controlPoints.slice(0, 2), sourceSlot)
-      controlPoints[0] = lineO[0]
-      controlPoints[1] = lineO[1]
+    const sourceMap = getPlatformSlot(source)
+    const targetMap = getPlatformSlot(target)
+    const sourceSlot = sourceMap && sourceMap.get(firstRoute) || 0
+    const targetSlot = targetMap && targetMap.get(firstRoute) || 0
+
+    const offset = getSpanOffset(span)
+
+    if (sourceSlot === 0 && targetSlot === 0 && offset === 0) {
       return [controlPoints]
     }
-    if (targetMap) {
-      const targetSlot = targetMap.get(firstRoute)
-      if (!targetSlot) {
-        return [controlPoints]
-      }
-      const lineO = math.offsetLine(controlPoints.slice(2, 4), targetSlot)
-      controlPoints[2] = lineO[0]
-      controlPoints[3] = lineO[1]
+
+    const sourceLine = controlPoints.slice(0, 2)
+    const targetLine = controlPoints.slice(2, 4)
+
+    // TODO: figure out what to do with zero lines
+    const offsetSourceLine = sourceLine[0] === sourceLine[1]
+      ? sourceLine
+      : math.offsetLine(sourceLine, sourceSlot - offset)
+
+    const offsetTargetLine = targetLine[0] === targetLine[1]
+      ? targetLine
+      : math.offsetLine(targetLine, targetSlot - offset)
+
+    controlPoints[0] = offsetSourceLine[0]
+    controlPoints[1] = offsetSourceLine[1]
+    controlPoints[2] = offsetTargetLine[0]
+    controlPoints[3] = offsetTargetLine[1]
+
+    if (offset === 0) {
+      return [controlPoints]
     }
-    return [controlPoints]
+
+    const curves = math.split(controlPoints, CURVE_SPLIT_NUM)
+    const [head, ...tail] = curves.map(pa => math.offsetPath(pa, offset))
+    return [head, ...tail.map(arr => arr.slice(1))]
   }
 
   render() {
