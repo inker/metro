@@ -36,9 +36,9 @@ const BLACK = '#000'
 type Bound = 'inbound' | 'outbound'
 const SPAN_PROPS = Object.freeze(['inbound', 'outbound'] as Bound[])
 
-interface Normals {
-  inbound: Point[],
-  outbound: Point[],
+interface Positions {
+  inbound: Point,
+  outbound: Point,
 }
 
 interface Containers {
@@ -202,26 +202,23 @@ class MapContainer extends PureComponent<Props> {
       return whiskers
     }
 
-    const normals: Normals = {
-      inbound: [],
-      outbound: [],
-    }
-
+    const positions: Positions = {} as any
     const distances = new WeakMap<Span, number>()
 
     for (const bound of SPAN_PROPS) {
       const boundSpans = platform.spans[bound]
+      const normals: Point[] = []
       for (const span of boundSpans) {
         const neighbor = span.other(platform)
         const neighborPos = this.getPlatformPosition(neighbor)
-        normals[bound].push(normalize(neighborPos.subtract(pos)))
+        const normal = normalize(neighborPos.subtract(pos))
+        normals.push(normal)
         distances.set(span, pos.distanceTo(neighborPos))
       }
+      positions[bound] = mean(normals).add(pos)
     }
 
-    const prevPos = mean(normals.inbound).add(pos)
-    const nextPos = mean(normals.outbound).add(pos)
-    const wings = math.wings(prevPos, pos, nextPos, 1)
+    const wings = math.wings(positions.inbound, pos, positions.outbound, 1)
     const wObj = {
       inbound: wings[0],
       outbound: wings[1],
