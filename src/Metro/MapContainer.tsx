@@ -199,12 +199,14 @@ class MapContainer extends PureComponent<Props> {
   private getSpanSlotPoints(span: Span) {
     const slots = this.getSpanSlots(span)
 
-    const [source, target] = SOURCE_TARGET.map(prop => {
+    const [source, target] = SOURCE_TARGET.map((prop, i) => {
       const platform = span[prop]
+
       const pos = this.getPlatformPosition(platform)
       const controlPoint = tryGetFromMap(this.getPlatformWhiskers(platform), span)
       const vec = controlPoint.subtract(pos)
-      const ortho = orthogonal(vec)[prop === 'source' ? 0 : 1]
+
+      const ortho = orthogonal(vec)[i]
       const normal = ortho.equals(zeroVec) ? ortho : normalize(ortho)
       const offsetVec = normal.multiplyBy(slots[prop])
       return pos.add(offsetVec)
@@ -507,7 +509,6 @@ class MapContainer extends PureComponent<Props> {
   render() {
     const {
       config,
-      zoom,
       network,
       lineRules,
       svgSizes,
