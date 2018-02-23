@@ -41,6 +41,11 @@ const SOURCE_TARGET = Object.freeze(['source', 'target'] as SourceOrTarget[])
 type Bound = 'inbound' | 'outbound'
 const SPAN_PROPS = Object.freeze(['inbound', 'outbound'] as Bound[])
 
+interface SlotPoints {
+  source: Point,
+  target: Point,
+}
+
 interface Positions {
   inbound: Point,
   outbound: Point,
@@ -196,7 +201,7 @@ class MapContainer extends PureComponent<Props> {
     return rgbs
   }
 
-  private getSpanSlotPoints(span: Span) {
+  private getSpanSlotPoints(span: Span): SlotPoints {
     const slots = this.getSpanSlots(span)
 
     const [source, target] = SOURCE_TARGET.map((prop, i) => {
@@ -460,13 +465,20 @@ class MapContainer extends PureComponent<Props> {
     const numSpans = spans.length
     const numSpansMinusOne = numSpans - 1
 
+    const map = new WeakMap<Span, SlotPoints>()
+
+    for (const span of spans) {
+      const slots = this.getSpanSlotPoints(span)
+      map.set(span, slots)
+    }
+
     for (let i = 0; i < numSpansMinusOne; ++i) {
       const span = spans[i]
 
       const {
         source: sourcePoint,
         target: targetPoint,
-      } = this.getSpanSlotPoints(span)
+      } = tryGetFromMap(map, span)
 
       sumDistances += sourcePoint.distanceTo(targetPoint)
 
@@ -478,7 +490,7 @@ class MapContainer extends PureComponent<Props> {
         const {
           source: otherSourcePoint,
           target: otherTargetPoint,
-        } = this.getSpanSlotPoints(otherSpan)
+        } = tryGetFromMap(map, otherSpan)
 
         // if (
         //   !span.isContinuous(otherSpan)
