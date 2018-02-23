@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 import { Point, LatLng } from 'leaflet'
-import { meanBy } from 'lodash'
+import { meanBy, xor } from 'lodash'
 
 import { meanColor } from 'util/color'
 import findCycle from 'util/algorithm/findCycle'
@@ -8,6 +8,7 @@ import * as math from 'util/math'
 import {
   mean,
   normalize,
+  orthogonal,
 } from 'util/math/vector'
 
 import {
@@ -73,6 +74,7 @@ class MapContainer extends PureComponent<Props> {
     containers: {},
   }
 
+  private isDetailed: boolean
   private readonly whiskers = new WeakMap<Platform, Map<Span, Point>>()
   private readonly platformSlots = new WeakMap<Platform, Map<Route, number>>()
   private readonly spanBatches = new WeakMap<Span, number>()
@@ -88,6 +90,7 @@ class MapContainer extends PureComponent<Props> {
   }
 
   private updateParameters(props: Props) {
+    this.isDetailed = props.zoom >= props.config.detailedZoom
     this.updateWhiskers(props)
     this.updateSlots(props)
     this.updateCircumcircles(props)
@@ -128,6 +131,24 @@ class MapContainer extends PureComponent<Props> {
   private getFirstWhisker = (platform: Platform) =>
     this.getPlatformWhiskers(platform).values().next().value
 
+  private getSpanSlots = (span: Span) => {
+    const {
+      source,
+      target,
+      routes,
+    } = span
+    if (this.props.config.detailedE && routes.length > 1) {
+      throw new Error('more routes per span than 1')
+    }
+    const firstRoute = routes[0]
+    const sourceMap = this.getPlatformSlot(source)
+    const targetMap = this.getPlatformSlot(target)
+    return {
+      source: sourceMap && sourceMap.get(firstRoute) || 0,
+      target: targetMap && targetMap.get(firstRoute) || 0,
+    }
+  }
+
   private unsetFeaturedPlatforms = () => {
     this.props.setFeaturedPlatforms(null)
   }
@@ -135,14 +156,12 @@ class MapContainer extends PureComponent<Props> {
   private getPlatformColor = (platform: Platform) => {
     const {
       config,
-      zoom,
       lineRules,
     } = this.props
 
     const passingLines = platform.passingLines()
 
-    const isDetailed = zoom >= config.detailedZoom
-    if (!isDetailed) {
+    if (!this.isDetailed) {
       // return BLACK
       return config.detailedE && !platform.passingLines().has('E') ? GRAY : BLACK
     }
@@ -171,11 +190,10 @@ class MapContainer extends PureComponent<Props> {
     return rgbs
   }
 
-  protected makeWhiskers(platform: Platform): Map<Span, Point> {
+  private makeWhiskers(platform: Platform): Map<Span, Point> {
     const PART = 0.5
     const pos = this.getPlatformPosition(platform)
     const whiskers = new Map<Span, Point>()
-    const { spans } = platform
     const allSpans = platform.getAllSpans()
 
     if (allSpans.length === 0) {
@@ -187,18 +205,27 @@ class MapContainer extends PureComponent<Props> {
     }
 
     if (allSpans.length === 2) {
-      const { inbound, outbound } = spans
-      const boundSpans = inbound.length === 2 ? inbound : outbound.length === 2 ? outbound : null
-      if (boundSpans) {
-        return whiskers.set(boundSpans[0], pos).set(boundSpans[1], pos)
+      // TODO: fix source/target in graph
+      // const { inbound, outbound } = spans
+      // const boundSpans = inbound.length === 2 ? inbound : outbound.length === 2 ? outbound : null
+      // if (boundSpans) {
+      //   return whiskers.set(boundSpans[0], pos).set(boundSpans[1], pos)
+      // }
+
+      // const inboundSpan = inbound[0]
+      // const outboundSpan = outbound[0]
+
+      const [inboundSpan, outboundSpan] = allSpans
+      if (xor(inboundSpan.routes, outboundSpan.routes).length > 0) {
+        return whiskers.set(inboundSpan, pos).set(outboundSpan, pos)
       }
 
-      const prevPos = this.getPlatformPosition(inbound[0].other(platform))
-      const nextPos = this.getPlatformPosition(outbound[0].other(platform))
+      const prevPos = this.getPlatformPosition(inboundSpan.other(platform))
+      const nextPos = this.getPlatformPosition(outboundSpan.other(platform))
       const wings = math.wings(prevPos, pos, nextPos, 1)
       const t = Math.min(pos.distanceTo(prevPos), pos.distanceTo(nextPos)) * PART
-      whiskers.set(spans.inbound[0], wings[0].multiplyBy(t).add(pos))
-      whiskers.set(spans.outbound[0], wings[1].multiplyBy(t).add(pos))
+      whiskers.set(inboundSpan, wings[0].multiplyBy(t).add(pos))
+      whiskers.set(outboundSpan, wings[1].multiplyBy(t).add(pos))
       return whiskers
     }
 
@@ -219,7 +246,7 @@ class MapContainer extends PureComponent<Props> {
     }
 
     const wings = math.wings(positions.inbound, pos, positions.outbound, 1)
-    const wObj = {
+    const wObj: Positions = {
       inbound: wings[0],
       outbound: wings[1],
     }
@@ -302,9 +329,10 @@ class MapContainer extends PureComponent<Props> {
       }
       remainingSpans.delete(span)
 
+      const sourceMap = platformSlots.get(span.source)
+      const targetMap = platformSlots.get(span.target)
+
       const slots = (() => {
-        const sourceMap = platformSlots.get(span.source)
-        const targetMap = platformSlots.get(span.target)
         const route = span.routes[0]
         const sourceSlot = sourceMap && sourceMap.get(route) || 0
         const targetSlot = targetMap && targetMap.get(route) || 0
@@ -323,9 +351,9 @@ class MapContainer extends PureComponent<Props> {
           throw new Error('span was deleted!')
         }
         remainingSpans.delete(ps)
-        const isInverted = ps.source === span.target
-        const sourceMap = platformSlots.get(span[isInverted ? 'target' : 'source'])
-        const targetMap = platformSlots.get(span[isInverted ? 'source' : 'target'])
+        if (ps.source === span.target) {
+          throw new Error('inverted!')
+        }
         const route = ps.routes[0]
         const sourceSlot = sourceMap && sourceMap.get(route) || 0
         const targetSlot = targetMap && targetMap.get(route) || 0
@@ -363,12 +391,7 @@ class MapContainer extends PureComponent<Props> {
     const { network } = this.props
 
     for (const station of network.stations) {
-      // const stationMeanColor: string
-      // if (zoom < 12) {
-      //     stationMeanColor = color.mean(this.linesToColors(this.passingLinesStation(station)));
-      // }
       for (const platform of station.platforms) {
-        // const posOnSVG = this.overlay.latLngToSvgPoint(platform.location);
         const wh = this.makeWhiskers(platform)
         this.whiskers.set(platform, wh)
       }
@@ -408,8 +431,6 @@ class MapContainer extends PureComponent<Props> {
       },
     } = this.state
 
-    const isDetailed = zoom >= config.detailedZoom
-
     // const lineWidth = 2 ** (zoom / 4 - 1.75);
 
     const lightRailPathStyle = tryGetFromMap(lineRules, 'L')
@@ -426,7 +447,7 @@ class MapContainer extends PureComponent<Props> {
             detailedE={config.detailedE}
             pathsInnerWrapper={pathsInner}
             getPlatformPosition={this.getPlatformPosition}
-            getPlatformSlot={this.getPlatformSlot}
+            getSpanSlots={this.getSpanSlots}
             getSpanOffset={this.getSpanOffset}
           />
         }
@@ -438,7 +459,7 @@ class MapContainer extends PureComponent<Props> {
         {transfersInner && dummyTransfers && defs && network.transfers &&
           <Transfers
             transfers={network.transfers}
-            isDetailed={isDetailed}
+            isDetailed={this.isDetailed}
             stationCircumpoints={this.stationCircumpoints}
             featuredPlatforms={featuredPlatforms}
             transferWidth={transferWidth}
@@ -459,7 +480,7 @@ class MapContainer extends PureComponent<Props> {
         {dummyPlatforms && network.platforms &&
           <Platforms
             platforms={network.platforms}
-            isDetailed={isDetailed}
+            isDetailed={this.isDetailed}
             strokeWidth={circleBorder}
             circleRadius={circleRadius}
             dummyPlatforms={dummyPlatforms}

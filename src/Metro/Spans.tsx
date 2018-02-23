@@ -56,7 +56,7 @@ interface Props {
   pathsInnerWrapper: SVGGElement,
   getPlatformPosition: (platform: Platform) => Point,
   getPlatformWhiskers: (platform: Platform) => Map<Span, Point>,
-  getPlatformSlot: (platform: Platform) => Map<Route, number> | null,
+  getSpanSlots: (span: Span) => { source: number, target: number },
   getSpanOffset: (span: Span) => number,
 }
 
@@ -143,7 +143,7 @@ class Spans extends PureComponent<Props> {
     const {
       getPlatformPosition,
       getPlatformWhiskers,
-      getPlatformSlot,
+      getSpanSlots,
       getSpanOffset,
     } = this.props
     const { source, target } = span
@@ -160,12 +160,10 @@ class Spans extends PureComponent<Props> {
       targetPos,
     ]
 
-    const firstRoute = span.routes[0]
-
-    const sourceMap = getPlatformSlot(source)
-    const targetMap = getPlatformSlot(target)
-    const sourceSlot = sourceMap && sourceMap.get(firstRoute) || 0
-    const targetSlot = targetMap && targetMap.get(firstRoute) || 0
+    const {
+      source: sourceSlot,
+      target: targetSlot,
+    } = getSpanSlots(span)
 
     const offset = getSpanOffset(span)
 
