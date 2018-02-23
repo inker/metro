@@ -52,9 +52,15 @@ export default class Span extends Edge<Platform> {
         vertex.spans.inbound.push(this)
     }
 
-    isNext(otherSpan: Span) {
-        return (this._source === otherSpan._target || this._target === otherSpan._source)
-            && intersection(this.routes, otherSpan.routes).length > 0
+    isAdjacentSpan(other: Span) {
+        // but not parallel!
+        return (this.has(other.source) || this.has(other.target))
+            && !this.isOf(other.source, other.target)
+    }
+
+    isContinuous(other: Span) {
+        // kinda like 'next'
+        return this.isAdjacentSpan(other) && intersection(this.routes, other.routes).length > 0
     }
 
     parallelSpans() {

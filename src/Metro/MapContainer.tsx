@@ -7,8 +7,10 @@ import findCycle from 'util/algorithm/findCycle'
 import * as math from 'util/math'
 import {
   mean,
+  zero as zeroVec,
   normalize,
   orthogonal,
+  segmentsIntersect,
 } from 'util/math/vector'
 
 import {
@@ -34,6 +36,8 @@ const GAP_BETWEEN_PARALLEL = 0 // 0 - none, 1 - line width
 const GRAY = '#999'
 const BLACK = '#000'
 
+type SourceOrTarget = 'source' | 'target'
+const SOURCE_TARGET = Object.freeze(['source', 'target'] as SourceOrTarget[])
 type Bound = 'inbound' | 'outbound'
 const SPAN_PROPS = Object.freeze(['inbound', 'outbound'] as Bound[])
 
@@ -93,7 +97,9 @@ class MapContainer extends PureComponent<Props> {
     this.isDetailed = props.zoom >= props.config.detailedZoom
     this.updateWhiskers(props)
     this.updateSlots(props)
+    this.updateBatches(props)
     this.updateCircumcircles(props)
+    this.costFunction(props)
   }
 
   private mountTransfersInner = (g: SVGGElement) => {
@@ -190,6 +196,26 @@ class MapContainer extends PureComponent<Props> {
     return rgbs
   }
 
+  private getSpanSlotPoints(span: Span) {
+    const slots = this.getSpanSlots(span)
+
+    const [source, target] = SOURCE_TARGET.map(prop => {
+      const platform = span[prop]
+      const pos = this.getPlatformPosition(platform)
+      const controlPoint = tryGetFromMap(this.getPlatformWhiskers(platform), span)
+      const vec = controlPoint.subtract(pos)
+      const ortho = orthogonal(vec)[prop === 'source' ? 0 : 1]
+      const normal = ortho.equals(zeroVec) ? ortho : normalize(ortho)
+      const offsetVec = normal.multiplyBy(slots[prop])
+      return pos.add(offsetVec)
+    })
+
+    return {
+      source,
+      target,
+    }
+  }
+
   private makeWhiskers(platform: Platform): Map<Span, Point> {
     const PART = 0.5
     const pos = this.getPlatformPosition(platform)
@@ -264,8 +290,6 @@ class MapContainer extends PureComponent<Props> {
   }
 
   private updateSlots(props: Props) {
-    console.time('batches')
-
     const {
       network,
       svgSizes,
@@ -274,8 +298,8 @@ class MapContainer extends PureComponent<Props> {
 
     const {
       platformSlots,
-      spanBatches,
     } = this
+
     const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * svgSizes.lineWidth
 
     for (const platform of network.platforms) {
@@ -320,8 +344,20 @@ class MapContainer extends PureComponent<Props> {
 
       platformSlots.set(platform, map)
     }
+  }
 
-    // batches
+  private updateBatches(props: Props) {
+    console.time('batches')
+
+    const {
+      network,
+    } = props
+
+    const {
+      platformSlots,
+      spanBatches,
+    } = this
+
     const remainingSpans = new Set<Span>(network.spans)
     for (const span of network.spans) {
       if (!remainingSpans.has(span)) {
@@ -371,7 +407,6 @@ class MapContainer extends PureComponent<Props> {
     }
 
     console.timeEnd('batches')
-
   }
 
   private updateCircumcircles(props: Props) {
@@ -396,6 +431,77 @@ class MapContainer extends PureComponent<Props> {
         this.whiskers.set(platform, wh)
       }
     }
+  }
+
+  private costFunction(props: Props) {
+    // distances (less)
+    // crossings (less)
+
+    console.time('cost')
+
+    const {
+      spanBatches,
+      getPlatformPosition,
+      getSpanSlots,
+      getFirstWhisker,
+    } = this
+
+    const {
+      network,
+    } = props
+
+    const spans = network.spans.filter(s => s.routes[0].line === 'E')
+
+    let sumDistances = 0
+    let numIntersections = 0
+
+    const numSpans = spans.length
+    const numSpansMinusOne = numSpans - 1
+
+    for (let i = 0; i < numSpansMinusOne; ++i) {
+      const span = spans[i]
+
+      const {
+        source: sourcePoint,
+        target: targetPoint,
+      } = this.getSpanSlotPoints(span)
+
+      sumDistances += sourcePoint.distanceTo(targetPoint)
+
+      const arr = [sourcePoint, targetPoint]
+
+      for (let j = i + 1; j < numSpans; ++j) {
+        const otherSpan = spans[j]
+
+        const {
+          source: otherSourcePoint,
+          target: otherTargetPoint,
+        } = this.getSpanSlotPoints(otherSpan)
+
+        // if (
+        //   !span.isContinuous(otherSpan)
+        //   && (span.source === otherSpan.target || span.target === otherSpan.source)
+        //   && segmentsIntersect(arr, [otherSourcePoint, otherTargetPoint])
+        // ) {
+        //   debugger
+        // }
+
+        const doIntersect = !span.isContinuous(otherSpan)
+          && segmentsIntersect(arr, [otherSourcePoint, otherTargetPoint])
+
+        if (doIntersect) {
+          // console.log('intersection')
+          // console.log(span.source.name, span.target.name, span.routes[0].branch)
+          // console.log(otherSpan.source.name, otherSpan.target.name, otherSpan.routes[0].branch)
+          ++numIntersections
+        }
+      }
+    }
+
+    console.timeEnd('cost')
+
+    console.log('sum distances', sumDistances)
+    console.log('num intersections', numIntersections)
   }
 
   render() {
