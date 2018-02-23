@@ -25,7 +25,6 @@ import {
     wikimapia,
 } from './ui/tilelayers'
 
-import * as math from './util/math'
 import { getJSON } from './util/http'
 import getCenter from './util/geo/getCenter'
 // import geometricMedian from './util/geo/geometricMedian'

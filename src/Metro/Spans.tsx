@@ -175,11 +175,11 @@ class Spans extends PureComponent<Props> {
     const targetLine = controlPoints.slice(2, 4)
 
     // TODO: figure out what to do with zero lines
-    const offsetSourceLine = sourceLine[0] === sourceLine[1]
+    const offsetSourceLine = sourceLine[0].equals(sourceLine[1])
       ? sourceLine
       : math.offsetLine(sourceLine, sourceSlot - offset)
 
-    const offsetTargetLine = targetLine[0] === targetLine[1]
+    const offsetTargetLine = targetLine[0].equals(targetLine[1])
       ? targetLine
       : math.offsetLine(targetLine, targetSlot - offset)
 

@@ -10,6 +10,8 @@ enum Orientation {
     ANTICLOCKWISE,
 }
 
+export const zero = Object.freeze(point(0, 0))
+
 export const unit = Object.freeze(point(1, 0))
 
 export const isArbitrarilySmall = (v: Point) =>
