@@ -1,278 +1,661 @@
-import React from 'react'
-import ReactDom from 'react-dom'
-import L from 'leaflet'
-import unblur from 'unblur'
+import React, { PureComponent } from 'react'
+import { Point, LatLng } from 'leaflet'
+import {
+  mean,
+  xor,
+} from 'lodash'
 
-import Config from './Config'
-import getLineRules from './getLineRules'
-
-import Network, { GraphJSON } from './network'
-
-import addLayerSwitcher from './ui/addLayerSwitcher'
-import DistanceMeasure from './ui/DistanceMeasure'
-import SvgOverlay from './ui/SvgOverlay'
-import ContextMenu from './ui/ContextMenu'
-import FAQ from './ui/FAQ'
-// import drawZones from './ui/drawZones'
+import { meanColor } from 'utils/color'
+import findCycle from 'utils/algorithm/findCycle'
+import { makeWings } from 'utils/math'
+import {
+  mean as meanPoint,
+  zero as zeroVec,
+  normalize,
+  orthogonal,
+} from 'utils/math/vector'
 
 import {
-    mapbox,
-    mapbox2,
-    mapnik,
-    osmFrance,
-    openMapSurfer,
-    cartoDBNoLabels,
-    wikimapia,
-} from 'ui/tilelayers'
+  tryGetFromMap,
+} from 'utils/collections'
 
-import { getJSON } from 'utils/http'
-import getCenter from 'utils/geo/getCenter'
-// import geometricMedian from 'utils/geo/geometricMedian'
-import MetroMapEventMap from 'utils/MetroMapEventMap'
-import Mediator from 'utils/Mediator'
+import Network, {
+  Platform,
+  Station,
+  Span,
+  Route,
+} from '../network'
 
-import Metro from './Metro'
+import Config from '../Config'
 
-import 'leaflet/dist/leaflet.css'
+import getPositions from './utils/getPositions'
 
-const alertifyPromise = import(/* webpackChunkName: "alertify" */ 'ui/alertify')
+import optimizeSlots from './optimization/optimizeSlots'
+import sortSpans from './optimization/sortSpans'
+import costFunction from './optimization/costFunction'
 
-const contextMenuArray = [
-    {
-        event: 'routefrom',
-        text: 'Route from here',
-    },
-    {
-        event: 'routeto',
-        text: 'Route to here',
-    },
-    {
-        event: 'clearroute',
-        text: 'Clear route',
-    },
-    {
-        event: 'showheatmap',
-        text: 'Show heatmap',
-        extra: {
-            disabled: true,
-        },
-    },
-]
+import { Containers as MetroContainers } from './index'
+import Platforms from './Platforms'
+import Transfers from './Transfers'
+import Spans from './Spans'
 
-export default class {
-    readonly mediator = new Mediator()
-    protected readonly config: Config
-    protected map: L.Map
-    private moving = false
-    protected overlay: SvgOverlay
-    protected readonly contextMenu = new ContextMenu(contextMenuArray as any)
+const GAP_BETWEEN_PARALLEL = 0 // 0 - none, 1 - line width
 
-    protected network: Network
-    private lineRules: Map<string, CSSStyleDeclaration>
+const GRAY = '#999'
+const BLACK = '#000'
 
-    // private routeWorker = new Worker('js/routeworker.js');
+type SourceOrTarget = 'source' | 'target'
+const SOURCE_TARGET = Object.freeze(['source', 'target'] as SourceOrTarget[])
 
-    getMap(): L.Map {
-        return this.map
-    }
+type Bound = 'inbound' | 'outbound'
+const SPAN_PROPS = Object.freeze(['inbound', 'outbound'] as Bound[])
 
-    getNetwork(): Network {
-        return this.network
-    }
-
-    constructor(config: Config) {
-        this.config = config
-        this.makeMap()
-    }
-
-    protected async makeMap() {
-        try {
-            const { config } = this
-            const networkPromise = this.getGraph()
-            const lineRulesPromise = getLineRules(config.url.scheme)
-            const dataPromise = getJSON(config.url.data)
-
-            const tileLoadPromise = new Promise(resolve => {
-                mapbox.once('load', resolve)
-                setTimeout(resolve, 5000)
-            })
-
-            // wait.textContent = 'making map...';
-
-            config.center = [0, 0]
-            const mapOptions = { ...config }
-            const scaleControl = L.control.scale({
-                imperial: false,
-            })
-            this.map = L.map(config.containerId, mapOptions).addControl(scaleControl)
-            const mapPaneStyle = this.map.getPanes().mapPane.style
-            mapPaneStyle.visibility = 'hidden'
-
-            addLayerSwitcher(this.map, [
-                mapbox,
-                mapnik,
-                osmFrance,
-                mapbox2,
-                openMapSurfer,
-                cartoDBNoLabels,
-                wikimapia,
-            ])
-
-            // wait.textContent = 'loading graph...';
-            this.addContextMenu()
-
-            const json = await networkPromise
-            this.network = new Network(json, config.detailedE)
-            const platformLocations = this.network.platforms.map(p => p.location)
-            const center = getCenter(platformLocations)
-            config.center = [center.lat, center.lng]
-            const bounds = L.latLngBounds(platformLocations)
-            this.overlay = new SvgOverlay(bounds, L.point(200, 200)).addTo(this.map)
-            const { defs } = this.overlay
-
-            const {
-                default: alertify,
-                confirm,
-            } = await alertifyPromise
-            // addEventListener('keydown', async e => {
-            //     if (!e.shiftKey || !e.ctrlKey || e.keyCode !== 82 || !(await confirm('Reset network?'))) {
-            //         return
-            //     }
-            //     const graph = await this.getGraph()
-            //     this.resetNetwork(graph)
-            // })
-
-            // const { textContent } = defs
-            // if (!textContent) {
-            //     alertify.alert(`
-            //         Your browser doesn't seem to have capabilities to display some features of the map.
-            //         Consider using Chrome or Firefox for the best experience.
-            //     `)
-            // }
-
-            this.lineRules = await lineRulesPromise
-            // wait.textContent = 'adding content...';
-            this.resetMapView()
-            this.map.addLayer(mapbox)
-            this.map.on('overlayupdate', e => {
-                this.moving = true
-                this.render()
-                this.moving = false
-                // console.time('conversion');
-                // file.svgToPicture(document.getElementById('overlay') as any).then(img => {
-                //     document.body.appendChild(img);
-                //     console.timeEnd('conversion');
-                // });
-            })
-            this.initNetwork()
-            // TODO: fix the kludge making the grey area disappear
-            this.map.invalidateSize(false)
-            this.addMapListeners()
-            // new RoutePlanner().addTo(this)
-            new DistanceMeasure().addTo(this.map)
-            // this.routeWorker.postMessage(this.network);
-            // drawZones(this.map, this.network.platforms);
-
-            dataPromise.then(data => new FAQ(data).addTo(this.map))
-            // wait.textContent = 'loading tiles...';
-
-            await tileLoadPromise
-            // wait.parentElement.removeChild(wait);
-            mapPaneStyle.visibility = ''
-            // const img = file.svgToImg(document.getElementById('overlay') as any, true);
-            // file.svgToCanvas(document.getElementById('overlay') as any)
-            //     .then(canvas => fFile.downloadText('svg.txt', canvas.toDataURL('image/png')));
-            // file.downloadText('img.txt', img.src);
-            this.runUnblur()
-        } catch (e) {
-            console.error(e)
-        }
-    }
-
-    runUnblur() {
-        this.map
-            .on('movestart', e => this.moving = true)
-            .on('moveend', e => this.moving = false)
-        unblur({
-            interval: 250,
-            skipIf: () => this.moving,
-            // onUnblur: (els) => console.log('unblurred:', els.length),
-            // onSkip: () => console.log('skipped'),
-        })
-    }
-
-    subscribe<K extends keyof MetroMapEventMap>(type: K, listener: (e: MetroMapEventMap[K]) => void) {
-        this.mediator.subscribe(type, listener)
-        // forwarding map event to mediator
-        this.map.on(type, this.mediator.publish)
-    }
-
-    private addContextMenu() {
-        for (const el of contextMenuArray) {
-            this.map.on(el.event, this.mediator.publish)
-        }
-        this.contextMenu.addTo(this.map)
-    }
-
-    protected addMapListeners() {
-        const { map, contextMenu } = this
-
-        map.on('distancemeasureinit', e => {
-            contextMenu.insertItem('measuredistance', 'Measure distance')
-
-            map.on('clearmeasurements', () => {
-                contextMenu.removeItem('clearmeasurements')
-                contextMenu.insertItem('measuredistance', 'Measure distance')
-            })
-
-            this.subscribe('measuredistance', () => {
-                contextMenu.removeItem('measuredistance')
-                contextMenu.insertItem('clearmeasurements', 'Clear measurements')
-            })
-        })
-    }
-
-    /** call only once! */
-    private initNetwork() {
-        this.render()
-    }
-
-    private resetMapView() {
-        // const fitness = (points, pt) => points.reduce((prev, cur) => this.bounds., 0);
-        // const center = geometricMedian(this.network.platforms.map(p => p.location), fitness, 0.1);
-        const { center, zoom } = this.config
-        const options = {
-            animate: false,
-        }
-        if (!center) {
-            console.error(`cannot set map to center`)
-            return
-        }
-        this.map.setView(center, zoom + 1, options)
-        this.map.setView(center, zoom, options)
-    }
-
-    private getGraph(): Promise<GraphJSON> {
-        return getJSON(this.config.url.graph)
-    }
-
-    protected resetNetwork(json: GraphJSON) {
-        this.network = new Network(json)
-        this.render()
-    }
-
-    private latLngToOverlayPoint = (latLng: L.LatLng) =>
-        this.overlay.latLngToOverlayPoint(latLng)
-
-    render() {
-        ReactDom.render((
-            <Metro
-                config={this.config}
-                zoom={this.map.getZoom()}
-                lineRules={this.lineRules}
-                network={this.network}
-                latLngToOverlayPoint={this.latLngToOverlayPoint}
-            />
-        ), this.overlay.origin)
-    }
+type SlotPoints = {
+  [P in SourceOrTarget]: Point
 }
+
+type Positions = {
+  [P in Bound]: Point
+}
+
+interface Containers {
+  transfersInner?: SVGGElement,
+  pathsInner?: SVGGElement,
+}
+
+interface Props {
+  config: Config,
+  zoom: number,
+  lineRules: Map<string, CSSStyleDeclaration>,
+  network: Network,
+  platformsOnSVG: WeakMap<Platform, Point>,
+  svgSizes: any,
+  containers: MetroContainers,
+  featuredPlatforms: Platform[] | null,
+  setFeaturedPlatforms: (platforms: Platform[] | null) => void,
+  latLngToOverlayPoint: (latLng: LatLng) => Point,
+}
+
+interface State {
+  containers: Containers,
+}
+
+class MapContainer extends PureComponent<Props> {
+  constructor(props) {
+    super(props)
+    this.updateParameters(props)
+  }
+
+  state: State = {
+    containers: {},
+  }
+
+  private isDetailed: boolean
+  private isOptimized = false
+
+  private readonly whiskers = new WeakMap<Platform, Map<Span, Point>>()
+  private readonly platformSlots = new WeakMap<Platform, Route[]>()
+  private readonly spanBatches = new Map<Span, number>()
+  private readonly parallelSpans: Span[][] = []
+  private readonly stationCircumpoints = new WeakMap<Station, Platform[]>()
+
+  UNSAFE_componentWillReceiveProps(props: Props) {
+    const oldProps = this.props
+    if (props.zoom === oldProps.zoom) {
+      return
+    }
+
+    this.updateParameters(props)
+  }
+
+  private updateParameters(props: Props) {
+    this.isDetailed = props.zoom >= props.config.detailedZoom
+
+    this.updateWhiskers(props)
+    this.updateCircumcircles(props)
+
+    if (!this.isOptimized) {
+      this.updateSlots(props)
+      this.updateBatches(props)
+      this.optimize(props)
+      this.updateBatches(props) // may be redundant
+      this.isOptimized = true
+    }
+  }
+
+  private mountTransfersInner = (g: SVGGElement) => {
+    console.info('mounting transfers inner', g)
+    this.setState((state: State) => ({
+      containers: {
+        ...state.containers,
+        transfersInner: g,
+      },
+    }))
+  }
+
+  private mountPathsInner = (g: SVGGElement) => {
+    console.info('mounting paths inner', g)
+    this.setState((state: State) => ({
+      containers: {
+        ...state.containers,
+        pathsInner: g,
+      },
+    }))
+  }
+
+  private getPlatformPosition = (platform: Platform) =>
+    tryGetFromMap(this.props.platformsOnSVG, platform)
+
+  private getPlatformWhiskers = (platform: Platform) =>
+    tryGetFromMap(this.whiskers, platform)
+
+  private getPlatformSlot = (platform: Platform) =>
+    this.platformSlots.get(platform) || null
+
+  private getSpanOffset = (span: Span) => {
+    const offset = this.spanBatches.get(span)
+    if (!offset) {
+      return 0
+    }
+
+    const { svgSizes } = this.props
+    const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * svgSizes.lineWidth
+    return offset * lineWidthPlusGapPx
+  }
+
+  private getFirstWhisker = (platform: Platform) =>
+    this.getPlatformWhiskers(platform).values().next().value
+
+  private getPlatformSlotPosition = (platform: Platform, route: Route) => {
+    const map = this.getPlatformSlot(platform)
+    if (!map) {
+      return 0
+    }
+
+    const index = map.indexOf(route)
+    if (index < 0) {
+      return 0
+    }
+
+    const { svgSizes } = this.props
+    const routes = platform.passingRoutes()
+
+    const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * svgSizes.lineWidth
+    const leftShift = (routes.size - 1) / 2
+    return (index - leftShift) * lineWidthPlusGapPx
+  }
+
+  private getSpanSlots = (span: Span) => {
+    const {
+      source,
+      target,
+      routes,
+    } = span
+
+    if (this.props.config.detailedE && routes.length > 1) {
+      throw new Error('more routes per span than 1')
+    }
+
+    const firstRoute = routes[0]
+
+    return {
+      source: this.getPlatformSlotPosition(source, firstRoute),
+      target: this.getPlatformSlotPosition(target, firstRoute),
+    }
+  }
+
+  private getSpanSlotPoints = (span: Span): SlotPoints => {
+    const slots = this.getSpanSlots(span)
+
+    const [source, target] = SOURCE_TARGET.map((prop, i) => {
+      const platform = span[prop]
+
+      const pos = this.getPlatformPosition(platform)
+      const controlPoint = tryGetFromMap(this.getPlatformWhiskers(platform), span)
+      const vec = controlPoint.subtract(pos)
+
+      const ortho = orthogonal(vec)[i]
+      const normal = ortho.equals(zeroVec) ? ortho : normalize(ortho)
+      return normal.multiplyBy(slots[prop]).add(pos)
+    })
+
+    return {
+      source,
+      target,
+    }
+  }
+
+  private getPlatformPositions = (platform: Platform) => {
+    const pos = this.getPlatformPosition(platform)
+    const value = this.getFirstWhisker(platform)
+    if (pos.equals(value)) {
+      // TODO WTF
+      return pos
+    }
+
+    const slots = this.getPlatformSlot(platform)
+    if (!slots) {
+      return pos
+    }
+
+    const { svgSizes } = this.props
+    const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * svgSizes.lineWidth
+    const leftShift = (slots.length - 1) / 2
+    const maxSlot = leftShift * lineWidthPlusGapPx
+
+    return getPositions(pos, value, -maxSlot, maxSlot)
+  }
+
+  private getPlatformColor = (platform: Platform) => {
+    const {
+      config,
+      lineRules,
+    } = this.props
+
+    const passingLines = platform.passingLines()
+
+    if (!this.isDetailed) {
+      // return BLACK
+      return config.detailedE && !platform.passingLines().has('E') ? GRAY : BLACK
+    }
+
+    if (!config.detailedE) {
+      return meanColor(this.linesToColors(passingLines))
+    }
+    if (!passingLines.has('E')) {
+      return GRAY
+    }
+    // TODO: temp
+    return BLACK
+    // const line = passingLines.values().next().value
+    // return passingLines.size === 1 && tryGetFromMap(lineRules, line).stroke || BLACK
+  }
+
+  private unsetFeaturedPlatforms = () => {
+    this.props.setFeaturedPlatforms(null)
+  }
+
+  private linesToColors(lines: Set<string>): string[] {
+    const { lineRules } = this.props
+    const rgbs: string[] = []
+    for (const line of lines) {
+      const { stroke } = tryGetFromMap(lineRules, line[0] === 'M' ? line : line[0])
+      if (stroke) {
+        rgbs.push(stroke)
+      }
+    }
+    return rgbs
+  }
+
+  private makeWhiskers(platform: Platform): Map<Span, Point> {
+    const PART = 0.5
+    const pos = this.getPlatformPosition(platform)
+    const whiskers = new Map<Span, Point>()
+    const allSpans = platform.getAllSpans()
+
+    if (allSpans.length === 0) {
+      return whiskers
+    }
+
+    if (allSpans.length === 1) {
+      return whiskers.set(allSpans[0], pos)
+    }
+
+    if (allSpans.length === 2) {
+      // TODO: fix source/target in graph
+      // const { inbound, outbound } = spans
+      // const boundSpans = inbound.length === 2 ? inbound : outbound.length === 2 ? outbound : null
+      // if (boundSpans) {
+      //   return whiskers.set(boundSpans[0], pos).set(boundSpans[1], pos)
+      // }
+
+      // const inboundSpan = inbound[0]
+      // const outboundSpan = outbound[0]
+
+      const [inboundSpan, outboundSpan] = allSpans
+      const areSameBound = xor(inboundSpan.routes, outboundSpan.routes).length > 0
+      if (!areSameBound) {
+        const prevPos = this.getPlatformPosition(inboundSpan.other(platform))
+        const nextPos = this.getPlatformPosition(outboundSpan.other(platform))
+        const wings = makeWings(prevPos, pos, nextPos, 1)
+        const t = Math.min(pos.distanceTo(prevPos), pos.distanceTo(nextPos)) * PART
+        whiskers.set(inboundSpan, wings[0].multiplyBy(t).add(pos))
+        whiskers.set(outboundSpan, wings[1].multiplyBy(t).add(pos))
+        return whiskers
+      }
+    }
+
+    const positions: Positions = {} as any
+    const distances = new WeakMap<Span, number>()
+
+    for (const bound of SPAN_PROPS) {
+      const boundSpans = platform.spans[bound]
+      const normals: Point[] = []
+      for (const span of boundSpans) {
+        const neighbor = span.other(platform)
+        const neighborPos = this.getPlatformPosition(neighbor)
+        const normal = normalize(neighborPos.subtract(pos))
+        normals.push(normal)
+        distances.set(span, pos.distanceTo(neighborPos))
+      }
+      positions[bound] = normals.length > 0 ? meanPoint(normals).add(pos) : (() => {
+        const neighbors = platform.adjacentPlatformsBySpans()
+        const poss = neighbors.map(p => this.getPlatformPosition(p))
+        const cofficient = -0.1 // somehow any negative number works
+        return meanPoint(poss).subtract(pos).multiplyBy(cofficient).add(pos)
+      })()
+    }
+
+    const wings = makeWings(positions.inbound, pos, positions.outbound, 1)
+    const wObj: Positions = {
+      inbound: wings[0],
+      outbound: wings[1],
+    }
+
+    for (const bound of SPAN_PROPS) {
+      const boundSpans = platform.spans[bound]
+      const wing = wObj[bound]
+      for (const span of boundSpans) {
+        const t = tryGetFromMap(distances, span) * PART
+        const end = wing.multiplyBy(t).add(pos)
+        whiskers.set(span, end)
+      }
+    }
+    return whiskers
+  }
+
+  private updateWhiskers(props: Props) {
+    const { network } = this.props
+
+    for (const station of network.stations) {
+      for (const platform of station.platforms) {
+        const wh = this.makeWhiskers(platform)
+        this.whiskers.set(platform, wh)
+      }
+    }
+  }
+
+  private updateCircumcircles(props: Props) {
+    const {
+      network,
+    } = props
+
+    for (const station of network.stations) {
+      const circular = findCycle(network, station)
+      if (circular.length > 0) {
+        this.stationCircumpoints.set(station, circular)
+      }
+    }
+  }
+
+  private updateSlots(props: Props) {
+    const {
+      network,
+      config,
+    } = props
+
+    const {
+      platformSlots,
+    } = this
+
+    for (const platform of network.platforms) {
+      const routeSet = platform.passingRoutes()
+      if (routeSet.size === 1) {
+        continue
+      }
+      const routes = Array.from(routeSet)
+
+      // if (!config.detailedE) {
+      //   const lineSet = platform.passingLines()
+      //   if (lineSet.size === 1) {
+      //     continue
+      //   }
+      //   const lines = Array.from(lineSet)
+      //   const leftShift = (routes.length - 1) / 2
+
+      //   for (let i = 0; i < lines.length; ++i) {
+      //     const slot = (i - leftShift) * lineWidthPlusGapPx
+      //     const map = getOrMakeInMap(platformSlots, platform, () => new Map<Route, number>())
+      //     const line = lines[i]
+      //     for (const route of routes) {
+      //       if (route.line !== line) {
+      //         continue
+      //       }
+      //       map.set(route, slot)
+      //     }
+      //     const route = routes[i]
+      //     map.set(route, slot)
+      //   }
+      //   return
+      // }
+
+      platformSlots.set(platform, routes)
+    }
+  }
+
+  private updateBatches(props: Props) {
+    // console.time('batches')
+
+    const {
+      network,
+    } = props
+
+    const {
+      platformSlots,
+      spanBatches,
+    } = this
+
+    spanBatches.clear()
+    this.parallelSpans.length = 0
+
+    const remainingSpans = new Set<Span>(network.spans)
+    for (const span of network.spans) {
+      if (!remainingSpans.has(span)) {
+        continue
+      }
+
+      const sourceMap = platformSlots.get(span.source)
+      const targetMap = platformSlots.get(span.target)
+
+      const parallelSpans = span.parallelSpans()
+      parallelSpans.push(span)
+
+      const spanToSourceSlot = new Map<Span, number>()
+
+      const sameDiffSpans = new Map<number, Span[]>()
+      for (const s of parallelSpans) {
+        remainingSpans.delete(s)
+
+        const route = s.routes[0]
+        // TODO: check this shit
+        const sourceSlot = sourceMap ? sourceMap.indexOf(route) : 0
+        const targetSlot = targetMap ? targetMap.indexOf(route) : 0
+
+        if (sourceSlot < 0 || targetSlot < 0) {
+          console.error('in span:', span)
+          throw new Error('route not found')
+        }
+
+        const diff = targetSlot - sourceSlot
+
+        spanToSourceSlot.set(s, sourceSlot)
+
+        const ss = sameDiffSpans.get(diff)
+        if (ss) {
+          ss.push(s)
+        } else {
+          sameDiffSpans.set(diff, [s])
+        }
+      }
+
+      const entries = Array.from(sameDiffSpans.values())
+
+      for (const ss of entries) {
+        if (ss.length < 2) {
+          continue
+        }
+        const sourceSlots = ss.map(s => tryGetFromMap(spanToSourceSlot, s))
+        const avgSourceSlot = mean(sourceSlots)
+        for (let i = 0; i < ss.length; ++i) {
+          // normalize
+          spanBatches.set(ss[i], sourceSlots[i] - avgSourceSlot)
+        }
+        this.parallelSpans.push(ss)
+      }
+    }
+
+    // console.timeEnd('batches')
+  }
+
+  private costFunction(props: Props, log = false) {
+    const {
+      network,
+    } = props
+
+    const {
+      parallelSpans,
+      getSpanSlotPoints,
+    } = this
+
+    return costFunction({
+      network,
+      parallelSpans,
+      getSpanSlotPoints,
+      log,
+    })
+  }
+
+  optimize(props: Props) {
+    const {
+      platformSlots,
+      spanBatches,
+      parallelSpans,
+    } = this
+
+    const { network } = props
+
+    console.time('loops')
+    const cost = this.costFunction(props)
+    console.log('initial cost', cost)
+
+    optimizeSlots({
+      network,
+      platformSlots,
+      costFunc: () => this.costFunction(props),
+      updateBatches: () => this.updateBatches(props),
+    })
+
+    console.timeEnd('loops')
+
+    console.log('batches', spanBatches)
+    console.log('slots', platformSlots)
+
+    // TODO: how to save optimized state?
+
+    console.log('total cost', this.costFunction(props, true))
+
+    sortSpans(network.spans, parallelSpans)
+  }
+
+  render() {
+    const {
+      config,
+      network,
+      lineRules,
+      svgSizes,
+      featuredPlatforms,
+      setFeaturedPlatforms,
+      containers: {
+        dummyTransfers,
+        dummyPlatforms,
+        defs,
+      },
+    } = this.props
+
+    const {
+      lineWidth,
+      lightLineWidth,
+      circleBorder,
+      circleRadius,
+      transferWidth,
+      transferBorder,
+      fullCircleRadius,
+    } = svgSizes
+
+    const {
+      containers: {
+        transfersInner,
+        pathsInner,
+      },
+    } = this.state
+
+    // const lineWidth = 2 ** (zoom / 4 - 1.75);
+
+    const lightRailPathStyle = tryGetFromMap(lineRules, 'L')
+    lightRailPathStyle.strokeWidth = `${lightLineWidth}px`
+
+    return (
+      <>
+        {pathsInner && network.spans &&
+          <Spans
+            spans={network.spans}
+            lineWidth={lineWidth}
+            getPlatformWhiskers={this.getPlatformWhiskers}
+            lineRules={lineRules}
+            detailedE={config.detailedE}
+            pathsInnerWrapper={pathsInner}
+            getPlatformPosition={this.getPlatformPosition}
+            getSpanSlots={this.getSpanSlots}
+            getSpanOffset={this.getSpanOffset}
+          />
+        }
+
+        <g
+          ref={this.mountPathsInner}
+        />
+
+        {transfersInner && dummyTransfers && defs && network.transfers &&
+          <Transfers
+            transfers={network.transfers}
+            isDetailed={this.isDetailed}
+            stationCircumpoints={this.stationCircumpoints}
+            featuredPlatforms={featuredPlatforms}
+            transferWidth={transferWidth}
+            transferBorder={transferBorder}
+            fullCircleRadius={fullCircleRadius}
+            transfersInnerWrapper={transfersInner}
+            dummyTransfers={dummyTransfers}
+            defs={defs}
+            getPlatformPosition={this.getPlatformPosition}
+            getPlatformPositions={this.getPlatformPositions}
+            getPlatformColor={this.getPlatformColor}
+            setFeaturedPlatforms={setFeaturedPlatforms}
+            unsetFeaturedPlatforms={this.unsetFeaturedPlatforms}
+          />
+        }
+
+        {dummyPlatforms && network.platforms &&
+          <Platforms
+            platforms={network.platforms}
+            isDetailed={this.isDetailed}
+            strokeWidth={circleBorder}
+            circleRadius={circleRadius}
+            dummyPlatforms={dummyPlatforms}
+            featuredPlatforms={featuredPlatforms}
+            getPlatformPositions={this.getPlatformPositions}
+            getPlatformColor={this.getPlatformColor}
+            setFeaturedPlatforms={setFeaturedPlatforms}
+            unsetFeaturedPlatforms={this.unsetFeaturedPlatforms}
+          />
+        }
+
+        <g
+          ref={this.mountTransfersInner}
+        />
+
+      </>
+    )
+  }
+}
+
+export default MapContainer
