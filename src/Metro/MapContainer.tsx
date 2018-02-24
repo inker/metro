@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 import { Point, LatLng } from 'leaflet'
-import { meanBy, xor } from 'lodash'
+import { meanBy, xor, sample } from 'lodash'
 
 import { meanColor } from 'util/color'
 import findCycle from 'util/algorithm/findCycle'
@@ -86,7 +86,7 @@ class MapContainer extends PureComponent<Props> {
   private isDetailed: boolean
   private readonly whiskers = new WeakMap<Platform, Map<Span, Point>>()
   private readonly platformSlots = new WeakMap<Platform, Map<Route, number>>()
-  private readonly spanBatches = new WeakMap<Span, number>()
+  private readonly spanBatches = new Map<Span, number>()
   private readonly stationCircumpoints = new WeakMap<Station, Platform[]>()
 
   componentWillReceiveProps(props: Props) {
@@ -104,7 +104,8 @@ class MapContainer extends PureComponent<Props> {
     this.updateSlots(props)
     this.updateBatches(props)
     this.updateCircumcircles(props)
-    this.costFunction(props)
+    this.optimize(props)
+    this.updateBatches(props) // may be redundant
   }
 
   private mountTransfersInner = (g: SVGGElement) => {
@@ -185,8 +186,8 @@ class MapContainer extends PureComponent<Props> {
     }
     // TODO: temp
     return BLACK
-    const line = passingLines.values().next().value
-    return passingLines.size === 1 && tryGetFromMap(lineRules, line).stroke || BLACK
+    // const line = passingLines.values().next().value
+    // return passingLines.size === 1 && tryGetFromMap(lineRules, line).stroke || BLACK
   }
 
   private linesToColors(lines: Set<string>): string[] {
@@ -354,7 +355,7 @@ class MapContainer extends PureComponent<Props> {
   }
 
   private updateBatches(props: Props) {
-    console.time('batches')
+    // console.time('batches')
 
     const {
       network,
@@ -364,6 +365,8 @@ class MapContainer extends PureComponent<Props> {
       platformSlots,
       spanBatches,
     } = this
+
+    spanBatches.clear()
 
     const remainingSpans = new Set<Span>(network.spans)
     for (const span of network.spans) {
@@ -413,7 +416,7 @@ class MapContainer extends PureComponent<Props> {
       }
     }
 
-    console.timeEnd('batches')
+    // console.timeEnd('batches')
   }
 
   private updateCircumcircles(props: Props) {
@@ -440,18 +443,9 @@ class MapContainer extends PureComponent<Props> {
     }
   }
 
-  private costFunction(props: Props) {
+  private costFunction(props: Props, log = false) {
     // distances (less)
     // crossings (less)
-
-    console.time('cost')
-
-    const {
-      spanBatches,
-      getPlatformPosition,
-      getSpanSlots,
-      getFirstWhisker,
-    } = this
 
     const {
       network,
@@ -460,7 +454,8 @@ class MapContainer extends PureComponent<Props> {
     const spans = network.spans.filter(s => s.routes[0].line === 'E')
 
     let sumDistances = 0
-    let numIntersections = 0
+    let numCrossings = 0
+    let numParallelCrossings = 0
 
     const numSpans = spans.length
     const numSpansMinusOne = numSpans - 1
@@ -504,18 +499,92 @@ class MapContainer extends PureComponent<Props> {
           && segmentsIntersect(arr, [otherSourcePoint, otherTargetPoint])
 
         if (doIntersect) {
+          const isParallelCrossing = span.isParallel(otherSpan)
           // console.log('intersection')
           // console.log(span.source.name, span.target.name, span.routes[0].branch)
           // console.log(otherSpan.source.name, otherSpan.target.name, otherSpan.routes[0].branch)
-          ++numIntersections
+          if (isParallelCrossing) {
+            if (log) {
+              console.log('intersection')
+              console.log(span.source.name, span.target.name, span.routes[0].branch)
+              console.log(otherSpan.source.name, otherSpan.target.name, otherSpan.routes[0].branch)
+            }
+            ++numParallelCrossings
+          }
+          ++numCrossings
         }
       }
     }
 
-    console.timeEnd('cost')
+    const { spanBatches } = this
+    const entries = Array.from(spanBatches).filter(([s]) => s.routes[0].line === 'E')
+    const numNonBatchedSpans = spans.length - entries.length
+    // console.log(spans.length, entries.length)
 
-    console.log('sum distances', sumDistances)
-    console.log('num intersections', numIntersections)
+    const totalCost = numParallelCrossings * 100 + numCrossings * 2 - numNonBatchedSpans * 2 + sumDistances * 0.001
+
+    if (log) {
+      console.log('sum distances', sumDistances)
+      console.log('num crossings', numCrossings)
+      console.log('num parallel crossings', numParallelCrossings)
+    }
+
+    return totalCost
+  }
+
+  optimize(props: Props) {
+    const {
+      network,
+    } = props
+
+    const {
+      platformSlots,
+    } = this
+
+    const platforms = network.platforms.filter(p => platformSlots.has(p))
+
+    console.time('loops')
+    let prevCost = this.costFunction(props)
+    console.log('initial cost', prevCost)
+    const TOTAL_ITERATIONS = 0
+
+    const shouldSwap = (i: number) => {
+      const max = 10
+      const min = 1
+      const a = 1 - (i / TOTAL_ITERATIONS) // 1 -> 0
+      const diff = max - min
+      const b = a ** 25
+      const c = min + (b * diff)
+
+      const cost = this.costFunction(props)
+      const d = cost / prevCost
+      return d < c ? cost : null
+    }
+
+    for (let i = 0; i < TOTAL_ITERATIONS; ++i) {
+      const platform = sample(platforms)
+      const map = tryGetFromMap(platformSlots, platform)
+      const entries = Array.from(map)
+      const a = sample(entries) as [Route, number]
+      const b = sample(entries) as [Route, number]
+      map.set(a[0], b[1])
+      map.set(b[0], a[1])
+      this.updateBatches(props) // TODO: optimize
+      const newCost = shouldSwap(i)
+      if (newCost !== null) {
+        if (newCost !== prevCost) {
+          console.log(i, newCost)
+        }
+        prevCost = newCost
+        continue
+      }
+      // restore
+      map.set(a[0], a[1])
+      map.set(b[0], b[1])
+      this.updateBatches(props) // TODO: optimize
+    }
+    console.timeEnd('loops')
+    console.log('total cost', this.costFunction(props, true))
   }
 
   render() {
