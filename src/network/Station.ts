@@ -8,11 +8,10 @@ import getCenter from '../util/geo/getCenter'
 import Platform from './Platform'
 
 export default class Station {
-    readonly id: string
+    readonly id = uniqueId()
     platforms: Platform[]
 
     constructor(platforms: Platform[]) {
-        this.id = uniqueId()
         this.platforms = platforms
         for (const platform of platforms) {
             (platform as any)._station = this

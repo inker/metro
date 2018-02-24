@@ -13,7 +13,7 @@ interface Spans {
 }
 
 export default class Platform {
-    readonly id: string
+    readonly id = uniqueId()
     name: string
     altNames: AltNames
     location: LatLng
@@ -30,7 +30,6 @@ export default class Platform {
     }
 
     constructor(name: string, location: LatLng, altNames: AltNames = {}, elevation?: number) {
-        this.id = uniqueId('platform-')
         this.name = name
         this.altNames = altNames
         this.location = location
