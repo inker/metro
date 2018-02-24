@@ -2,6 +2,15 @@ import { Point, point } from 'leaflet'
 import { isArbitrarilySmall as isNumberSmall } from './index'
 
 export type Ray = [Point, Point]
+type Segment = [Point, Point]
+
+enum Orientation {
+    COLLINEAR,
+    CLOCKWISE,
+    ANTICLOCKWISE,
+}
+
+export const zero = Object.freeze(point(0, 0))
 
 export const unit = Object.freeze(point(1, 0))
 
@@ -50,4 +59,30 @@ export function intersection([a, u]: Ray, [b, v]: Ray): Point | null {
     const d = b.subtract(a)
     const t = det(d, v) / div
     return u.multiplyBy(t).add(a)
+}
+
+const onSegment = (p: Point, q: Point, r: Point) =>
+    q.x <= Math.max(p.x, r.x) && q.x >= Math.min(p.x, r.x) &&
+    q.y <= Math.max(p.y, r.y) && q.y >= Math.min(p.y, r.y)
+
+function orientation(p: Point, q: Point, r: Point): Orientation {
+    const pq = q.subtract(p)
+    const qr = r.subtract(q)
+    const val = det(qr, pq)
+    return Math.abs(val) < Number.EPSILON
+        ? Orientation.COLLINEAR
+        : val > 0 ? Orientation.CLOCKWISE : Orientation.ANTICLOCKWISE
+}
+
+export function segmentsIntersect([p1, q1]: Segment, [p2, q2]: Segment): boolean {
+    const o1 = orientation(p1, q1, p2)
+    const o2 = orientation(p1, q1, q2)
+    const o3 = orientation(p2, q2, p1)
+    const o4 = orientation(p2, q2, q1)
+
+    return o1 !== o2 && o3 !== o4
+        || o1 === Orientation.COLLINEAR && onSegment(p1, p2, q1)
+        || o2 === Orientation.COLLINEAR && onSegment(p1, q2, q1)
+        || o3 === Orientation.COLLINEAR && onSegment(p2, p1, q2)
+        || o4 === Orientation.COLLINEAR && onSegment(p2, q1, q2)
 }

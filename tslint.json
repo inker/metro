@@ -22,6 +22,7 @@
       "log"
     ],
     "no-duplicate-variable": true,
+    "no-implicit-dependencies": false,
     "no-this-assignment": false,
     "no-unused-variable": true,
     "no-submodule-imports": false,

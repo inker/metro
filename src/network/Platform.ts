@@ -1,3 +1,5 @@
+import { uniqueId } from 'lodash'
+
 import { AltNames, LatLng } from './types'
 
 import Span from './Span'
@@ -5,7 +7,8 @@ import Transfer from './Transfer'
 import Station from './Station'
 import Route from './Route'
 
-export default class {
+export default class Platform {
+    readonly id = uniqueId()
     name: string
     altNames: AltNames
     location: LatLng
