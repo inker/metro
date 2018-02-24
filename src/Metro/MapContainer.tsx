@@ -26,6 +26,8 @@ import Network, {
 
 import Config from '../Config'
 
+import makeShouldSwapFunc from './utils/makeShouldSwapFunc'
+
 import { Containers as MetroContainers } from './index'
 import Platforms from './Platforms'
 import Transfers from './Transfers'
@@ -548,18 +550,7 @@ class MapContainer extends PureComponent<Props> {
     console.log('initial cost', prevCost)
     const TOTAL_ITERATIONS = 0
 
-    const shouldSwap = (i: number) => {
-      const max = 10
-      const min = 1
-      const a = 1 - (i / TOTAL_ITERATIONS) // 1 -> 0
-      const diff = max - min
-      const b = a ** 25
-      const c = min + (b * diff)
-
-      const cost = this.costFunction(props)
-      const d = cost / prevCost
-      return d < c ? cost : null
-    }
+    const shouldSwap = makeShouldSwapFunc(TOTAL_ITERATIONS, 10, () => this.costFunction(props))
 
     for (let i = 0; i < TOTAL_ITERATIONS; ++i) {
       const platform = sample(platforms)
@@ -570,7 +561,7 @@ class MapContainer extends PureComponent<Props> {
       map.set(a[0], b[1])
       map.set(b[0], a[1])
       this.updateBatches(props) // TODO: optimize
-      const newCost = shouldSwap(i)
+      const newCost = shouldSwap(prevCost, i)
       if (newCost !== null) {
         if (newCost !== prevCost) {
           console.log(i, newCost)
