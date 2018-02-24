@@ -6,10 +6,7 @@ import PlatformReact from 'components/Platform'
 
 import {
   Platform,
-  Route,
 } from '../network'
-
-import getPlatformPositions from './utils/getPlatformPositions'
 
 const PlatformCircles = styled.g`
   fill: white;
@@ -23,9 +20,7 @@ interface Props {
   circleRadius: number,
   dummyPlatforms: SVGGElement,
   featuredPlatforms: Platform[] | null,
-  getPlatformPosition: (platform: Platform) => Point,
-  getPlatformSlot: (platform: Platform) => Map<Route, number> | null,
-  getFirstWhisker: (platform: Platform) => Point,
+  getPlatformPositions: (platform: Platform) => Point | Point[],
   getPlatformColor: (platform: Platform) => string,
   setFeaturedPlatforms: (platform: Platform[]) => void,
   unsetFeaturedPlatforms: () => void,
@@ -47,16 +42,6 @@ class Platforms extends PureComponent<Props> {
     const { name } = platform
     const featuredPlatforms = platform.station.platforms.filter(p => p.name === name)
     setFeaturedPlatforms(featuredPlatforms)
-  }
-
-  private getPlatformPositions(platform: Platform) {
-    const { props } = this
-    return getPlatformPositions(
-      platform,
-      props.getPlatformPosition,
-      props.getPlatformSlot,
-      props.getFirstWhisker,
-    )
   }
 
   private getDisplayedPlatforms() {
@@ -102,6 +87,7 @@ class Platforms extends PureComponent<Props> {
       circleRadius,
       dummyPlatforms,
       featuredPlatforms,
+      getPlatformPositions,
       getPlatformColor,
       unsetFeaturedPlatforms,
     } = this.props
@@ -116,7 +102,7 @@ class Platforms extends PureComponent<Props> {
         }}
       >
         {dummyPlatforms && platforms.map(platform => {
-          const pos = this.getPlatformPositions(platform)
+          const pos = getPlatformPositions(platform)
           const representedPlatforms = displayedMap.get(platform)
           const radius = representedPlatforms ? circleRadius : 0
           const isFeatured = !!featuredSet && featuredSet.has(platform)

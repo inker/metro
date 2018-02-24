@@ -26,6 +26,7 @@ import Network, {
 
 import Config from '../Config'
 
+import getPositions from './utils/getPositions'
 import makeShouldSwapFunc from './utils/makeShouldSwapFunc'
 
 import { Containers as MetroContainers } from './index'
@@ -163,8 +164,22 @@ class MapContainer extends PureComponent<Props> {
     }
   }
 
-  private unsetFeaturedPlatforms = () => {
-    this.props.setFeaturedPlatforms(null)
+  private getPlatformPositions = (platform: Platform) => {
+    const pos = this.getPlatformPosition(platform)
+    const slotsMap = this.getPlatformSlot(platform)
+    if (!slotsMap) {
+      return pos
+    }
+
+    const slots = Array.from(slotsMap).map(([k, v]) => v)
+    const value = this.getFirstWhisker(platform)
+    if (pos.equals(value)) {
+      // TODO WTF
+      return pos
+    }
+    const minSlot = Math.min(...slots)
+    const maxSlot = Math.max(...slots)
+    return getPositions(pos, value, minSlot, maxSlot)
   }
 
   private getPlatformColor = (platform: Platform) => {
@@ -190,6 +205,10 @@ class MapContainer extends PureComponent<Props> {
     return BLACK
     // const line = passingLines.values().next().value
     // return passingLines.size === 1 && tryGetFromMap(lineRules, line).stroke || BLACK
+  }
+
+  private unsetFeaturedPlatforms = () => {
+    this.props.setFeaturedPlatforms(null)
   }
 
   private linesToColors(lines: Set<string>): string[] {
@@ -648,8 +667,7 @@ class MapContainer extends PureComponent<Props> {
             dummyTransfers={dummyTransfers}
             defs={defs}
             getPlatformPosition={this.getPlatformPosition}
-            getPlatformSlot={this.getPlatformSlot}
-            getFirstWhisker={this.getFirstWhisker}
+            getPlatformPositions={this.getPlatformPositions}
             getPlatformColor={this.getPlatformColor}
             setFeaturedPlatforms={setFeaturedPlatforms}
             unsetFeaturedPlatforms={this.unsetFeaturedPlatforms}
@@ -664,9 +682,7 @@ class MapContainer extends PureComponent<Props> {
             circleRadius={circleRadius}
             dummyPlatforms={dummyPlatforms}
             featuredPlatforms={featuredPlatforms}
-            getPlatformPosition={this.getPlatformPosition}
-            getPlatformSlot={this.getPlatformSlot}
-            getFirstWhisker={this.getFirstWhisker}
+            getPlatformPositions={this.getPlatformPositions}
             getPlatformColor={this.getPlatformColor}
             setFeaturedPlatforms={setFeaturedPlatforms}
             unsetFeaturedPlatforms={this.unsetFeaturedPlatforms}

@@ -21,7 +21,6 @@ import {
 } from '../network'
 
 import cartesian from './utils/cartesian'
-import getPlatformPositions from './utils/getPlatformPositions'
 
 const Paths = styled.g`
   fill: none;
@@ -53,8 +52,7 @@ interface Props {
   dummyTransfers: SVGGElement,
   defs: SVGDefsElement,
   getPlatformPosition: (platform: Platform) => Point,
-  getPlatformSlot: (platform: Platform) => Map<Route, number> | null,
-  getFirstWhisker: (platform: Platform) => Point,
+  getPlatformPositions: (platform: Platform) => Point | Point[],
   getPlatformColor: (platform: Platform) => string,
   setFeaturedPlatforms: (platforms: Platform[]) => void,
   unsetFeaturedPlatforms: () => void,
@@ -79,16 +77,6 @@ class Transfers extends PureComponent<Props> {
     const targetFeaturedPlatforms = target.station.platforms.filter(p => p.name === targetName)
     const featuredPlatforms = uniq([...sourceFeaturedPlatforms, ...targetFeaturedPlatforms])
     this.props.setFeaturedPlatforms(featuredPlatforms)
-  }
-
-  private getPlatformPositions(platform: Platform) {
-    const { props } = this
-    return getPlatformPositions(
-      platform,
-      props.getPlatformPosition,
-      props.getPlatformSlot,
-      props.getFirstWhisker,
-    )
   }
 
   private getThirdPosition(transfer: Transfer) {
@@ -122,9 +110,10 @@ class Transfers extends PureComponent<Props> {
   }
 
   private getPositions(transfer: Transfer) {
+    const { getPlatformPositions } = this.props
     const { source, target } = transfer
-    const sourcePos = this.getPlatformPositions(source)
-    const targetPos = this.getPlatformPositions(target)
+    const sourcePos = getPlatformPositions(source)
+    const targetPos = getPlatformPositions(target)
     const thirdPos = this.getThirdPosition(transfer)
 
     if (!Array.isArray(sourcePos) && !Array.isArray(targetPos)) {
