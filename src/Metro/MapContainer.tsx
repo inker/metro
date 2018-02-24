@@ -41,17 +41,16 @@ const BLACK = '#000'
 
 type SourceOrTarget = 'source' | 'target'
 const SOURCE_TARGET = Object.freeze(['source', 'target'] as SourceOrTarget[])
+
 type Bound = 'inbound' | 'outbound'
 const SPAN_PROPS = Object.freeze(['inbound', 'outbound'] as Bound[])
 
-interface SlotPoints {
-  source: Point,
-  target: Point,
+type SlotPoints = {
+  [P in SourceOrTarget]: Point
 }
 
-interface Positions {
-  inbound: Point,
-  outbound: Point,
+type Positions = {
+  [P in Bound]: Point
 }
 
 interface Containers {
