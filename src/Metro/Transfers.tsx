@@ -17,7 +17,6 @@ import {
   Platform,
   Station,
   Transfer,
-  Route,
 } from '../network'
 
 import cartesian from './utils/cartesian'

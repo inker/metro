@@ -1,6 +1,10 @@
 import React, { PureComponent } from 'react'
 import { Point, LatLng } from 'leaflet'
-import { meanBy, xor, sample } from 'lodash'
+import {
+  meanBy,
+  xor,
+  sample,
+} from 'lodash'
 
 import { meanColor } from 'util/color'
 import findCycle from 'util/algorithm/findCycle'
@@ -170,7 +174,7 @@ class MapContainer extends PureComponent<Props> {
       return pos
     }
 
-    const slots = Array.from(slotsMap).map(([k, v]) => v)
+    const slots = Array.from(slotsMap.values())
     const value = this.getFirstWhisker(platform)
     if (pos.equals(value)) {
       // TODO WTF
@@ -234,8 +238,7 @@ class MapContainer extends PureComponent<Props> {
 
       const ortho = orthogonal(vec)[i]
       const normal = ortho.equals(zeroVec) ? ortho : normalize(ortho)
-      const offsetVec = normal.multiplyBy(slots[prop])
-      return pos.add(offsetVec)
+      return normal.multiplyBy(slots[prop]).add(pos)
     })
 
     return {
@@ -537,8 +540,8 @@ class MapContainer extends PureComponent<Props> {
     }
 
     const { spanBatches } = this
-    const entries = Array.from(spanBatches).filter(([s]) => s.routes[0].line === 'E')
-    const numNonBatchedSpans = spans.length - entries.length
+    const batchedSpans = Array.from(spanBatches.keys()).filter(s => s.routes[0].line === 'E')
+    const numNonBatchedSpans = spans.length - batchedSpans.length
     // console.log(spans.length, entries.length)
 
     const totalCost = numParallelCrossings * 100 + numCrossings * 2 - numNonBatchedSpans * 2 + sumDistances * 0.001

@@ -1,3 +1,4 @@
+import { Point } from 'leaflet'
 import { memoize } from 'lodash'
 
 import {
@@ -5,11 +6,13 @@ import {
   normalize,
 } from 'util/math/vector'
 
-function getPositions(pos, value, minOffset, maxOffset) {
-  const ortho = normalize(orthogonal(value.subtract(pos))[0])
+function getPositions(pos: Point, value: Point, minOffset: number, maxOffset: number) {
+  const vec = value.subtract(pos)
+  const ortho = orthogonal(vec)[0]
+  const normal = normalize(ortho)
   return [
-    ortho.multiplyBy(minOffset).add(pos),
-    ortho.multiplyBy(maxOffset).add(pos),
+    normal.multiplyBy(minOffset).add(pos),
+    normal.multiplyBy(maxOffset).add(pos),
   ]
 }
 

@@ -5,8 +5,6 @@ import { Point } from 'leaflet'
 import Modal from 'components/Modal'
 import Bezier from 'components/primitives/Bezier'
 
-import Route from 'network/Route'
-
 import * as math from 'util/math'
 
 import {
