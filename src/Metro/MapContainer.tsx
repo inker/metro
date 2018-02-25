@@ -31,6 +31,7 @@ import Network, {
 import Config from '../Config'
 
 import getPositions from './utils/getPositions'
+import getPlatformPatches from './utils/getPlatformPatches'
 import makeShouldSwapFunc from './utils/makeShouldSwapFunc'
 
 import { Containers as MetroContainers } from './index'
@@ -544,7 +545,7 @@ class MapContainer extends PureComponent<Props> {
     const numNonBatchedSpans = spans.length - batchedSpans.length
     // console.log(spans.length, entries.length)
 
-    const totalCost = numParallelCrossings * 100 + numCrossings * 2 - numNonBatchedSpans * 2 + sumDistances * 0.001
+    const totalCost = numParallelCrossings * 100 + numCrossings * 2 - numNonBatchedSpans * 2 + sumDistances * 0.000
 
     if (log) {
       console.log('sum distances', sumDistances)
@@ -565,22 +566,43 @@ class MapContainer extends PureComponent<Props> {
     } = this
 
     const platforms = network.platforms.filter(p => platformSlots.has(p))
+    const patches = getPlatformPatches(platforms)
+    console.log('patches', patches)
+
+    // initial primitive optimization (straigtening of patches)
+    for (const patch of patches) {
+      const firstPlatform = patch[0]
+      const routes = Array.from(firstPlatform.passingRoutes())
+      const slotsMap = tryGetFromMap(platformSlots, firstPlatform)
+      const slots = Array.from(slotsMap.values())
+      for (const p of patch) {
+        const map = tryGetFromMap(platformSlots, p)
+        for (let i = 0; i < routes.length; ++i) {
+          map.set(routes[i], slots[i])
+        }
+      }
+    }
+    this.updateBatches(props) // TODO: optimize
 
     console.time('loops')
     let prevCost = this.costFunction(props)
     console.log('initial cost', prevCost)
-    const TOTAL_ITERATIONS = 0
+    const TOTAL_ITERATIONS = 10000
 
     const shouldSwap = makeShouldSwapFunc(TOTAL_ITERATIONS, 10, () => this.costFunction(props))
 
     for (let i = 0; i < TOTAL_ITERATIONS; ++i) {
-      const platform = sample(platforms)
-      const map = tryGetFromMap(platformSlots, platform)
-      const entries = Array.from(map)
+      const patch = sample(patches) as Platform[]
+      const firstPlatform = patch[0]
+      const slotsMap = tryGetFromMap(platformSlots, firstPlatform)
+      const entries = Array.from(slotsMap)
       const a = sample(entries) as [Route, number]
       const b = sample(entries) as [Route, number]
-      map.set(a[0], b[1])
-      map.set(b[0], a[1])
+      for (const p of patch) {
+        const map = tryGetFromMap(platformSlots, p)
+        map.set(a[0], b[1])
+        map.set(b[0], a[1])
+      }
       this.updateBatches(props) // TODO: optimize
       const newCost = shouldSwap(prevCost, i)
       if (newCost !== null) {
@@ -591,8 +613,11 @@ class MapContainer extends PureComponent<Props> {
         continue
       }
       // restore
-      map.set(a[0], a[1])
-      map.set(b[0], b[1])
+      for (const p of patch) {
+        const map = tryGetFromMap(platformSlots, p)
+        map.set(a[0], a[1])
+        map.set(b[0], b[1])
+      }
       this.updateBatches(props) // TODO: optimize
     }
     console.timeEnd('loops')
