@@ -6,6 +6,7 @@ import {
   orderBy,
   xor,
   sample,
+  shuffle,
 } from 'lodash'
 
 import { meanColor } from 'util/color'
@@ -61,6 +62,8 @@ type SlotPoints = {
 type Positions = {
   [P in Bound]: Point
 }
+
+const simpleShouldSwapFunc = (newCost: number, prevCost: number) => newCost <= prevCost
 
 interface Containers {
   transfersInner?: SVGGElement,
@@ -601,7 +604,7 @@ class MapContainer extends PureComponent<Props> {
 
     const costFunc = () => this.costFunction(props)
 
-    const onSwap = (iteration: number, newCost: number, prevCost: number) => {
+    const onSwap = (newCost: number, prevCost: number, iteration: number) => {
       if (newCost !== prevCost) {
         console.log(iteration, newCost)
       }
@@ -610,6 +613,7 @@ class MapContainer extends PureComponent<Props> {
     const swapFooOptions = {
       costFunc,
       shouldSwap: makeShouldSwapFunc(TOTAL_ITERATIONS, 10, 100),
+      onSwap,
       before: () => {
         const patch = sample(patches) as Platform[]
         const firstPlatform = patch[0]
@@ -633,23 +637,21 @@ class MapContainer extends PureComponent<Props> {
         }
         this.updateBatches(props) // TODO: optimize
       },
-      onSwap,
     }
 
     cost = optimize(TOTAL_ITERATIONS, cost, swapFooOptions)
 
     // move whole routes around
     const platformBranches = getPlatformBranches(platforms)
-    const fooarr = Array.from(platformBranches)
-    console.log('bro', fooarr)
-
-    const nextShouldSwapFunc = (newCost: number, prevCost: number) => newCost <= prevCost
+    const routeEntries = shuffle(Array.from(platformBranches))
+    console.log('bro', routeEntries)
 
     cost = optimize(TOTAL_ITERATIONS / 3, cost, {
       costFunc,
-      shouldSwap: nextShouldSwapFunc,
-      before: () => {
-        const [route, ps] = sample(fooarr) as [Route, Platform[]]
+      shouldSwap: simpleShouldSwapFunc,
+      onSwap,
+      before: (i) => {
+        const [route, ps] = routeEntries[i % routeEntries.length]
         const down = Math.random() < 0.5
         const swappedPlatforms = new Map<Platform, Route>()
         for (const p of ps) {
@@ -681,14 +683,13 @@ class MapContainer extends PureComponent<Props> {
         }
         this.updateBatches(props) // TODO: optimize
       },
-      onSwap,
     })
 
     console.log('finally')
 
     cost = optimize(TOTAL_ITERATIONS / 2, cost, {
       ...swapFooOptions,
-      shouldSwap: nextShouldSwapFunc,
+      shouldSwap: simpleShouldSwapFunc,
     })
 
     console.log('cost', cost)

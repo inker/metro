@@ -1,9 +1,9 @@
 interface Options<T> {
   costFunc: () => number,
-  shouldSwap: (newCost: number, prevCost: number, iteration: number) => boolean
-  before?: () => T,
-  after?: (beforeRetVal: T) => void,
-  onSwap?: (iteration: number, newCost: number, prevCost: number) => void,
+  shouldSwap: (newCost: number, prevCost: number, iteration: number) => boolean,
+  onSwap?: (newCost: number, prevCost: number, iteration: number) => void,
+  before?: (iteration: number) => T,
+  after?: (beforeRetVal: T, iteration: number) => void,
 }
 
 export default <T>(totalIterations: number, initialCost: number, {
@@ -17,18 +17,18 @@ export default <T>(totalIterations: number, initialCost: number, {
   for (let i = 0; i < totalIterations; ++i) {
     let beforeRetVal: T | undefined
     if (before) {
-      beforeRetVal = before()
+      beforeRetVal = before(i)
     }
     const newCost = costFunc()
     if (shouldSwap(newCost, prevCost, i)) {
       if (onSwap) {
-        onSwap(i, newCost, prevCost)
+        onSwap(newCost, prevCost, i)
       }
       prevCost = newCost
       continue
     }
     if (after) {
-      after(beforeRetVal as T)
+      after(beforeRetVal as T, i)
     }
   }
   return prevCost
