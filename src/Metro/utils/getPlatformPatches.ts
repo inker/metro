@@ -1,12 +1,8 @@
 import {
-  flatten,
-  uniq,
   xor,
 } from 'lodash'
 
 import Platform from 'network/Platform'
-
-type SourceOrTarget = 'source' | 'target'
 
 function walk(platform: Platform, patches: Set<Platform>): Set<Platform> {
   patches.add(platform)

@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react'
 import { Point, LatLng } from 'leaflet'
 import {
+  clamp,
   meanBy,
+  orderBy,
   xor,
   sample,
 } from 'lodash'
@@ -32,7 +34,9 @@ import Config from '../Config'
 
 import getPositions from './utils/getPositions'
 import getPlatformPatches from './utils/getPlatformPatches'
+import getPlatformBranches from './utils/getPlatformBranches'
 import makeShouldSwapFunc from './utils/makeShouldSwapFunc'
+import optimize from './utils/optimize'
 
 import { Containers as MetroContainers } from './index'
 import Platforms from './Platforms'
@@ -545,7 +549,13 @@ class MapContainer extends PureComponent<Props> {
     const numNonBatchedSpans = spans.length - batchedSpans.length
     // console.log(spans.length, entries.length)
 
-    const totalCost = numParallelCrossings * 100 + numCrossings * 2 - numNonBatchedSpans * 2 + sumDistances * 0.000
+    // TODO: treat only adjacent parallel as parallel
+
+    const totalCost = 1000
+      + numParallelCrossings * 100
+      + numCrossings * 2
+      - numNonBatchedSpans * 5
+      + sumDistances * 0.001
 
     if (log) {
       console.log('sum distances', sumDistances)
@@ -585,41 +595,106 @@ class MapContainer extends PureComponent<Props> {
     this.updateBatches(props) // TODO: optimize
 
     console.time('loops')
-    let prevCost = this.costFunction(props)
-    console.log('initial cost', prevCost)
-    const TOTAL_ITERATIONS = 10000
+    let cost = this.costFunction(props)
+    console.log('initial cost', cost)
+    const TOTAL_ITERATIONS = 1000
 
-    const shouldSwap = makeShouldSwapFunc(TOTAL_ITERATIONS, 10, () => this.costFunction(props))
+    const costFunc = () => this.costFunction(props)
 
-    for (let i = 0; i < TOTAL_ITERATIONS; ++i) {
-      const patch = sample(patches) as Platform[]
-      const firstPlatform = patch[0]
-      const slotsMap = tryGetFromMap(platformSlots, firstPlatform)
-      const entries = Array.from(slotsMap)
-      const a = sample(entries) as [Route, number]
-      const b = sample(entries) as [Route, number]
-      for (const p of patch) {
-        const map = tryGetFromMap(platformSlots, p)
-        map.set(a[0], b[1])
-        map.set(b[0], a[1])
+    const onSwap = (iteration: number, newCost: number, prevCost: number) => {
+      if (newCost !== prevCost) {
+        console.log(iteration, newCost)
       }
-      this.updateBatches(props) // TODO: optimize
-      const newCost = shouldSwap(prevCost, i)
-      if (newCost !== null) {
-        if (newCost !== prevCost) {
-          console.log(i, newCost)
-        }
-        prevCost = newCost
-        continue
-      }
-      // restore
-      for (const p of patch) {
-        const map = tryGetFromMap(platformSlots, p)
-        map.set(a[0], a[1])
-        map.set(b[0], b[1])
-      }
-      this.updateBatches(props) // TODO: optimize
     }
+
+    const swapFooOptions = {
+      costFunc,
+      shouldSwap: makeShouldSwapFunc(TOTAL_ITERATIONS, 10, 100),
+      before: () => {
+        const patch = sample(patches) as Platform[]
+        const firstPlatform = patch[0]
+        const slotsMap = tryGetFromMap(platformSlots, firstPlatform)
+        const entries = Array.from(slotsMap)
+        const a = sample(entries) as [Route, number]
+        const b = sample(entries) as [Route, number]
+        for (const p of patch) {
+          const map = tryGetFromMap(platformSlots, p)
+          map.set(a[0], b[1])
+          map.set(b[0], a[1])
+        }
+        this.updateBatches(props) // TODO: optimize
+        return { patch, a, b }
+      },
+      after: ({ patch, a, b }) => {
+        for (const p of patch) {
+          const map = tryGetFromMap(platformSlots, p)
+          map.set(a[0], a[1])
+          map.set(b[0], b[1])
+        }
+        this.updateBatches(props) // TODO: optimize
+      },
+      onSwap,
+    }
+
+    cost = optimize(TOTAL_ITERATIONS, cost, swapFooOptions)
+
+    // move whole routes around
+    const platformBranches = getPlatformBranches(platforms)
+    const fooarr = Array.from(platformBranches)
+    console.log('bro', fooarr)
+
+    const nextShouldSwapFunc = (newCost: number, prevCost: number) => newCost <= prevCost
+
+    cost = optimize(TOTAL_ITERATIONS / 3, cost, {
+      costFunc,
+      shouldSwap: nextShouldSwapFunc,
+      before: () => {
+        const [route, ps] = sample(fooarr) as [Route, Platform[]]
+        const down = Math.random() < 0.5
+        const swappedPlatforms = new Map<Platform, Route>()
+        for (const p of ps) {
+          const slotsMap = tryGetFromMap(platformSlots, p)
+          const entries = orderBy(Array.from(slotsMap), ([k, v]) => v)
+          const posIndex = entries.findIndex(([k, v]) => k === route)
+          const newPosIndex = posIndex + (down ? 1 : -1)
+          const otherPosIndex = clamp(newPosIndex, 0, entries.length - 1)
+          if (posIndex === otherPosIndex) {
+            continue
+          }
+          const [otherRoute] = entries[otherPosIndex]
+          const pos = entries[posIndex][1]
+          const otherPos = entries[otherPosIndex][1]
+          slotsMap.set(route, otherPos)
+          slotsMap.set(otherRoute, pos)
+          swappedPlatforms.set(p, otherRoute)
+        }
+        this.updateBatches(props) // TODO: optimize
+        return { route, swappedPlatforms }
+      },
+      after: ({ route, swappedPlatforms }) => {
+        for (const [p, otherRoute] of swappedPlatforms) {
+          const slotsMap = tryGetFromMap(platformSlots, p)
+          const pos = tryGetFromMap(slotsMap, otherRoute)
+          const otherPos = tryGetFromMap(slotsMap, route)
+          slotsMap.set(route, pos)
+          slotsMap.set(otherRoute, otherPos)
+        }
+        this.updateBatches(props) // TODO: optimize
+      },
+      onSwap,
+    })
+
+    console.log('finally')
+
+    cost = optimize(TOTAL_ITERATIONS / 2, cost, {
+      ...swapFooOptions,
+      shouldSwap: nextShouldSwapFunc,
+    })
+
+    console.log('cost', cost)
+
+    // TODO: how to save optimized state?
+
     console.timeEnd('loops')
     console.log('total cost', this.costFunction(props, true))
   }
