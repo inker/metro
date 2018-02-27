@@ -2,18 +2,19 @@ import React, { PureComponent } from 'react'
 import { Point, LatLng } from 'leaflet'
 import {
   clamp,
-  meanBy,
+  mean,
   orderBy,
   xor,
   sample,
   shuffle,
+  sumBy,
 } from 'lodash'
 
 import { meanColor } from 'util/color'
 import findCycle from 'util/algorithm/findCycle'
 import * as math from 'util/math'
 import {
-  mean,
+  mean as meanPoint,
   zero as zeroVec,
   normalize,
   orthogonal,
@@ -101,6 +102,7 @@ class MapContainer extends PureComponent<Props> {
   private readonly whiskers = new WeakMap<Platform, Map<Span, Point>>()
   private readonly platformSlots = new WeakMap<Platform, Map<Route, number>>()
   private readonly spanBatches = new Map<Span, number>()
+  private readonly parallelSpans: Span[][] = []
   private readonly stationCircumpoints = new WeakMap<Station, Platform[]>()
 
   componentWillReceiveProps(props: Props) {
@@ -307,7 +309,7 @@ class MapContainer extends PureComponent<Props> {
         normals.push(normal)
         distances.set(span, pos.distanceTo(neighborPos))
       }
-      positions[bound] = mean(normals).add(pos)
+      positions[bound] = meanPoint(normals).add(pos)
     }
 
     const wings = math.wings(positions.inbound, pos, positions.outbound, 1)
@@ -398,52 +400,55 @@ class MapContainer extends PureComponent<Props> {
     } = this
 
     spanBatches.clear()
+    this.parallelSpans.length = 0
 
     const remainingSpans = new Set<Span>(network.spans)
     for (const span of network.spans) {
       if (!remainingSpans.has(span)) {
         continue
       }
-      remainingSpans.delete(span)
 
       const sourceMap = platformSlots.get(span.source)
       const targetMap = platformSlots.get(span.target)
 
-      const slots = (() => {
-        const route = span.routes[0]
-        const sourceSlot = sourceMap && sourceMap.get(route) || 0
-        const targetSlot = targetMap && targetMap.get(route) || 0
-        return [sourceSlot, targetSlot]
-      })()
-
-      const diff = slots[1] - slots[0]
-
-      const entries: [Span, number][] = [
-        [span, slots[0]],
-      ]
-
       const parallelSpans = span.parallelSpans()
-      for (const ps of parallelSpans) {
-        if (!remainingSpans.has(ps)) {
-          throw new Error('span was deleted!')
-        }
-        remainingSpans.delete(ps)
-        if (ps.source === span.target) {
-          throw new Error('inverted!')
-        }
-        const route = ps.routes[0]
+      parallelSpans.push(span)
+
+      const spanToSourceSlot = new Map<Span, number>()
+
+      const sameDiffSpans = new Map<number, Span[]>()
+      for (const s of parallelSpans) {
+        remainingSpans.delete(s)
+
+        const route = s.routes[0]
         const sourceSlot = sourceMap && sourceMap.get(route) || 0
         const targetSlot = targetMap && targetMap.get(route) || 0
-        const d = targetSlot - sourceSlot
-        if (d === diff) {
-          entries.push([ps, sourceSlot])
+
+        const diff = targetSlot - sourceSlot
+
+        spanToSourceSlot.set(s, sourceSlot)
+
+        const ss = sameDiffSpans.get(diff)
+        if (ss) {
+          ss.push(s)
+        } else {
+          sameDiffSpans.set(diff, [s])
         }
       }
 
-      // normalize
-      const avg = meanBy(entries, pair => pair[1])
-      for (const [s, d] of entries) {
-        spanBatches.set(s, d - avg)
+      const entries = Array.from(sameDiffSpans.values())
+
+      for (const ss of entries) {
+        if (ss.length < 2) {
+          continue
+        }
+        const sourceSlots = ss.map(s => tryGetFromMap(spanToSourceSlot, s))
+        const avgSourceSlot = mean(sourceSlots)
+        for (let i = 0; i < ss.length; ++i) {
+          // normalize
+          spanBatches.set(ss[i], sourceSlots[i] - avgSourceSlot)
+        }
+        this.parallelSpans.push(ss)
       }
     }
 
@@ -547,17 +552,15 @@ class MapContainer extends PureComponent<Props> {
       }
     }
 
-    const { spanBatches } = this
-    const batchedSpans = Array.from(spanBatches.keys()).filter(s => s.routes[0].line === 'E')
-    const numNonBatchedSpans = spans.length - batchedSpans.length
+    const parallelBatches = sumBy(this.parallelSpans, ps => ps.length * ps.length)
     // console.log(spans.length, entries.length)
 
     // TODO: treat only adjacent parallel as parallel
 
-    const totalCost = 1000
+    const totalCost = 1500
       + numParallelCrossings * 100
       + numCrossings * 2
-      - numNonBatchedSpans * 5
+      - parallelBatches * 5
       + sumDistances * 0.001
 
     if (log) {
@@ -600,7 +603,7 @@ class MapContainer extends PureComponent<Props> {
     console.time('loops')
     let cost = this.costFunction(props)
     console.log('initial cost', cost)
-    const TOTAL_ITERATIONS = 1000
+    const TOTAL_ITERATIONS = 500
 
     const costFunc = () => this.costFunction(props)
 
@@ -612,7 +615,7 @@ class MapContainer extends PureComponent<Props> {
 
     const swapFooOptions = {
       costFunc,
-      shouldSwap: makeShouldSwapFunc(TOTAL_ITERATIONS, 10, 100),
+      shouldSwap: makeShouldSwapFunc(TOTAL_ITERATIONS, 10, 1000),
       onSwap,
       before: () => {
         const patch = sample(patches) as Platform[]
@@ -680,6 +683,47 @@ class MapContainer extends PureComponent<Props> {
           const otherPos = tryGetFromMap(slotsMap, route)
           slotsMap.set(route, pos)
           slotsMap.set(otherRoute, otherPos)
+        }
+        this.updateBatches(props) // TODO: optimize
+      },
+    })
+
+    console.log('rotation')
+    const minThreeRoutePlatforms = patches.filter(pa => pa[0].passingRoutes().size > 2)
+
+    cost = optimize(TOTAL_ITERATIONS / 3, cost, {
+      costFunc,
+      shouldSwap: simpleShouldSwapFunc,
+      onSwap,
+      before: (i) => {
+        const down = Math.random() < 0.5
+        const patch = sample(minThreeRoutePlatforms) as Platform[]
+        const firstPlatform = patch[0]
+        const slotsMap = tryGetFromMap(platformSlots, firstPlatform)
+        const entries = orderBy(Array.from(slotsMap), ([k, v]) => v)
+        const routes = entries.map(item => item[0])
+        const slots = entries.map(item => item[1])
+
+        // rotate
+        const len = routes.length
+        const offs = len + (down ? 1 : -1)
+        for (let j = 0; j < len; ++j) {
+          const route = routes[j]
+          const slot = slots[(j + offs) % len]
+          for (const p of patch) {
+            const map = tryGetFromMap(platformSlots, p)
+            map.set(route, slot)
+          }
+        }
+        this.updateBatches(props)
+        return { patch, entries }
+      },
+      after: ({ patch, entries }) => {
+        for (const p of patch) {
+          const map = tryGetFromMap(platformSlots, p)
+          for (const [route, slot] of entries) {
+            map.set(route, slot)
+          }
         }
         this.updateBatches(props) // TODO: optimize
       },

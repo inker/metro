@@ -19,13 +19,13 @@ import {
 const E_COLORS = [
   '#000',
   '#f00',
-  '#00f',
+  '#4af',
   '#840',
   '#f80',
-  '#808',
+  '#00f',
   '#080',
+  '#808',
   '#ff0',
-  '#4af',
 ]
 
 const CURVE_SPLIT_NUM = 8
