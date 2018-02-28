@@ -5,6 +5,7 @@ import {
   mean,
   orderBy,
   xor,
+  intersection,
   sample,
   shuffle,
   sumBy,
@@ -513,7 +514,7 @@ class MapContainer extends PureComponent<Props> {
 
       sumDistances += sourcePoint.distanceTo(targetPoint)
 
-      const arr = [sourcePoint, targetPoint]
+      const arr = [sourcePoint, targetPoint] as [Point, Point]
 
       for (let j = i + 1; j < numSpans; ++j) {
         const otherSpan = spans[j]
@@ -533,6 +534,8 @@ class MapContainer extends PureComponent<Props> {
 
         const doIntersect = !span.isContinuous(otherSpan)
           && segmentsIntersect(arr, [otherSourcePoint, otherTargetPoint])
+
+        // TODO: intersecting a parallel batch counts as 1?
 
         if (doIntersect) {
           const isParallelCrossing = span.isParallel(otherSpan)
@@ -647,6 +650,39 @@ class MapContainer extends PureComponent<Props> {
     // move whole routes around
     const platformBranches = getPlatformBranches(platforms)
     const routeEntries = shuffle(Array.from(platformBranches))
+
+    console.log('swap routes')
+
+    cost = optimize(TOTAL_ITERATIONS / 3, cost, {
+      costFunc,
+      shouldSwap: simpleShouldSwapFunc,
+      onSwap,
+      before: (i) => {
+        const [r1, ps1] = sample(routeEntries) as [Route, Platform[]]
+        const [r2, ps2] = sample(routeEntries) as [Route, Platform[]]
+        const commonPlatforms = intersection(ps1, ps2)
+        for (const p of commonPlatforms) {
+          const slotsMap = tryGetFromMap(platformSlots, p)
+          const pos1 = tryGetFromMap(slotsMap, r1)
+          const pos2 = tryGetFromMap(slotsMap, r2)
+          slotsMap.set(r1, pos2)
+          slotsMap.set(r2, pos1)
+        }
+        this.updateBatches(props) // TODO: optimize
+        return { commonPlatforms, r1, r2 }
+      },
+      after: ({ commonPlatforms, r1, r2 }) => {
+        for (const p of commonPlatforms) {
+          const slotsMap = tryGetFromMap(platformSlots, p)
+          const pos2 = tryGetFromMap(slotsMap, r1)
+          const pos1 = tryGetFromMap(slotsMap, r2)
+          slotsMap.set(r1, pos1)
+          slotsMap.set(r2, pos2)
+        }
+        this.updateBatches(props) // TODO: optimize
+      },
+    })
+
     console.log('bro', routeEntries)
 
     cost = optimize(TOTAL_ITERATIONS / 3, cost, {
