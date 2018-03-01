@@ -588,12 +588,7 @@ class MapContainer extends PureComponent<Props> {
       }
     }
 
-    function powerOf4(n: number) {
-      const quadratic = n * n
-      return quadratic * quadratic
-    }
-
-    const parallelBatches = sumBy(this.parallelSpans, ps => powerOf4(ps.length))
+    const parallelBatches = sumBy(this.parallelSpans, ps => ps.length ** 4)
     // console.log(spans.length, entries.length)
 
     // TODO: treat only adjacent parallel as parallel
