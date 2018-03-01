@@ -13,7 +13,7 @@ interface Spans {
 }
 
 export default class Platform {
-    readonly id = uniqueId()
+    readonly id = uniqueId('platform-')
     name: string
     altNames: AltNames
     location: LatLng
