@@ -645,7 +645,7 @@ class MapContainer extends PureComponent<Props> {
       }
     }
 
-    const swapFooOptions = {
+    const swapSpansOptions = {
       costFunc,
       shouldSwap: makeShouldSwapFunc(TOTAL_ITERATIONS, 20, 50),
       onSwap,
@@ -672,7 +672,7 @@ class MapContainer extends PureComponent<Props> {
       },
     }
 
-    cost = optimize(TOTAL_ITERATIONS, cost, swapFooOptions)
+    cost = optimize(TOTAL_ITERATIONS, cost, swapSpansOptions)
 
     // move whole routes around
     const platformBranches = getPlatformBranches(platforms)
@@ -680,7 +680,7 @@ class MapContainer extends PureComponent<Props> {
 
     console.log('swap routes')
 
-    cost = optimize(TOTAL_ITERATIONS / 3, cost, {
+    const swapRoutesOptions = {
       costFunc,
       shouldSwap: simpleShouldSwapFunc,
       onSwap,
@@ -706,11 +706,13 @@ class MapContainer extends PureComponent<Props> {
         }
         this.updateBatches(props) // TODO: optimize
       },
-    })
+    }
 
-    console.log('bro', routeEntries)
+    cost = optimize(TOTAL_ITERATIONS / 3, cost, swapRoutesOptions)
 
-    cost = optimize(TOTAL_ITERATIONS / 3, cost, {
+    console.log('moving routes (with clamping)', routeEntries)
+
+    cost = optimize(TOTAL_ITERATIONS, cost, {
       costFunc,
       shouldSwap: simpleShouldSwapFunc,
       onSwap,
@@ -744,7 +746,10 @@ class MapContainer extends PureComponent<Props> {
       },
     })
 
-    console.log('rotation')
+    // console.log('swapping routes again')
+    // cost = optimize(TOTAL_ITERATIONS / 3, cost, swapRoutesOptions)
+
+    console.log('rotating routes')
     const minThreeRoutePlatforms = patches.filter(pa => pa[0].passingRoutes().size > 2)
 
     cost = optimize(TOTAL_ITERATIONS / 3, cost, {
@@ -787,7 +792,7 @@ class MapContainer extends PureComponent<Props> {
     console.log('finally')
 
     cost = optimize(TOTAL_ITERATIONS / 2, cost, {
-      ...swapFooOptions,
+      ...swapSpansOptions,
       shouldSwap: simpleShouldSwapFunc,
     })
 
