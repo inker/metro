@@ -162,8 +162,16 @@ class MapContainer extends PureComponent<Props> {
   private getPlatformSlot = (platform: Platform) =>
     this.platformSlots.get(platform) || null
 
-  private getSpanOffset = (span: Span) =>
-    this.spanBatches.get(span) || 0
+  private getSpanOffset = (span: Span) => {
+    const offset = this.spanBatches.get(span)
+    if (!offset) {
+      return 0
+    }
+
+    const { svgSizes } = this.props
+    const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * svgSizes.lineWidth
+    return offset * lineWidthPlusGapPx
+  }
 
   private getFirstWhisker = (platform: Platform) =>
     this.getPlatformWhiskers(platform).values().next().value
@@ -580,13 +588,18 @@ class MapContainer extends PureComponent<Props> {
       }
     }
 
-    const parallelBatches = sumBy(this.parallelSpans, ps => ps.length * ps.length * ps.length)
+    function powerOf4(n: number) {
+      const quadratic = n * n
+      return quadratic * quadratic
+    }
+
+    const parallelBatches = sumBy(this.parallelSpans, ps => powerOf4(ps.length))
     // console.log(spans.length, entries.length)
 
     // TODO: treat only adjacent parallel as parallel
 
-    const totalCost = 8000
-      + numParallelCrossings * 100
+    const totalCost = 20000
+      + numParallelCrossings * 500
       + numCrossings * 2
       - parallelBatches * 5
       + sumDistances * 0.001
@@ -639,7 +652,7 @@ class MapContainer extends PureComponent<Props> {
 
     const swapFooOptions = {
       costFunc,
-      shouldSwap: makeShouldSwapFunc(TOTAL_ITERATIONS, 10, 100),
+      shouldSwap: makeShouldSwapFunc(TOTAL_ITERATIONS, 20, 50),
       onSwap,
       before: () => {
         const patch = sample(patches) as Platform[]
@@ -784,6 +797,9 @@ class MapContainer extends PureComponent<Props> {
     })
 
     console.log('cost', cost)
+
+    console.log('batches', this.spanBatches)
+    console.log('slots', this.platformSlots)
 
     // TODO: how to save optimized state?
 
