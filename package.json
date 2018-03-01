@@ -31,7 +31,7 @@
     "@types/hammerjs": "^2.0.35",
     "@types/leaflet": "^1.2.5",
     "@types/lodash": "^4.14.104",
-    "@types/react": "^16.0.38",
+    "@types/react": "^16.0.39",
     "@types/react-dom": "^16.0.4",
     "@types/react-router-dom": "^4.2.4",
     "awesome-typescript-loader": "^3.4.1",
@@ -40,7 +40,7 @@
     "cssnano": "^3.10.0",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.10",
-    "html-webpack-plugin": "^2.30.1",
+    "html-webpack-plugin": "^3.0.4",
     "postcss-cssnext": "^3.1.0",
     "postcss-loader": "^2.1.1",
     "rimraf": "^2.6.2",
@@ -52,8 +52,8 @@
     "uglifyjs-webpack-plugin": "^1.2.0",
     "url-loader": "^0.6.2",
     "webpack": "^3.11.0",
-    "webpack-bundle-analyzer": "^2.11.0",
-    "webpack-dev-server": "^2.11.1"
+    "webpack-bundle-analyzer": "^2.11.1",
+    "webpack-dev-server": "^2.11.2"
   },
   "scripts": {
     "clean": "rimraf docs",

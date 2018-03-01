@@ -57,7 +57,10 @@ export function offsetLine(points: Point[], d: number): Point[] {
         throw new Error('line must have 2 points')
     }
     if (points[0].equals(points[1])) {
-        throw new Error('points are overlapped')
+        // TODO: points are overlapped
+        // throw new Error('points are overlapped')
+        console.error('points are overlapped')
+        return points
     }
     const vec = points[1].subtract(points[0])
     const [o] = orthogonal(vec)

@@ -555,12 +555,12 @@ class MapContainer extends PureComponent<Props> {
       }
     }
 
-    const parallelBatches = sumBy(this.parallelSpans, ps => ps.length * ps.length)
+    const parallelBatches = sumBy(this.parallelSpans, ps => ps.length * ps.length * ps.length)
     // console.log(spans.length, entries.length)
 
     // TODO: treat only adjacent parallel as parallel
 
-    const totalCost = 1500
+    const totalCost = 8000
       + numParallelCrossings * 100
       + numCrossings * 2
       - parallelBatches * 5
@@ -618,7 +618,7 @@ class MapContainer extends PureComponent<Props> {
 
     const swapFooOptions = {
       costFunc,
-      shouldSwap: makeShouldSwapFunc(TOTAL_ITERATIONS, 10, 1000),
+      shouldSwap: makeShouldSwapFunc(TOTAL_ITERATIONS, 10, 100),
       onSwap,
       before: () => {
         const patch = sample(patches) as Platform[]
