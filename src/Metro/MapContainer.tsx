@@ -3,9 +3,9 @@ import { Point, LatLng } from 'leaflet'
 import {
   clamp,
   mean,
-  orderBy,
   xor,
   intersection,
+  random,
   sample,
   shuffle,
   sumBy,
@@ -24,6 +24,7 @@ import {
 
 import {
   tryGetFromMap,
+  swapArrayElements,
 } from 'util/collections'
 
 import Network, {
@@ -100,8 +101,10 @@ class MapContainer extends PureComponent<Props> {
   }
 
   private isDetailed: boolean
+  private isOptimized = false
+
   private readonly whiskers = new WeakMap<Platform, Map<Span, Point>>()
-  private readonly platformSlots = new WeakMap<Platform, Map<Route, number>>()
+  private readonly platformSlots = new WeakMap<Platform, Route[]>()
   private readonly spanBatches = new Map<Span, number>()
   private readonly parallelSpans: Span[][] = []
   private readonly stationCircumpoints = new WeakMap<Station, Platform[]>()
@@ -117,12 +120,17 @@ class MapContainer extends PureComponent<Props> {
 
   private updateParameters(props: Props) {
     this.isDetailed = props.zoom >= props.config.detailedZoom
+
     this.updateWhiskers(props)
-    this.updateSlots(props)
-    this.updateBatches(props)
     this.updateCircumcircles(props)
-    this.optimize(props)
-    this.updateBatches(props) // may be redundant
+
+    if (!this.isOptimized) {
+      this.updateSlots(props)
+      this.updateBatches(props)
+      this.optimize(props)
+      this.updateBatches(props) // may be redundant
+      this.isOptimized = true
+    }
   }
 
   private mountTransfersInner = (g: SVGGElement) => {
@@ -160,40 +168,63 @@ class MapContainer extends PureComponent<Props> {
   private getFirstWhisker = (platform: Platform) =>
     this.getPlatformWhiskers(platform).values().next().value
 
+  private getPlatformSlotPosition = (platform: Platform, route: Route) => {
+    const map = this.getPlatformSlot(platform)
+    if (!map) {
+      return 0
+    }
+
+    const index = map.indexOf(route)
+    if (index < 0) {
+      return 0
+    }
+
+    const { svgSizes } = this.props
+    const routes = platform.passingRoutes()
+
+    const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * svgSizes.lineWidth
+    const leftShift = (routes.size - 1) / 2
+    return (index - leftShift) * lineWidthPlusGapPx
+  }
+
   private getSpanSlots = (span: Span) => {
     const {
       source,
       target,
       routes,
     } = span
+
     if (this.props.config.detailedE && routes.length > 1) {
       throw new Error('more routes per span than 1')
     }
+
     const firstRoute = routes[0]
-    const sourceMap = this.getPlatformSlot(source)
-    const targetMap = this.getPlatformSlot(target)
+
     return {
-      source: sourceMap && sourceMap.get(firstRoute) || 0,
-      target: targetMap && targetMap.get(firstRoute) || 0,
+      source: this.getPlatformSlotPosition(source, firstRoute),
+      target: this.getPlatformSlotPosition(target, firstRoute),
     }
   }
 
   private getPlatformPositions = (platform: Platform) => {
     const pos = this.getPlatformPosition(platform)
-    const slotsMap = this.getPlatformSlot(platform)
-    if (!slotsMap) {
-      return pos
-    }
-
-    const slots = Array.from(slotsMap.values())
     const value = this.getFirstWhisker(platform)
     if (pos.equals(value)) {
       // TODO WTF
       return pos
     }
-    const minSlot = Math.min(...slots)
-    const maxSlot = Math.max(...slots)
-    return getPositions(pos, value, minSlot, maxSlot)
+
+    const slots = this.getPlatformSlot(platform)
+    if (!slots) {
+      return pos
+    }
+
+    const { svgSizes } = this.props
+    const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * svgSizes.lineWidth
+    const leftShift = (slots.length - 1) / 2
+    const maxSlot = leftShift * lineWidthPlusGapPx
+
+    return getPositions(pos, value, -maxSlot, maxSlot)
   }
 
   private getPlatformColor = (platform: Platform) => {
@@ -334,15 +365,12 @@ class MapContainer extends PureComponent<Props> {
   private updateSlots(props: Props) {
     const {
       network,
-      svgSizes,
       config,
     } = props
 
     const {
       platformSlots,
     } = this
-
-    const lineWidthPlusGapPx = (GAP_BETWEEN_PARALLEL + 1) * svgSizes.lineWidth
 
     for (const platform of network.platforms) {
       const routeSet = platform.passingRoutes()
@@ -375,16 +403,7 @@ class MapContainer extends PureComponent<Props> {
       //   return
       // }
 
-      const leftShift = (routes.length - 1) / 2
-      const map = new Map<Route, number>()
-
-      for (let i = 0; i < routes.length; ++i) {
-        const slot = (i - leftShift) * lineWidthPlusGapPx
-        const route = routes[i]
-        map.set(route, slot)
-      }
-
-      platformSlots.set(platform, map)
+      platformSlots.set(platform, routes)
     }
   }
 
@@ -422,8 +441,14 @@ class MapContainer extends PureComponent<Props> {
         remainingSpans.delete(s)
 
         const route = s.routes[0]
-        const sourceSlot = sourceMap && sourceMap.get(route) || 0
-        const targetSlot = targetMap && targetMap.get(route) || 0
+        // TODO: check this shit
+        const sourceSlot = sourceMap ? sourceMap.indexOf(route) : 0
+        const targetSlot = targetMap ? targetMap.indexOf(route) : 0
+
+        if (sourceSlot < 0 || targetSlot < 0) {
+          console.error('in span:', span)
+          throw new Error('route not found')
+        }
 
         const diff = targetSlot - sourceSlot
 
@@ -591,14 +616,10 @@ class MapContainer extends PureComponent<Props> {
     // initial primitive optimization (straigtening of patches)
     for (const patch of patches) {
       const firstPlatform = patch[0]
-      const routes = Array.from(firstPlatform.passingRoutes())
-      const slotsMap = tryGetFromMap(platformSlots, firstPlatform)
-      const slots = Array.from(slotsMap.values())
+      const slots = tryGetFromMap(platformSlots, firstPlatform)
       for (const p of patch) {
-        const map = tryGetFromMap(platformSlots, p)
-        for (let i = 0; i < routes.length; ++i) {
-          map.set(routes[i], slots[i])
-        }
+        const pSlots = tryGetFromMap(platformSlots, p)
+        pSlots.splice(0, pSlots.length, ...slots)
       }
     }
     this.updateBatches(props) // TODO: optimize
@@ -623,23 +644,21 @@ class MapContainer extends PureComponent<Props> {
       before: () => {
         const patch = sample(patches) as Platform[]
         const firstPlatform = patch[0]
-        const slotsMap = tryGetFromMap(platformSlots, firstPlatform)
-        const entries = Array.from(slotsMap)
-        const a = sample(entries) as [Route, number]
-        const b = sample(entries) as [Route, number]
+        const routes = tryGetFromMap(platformSlots, firstPlatform)
+        const max = routes.length - 1
+        const slot1 = random(0, max)
+        const slot2 = random(0, max)
         for (const p of patch) {
-          const map = tryGetFromMap(platformSlots, p)
-          map.set(a[0], b[1])
-          map.set(b[0], a[1])
+          const slots = tryGetFromMap(platformSlots, p)
+          swapArrayElements(slots, slot1, slot2)
         }
         this.updateBatches(props) // TODO: optimize
-        return { patch, a, b }
+        return { patch, slot1, slot2 }
       },
-      after: ({ patch, a, b }) => {
+      after: ({ patch, slot1, slot2 }) => {
         for (const p of patch) {
-          const map = tryGetFromMap(platformSlots, p)
-          map.set(a[0], a[1])
-          map.set(b[0], b[1])
+          const slots = tryGetFromMap(platformSlots, p)
+          swapArrayElements(slots, slot1, slot2)
         }
         this.updateBatches(props) // TODO: optimize
       },
@@ -662,22 +681,20 @@ class MapContainer extends PureComponent<Props> {
         const [r2, ps2] = sample(routeEntries) as [Route, Platform[]]
         const commonPlatforms = intersection(ps1, ps2)
         for (const p of commonPlatforms) {
-          const slotsMap = tryGetFromMap(platformSlots, p)
-          const pos1 = tryGetFromMap(slotsMap, r1)
-          const pos2 = tryGetFromMap(slotsMap, r2)
-          slotsMap.set(r1, pos2)
-          slotsMap.set(r2, pos1)
+          const slots = tryGetFromMap(platformSlots, p)
+          const slot1 = slots.indexOf(r1)
+          const slot2 = slots.indexOf(r2)
+          swapArrayElements(slots, slot1, slot2)
         }
         this.updateBatches(props) // TODO: optimize
         return { commonPlatforms, r1, r2 }
       },
       after: ({ commonPlatforms, r1, r2 }) => {
         for (const p of commonPlatforms) {
-          const slotsMap = tryGetFromMap(platformSlots, p)
-          const pos2 = tryGetFromMap(slotsMap, r1)
-          const pos1 = tryGetFromMap(slotsMap, r2)
-          slotsMap.set(r1, pos1)
-          slotsMap.set(r2, pos2)
+          const slots = tryGetFromMap(platformSlots, p)
+          const slot1 = slots.indexOf(r1)
+          const slot2 = slots.indexOf(r2)
+          swapArrayElements(slots, slot1, slot2)
         }
         this.updateBatches(props) // TODO: optimize
       },
@@ -694,19 +711,15 @@ class MapContainer extends PureComponent<Props> {
         const down = Math.random() < 0.5
         const swappedPlatforms = new Map<Platform, Route>()
         for (const p of ps) {
-          const slotsMap = tryGetFromMap(platformSlots, p)
-          const entries = orderBy(Array.from(slotsMap), ([k, v]) => v)
-          const posIndex = entries.findIndex(([k, v]) => k === route)
-          const newPosIndex = posIndex + (down ? 1 : -1)
-          const otherPosIndex = clamp(newPosIndex, 0, entries.length - 1)
-          if (posIndex === otherPosIndex) {
+          const slots = tryGetFromMap(platformSlots, p)
+          const slot = slots.indexOf(route)
+          const newSlot = slot + (down ? 1 : -1)
+          const otherSlot = clamp(newSlot, 0, slots.length - 1)
+          if (slot === otherSlot) {
             continue
           }
-          const [otherRoute] = entries[otherPosIndex]
-          const pos = entries[posIndex][1]
-          const otherPos = entries[otherPosIndex][1]
-          slotsMap.set(route, otherPos)
-          slotsMap.set(otherRoute, pos)
+          const otherRoute = slots[otherSlot]
+          swapArrayElements(slots, slot, otherSlot)
           swappedPlatforms.set(p, otherRoute)
         }
         this.updateBatches(props) // TODO: optimize
@@ -714,11 +727,10 @@ class MapContainer extends PureComponent<Props> {
       },
       after: ({ route, swappedPlatforms }) => {
         for (const [p, otherRoute] of swappedPlatforms) {
-          const slotsMap = tryGetFromMap(platformSlots, p)
-          const pos = tryGetFromMap(slotsMap, otherRoute)
-          const otherPos = tryGetFromMap(slotsMap, route)
-          slotsMap.set(route, pos)
-          slotsMap.set(otherRoute, otherPos)
+          const slots = tryGetFromMap(platformSlots, p)
+          const slot = slots.indexOf(otherRoute)
+          const otherSlot = slots.indexOf(route)
+          swapArrayElements(slots, slot, otherSlot)
         }
         this.updateBatches(props) // TODO: optimize
       },
@@ -734,31 +746,30 @@ class MapContainer extends PureComponent<Props> {
       before: (i) => {
         const down = Math.random() < 0.5
         const patch = sample(minThreeRoutePlatforms) as Platform[]
-        const firstPlatform = patch[0]
-        const slotsMap = tryGetFromMap(platformSlots, firstPlatform)
-        const entries = orderBy(Array.from(slotsMap), ([k, v]) => v)
-        const routes = entries.map(item => item[0])
-        const slots = entries.map(item => item[1])
 
         // rotate
-        const len = routes.length
-        const offs = len + (down ? 1 : -1)
-        for (let j = 0; j < len; ++j) {
-          const route = routes[j]
-          const slot = slots[(j + offs) % len]
-          for (const p of patch) {
-            const map = tryGetFromMap(platformSlots, p)
-            map.set(route, slot)
+        for (const p of patch) {
+          const slots = tryGetFromMap(platformSlots, p)
+          if (down) {
+            const last = slots.pop() as Route
+            slots.unshift(last)
+          } else {
+            const first = slots.shift() as Route
+            slots.push(first)
           }
         }
         this.updateBatches(props)
-        return { patch, entries }
+        return { patch, down }
       },
-      after: ({ patch, entries }) => {
+      after: ({ patch, down }) => {
         for (const p of patch) {
-          const map = tryGetFromMap(platformSlots, p)
-          for (const [route, slot] of entries) {
-            map.set(route, slot)
+          const slots = tryGetFromMap(platformSlots, p)
+          if (!down) {
+            const last = slots.pop() as Route
+            slots.unshift(last)
+          } else {
+            const first = slots.shift() as Route
+            slots.push(first)
           }
         }
         this.updateBatches(props) // TODO: optimize
