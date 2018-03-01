@@ -370,6 +370,30 @@ class MapContainer extends PureComponent<Props> {
     return whiskers
   }
 
+  private updateWhiskers(props: Props) {
+    const { network } = this.props
+
+    for (const station of network.stations) {
+      for (const platform of station.platforms) {
+        const wh = this.makeWhiskers(platform)
+        this.whiskers.set(platform, wh)
+      }
+    }
+  }
+
+  private updateCircumcircles(props: Props) {
+    const {
+      network,
+    } = props
+
+    for (const station of network.stations) {
+      const circular = findCycle(network, station)
+      if (circular.length > 0) {
+        this.stationCircumpoints.set(station, circular)
+      }
+    }
+  }
+
   private updateSlots(props: Props) {
     const {
       network,
@@ -487,30 +511,6 @@ class MapContainer extends PureComponent<Props> {
     }
 
     // console.timeEnd('batches')
-  }
-
-  private updateCircumcircles(props: Props) {
-    const {
-      network,
-    } = props
-
-    for (const station of network.stations) {
-      const circular = findCycle(network, station)
-      if (circular.length > 0) {
-        this.stationCircumpoints.set(station, circular)
-      }
-    }
-  }
-
-  private updateWhiskers(props: Props) {
-    const { network } = this.props
-
-    for (const station of network.stations) {
-      for (const platform of station.platforms) {
-        const wh = this.makeWhiskers(platform)
-        this.whiskers.set(platform, wh)
-      }
-    }
   }
 
   private costFunction(props: Props, log = false) {
