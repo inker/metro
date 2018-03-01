@@ -48,3 +48,9 @@ export function tryGetKeyFromBiMap<K, V>(map: IBiMap<K, V>, val: V): K {
     }
     return key
 }
+
+export function swapArrayElements<T>(arr: T[], a: number, b: number) {
+    const t = arr[a]
+    arr[a] = arr[b]
+    arr[b] = t
+}
