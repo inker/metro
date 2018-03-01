@@ -6,6 +6,7 @@ import Route from './Route'
 
 export default class Span extends Edge<Platform> {
     routes: Route[]
+
     constructor(source: Platform, target: Platform, routes: Route[]) {
         super(source, target)
         source.spans.push(this)
