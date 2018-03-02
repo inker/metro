@@ -30,8 +30,8 @@ export function setDirection(gradient: Element, vector: Point) {
 }
 
 export function setOffset(gradient: Element, offset: number) {
-  (gradient.firstElementChild as SVGStopElement).setAttribute('offset', offset.toString());
-  (gradient.lastElementChild as SVGStopElement).setAttribute('offset', (1 - offset).toString())
+  gradient.firstElementChild!.setAttribute('offset', offset.toString())
+  gradient.lastElementChild!.setAttribute('offset', (1 - offset).toString())
 }
 
 class TransferReact extends PureComponent<Props> {
