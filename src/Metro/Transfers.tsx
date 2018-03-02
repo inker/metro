@@ -39,6 +39,20 @@ const TransfersInner = styled(Inner)`
   stroke: #FFFFFF;
 `
 
+function bestPair(sourcePositionArr: Point[], targetPositionArr: Point[]) {
+  const combos = cartesian(sourcePositionArr, targetPositionArr) as Point[][]
+  return minBy(combos, ([p1, p2]) => p1.distanceTo(p2))
+}
+
+function bestTriplet(sourcePositionArr: Point[], targetPositionArr: Point[], thirdPos: Point) {
+  const thirdPositions = [thirdPos]
+  const combos = cartesian(sourcePositionArr, targetPositionArr, thirdPositions) as Point[][]
+  return minBy(combos, combo => {
+    const c = getCircumcenter(combo)
+    return c ? c.distanceTo(combo[0]) : Infinity
+  })
+}
+
 interface Props {
   transfers: Transfer[],
   isDetailed: boolean,
@@ -94,20 +108,6 @@ class Transfers extends PureComponent<Props> {
     return getPlatformPosition(third)
   }
 
-  private bestPair(sourcePositionArr: Point[], targetPositionArr: Point[]) {
-    const combos = cartesian(sourcePositionArr, targetPositionArr) as Point[][]
-    return minBy(combos, ([p1, p2]) => p1.distanceTo(p2))
-  }
-
-  private bestTriplet(sourcePositionArr: Point[], targetPositionArr: Point[], thirdPos: Point) {
-    const thirdPositions = [thirdPos]
-    const combos = cartesian(sourcePositionArr, targetPositionArr, thirdPositions) as Point[][]
-    return minBy(combos, combo => {
-      const c = getCircumcenter(combo)
-      return c ? c.distanceTo(combo[0]) : Infinity
-    })
-  }
-
   private getPositions(transfer: Transfer) {
     const { getPlatformPositions } = this.props
     const { source, target } = transfer
@@ -122,8 +122,8 @@ class Transfers extends PureComponent<Props> {
     const sourcePositionArr = castArray(sourcePos)
     const targetPositionArr = castArray(targetPos)
     const bestCombo = thirdPos
-      ? this.bestTriplet(sourcePositionArr, targetPositionArr, thirdPos)
-      : this.bestPair(sourcePositionArr, targetPositionArr)
+      ? bestTriplet(sourcePositionArr, targetPositionArr, thirdPos)
+      : bestPair(sourcePositionArr, targetPositionArr)
 
     if (!bestCombo) {
       throw new Error('somehow best combo sucks')

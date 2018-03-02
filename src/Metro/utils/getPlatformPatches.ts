@@ -19,6 +19,9 @@ function walk(platform: Platform, patches: Set<Platform>): Set<Platform> {
 
 const getCloud = (platform: Platform) => walk(platform, new Set())
 
+/**
+ * patches of platforms with the same routes (exactly)
+ */
 export default (platforms: Platform[]): Platform[][] => {
   const remainingPlatforms = new Set(platforms)
   const patches: Platform[][] = []

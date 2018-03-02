@@ -5,6 +5,9 @@ import {
   getOrMakeInMap,
 } from 'util/collections'
 
+/**
+ * route -> platforms
+ */
 export default (platforms: Platform[]): Map<Route, Platform[]> => {
   const map = new Map<Route, Platform[]>()
   for (const platform of platforms) {
