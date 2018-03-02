@@ -650,7 +650,7 @@ class MapContainer extends PureComponent<Props> {
       shouldSwap: makeShouldSwapFunc(TOTAL_ITERATIONS, 20, 50),
       onSwap,
       before: () => {
-        const patch = sample(patches) as Platform[]
+        const patch = sample(patches)!
         const firstPlatform = patch[0]
         const routes = tryGetFromMap(platformSlots, firstPlatform)
         const max = routes.length - 1
@@ -685,8 +685,8 @@ class MapContainer extends PureComponent<Props> {
       shouldSwap: simpleShouldSwapFunc,
       onSwap,
       before: (i) => {
-        const [r1, ps1] = sample(routeEntries) as [Route, Platform[]]
-        const [r2, ps2] = sample(routeEntries) as [Route, Platform[]]
+        const [r1, ps1] = sample(routeEntries)!
+        const [r2, ps2] = sample(routeEntries)!
         const commonPlatforms = intersection(ps1, ps2)
         for (const p of commonPlatforms) {
           const slots = tryGetFromMap(platformSlots, p)
@@ -758,16 +758,16 @@ class MapContainer extends PureComponent<Props> {
       onSwap,
       before: (i) => {
         const down = Math.random() < 0.5
-        const patch = sample(minThreeRoutePlatforms) as Platform[]
+        const patch = sample(minThreeRoutePlatforms)!
 
         // rotate
         for (const p of patch) {
           const slots = tryGetFromMap(platformSlots, p)
           if (down) {
-            const last = slots.pop() as Route
+            const last = slots.pop()!
             slots.unshift(last)
           } else {
-            const first = slots.shift() as Route
+            const first = slots.shift()!
             slots.push(first)
           }
         }
@@ -778,10 +778,10 @@ class MapContainer extends PureComponent<Props> {
         for (const p of patch) {
           const slots = tryGetFromMap(platformSlots, p)
           if (!down) {
-            const last = slots.pop() as Route
+            const last = slots.pop()!
             slots.unshift(last)
           } else {
-            const first = slots.shift() as Route
+            const first = slots.shift()!
             slots.push(first)
           }
         }
