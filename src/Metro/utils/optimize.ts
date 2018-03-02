@@ -1,34 +1,31 @@
 interface Options<T> {
+  move: (iteration: number) => T,
   costFunc: () => number,
-  shouldSwap: (newCost: number, prevCost: number, iteration: number) => boolean,
-  onSwap?: (newCost: number, prevCost: number, iteration: number) => void,
-  before?: (iteration: number) => T,
-  after?: (beforeRetVal: T, iteration: number) => void,
+  shouldAccept: (newCost: number, prevCost: number, iteration: number) => boolean,
+  onAccept?: (newCost: number, prevCost: number, iteration: number) => void,
+  restore?: (beforeRetVal: T, iteration: number) => void,
 }
 
 export default <T>(totalIterations: number, initialCost: number, {
   costFunc,
-  shouldSwap,
-  before,
-  after,
-  onSwap,
+  shouldAccept,
+  move,
+  restore,
+  onAccept,
 }: Options<T>) => {
   let prevCost = initialCost
   for (let i = 0; i < totalIterations; ++i) {
-    let beforeRetVal: T | undefined
-    if (before) {
-      beforeRetVal = before(i)
-    }
+    const moveRetVal = move(i)
     const newCost = costFunc()
-    if (shouldSwap(newCost, prevCost, i)) {
-      if (onSwap) {
-        onSwap(newCost, prevCost, i)
+    if (shouldAccept(newCost, prevCost, i)) {
+      if (onAccept) {
+        onAccept(newCost, prevCost, i)
       }
       prevCost = newCost
       continue
     }
-    if (after) {
-      after(beforeRetVal as T, i)
+    if (restore) {
+      restore(moveRetVal, i)
     }
   }
   return prevCost

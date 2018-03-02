@@ -3,6 +3,7 @@ import { Point, LatLng } from 'leaflet'
 import {
   clamp,
   mean,
+  lte,
   xor,
   intersection,
   random,
@@ -13,7 +14,7 @@ import {
 
 import { meanColor } from 'util/color'
 import findCycle from 'util/algorithm/findCycle'
-import * as math from 'util/math'
+import { makeWings } from 'util/math'
 import {
   mean as meanPoint,
   zero as zeroVec,
@@ -39,7 +40,7 @@ import Config from '../Config'
 import getPositions from './utils/getPositions'
 import getPlatformPatches from './utils/getPlatformPatches'
 import getPlatformBranches from './utils/getPlatformBranches'
-import makeShouldSwapFunc from './utils/makeShouldSwapFunc'
+import makeAcceptanceFunc from './utils/makeAcceptanceFunc'
 import optimize from './utils/optimize'
 
 import { Containers as MetroContainers } from './index'
@@ -66,7 +67,11 @@ type Positions = {
   [P in Bound]: Point
 }
 
-const simpleShouldSwapFunc = (newCost: number, prevCost: number) => newCost <= prevCost
+function onAccept(newCost: number, prevCost: number, iteration: number) {
+  if (newCost !== prevCost) {
+    console.log(iteration, newCost)
+  }
+}
 
 interface Containers {
   transfersInner?: SVGGElement,
@@ -329,7 +334,7 @@ class MapContainer extends PureComponent<Props> {
 
       const prevPos = this.getPlatformPosition(inboundSpan.other(platform))
       const nextPos = this.getPlatformPosition(outboundSpan.other(platform))
-      const wings = math.wings(prevPos, pos, nextPos, 1)
+      const wings = makeWings(prevPos, pos, nextPos, 1)
       const t = Math.min(pos.distanceTo(prevPos), pos.distanceTo(nextPos)) * PART
       whiskers.set(inboundSpan, wings[0].multiplyBy(t).add(pos))
       whiskers.set(outboundSpan, wings[1].multiplyBy(t).add(pos))
@@ -352,7 +357,7 @@ class MapContainer extends PureComponent<Props> {
       positions[bound] = meanPoint(normals).add(pos)
     }
 
-    const wings = math.wings(positions.inbound, pos, positions.outbound, 1)
+    const wings = makeWings(positions.inbound, pos, positions.outbound, 1)
     const wObj: Positions = {
       inbound: wings[0],
       outbound: wings[1],
@@ -639,17 +644,11 @@ class MapContainer extends PureComponent<Props> {
 
     const costFunc = () => this.costFunction(props)
 
-    const onSwap = (newCost: number, prevCost: number, iteration: number) => {
-      if (newCost !== prevCost) {
-        console.log(iteration, newCost)
-      }
-    }
-
     const swapSpansOptions = {
       costFunc,
-      shouldSwap: makeShouldSwapFunc(TOTAL_ITERATIONS, 20, 50),
-      onSwap,
-      before: () => {
+      shouldAccept: makeAcceptanceFunc(TOTAL_ITERATIONS, 20, 50),
+      onAccept,
+      move: () => {
         const patch = sample(patches)!
         const firstPlatform = patch[0]
         const routes = tryGetFromMap(platformSlots, firstPlatform)
@@ -663,7 +662,7 @@ class MapContainer extends PureComponent<Props> {
         this.updateBatches(props) // TODO: optimize
         return { patch, slot1, slot2 }
       },
-      after: ({ patch, slot1, slot2 }) => {
+      restore: ({ patch, slot1, slot2 }) => {
         for (const p of patch) {
           const slots = tryGetFromMap(platformSlots, p)
           swapArrayElements(slots, slot1, slot2)
@@ -682,9 +681,9 @@ class MapContainer extends PureComponent<Props> {
 
     const swapRoutesOptions = {
       costFunc,
-      shouldSwap: simpleShouldSwapFunc,
-      onSwap,
-      before: (i) => {
+      shouldAccept: lte,
+      onAccept,
+      move: (i) => {
         const [r1, ps1] = sample(routeEntries)!
         const [r2, ps2] = sample(routeEntries)!
         const commonPlatforms = intersection(ps1, ps2)
@@ -697,7 +696,7 @@ class MapContainer extends PureComponent<Props> {
         this.updateBatches(props) // TODO: optimize
         return { commonPlatforms, r1, r2 }
       },
-      after: ({ commonPlatforms, r1, r2 }) => {
+      restore: ({ commonPlatforms, r1, r2 }) => {
         for (const p of commonPlatforms) {
           const slots = tryGetFromMap(platformSlots, p)
           const slot1 = slots.indexOf(r1)
@@ -714,9 +713,9 @@ class MapContainer extends PureComponent<Props> {
 
     cost = optimize(TOTAL_ITERATIONS, cost, {
       costFunc,
-      shouldSwap: simpleShouldSwapFunc,
-      onSwap,
-      before: (i) => {
+      shouldAccept: lte,
+      onAccept,
+      move: (i) => {
         const [route, ps] = routeEntries[i % routeEntries.length]
         const down = Math.random() < 0.5
         const swappedPlatforms = new Map<Platform, Route>()
@@ -735,7 +734,7 @@ class MapContainer extends PureComponent<Props> {
         this.updateBatches(props) // TODO: optimize
         return { route, swappedPlatforms }
       },
-      after: ({ route, swappedPlatforms }) => {
+      restore: ({ route, swappedPlatforms }) => {
         for (const [p, otherRoute] of swappedPlatforms) {
           const slots = tryGetFromMap(platformSlots, p)
           const slot = slots.indexOf(otherRoute)
@@ -754,9 +753,9 @@ class MapContainer extends PureComponent<Props> {
 
     cost = optimize(TOTAL_ITERATIONS / 3, cost, {
       costFunc,
-      shouldSwap: simpleShouldSwapFunc,
-      onSwap,
-      before: (i) => {
+      shouldAccept: lte,
+      onAccept,
+      move: (i) => {
         const down = Math.random() < 0.5
         const patch = sample(minThreeRoutePlatforms)!
 
@@ -774,7 +773,7 @@ class MapContainer extends PureComponent<Props> {
         this.updateBatches(props)
         return { patch, down }
       },
-      after: ({ patch, down }) => {
+      restore: ({ patch, down }) => {
         for (const p of patch) {
           const slots = tryGetFromMap(platformSlots, p)
           if (!down) {
@@ -793,7 +792,7 @@ class MapContainer extends PureComponent<Props> {
 
     cost = optimize(TOTAL_ITERATIONS / 2, cost, {
       ...swapSpansOptions,
-      shouldSwap: simpleShouldSwapFunc,
+      shouldAccept: lte,
     })
 
     console.log('cost', cost)

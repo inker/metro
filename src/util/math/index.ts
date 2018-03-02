@@ -90,7 +90,7 @@ export function offsetPath(controlPoints: Point[], d: number): Point[] {
     })
 }
 
-export function wings(a: Point, b: Point, c: Point, length = 1): Point[] {
+export function makeWings(a: Point, b: Point, c: Point, length = 1): Point[] {
     const ba = a.subtract(b)
     const bc = c.subtract(b)
     const bis = bisect(ba, bc)
