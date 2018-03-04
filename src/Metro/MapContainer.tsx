@@ -646,7 +646,7 @@ class MapContainer extends PureComponent<Props> {
 
     const swapSpansOptions = {
       costFunc,
-      shouldAccept: makeAcceptanceFunc(TOTAL_ITERATIONS, 20, 50),
+      shouldAccept: makeAcceptanceFunc(TOTAL_ITERATIONS, 49, 50),
       onAccept,
       move: () => {
         const patch = sample(patches)!
@@ -707,7 +707,7 @@ class MapContainer extends PureComponent<Props> {
       },
     }
 
-    cost = optimize(TOTAL_ITERATIONS / 3, cost, swapRoutesOptions)
+    cost = optimize(TOTAL_ITERATIONS / 2, cost, swapRoutesOptions)
 
     console.log('moving routes (with clamping)', routeEntries)
 
