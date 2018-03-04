@@ -639,7 +639,7 @@ class MapContainer extends PureComponent<Props> {
         pSlots.splice(0, pSlots.length, ...slots)
       }
     }
-    this.updateBatches(props) // TODO: optimize
+    this.updateBatches(props)
 
     console.time('loops')
     let cost = this.costFunction(props)
@@ -663,7 +663,7 @@ class MapContainer extends PureComponent<Props> {
           const slots = tryGetFromMap(platformSlots, p)
           swapArrayElements(slots, slot1, slot2)
         }
-        this.updateBatches(props) // TODO: optimize
+        this.updateBatches(props)
         return { patch, slot1, slot2 }
       },
       restore: ({ patch, slot1, slot2 }) => {
@@ -671,7 +671,7 @@ class MapContainer extends PureComponent<Props> {
           const slots = tryGetFromMap(platformSlots, p)
           swapArrayElements(slots, slot1, slot2)
         }
-        this.updateBatches(props) // TODO: optimize
+        this.updateBatches(props)
       },
     }
 
@@ -697,7 +697,7 @@ class MapContainer extends PureComponent<Props> {
           const slot2 = slots.indexOf(r2)
           swapArrayElements(slots, slot1, slot2)
         }
-        this.updateBatches(props) // TODO: optimize
+        this.updateBatches(props)
         return { commonPlatforms, r1, r2 }
       },
       restore: ({ commonPlatforms, r1, r2 }) => {
@@ -707,7 +707,7 @@ class MapContainer extends PureComponent<Props> {
           const slot2 = slots.indexOf(r2)
           swapArrayElements(slots, slot1, slot2)
         }
-        this.updateBatches(props) // TODO: optimize
+        this.updateBatches(props)
       },
     }
 
@@ -735,7 +735,7 @@ class MapContainer extends PureComponent<Props> {
           swapArrayElements(slots, slot, otherSlot)
           swappedPlatforms.set(p, otherRoute)
         }
-        this.updateBatches(props) // TODO: optimize
+        this.updateBatches(props)
         return { route, swappedPlatforms }
       },
       restore: ({ route, swappedPlatforms }) => {
@@ -745,7 +745,7 @@ class MapContainer extends PureComponent<Props> {
           const otherSlot = slots.indexOf(route)
           swapArrayElements(slots, slot, otherSlot)
         }
-        this.updateBatches(props) // TODO: optimize
+        this.updateBatches(props)
       },
     })
 
@@ -788,7 +788,7 @@ class MapContainer extends PureComponent<Props> {
             slots.push(first)
           }
         }
-        this.updateBatches(props) // TODO: optimize
+        this.updateBatches(props)
       },
     })
 
