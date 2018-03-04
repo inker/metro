@@ -328,17 +328,16 @@ class MapContainer extends PureComponent<Props> {
       // const outboundSpan = outbound[0]
 
       const [inboundSpan, outboundSpan] = allSpans
-      if (xor(inboundSpan.routes, outboundSpan.routes).length > 0) {
-        return whiskers.set(inboundSpan, pos).set(outboundSpan, pos)
+      const areSameBound = xor(inboundSpan.routes, outboundSpan.routes).length > 0
+      if (!areSameBound) {
+        const prevPos = this.getPlatformPosition(inboundSpan.other(platform))
+        const nextPos = this.getPlatformPosition(outboundSpan.other(platform))
+        const wings = makeWings(prevPos, pos, nextPos, 1)
+        const t = Math.min(pos.distanceTo(prevPos), pos.distanceTo(nextPos)) * PART
+        whiskers.set(inboundSpan, wings[0].multiplyBy(t).add(pos))
+        whiskers.set(outboundSpan, wings[1].multiplyBy(t).add(pos))
+        return whiskers
       }
-
-      const prevPos = this.getPlatformPosition(inboundSpan.other(platform))
-      const nextPos = this.getPlatformPosition(outboundSpan.other(platform))
-      const wings = makeWings(prevPos, pos, nextPos, 1)
-      const t = Math.min(pos.distanceTo(prevPos), pos.distanceTo(nextPos)) * PART
-      whiskers.set(inboundSpan, wings[0].multiplyBy(t).add(pos))
-      whiskers.set(outboundSpan, wings[1].multiplyBy(t).add(pos))
-      return whiskers
     }
 
     const positions: Positions = {} as any
@@ -354,7 +353,12 @@ class MapContainer extends PureComponent<Props> {
         normals.push(normal)
         distances.set(span, pos.distanceTo(neighborPos))
       }
-      positions[bound] = meanPoint(normals).add(pos)
+      positions[bound] = normals.length > 0 ? meanPoint(normals).add(pos) : (() => {
+        const neighbors = platform.adjacentPlatformsBySpans()
+        const poss = neighbors.map(p => this.getPlatformPosition(p))
+        const cofficient = -0.1 // somehow any negative number works
+        return meanPoint(poss).subtract(pos).multiplyBy(cofficient).add(pos)
+      })()
     }
 
     const wings = makeWings(positions.inbound, pos, positions.outbound, 1)
