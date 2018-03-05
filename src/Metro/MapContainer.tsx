@@ -566,14 +566,6 @@ class MapContainer extends PureComponent<Props> {
           target: otherTargetPoint,
         } = tryGetFromMap(map, otherSpan)
 
-        // if (
-        //   !span.isContinuous(otherSpan)
-        //   && (span.source === otherSpan.target || span.target === otherSpan.source)
-        //   && segmentsIntersect(arr, [otherSourcePoint, otherTargetPoint])
-        // ) {
-        //   debugger
-        // }
-
         const doIntersect = !span.isContinuous(otherSpan)
           && segmentsIntersect(arr, [otherSourcePoint, otherTargetPoint])
 
@@ -751,46 +743,47 @@ class MapContainer extends PureComponent<Props> {
 
     // console.log('swapping routes again')
     // cost = optimize(TOTAL_ITERATIONS / 3, cost, swapRoutesOptions)
-
-    console.log('rotating routes')
     const minThreeRoutePlatforms = patches.filter(pa => pa[0].passingRoutes().size > 2)
 
-    cost = optimize(TOTAL_ITERATIONS / 3, cost, {
-      costFunc,
-      shouldAccept: lte,
-      onAccept,
-      move: (i) => {
-        const down = Math.random() < 0.5
-        const patch = sample(minThreeRoutePlatforms)!
+    if (minThreeRoutePlatforms.length > 0) {
+      console.log('rotating routes')
+      cost = optimize(TOTAL_ITERATIONS / 3, cost, {
+        costFunc,
+        shouldAccept: lte,
+        onAccept,
+        move: (i) => {
+          const down = Math.random() < 0.5
+          const patch = sample(minThreeRoutePlatforms)!
 
-        // rotate
-        for (const p of patch) {
-          const slots = tryGetFromMap(platformSlots, p)
-          if (down) {
-            const last = slots.pop()!
-            slots.unshift(last)
-          } else {
-            const first = slots.shift()!
-            slots.push(first)
+          // rotate
+          for (const p of patch) {
+            const slots = tryGetFromMap(platformSlots, p)
+            if (down) {
+              const last = slots.pop()!
+              slots.unshift(last)
+            } else {
+              const first = slots.shift()!
+              slots.push(first)
+            }
           }
-        }
-        this.updateBatches(props)
-        return { patch, down }
-      },
-      restore: ({ patch, down }) => {
-        for (const p of patch) {
-          const slots = tryGetFromMap(platformSlots, p)
-          if (!down) {
-            const last = slots.pop()!
-            slots.unshift(last)
-          } else {
-            const first = slots.shift()!
-            slots.push(first)
+          this.updateBatches(props)
+          return { patch, down }
+        },
+        restore: ({ patch, down }) => {
+          for (const p of patch) {
+            const slots = tryGetFromMap(platformSlots, p)
+            if (!down) {
+              const last = slots.pop()!
+              slots.unshift(last)
+            } else {
+              const first = slots.shift()!
+              slots.push(first)
+            }
           }
-        }
-        this.updateBatches(props)
-      },
-    })
+          this.updateBatches(props)
+        },
+      })
+    }
 
     console.log('finally')
 
