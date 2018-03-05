@@ -28,6 +28,12 @@ module.exports = env => ({
     },
   },
   devtool: env === 'dev' ? 'source-map' : undefined,
+  optimization: {
+    runtimeChunk: true,
+    splitChunks: {
+      chunks: 'all',
+    },
+  },
   module: {
     rules: rules(env),
   },

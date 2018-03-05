@@ -35,7 +35,7 @@ const moduleToFileNames = (module) => {
 
 const chunkToName = (chunk) =>
   chunk.name
-  || chunk.modules.map(moduleToFileNames).find((name) => name)
+  || Array.from(chunk.modulesIterable, moduleToFileNames).find((name) => name)
   || null
 
 module.exports = env => [
@@ -55,26 +55,6 @@ module.exports = env => [
   new NamedChunksPlugin(chunkToName),
 
   // new (env === 'dev' ? NamedModulesPlugin : HashedModuleIdsPlugin)(),
-
-  new CommonsChunkPlugin({
-    name: 'app',
-    children: true,
-    minChunks: 2,
-    async: 'commons',
-  }),
-
-  new CommonsChunkPlugin({
-    name: 'vendor',
-    // names: 'vendor',
-    // chunks: ['app'],
-    minChunks: ({ context }) => context && context.includes('node_modules'),
-    // async: true,
-  }),
-
-  new CommonsChunkPlugin({
-    name: 'runtime',
-    minChunks: Infinity,
-  }),
 
   new HtmlWebpackPlugin({
     filename: 'index.html',
