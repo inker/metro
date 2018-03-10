@@ -105,7 +105,7 @@ export default ({
 
   const swapRoutesOptions = {
     costFunc,
-    shouldAccept: makeAcceptanceFunc(TOTAL_ITERATIONS / 2, 2, 50),
+    shouldAccept: lte,
     onAccept,
     move: (i) => {
       const [r1, ps1] = sample(routeEntries)!

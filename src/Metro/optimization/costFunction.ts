@@ -2,6 +2,7 @@ import { Point } from 'leaflet'
 
 import {
   sumBy,
+  castArray,
 } from 'lodash'
 
 import Network, {
@@ -14,6 +15,7 @@ import {
 
 import {
   tryGetFromMap,
+  iteratePairwise,
 } from 'util/collections'
 
 type SourceOrTarget = 'source' | 'target'
@@ -45,7 +47,6 @@ export default ({
   let numParallelCrossings = 0
 
   const numSpans = spans.length
-  const numSpansMinusOne = numSpans - 1
 
   const map = new WeakMap<Span, SlotPoints>()
 
@@ -54,7 +55,9 @@ export default ({
     map.set(span, slots)
   }
 
-  for (let i = 0; i < numSpansMinusOne; ++i) {
+  const intersections: { [key: string]: boolean | undefined } = {}
+
+  for (let i = 0; i < numSpans; ++i) {
     const span = spans[i]
 
     const {
@@ -77,8 +80,6 @@ export default ({
       const doIntersect = !span.isContinuous(otherSpan)
         && segmentsIntersect(arr, [otherSourcePoint, otherTargetPoint])
 
-      // TODO: intersecting a parallel batch counts as 1?
-
       if (doIntersect) {
         const isParallelCrossing = span.isParallel(otherSpan)
         // console.log('intersection')
@@ -92,17 +93,38 @@ export default ({
           }
           ++numParallelCrossings
         }
-        ++numCrossings
+        intersections[`${span.id}:${otherSpan.id}`] = doIntersect
+        intersections[`${otherSpan.id}:${span.id}`] = doIntersect
       }
     }
   }
+
+  const remaining = new Set(spans)
+  for (const parallels of parallelSpans) {
+    for (const s of parallels) {
+      remaining.delete(s)
+    }
+  }
+  const augmentedParallelSpans = [...parallelSpans, ...Array.from(remaining).map(castArray)]
+
+  iteratePairwise(augmentedParallelSpans, (a, b) => {
+    for (const s1 of a) {
+      for (const s2 of b) {
+        const doIntersect = intersections[`${s1.id}:${s2.id}`]
+        if (doIntersect) {
+          numCrossings += (a.length * b.length) ** 0.1
+          return
+        }
+      }
+    }
+  })
 
   const parallelBatches = sumBy(parallelSpans, ps => ps.length ** 4)
   // console.log(spans.length, entries.length)
 
   // TODO: treat only adjacent parallel as parallel
 
-  const totalCost = 20000
+  const totalCost = 25000
     + numParallelCrossings * 500
     + numCrossings * 2
     - parallelBatches * 5

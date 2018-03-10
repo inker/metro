@@ -54,3 +54,14 @@ export function swapArrayElements<T>(arr: T[], a: number, b: number) {
     arr[a] = arr[b]
     arr[b] = t
 }
+
+export function iteratePairwise<T>(arr: T[], iteration: (a: T, b: T) => void) {
+    const len = arr.length
+    const lenMinusOne = len - 1
+    for (let i = 0; i < lenMinusOne; ++i) {
+        const el = arr[i]
+        for (let j = i + 1; j < len; ++j) {
+            iteration(el, arr[j])
+        }
+    }
+}
