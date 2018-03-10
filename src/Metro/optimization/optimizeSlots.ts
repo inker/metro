@@ -2,7 +2,6 @@ import {
   clamp,
   intersection,
   lte,
-  orderBy,
   random,
   sample,
   shuffle,
@@ -13,16 +12,24 @@ import {
   swapArrayElements,
 } from 'util/collections'
 
+import {
+  mean as meanPoint,
+  zero as zeroVec,
+  normalize,
+  orthogonal,
+  segmentsIntersect,
+} from 'util/math/vector'
+
 import Network, {
   Platform,
   Span,
   Route,
-} from '../network'
+} from '../../network'
 
-import getPlatformPatches from './utils/getPlatformPatches'
-import getPlatformBranches from './utils/getPlatformBranches'
-import makeAcceptanceFunc from './utils/makeAcceptanceFunc'
-import optimize from './utils/optimize'
+import getPlatformPatches from '../utils/getPlatformPatches'
+import getPlatformBranches from '../utils/getPlatformBranches'
+import makeAcceptanceFunc from '../utils/makeAcceptanceFunc'
+import optimize from '../utils/optimize'
 
 function onAccept(newCost: number, prevCost: number, iteration: number) {
   if (newCost !== prevCost) {
@@ -30,23 +37,10 @@ function onAccept(newCost: number, prevCost: number, iteration: number) {
   }
 }
 
-function sortSpans(spans: Span[], parallelSpans: Span[][]) {
-  const map = new WeakMap<Span, number>()
-  for (const s of spans) {
-    const parallels = parallelSpans.find(ss => ss.includes(s))
-    const numParallels = parallels ? parallels.length : 1
-    const eFactor = s.routes[0].line === 'E' ? 0 : Infinity
-    map.set(s, numParallels + eFactor)
-  }
-  const sortedSpans = orderBy(spans, s => tryGetFromMap(map, s), 'desc')
-  spans.splice(0, spans.length, ...sortedSpans)
-}
-
 interface Options {
   network: Network,
   platformSlots: WeakMap<Platform, Route[]>,
   spanBatches: Map<Span, number>,
-  parallelSpans: Span[][],
   costFunc: () => number,
   updateBatches: () => void,
 }
@@ -55,7 +49,6 @@ export default ({
   network,
   platformSlots,
   spanBatches,
-  parallelSpans,
   costFunc,
   updateBatches,
 }: Options) => {
@@ -234,6 +227,4 @@ export default ({
     ...swapSpansOptions,
     shouldAccept: lte,
   })
-
-  sortSpans(network.spans, parallelSpans)
 }
