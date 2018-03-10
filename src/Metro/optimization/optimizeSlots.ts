@@ -12,14 +12,6 @@ import {
   swapArrayElements,
 } from 'util/collections'
 
-import {
-  mean as meanPoint,
-  zero as zeroVec,
-  normalize,
-  orthogonal,
-  segmentsIntersect,
-} from 'util/math/vector'
-
 import Network, {
   Platform,
   Span,
@@ -113,7 +105,7 @@ export default ({
 
   const swapRoutesOptions = {
     costFunc,
-    shouldAccept: lte,
+    shouldAccept: makeAcceptanceFunc(TOTAL_ITERATIONS / 2, 2, 50),
     onAccept,
     move: (i) => {
       const [r1, ps1] = sample(routeEntries)!
