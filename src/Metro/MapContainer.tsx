@@ -2,9 +2,7 @@ import React, { PureComponent } from 'react'
 import { Point, LatLng } from 'leaflet'
 import {
   mean,
-  orderBy,
   xor,
-  sumBy,
 } from 'lodash'
 
 import { meanColor } from 'util/color'
@@ -15,7 +13,6 @@ import {
   zero as zeroVec,
   normalize,
   orthogonal,
-  segmentsIntersect,
 } from 'util/math/vector'
 
 import {
@@ -33,7 +30,9 @@ import Config from '../Config'
 
 import getPositions from './utils/getPositions'
 
-import optimizeSlots from './optimizeSlots'
+import optimizeSlots from './optimization/optimizeSlots'
+import sortSpans from './optimization/sortSpans'
+import costFunction from './optimization/costFunction'
 
 import { Containers as MetroContainers } from './index'
 import Platforms from './Platforms'
@@ -205,6 +204,27 @@ class MapContainer extends PureComponent<Props> {
     }
   }
 
+  private getSpanSlotPoints = (span: Span): SlotPoints => {
+    const slots = this.getSpanSlots(span)
+
+    const [source, target] = SOURCE_TARGET.map((prop, i) => {
+      const platform = span[prop]
+
+      const pos = this.getPlatformPosition(platform)
+      const controlPoint = tryGetFromMap(this.getPlatformWhiskers(platform), span)
+      const vec = controlPoint.subtract(pos)
+
+      const ortho = orthogonal(vec)[i]
+      const normal = ortho.equals(zeroVec) ? ortho : normalize(ortho)
+      return normal.multiplyBy(slots[prop]).add(pos)
+    })
+
+    return {
+      source,
+      target,
+    }
+  }
+
   private getPlatformPositions = (platform: Platform) => {
     const pos = this.getPlatformPosition(platform)
     const value = this.getFirstWhisker(platform)
@@ -265,27 +285,6 @@ class MapContainer extends PureComponent<Props> {
       }
     }
     return rgbs
-  }
-
-  private getSpanSlotPoints(span: Span): SlotPoints {
-    const slots = this.getSpanSlots(span)
-
-    const [source, target] = SOURCE_TARGET.map((prop, i) => {
-      const platform = span[prop]
-
-      const pos = this.getPlatformPosition(platform)
-      const controlPoint = tryGetFromMap(this.getPlatformWhiskers(platform), span)
-      const vec = controlPoint.subtract(pos)
-
-      const ortho = orthogonal(vec)[i]
-      const normal = ortho.equals(zeroVec) ? ortho : normalize(ortho)
-      return normal.multiplyBy(slots[prop]).add(pos)
-    })
-
-    return {
-      source,
-      target,
-    }
   }
 
   private makeWhiskers(platform: Platform): Map<Span, Point> {
@@ -509,90 +508,21 @@ class MapContainer extends PureComponent<Props> {
   }
 
   private costFunction(props: Props, log = false) {
-    // distances (less)
-    // crossings (less)
-
     const {
       network,
     } = props
 
-    const spans = network.spans.filter(s => s.routes[0].line === 'E')
+    const {
+      parallelSpans,
+      getSpanSlotPoints,
+    } = this
 
-    let sumDistances = 0
-    let numCrossings = 0
-    let numParallelCrossings = 0
-
-    const numSpans = spans.length
-    const numSpansMinusOne = numSpans - 1
-
-    const map = new WeakMap<Span, SlotPoints>()
-
-    for (const span of spans) {
-      const slots = this.getSpanSlotPoints(span)
-      map.set(span, slots)
-    }
-
-    for (let i = 0; i < numSpansMinusOne; ++i) {
-      const span = spans[i]
-
-      const {
-        source: sourcePoint,
-        target: targetPoint,
-      } = tryGetFromMap(map, span)
-
-      sumDistances += sourcePoint.distanceTo(targetPoint)
-
-      const arr = [sourcePoint, targetPoint] as [Point, Point]
-
-      for (let j = i + 1; j < numSpans; ++j) {
-        const otherSpan = spans[j]
-
-        const {
-          source: otherSourcePoint,
-          target: otherTargetPoint,
-        } = tryGetFromMap(map, otherSpan)
-
-        const doIntersect = !span.isContinuous(otherSpan)
-          && segmentsIntersect(arr, [otherSourcePoint, otherTargetPoint])
-
-        // TODO: intersecting a parallel batch counts as 1?
-
-        if (doIntersect) {
-          const isParallelCrossing = span.isParallel(otherSpan)
-          // console.log('intersection')
-          // console.log(span.source.name, span.target.name, span.routes[0].branch)
-          // console.log(otherSpan.source.name, otherSpan.target.name, otherSpan.routes[0].branch)
-          if (isParallelCrossing) {
-            if (log) {
-              console.log('intersection')
-              console.log(span.source.name, span.target.name, span.routes[0].branch)
-              console.log(otherSpan.source.name, otherSpan.target.name, otherSpan.routes[0].branch)
-            }
-            ++numParallelCrossings
-          }
-          ++numCrossings
-        }
-      }
-    }
-
-    const parallelBatches = sumBy(this.parallelSpans, ps => ps.length ** 4)
-    // console.log(spans.length, entries.length)
-
-    // TODO: treat only adjacent parallel as parallel
-
-    const totalCost = 20000
-      + numParallelCrossings * 500
-      + numCrossings * 2
-      - parallelBatches * 5
-      + sumDistances * 0.001
-
-    if (log) {
-      console.log('sum distances', sumDistances)
-      console.log('num crossings', numCrossings)
-      console.log('num parallel crossings', numParallelCrossings)
-    }
-
-    return totalCost
+    return costFunction({
+      network,
+      parallelSpans,
+      getSpanSlotPoints,
+      log,
+    })
   }
 
   optimize(props: Props) {
@@ -610,7 +540,6 @@ class MapContainer extends PureComponent<Props> {
       network,
       platformSlots,
       spanBatches,
-      parallelSpans,
       costFunc: () => this.costFunction(props),
       updateBatches: () => this.updateBatches(props),
     })
@@ -623,6 +552,8 @@ class MapContainer extends PureComponent<Props> {
     // TODO: how to save optimized state?
 
     console.log('total cost', this.costFunction(props, true))
+
+    sortSpans(network.spans, parallelSpans)
   }
 
   render() {
