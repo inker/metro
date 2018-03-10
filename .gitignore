@@ -232,3 +232,4 @@ pip-log.txt
 
 .vscode
 deploy_key
+.awcache
