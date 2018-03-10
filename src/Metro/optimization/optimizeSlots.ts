@@ -45,10 +45,6 @@ export default ({
   const patches = getPlatformPatches(platforms)
   console.log('patches', patches)
 
-  console.log('shuffling spans')
-  const shuffledSpans = shuffle(network.spans)
-  network.spans.splice(0, shuffledSpans.length, ...shuffledSpans)
-
   // initial primitive optimization (straigtening of patches)
   console.log('straightening patches')
   for (const patch of patches) {
