@@ -3,6 +3,7 @@ const { createLodashTransformer } = require('typescript-plugin-lodash')
 
 const tsOptions = env => env === 'dev' ? {
   // getCustomTransformers: () => ({ before: [styledComponentsTransformer] }),
+  useCache: true,
 } : {
   ignoreDiagnostics: [],
   getCustomTransformers: () => ({ before: [createLodashTransformer()] }),
@@ -56,9 +57,9 @@ module.exports = env => [
   {
     test: /\.(png|jpg|jpeg|gif|svg)$/,
     use: {
-      loader: 'url-loader',
+      loader: 'file-loader',
       options: {
-        limit: 1,
+        name: '[name].[hash].[ext]',
       },
     },
   },
