@@ -539,7 +539,6 @@ class MapContainer extends PureComponent<Props> {
     optimizeSlots({
       network,
       platformSlots,
-      spanBatches,
       costFunc: () => this.costFunction(props),
       updateBatches: () => this.updateBatches(props),
     })

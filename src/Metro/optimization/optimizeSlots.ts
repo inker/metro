@@ -14,7 +14,6 @@ import {
 
 import Network, {
   Platform,
-  Span,
   Route,
 } from '../../network'
 
@@ -32,7 +31,6 @@ function onAccept(newCost: number, prevCost: number, iteration: number) {
 interface Options {
   network: Network,
   platformSlots: WeakMap<Platform, Route[]>,
-  spanBatches: Map<Span, number>,
   costFunc: () => number,
   updateBatches: () => void,
 }
@@ -40,7 +38,6 @@ interface Options {
 export default ({
   network,
   platformSlots,
-  spanBatches,
   costFunc,
   updateBatches,
 }: Options) => {
