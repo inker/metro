@@ -1,6 +1,20 @@
 import { Component } from 'react'
 import equalsByLevel from './equalsByLevel'
 
+function excludedProps(baseObject, specificPropsObject) {
+  if (!specificPropsObject) {
+    return Object.assign({}, baseObject)
+  }
+
+  const genericOldProps = {}
+  for (const [prop, val] of Object.entries(baseObject)) {
+    if (!specificPropsObject.hasOwnProperty(prop)) {
+      genericOldProps[prop] = val
+    }
+  }
+  return genericOldProps
+}
+
 /**
  * @param {number} defaultLevel
  * @param {object} specificProps
@@ -8,25 +22,15 @@ import equalsByLevel from './equalsByLevel'
  */
 const propsComparisonLevel = (defaultLevel, specificProps) =>
   (Class) => {
-    Class.prototype.shouldComponentUpdate = function (newProps) {
+    Class.prototype.shouldComponentUpdate = function (newProps, newState) {
       const oldProps = this.props
+      const oldState = this.state
       if (!specificProps) {
-        return !equalsByLevel(oldProps, newProps, defaultLevel)
+        return !equalsByLevel(oldProps, newProps, defaultLevel) || !equalsByLevel(oldState, newState, defaultLevel)
       }
 
-      const genericOldProps = {}
-      for (const [prop, val] of Object.entries(oldProps)) {
-        if (!specificProps.hasOwnProperty(prop)) {
-          genericOldProps[prop] = val
-        }
-      }
-
-      const genericNewProps = {}
-      for (const [prop, val] of Object.entries(newProps)) {
-        if (!specificProps.hasOwnProperty(prop)) {
-          genericNewProps[prop] = val
-        }
-      }
+      const genericOldProps = excludedProps(oldProps, specificProps)
+      const genericNewProps = excludedProps(newProps, specificProps)
 
       return equalsByLevel(genericOldProps, genericNewProps, defaultLevel)
         && Object.entries(specificProps)
