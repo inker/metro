@@ -28,7 +28,7 @@ class Stadium extends PureComponent<Props> {
 
     return (
       <rect
-        x={center.x - distance * 0.5 - radius}
+        x={center.x - radius - distance / 2}
         y={center.y - radius}
         width={distance + diameter}
         height={diameter}

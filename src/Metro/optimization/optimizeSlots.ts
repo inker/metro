@@ -17,7 +17,7 @@ import Network, {
   Route,
 } from '../../network'
 
-import getPlatformPatches from '../utils/getPlatformPatches'
+import getSegments from '../utils/getSegments'
 import getPlatformBranches from '../utils/getPlatformBranches'
 import makeAcceptanceFunc from '../utils/makeAcceptanceFunc'
 import optimize from '../utils/optimize'
@@ -42,15 +42,15 @@ export default ({
   updateBatches,
 }: Options) => {
   const platforms = network.platforms.filter(p => platformSlots.has(p))
-  const patches = getPlatformPatches(platforms)
-  console.log('patches', patches)
+  const segments = getSegments(platforms)
+  console.log('segments', segments)
 
-  // initial primitive optimization (straigtening of patches)
-  console.log('straightening patches')
-  for (const patch of patches) {
-    const firstPlatform = patch[0]
+  // initial primitive optimization (straigtening of segments)
+  console.log('straightening segments')
+  for (const segment of segments) {
+    const firstPlatform = segment[0]
     const slots = tryGetFromMap(platformSlots, firstPlatform)
-    for (const p of patch) {
+    for (const p of segment) {
       const pSlots = tryGetFromMap(platformSlots, p)
       pSlots.splice(0, pSlots.length, ...slots)
     }
@@ -59,28 +59,28 @@ export default ({
 
   let cost = costFunc()
   console.log('initial cost', cost)
-  const TOTAL_ITERATIONS = 500
+  const TOTAL_ITERATIONS = 200
 
   const swapSpansOptions = {
     costFunc,
-    shouldAccept: makeAcceptanceFunc(TOTAL_ITERATIONS, 49, 50),
+    shouldAccept: makeAcceptanceFunc(TOTAL_ITERATIONS, 10, 50),
     onAccept,
     move: () => {
-      const patch = sample(patches)!
-      const firstPlatform = patch[0]
+      const segment = sample(segments)!
+      const firstPlatform = segment[0]
       const routes = tryGetFromMap(platformSlots, firstPlatform)
       const max = routes.length - 1
       const slot1 = random(0, max)
       const slot2 = random(0, max)
-      for (const p of patch) {
+      for (const p of segment) {
         const slots = tryGetFromMap(platformSlots, p)
         swapArrayElements(slots, slot1, slot2)
       }
       updateBatches()
-      return { patch, slot1, slot2 }
+      return { segment, slot1, slot2 }
     },
-    restore: ({ patch, slot1, slot2 }) => {
-      for (const p of patch) {
+    restore: ({ segment, slot1, slot2 }) => {
+      for (const p of segment) {
         const slots = tryGetFromMap(platformSlots, p)
         swapArrayElements(slots, slot1, slot2)
       }
@@ -164,7 +164,7 @@ export default ({
 
   // console.log('swapping routes again')
   // cost = optimize(TOTAL_ITERATIONS / 3, cost, swapRoutesOptions)
-  const minThreeRoutePlatforms = patches.filter(pa => pa[0].passingRoutes().size > 2)
+  const minThreeRoutePlatforms = segments.filter(pa => pa[0].passingRoutes().size > 2)
 
   if (minThreeRoutePlatforms.length > 0) {
     console.log('rotating routes')
@@ -174,10 +174,10 @@ export default ({
       onAccept,
       move: (i) => {
         const down = Math.random() < 0.5
-        const patch = sample(minThreeRoutePlatforms)!
+        const segment = sample(minThreeRoutePlatforms)!
 
         // rotate
-        for (const p of patch) {
+        for (const p of segment) {
           const slots = tryGetFromMap(platformSlots, p)
           if (down) {
             const last = slots.pop()!
@@ -188,10 +188,10 @@ export default ({
           }
         }
         updateBatches()
-        return { patch, down }
+        return { segment, down }
       },
-      restore: ({ patch, down }) => {
-        for (const p of patch) {
+      restore: ({ segment, down }) => {
+        for (const p of segment) {
           const slots = tryGetFromMap(platformSlots, p)
           if (!down) {
             const last = slots.pop()!
