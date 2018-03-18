@@ -60,6 +60,7 @@ export default class extends MetroMap {
             const platform = relatedTargetToPlatform(e.relatedTarget)
             platform.type = platform.type === 'normal' ? 'dummy' : 'normal'
             this.redrawNetwork()
+            this.displayDummyPlatforms()
         })
         this.subscribe('platformrename', e => {
             const platform = relatedTargetToPlatform(e.relatedTarget)
@@ -255,7 +256,6 @@ export default class extends MetroMap {
     protected redrawNetwork() {
         super.redrawNetwork()
         this.addBindings()
-        this.displayDummyPlatforms()
     }
 
     private addBindings() {
