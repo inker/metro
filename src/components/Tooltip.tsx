@@ -56,29 +56,27 @@ class Tooltip extends PureComponent<Props> {
     }
 
     return (
-      <g>
-        <foreignObject
-          x={-HALF_WIDTH}
-          y={-WIDTH}
-          width={WIDTH}
-          height={WIDTH}
-          transform={position ? `translate(${position.x}, ${position.y})` : ''}
-        >
-          <PlateBoxWrapper>
-            <PlateBox display={position}>
-              {names && names.map((name, i) => (
-                <Textling
-                  key={`${name}_${i}`}
-                  primary={i === 0}
-                  style={style}
-                >
-                  {name}
-                </Textling>
-              ))}
-            </PlateBox>
-          </PlateBoxWrapper>
-        </foreignObject>
-      </g>
+      <foreignObject
+        x={-HALF_WIDTH}
+        y={-WIDTH}
+        width={WIDTH}
+        height={WIDTH}
+        transform={position ? `translate(${position.x}, ${position.y})` : ''}
+      >
+        <PlateBoxWrapper>
+          <PlateBox display={position}>
+            {names && names.map((name, i) => (
+              <Textling
+                key={`${name}_${i}`}
+                primary={i === 0}
+                style={style}
+              >
+                {name}
+              </Textling>
+            ))}
+          </PlateBox>
+        </PlateBoxWrapper>
+      </foreignObject>
     )
   }
 }

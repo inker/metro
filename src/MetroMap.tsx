@@ -194,8 +194,10 @@ export default class {
             .on('movestart', e => this.moving = true)
             .on('moveend', e => this.moving = false)
         unblur({
-            skipIf: () => this.moving,
             interval: 250,
+            skipIf: () => this.moving,
+            // onUnblur: (els) => console.log('unblurred:', els.length),
+            // onSkip: () => console.log('skipped'),
         })
     }
 
