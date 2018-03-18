@@ -88,9 +88,8 @@ export default class extends MetroMap {
             this.network.platforms.push(newPlatform)
             if (detail.relatedTarget !== undefined) {
                 const span = relatedTargetToSpan(detail.relatedTarget)
-                const prop = span.source === newPlatform ? 'target' : 'source'
-                const newSpan = new Span(newPlatform, span[prop], span.routes)
-                span[prop] = newPlatform
+                const newSpan = new Span(newPlatform, span.target, span.routes)
+                span.target = newPlatform
                 this.network.spans.push(newSpan)
             }
             this.overlay.extendBounds(location)
