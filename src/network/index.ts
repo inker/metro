@@ -35,7 +35,7 @@ export default class {
     constructor(json: GraphJSON, detailedE?: boolean) {
         console.time('restore')
         const objectifyLatLng = (obj: LatLngJSON) => latLng(obj.lat, obj.lng)
-        this.platforms = json.platforms.map(p => new Platform(p.name, objectifyLatLng(p.location), p.altNames))
+        this.platforms = json.platforms.map(p => new Platform(p.name, objectifyLatLng(p.location), p.altNames, p.type as any))
         this.stations = []
         this.routes = json.routes
         this.lines = json.lines
@@ -102,6 +102,7 @@ export default class {
                 name: p.name,
                 altNames: p.altNames,
                 location: p.location,
+                type: p.type === 'normal' ? undefined : p.type,
             })),
             transfers: transfers.map(t => ({
                 source: platforms.indexOf(t.source),

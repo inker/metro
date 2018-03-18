@@ -11,6 +11,7 @@ export interface AltNamesJSON {
 }
 
 export interface PlatformJSON {
+    type?: string,
     name: string,
     altNames: AltNamesJSON,
     location: LatLngJSON,

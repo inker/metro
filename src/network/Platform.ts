@@ -12,8 +12,11 @@ interface Spans {
     outbound: Span[],
 }
 
+type PlatformType = 'normal' | 'dummy'
+
 export default class Platform {
     readonly id = uniqueId('platform-')
+    type: PlatformType
     name: string
     altNames: AltNames
     location: LatLng
@@ -29,10 +32,11 @@ export default class Platform {
         return this._station
     }
 
-    constructor(name: string, location: LatLng, altNames: AltNames = {}, elevation?: number) {
+    constructor(name: string, location: LatLng, altNames: AltNames = {}, type: PlatformType = 'normal', elevation?: number) {
         this.name = name
         this.altNames = altNames
         this.location = location
+        this.type = type
         this.elevation = elevation
     }
 
