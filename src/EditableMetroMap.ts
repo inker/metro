@@ -56,6 +56,11 @@ export default class extends MetroMap {
 
         const { map, contextMenu } = this
 
+        this.subscribe('platformchangetype', e => {
+            const platform = relatedTargetToPlatform(e.relatedTarget)
+            platform.type = platform.type === 'normal' ? 'dummy' : 'normal'
+            this.redrawNetwork()
+        })
         this.subscribe('platformrename', e => {
             const platform = relatedTargetToPlatform(e.relatedTarget)
             const bottomRight = getElementOffset(e.relatedTarget as SVGCircleElement)
@@ -161,6 +166,9 @@ export default class extends MetroMap {
             if (map.getZoom() < this.config.detailedZoom) {
                 map.setZoom(this.config.detailedZoom)
             }
+
+            this.displayDummyPlatforms()
+
             const pathTrigger = (target: EventTarget) => {
                 const targetsParent = (target as SVGElement).parentElement
                 if (!targetsParent) {
@@ -181,6 +189,7 @@ export default class extends MetroMap {
 
             contextMenu.insertItem('platformrename', 'Rename station', trigger)
             contextMenu.insertItem('platformdelete', 'Delete station', trigger)
+            contextMenu.insertItem('platformchangetype', 'Change type', trigger)
             contextMenu.insertItem('spanstart', 'Span from here', trigger)
             contextMenu.insertItem('transferstart', 'Transfer from here', trigger)
 
@@ -207,6 +216,8 @@ export default class extends MetroMap {
             contextMenu.removeItem('spanroutechange')
             contextMenu.removeItem('spandelete')
             contextMenu.removeItem('transferdelete')
+
+            this.hideDummyPlatforms()
         })
         this.subscribe('mapsave', async e => {
             const json = this.network.toJSON()
@@ -219,9 +230,32 @@ export default class extends MetroMap {
         })
     }
 
+    private displayDummyPlatforms() {
+        for (const p of this.network.platforms) {
+            if (p.type !== 'dummy') {
+                continue
+            }
+            const { style } = tryGetFromMap(pool.platformBindings, p)
+            style.opacity = '0.5'
+            style.display = ''
+        }
+    }
+
+    private hideDummyPlatforms() {
+        for (const p of this.network.platforms) {
+            if (p.type !== 'dummy') {
+                continue
+            }
+            const { style } = tryGetFromMap(pool.platformBindings, p)
+            style.opacity = ''
+            style.display = 'none'
+        }
+    }
+
     protected redrawNetwork() {
         super.redrawNetwork()
         this.addBindings()
+        this.displayDummyPlatforms()
     }
 
     private addBindings() {

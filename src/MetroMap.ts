@@ -441,6 +441,9 @@ export default class {
 
                 if (zoom > 9) {
                     const ci = this.makePlatformElement(platform)
+                    if (platform.type === 'dummy') {
+                        ci.style.display = 'none'
+                    }
                     // ci.id = 'p-' + platformIndex;
 
                     if (isDetailed) {
