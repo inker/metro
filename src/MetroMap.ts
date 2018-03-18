@@ -99,10 +99,16 @@ const contextMenuArray = [
     {
         event: 'routefrom',
         text: 'Route from here',
+        extra: {
+            disabled: true,
+        },
     },
     {
         event: 'routeto',
         text: 'Route to here',
+        extra: {
+            disabled: true,
+        },
     },
     {
         event: 'clearroute',
@@ -874,7 +880,9 @@ export default class {
         }
         const topmostPlatform = maxBy(platforms, p => p.location.lat)
         const topmostCircle = tryGetFromMap(pool.platformBindings, topmostPlatform)
-        this.tooltip.show(svg.getElementOffset(topmostCircle), namesOnPlate)
+        if (platforms.some(p => p.type !== 'dummy')) {
+            this.tooltip.show(svg.getElementOffset(topmostCircle), namesOnPlate)
+        }
     }
 
 }
