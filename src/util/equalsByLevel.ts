@@ -24,8 +24,8 @@ const equalsByLevel = (o1: any, o2: any, currentLevel: number) =>
  * Infinity: deep
  */
 export default (o1: any, o2: any, level: number) => {
-  if (!Number.isInteger(level) || level < 0) {
-    throw new Error(`level must be a non-negative integer, got ${level} instead`)
+  if (!Number.isSafeInteger(level) || level < 0) {
+    throw new Error(`level must be a non-negative safe integer (i.e. from 0 to 9007199254740991 inclusive) or Infinity, but got ${level} instead`)
   }
   return equalsByLevel(o1, o2, level)
 }
