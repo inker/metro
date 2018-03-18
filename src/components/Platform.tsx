@@ -3,7 +3,7 @@ import { Point } from 'leaflet'
 
 import Platform from 'network/Platform'
 
-import comparePropsLevel from 'util/comparePropsLevel'
+import propsComparisonLevel from 'util/propsComparisonLevel'
 
 import Circle from './primitives/Circle'
 import Stadium from './primitives/Stadium'
@@ -21,7 +21,7 @@ interface Props {
   onMouseOut?: () => void,
 }
 
-@comparePropsLevel(2)
+@propsComparisonLevel(2)
 class PlatformReact extends Component<Props> {
   private onMouseOver = () => {
     const { platforms, onMouseOver } = this.props
