@@ -63,7 +63,7 @@ export default ({
 
   const swapSpansOptions = {
     costFunc,
-    shouldAccept: makeAcceptanceFunc(TOTAL_ITERATIONS, 10, 50),
+    shouldAccept: makeAcceptanceFunc(TOTAL_ITERATIONS, 10, 25),
     onAccept,
     move: () => {
       const segment = sample(segments)!
