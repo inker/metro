@@ -1,7 +1,9 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { Point } from 'leaflet'
 
 import Platform from 'network/Platform'
+
+import comparePropsLevel from 'util/comparePropsLevel'
 
 import Circle from './primitives/Circle'
 import Stadium from './primitives/Stadium'
@@ -19,7 +21,8 @@ interface Props {
   onMouseOut?: () => void,
 }
 
-class PlatformReact extends PureComponent<Props> {
+@comparePropsLevel(2)
+class PlatformReact extends Component<Props> {
   private onMouseOver = () => {
     const { platforms, onMouseOver } = this.props
     if (!onMouseOver) {
