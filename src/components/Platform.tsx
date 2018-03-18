@@ -49,6 +49,7 @@ class PlatformReact extends Component<Props> {
 
   render() {
     const {
+      platforms,
       radius,
       color,
       isFeatured,
@@ -65,6 +66,7 @@ class PlatformReact extends Component<Props> {
         <El
           radius={realRadius}
           stroke={color}
+          display={platforms.every(p => p.type === 'dummy') ? 'none' : undefined}
         />
         {dummyParent &&
           <Modal
