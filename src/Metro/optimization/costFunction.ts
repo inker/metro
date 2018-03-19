@@ -124,7 +124,7 @@ export default ({
 
   // TODO: treat only adjacent parallel as parallel
 
-  const totalCost = 25000
+  const totalCost = 30000
     + numParallelCrossings * 500
     + numCrossings * 2
     - parallelBatches * 5
