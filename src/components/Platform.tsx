@@ -25,7 +25,7 @@ interface Props {
 class PlatformReact extends Component<Props> {
   private onMouseOver = () => {
     const { platforms, onMouseOver } = this.props
-    if (!onMouseOver) {
+    if (!onMouseOver || platforms.every(p => p.type === 'dummy')) {
       return
     }
     onMouseOver(platforms)
