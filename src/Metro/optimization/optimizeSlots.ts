@@ -59,11 +59,11 @@ export default ({
 
   let cost = costFunc()
   console.log('initial cost', cost)
-  const TOTAL_ITERATIONS = 200
+  const TOTAL_ITERATIONS = 100
 
   const swapSpansOptions = {
     costFunc,
-    shouldAccept: makeAcceptanceFunc(TOTAL_ITERATIONS, 10, 25),
+    shouldAccept: makeAcceptanceFunc(TOTAL_ITERATIONS, 1.5, 10),
     onAccept,
     move: () => {
       const segment = sample(segments)!
@@ -126,9 +126,7 @@ export default ({
 
   cost = optimize(TOTAL_ITERATIONS / 2, cost, swapRoutesOptions)
 
-  console.log('moving routes (with clamping)', routeEntries)
-
-  cost = optimize(TOTAL_ITERATIONS, cost, {
+  const clampingOptions = {
     costFunc,
     shouldAccept: lte,
     onAccept,
@@ -160,7 +158,11 @@ export default ({
       }
       updateBatches()
     },
-  })
+  }
+
+  console.log('moving routes (with clamping)', routeEntries)
+
+  cost = optimize(TOTAL_ITERATIONS, cost, clampingOptions)
 
   // console.log('swapping routes again')
   // cost = optimize(TOTAL_ITERATIONS / 3, cost, swapRoutesOptions)
@@ -212,4 +214,8 @@ export default ({
     ...swapSpansOptions,
     shouldAccept: lte,
   })
+
+  console.log('moving routes (with clamping) again', routeEntries)
+
+  cost = optimize(TOTAL_ITERATIONS / 2, cost, clampingOptions)
 }
