@@ -46,7 +46,9 @@ export default (objects: Platform[], p1: LatLng, p2: LatLng): ShortestRouteObjec
         currentTime.set(o, time + waitingTime)
         distance = distanceBetween(o.location, p2)
         time = distance / WALKING_WITH_OBSTACLES
-        fromPlatformToDest.set(o, time)
+        if (o.type !== 'dummy') {
+            fromPlatformToDest.set(o, time)
+        }
     }
     // pick the closest one so far
     let currentNode = findClosestObject(p1, objects)
@@ -113,6 +115,9 @@ export default (objects: Platform[], p1: LatLng, p2: LatLng): ShortestRouteObjec
     // find the shortest time & the exit station
     let shortestTime = Infinity
     for (const [p] of currentTime) {
+        if (p.type === 'dummy') {
+            continue
+        }
         const alt = tryGetFromMap(currentTime, p) + tryGetFromMap(fromPlatformToDest, p)
         if (alt < shortestTime) {
             shortestTime = alt

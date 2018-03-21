@@ -99,16 +99,10 @@ const contextMenuArray = [
     {
         event: 'routefrom',
         text: 'Route from here',
-        extra: {
-            disabled: true,
-        },
     },
     {
         event: 'routeto',
         text: 'Route to here',
-        extra: {
-            disabled: true,
-        },
     },
     {
         event: 'clearroute',
