@@ -58,7 +58,7 @@ class Metro extends PureComponent<Props, State> {
     featuredPlatforms: null,
   }
 
-  componentWillReceiveProps(props: Props) {
+  UNSAFE_componentWillReceiveProps(props: Props) {
     const oldProps = this.props
     if (props.zoom === oldProps.zoom) {
       return

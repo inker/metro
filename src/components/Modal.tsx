@@ -33,7 +33,7 @@ class Modal extends PureComponent<Props> {
     this.props.modalRoot.appendChild(this.el)
   }
 
-  componentWillReceiveProps(nextProps: Props) {
+  UNSAFE_componentWillReceiveProps(nextProps: Props) {
     if (this.props.modalRoot.id === nextProps.modalRoot.id) {
       return
     }
