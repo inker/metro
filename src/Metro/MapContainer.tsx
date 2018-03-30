@@ -99,7 +99,7 @@ class MapContainer extends PureComponent<Props> {
   private readonly parallelSpans: Span[][] = []
   private readonly stationCircumpoints = new WeakMap<Station, Platform[]>()
 
-  componentWillReceiveProps(props: Props) {
+  UNSAFE_componentWillReceiveProps(props: Props) {
     const oldProps = this.props
     if (props.zoom === oldProps.zoom) {
       return
