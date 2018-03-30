@@ -2,6 +2,7 @@ import { Point } from 'leaflet'
 
 import {
   sumBy,
+  meanBy,
   castArray,
 } from 'lodash'
 
@@ -42,7 +43,6 @@ export default ({
 
   const spans = network.spans.filter(s => s.routes[0].line === 'E')
 
-  let sumDistances = 0
   let numCrossings = 0
   let numParallelCrossings = 0
 
@@ -56,6 +56,7 @@ export default ({
   }
 
   const intersections: { [key: string]: boolean | undefined } = {}
+  const distances: { [id: string]: number } = {}
 
   for (let i = 0; i < numSpans; ++i) {
     const span = spans[i]
@@ -65,7 +66,7 @@ export default ({
       target: targetPoint,
     } = tryGetFromMap(map, span)
 
-    sumDistances += sourcePoint.distanceTo(targetPoint)
+    distances[span.id] = sourcePoint.distanceTo(targetPoint)
 
     const arr = [sourcePoint, targetPoint] as [Point, Point]
 
@@ -119,7 +120,9 @@ export default ({
     }
   })
 
-  const parallelBatches = sumBy(parallelSpans, ps => ps.length ** 4)
+  const avgDist = meanBy(spans, s => distances[s.id])
+
+  const parallelBatches = sumBy(parallelSpans, ps => ps.length ** 4 * meanBy(ps, s => distances[s.id]) / avgDist) / numSpans
   // console.log(spans.length, entries.length)
 
   // TODO: treat only adjacent parallel as parallel
@@ -127,11 +130,11 @@ export default ({
   const totalCost = 35000
     + numParallelCrossings * 500
     + numCrossings * 2
-    - parallelBatches * 5
-    + sumDistances * 0.001
+    - parallelBatches * 1000
+    + avgDist * 0.2
 
   if (log) {
-    console.log('sum distances', sumDistances)
+    console.log('avg distance', avgDist)
     console.log('num crossings', numCrossings)
     console.log('num parallel crossings', numParallelCrossings)
   }
