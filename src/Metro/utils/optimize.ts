@@ -15,7 +15,7 @@ export default <T>(totalIterations: number, initialCost: number, {
 }: Options<T>) => {
   let prevCost = initialCost
   for (let i = 0; i < totalIterations; ++i) {
-    const moveRetVal = move(i)
+    const snapshot = move(i)
     const newCost = costFunc()
     if (shouldAccept(newCost, prevCost, i)) {
       if (onAccept) {
@@ -25,7 +25,7 @@ export default <T>(totalIterations: number, initialCost: number, {
       continue
     }
     if (restore) {
-      restore(moveRetVal, i)
+      restore(snapshot, i)
     }
   }
   return prevCost
