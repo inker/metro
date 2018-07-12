@@ -66,9 +66,10 @@ export default class ContextMenu {
         const { target } = event
         console.log('target', target, (target as Node).parentNode)
         const { className } = target as Element
-        if (typeof className === 'string' && className.includes('leaflet-control')) {
+        if (!target || typeof className === 'string' && className.includes('leaflet-control')) {
             return
         }
+
         event.preventDefault()
         removeAllChildren(this.container)
         for (const item of this.items) {

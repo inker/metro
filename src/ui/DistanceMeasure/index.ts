@@ -37,7 +37,7 @@ export default class DistanceMeasure {
     }
 
     private updateDistances() {
-        const latlngs = this.polyline.getLatLngs()
+        const latlngs = this.polyline.getLatLngs() as L.LatLng[]
         const markers = this.markers.getLayers() as L.Marker[]
         const nMarkers = markers.length
         latlngs[0] = markers[0].setPopupContent('0').getLatLng()
@@ -58,7 +58,7 @@ export default class DistanceMeasure {
         if (latlngs.length > nMarkers) {
             latlngs.length = nMarkers
         }
-        const dashedLingLatLngs = this.dashedLine.getLatLngs()
+        const dashedLingLatLngs = this.dashedLine.getLatLngs() as L.LatLng[]
         dashedLingLatLngs[0] = last(latlngs) as L.LatLng
         this.dashedLine.setLatLngs(dashedLingLatLngs)
 
@@ -125,7 +125,7 @@ export default class DistanceMeasure {
     }
 
     private resetDashedLine = (e: L.LeafletMouseEvent) => {
-        const dashedLingLatLngs = this.dashedLine.getLatLngs()
+        const dashedLingLatLngs = this.dashedLine.getLatLngs() as L.LatLng[]
         dashedLingLatLngs[1] = e.latlng
         this.dashedLine.setLatLngs(dashedLingLatLngs)
         this.dashedLine.redraw()
