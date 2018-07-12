@@ -1,4 +1,4 @@
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const { createLodashTransformer } = require('typescript-plugin-lodash')
 
 const tsOptions = env => env === 'dev' ? {
@@ -18,18 +18,11 @@ const getCssLoader = global => global ? 'css-loader' : {
   },
 }
 
-// TODO: fix this shit
-const getCssRule = (env, global) => env === 'dev' || global ? [
-  'style-loader',
+const getCssRule = (env, global) => [
+  env === 'dev' ? 'style-loader' : MiniCssExtractPlugin.loader,
   getCssLoader(global),
   'postcss-loader',
-] : ExtractTextPlugin.extract({
-  fallback: 'style-loader',
-  use: [
-    getCssLoader(global),
-    'postcss-loader',
-  ],
-})
+]
 
 module.exports = env => [
   // { // adds source maps for external modules (like bim)
