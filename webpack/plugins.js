@@ -4,7 +4,6 @@ const {
   DefinePlugin,
   HotModuleReplacementPlugin,
   optimize: {
-    CommonsChunkPlugin,
     OccurrenceOrderPlugin,
   },
   NamedChunksPlugin,
