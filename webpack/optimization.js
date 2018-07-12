@@ -6,6 +6,13 @@ module.exports = env => ({
   splitChunks: {
     chunks: 'all',
     cacheGroups: {
+      lodash: {
+        test: /[\\/]lodash[\\/]/,
+        chunks: 'initial',
+        name: 'lodash',
+        enforce: true,
+        reuseExistingChunk: true,
+      },
       // vendor: {
       vendors: {
         test: /node_modules/,
