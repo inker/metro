@@ -16,7 +16,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 // const { CheckerPlugin } = require('awesome-typescript-loader')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
 const SEP_RE = new RegExp(`\\${path.sep}`, 'g')
@@ -72,7 +72,10 @@ module.exports = env => [
     },
   }),
 
-  new ExtractTextPlugin('style.[contenthash].css'),
+  env !== 'dev' && new MiniCssExtractPlugin({
+    filename: "[name].css",
+    chunkFilename: "[id].css"
+  }),
 
   new CopyWebpackPlugin([
     {
@@ -80,27 +83,6 @@ module.exports = env => [
       to: 'res',
     },
   ]),
-
-  env !== 'dev' && new UglifyJsPlugin({
-    uglifyOptions: {
-      compress: {
-        ecma: 6,
-        warnings: true,
-        dead_code: true,
-        properties: true,
-        unused: true,
-        join_vars: true,
-        drop_console: true,
-      },
-      mangle: {
-        safari10: true,
-      },
-      output: {
-        comments: false,
-      },
-    },
-    // sourceMap: true, // retains sourcemaps for typescript
-  }),
 
   env === 'analyze' && new BundleAnalyzerPlugin(),
 ].filter(item => item)
