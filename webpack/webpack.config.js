@@ -1,4 +1,6 @@
 const path = require('path')
+
+const optimization = require('./optimization')
 const rules = require('./rules')
 const plugins = require('./plugins')
 
@@ -6,6 +8,7 @@ const rootDir = process.cwd()
 const distDir = path.join(rootDir, 'docs')
 
 module.exports = env => ({
+  mode: env === 'dev' ? 'development' : 'production',
   target: 'web',
   entry: {
     app: './src/main.ts',
@@ -28,6 +31,7 @@ module.exports = env => ({
     },
   },
   devtool: env === 'dev' ? 'source-map' : undefined,
+  optimization: optimization(env),
   module: {
     rules: rules(env),
   },
