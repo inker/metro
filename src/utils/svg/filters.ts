@@ -1,4 +1,4 @@
-import { createSVGElement } from './index'
+import { createSVGElement } from '.'
 
 const GLOW_FILTER_ID = 'black-glow'
 

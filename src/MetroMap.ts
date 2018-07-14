@@ -7,6 +7,68 @@ import {
     maxBy,
 } from 'lodash'
 
+import getSvgSizesByZoom from 'ui/getSvgSizesByZoom'
+import addLayerSwitcher from 'ui/addLayerSwitcher'
+import DistanceMeasure from 'ui/DistanceMeasure'
+import SvgOverlay from 'ui/SvgOverlay'
+import ContextMenu from 'ui/ContextMenu'
+import RoutePlanner from 'ui/RoutePlanner'
+import Tooltip from 'ui/Tooltip'
+import FAQ from 'ui/FAQ'
+// import drawZones from 'ui/drawZones'
+
+import {
+    mapbox,
+    mapbox2,
+    mapnik,
+    osmFrance,
+    openMapSurfer,
+    cartoDBNoLabels,
+    wikimapia,
+} from 'ui/tilelayers'
+
+import {
+    getPlatformNames,
+    getPlatformNamesZipped,
+    // midPointsToEnds,
+} from 'utils/misc'
+
+import {
+    byId,
+    removeAllChildren,
+} from 'utils/dom'
+
+import * as math from 'utils/math'
+import * as svg from 'utils/svg'
+import { getJSON } from 'utils/http'
+import getCenter from 'utils/geo/getCenter'
+// import geometricMedian from 'utils/geo/geometricMedian'
+import { meanColor } from 'utils/color'
+import MetroMapEventMap from 'utils/MetroMapEventMap'
+import Mediator from 'utils/Mediator'
+
+import {
+    tryGetFromMap,
+    tryGetKeyFromBiMap,
+    getOrMakeInMap,
+} from 'utils/collections'
+
+import * as scale from 'utils/sfx/scale'
+import findCycle from 'utils/algorithm/findCycle'
+import * as gradients from 'utils/svg/gradients'
+import { create as createBezier } from 'utils/svg/bezier'
+import { appendAll as appendAllFilters } from 'utils/svg/filters'
+// import drawBezierHints from 'utils/dev/bezierHints'
+
+import {
+    mean,
+    normalize,
+    unit,
+    angle,
+} from 'utils/math/vector'
+
+import 'leaflet/dist/leaflet.css'
+
 import Config from './Config'
 import pool from './ObjectPool'
 import getLineRules from './getLineRules'
@@ -19,69 +81,7 @@ import Network, {
     GraphJSON,
 } from './network'
 
-import getSvgSizesByZoom from './ui/getSvgSizesByZoom'
-import addLayerSwitcher from './ui/addLayerSwitcher'
-import DistanceMeasure from './ui/DistanceMeasure'
-import SvgOverlay from './ui/SvgOverlay'
-import ContextMenu from './ui/ContextMenu'
-import RoutePlanner from './ui/RoutePlanner'
-import Tooltip from './ui/Tooltip'
-import FAQ from './ui/FAQ'
-// import drawZones from './ui/drawZones'
-
-import {
-    mapbox,
-    mapbox2,
-    mapnik,
-    osmFrance,
-    openMapSurfer,
-    cartoDBNoLabels,
-    wikimapia,
-} from './ui/tilelayers'
-
-import {
-    getPlatformNames,
-    getPlatformNamesZipped,
-    // midPointsToEnds,
-} from './util'
-
-import {
-    byId,
-    removeAllChildren,
-} from './util/dom'
-
-import * as math from './util/math'
-import * as svg from './util/svg'
-import { getJSON } from './util/http'
-import getCenter from './util/geo/getCenter'
-// import geometricMedian from './util/geo/geometricMedian'
-import { meanColor } from './util/color'
-import MetroMapEventMap from './util/MetroMapEventMap'
-import Mediator from './util/Mediator'
-
-import {
-    tryGetFromMap,
-    tryGetKeyFromBiMap,
-    getOrMakeInMap,
-} from './util/collections'
-
-import * as scale from './util/sfx/scale'
-import findCycle from './util/algorithm/findCycle'
-import * as gradients from './util/svg/gradients'
-import { create as createBezier } from './util/svg/bezier'
-import { appendAll as appendAllFilters } from './util/svg/filters'
-// import drawBezierHints from './util/dev/bezierHints'
-
-import {
-    mean,
-    normalize,
-    unit,
-    angle,
-} from './util/math/vector'
-
-import 'leaflet/dist/leaflet.css'
-
-const alertifyPromise = import(/* webpackChunkName: "alertify" */ './ui/alertify')
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ 'ui/alertify')
 
 const GAP_BETWEEN_PARALLEL = 0 // 0 - none, 1 - line width
 const CURVE_SPLIT_NUM = 10

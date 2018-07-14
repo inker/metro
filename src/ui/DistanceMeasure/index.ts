@@ -1,8 +1,9 @@
 import L from 'leaflet'
 import { last } from 'lodash'
 
-import redCircle from '../Icons/redCircle'
-import { onceEscapePress } from '../../util/events'
+import { onceEscapePress } from 'utils/events'
+
+import redCircle from 'ui/Icons/redCircle'
 
 import styles from './styles.pcss'
 

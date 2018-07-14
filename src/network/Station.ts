@@ -1,9 +1,9 @@
 import { uniqueId } from 'lodash'
 
-import { LatLng } from './types'
+import { getPlatformNamesZipped } from 'utils/misc'
+import getCenter from 'utils/geo/getCenter'
 
-import { getPlatformNamesZipped } from '../util'
-import getCenter from '../util/geo/getCenter'
+import { LatLng } from './types'
 
 import Platform from './Platform'
 

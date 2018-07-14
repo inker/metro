@@ -4,14 +4,26 @@ import {
     pull,
 } from 'lodash'
 
+import MapEditor from 'ui/MapEditor'
+import askRoutes from 'ui/askRoutes'
+import platformRenameDialog from 'ui/platformRenameDialog'
+
+import { getElementOffset } from 'utils/svg'
+import { setPath } from 'utils/svg/bezier'
+// import * as dom from 'utils/dom'
+
+import { getPlatformNames } from 'utils/misc'
+
+import {
+    intersection,
+    tryGetFromMap,
+    tryGetKeyFromBiMap,
+} from 'utils/collections'
+
 import MetroMap from './MetroMap'
 
 import Config from './Config'
 import pool from './ObjectPool'
-
-import MapEditor from './ui/MapEditor'
-import askRoutes from './ui/askRoutes'
-import platformRenameDialog from './ui/platformRenameDialog'
 
 import {
     Platform,
@@ -19,21 +31,9 @@ import {
     Transfer,
 } from './network'
 
-import { getElementOffset } from './util/svg'
-import { setPath } from './util/svg/bezier'
-// import * as dom from './util/dom'
-
-import { getPlatformNames } from './util'
-
-import {
-    intersection,
-    tryGetFromMap,
-    tryGetKeyFromBiMap,
-} from './util/collections'
-
 // const { gradients } = svg
 
-const gitHubDialogPromise = import(/* webpackChunkName: "GitHub" */ './ui/GitHub')
+const gitHubDialogPromise = import(/* webpackChunkName: "GitHub" */ 'ui/GitHub')
 
 export default class extends MetroMap {
     constructor(config: Config) {
@@ -161,7 +161,7 @@ export default class extends MetroMap {
             }
             const path = e.relatedTarget as SVGPathElement | SVGLineElement
             const transfer = (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as Transfer
-            fastDelete(this.network.transfers, transfer)
+            pull(this.network.transfers, transfer)
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
         this.subscribe('editmapstart', e => {

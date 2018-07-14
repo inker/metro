@@ -1,4 +1,4 @@
-const alertifyPromise = import(/* webpackChunkName: "alertify" */ '../alertify')
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ 'ui/alertify')
 
 export default async (gh, baseRepo, baseBranch) => {
     const head = `heads/${baseBranch}`

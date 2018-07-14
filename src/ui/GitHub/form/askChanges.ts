@@ -1,4 +1,4 @@
-const alertifyPromise = import(/* webpackChunkName: "alertify" */ '../../alertify')
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ 'ui/alertify')
 
 const TITLE = 'What did you change?'
 const ON_REFUSAL = 'Please provide the description of your changes'

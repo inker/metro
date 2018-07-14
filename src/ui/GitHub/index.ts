@@ -1,8 +1,9 @@
-import { makeLink } from '../../util/dom'
+import { makeLink } from 'utils/dom'
+
 import auth from './auth'
 import submitToGitHub from './submitToGitHub'
 
-const alertifyPromise = import(/* webpackChunkName: "alertify" */ '../alertify')
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ 'ui/alertify')
 
 export default async function githubDialog(json: string): Promise<boolean> {
     const authData = await auth()

@@ -5,7 +5,7 @@ import {
     createSVGElement,
     makePolygon,
     makeCircle,
-} from '../../util/svg'
+} from 'utils/svg'
 
 function makeTextLabel(text: string) {
     const label = createSVGElement('text')

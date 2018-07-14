@@ -2,13 +2,17 @@ import { Browser } from 'leaflet'
 import animateSvg from 'animate-svg'
 import { last } from 'lodash'
 
-import pool from '../../ObjectPool'
-import { applyDrop } from '../svg/filters'
-import { tryGetFromMap } from '../collections'
-import { byId } from '../dom'
-import { transitionEnd } from '../events'
+import { applyDrop } from 'utils/svg/filters'
+import { tryGetFromMap } from 'utils/collections'
+import { byId } from 'utils/dom'
+import { transitionEnd } from 'utils/events'
 
-import { Platform, Edge, Transfer } from '../../network'
+import pool from '../../ObjectPool'
+import {
+    Platform,
+    Edge,
+    Transfer,
+} from '../../network'
 
 import { scaleElement } from './scale'
 

@@ -1,7 +1,7 @@
 import { LatLngBounds, point } from 'leaflet'
 
-import MapOverlay from '../base/MapOverlay'
-import { createSVGElement } from '../../util/svg'
+import MapOverlay from 'ui/base/MapOverlay'
+import { createSVGElement } from 'utils/svg'
 
 import styles from './styles.pcss'
 

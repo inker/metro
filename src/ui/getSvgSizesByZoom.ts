@@ -1,5 +1,8 @@
 import { memoize } from 'lodash'
 
+const memoizeFunc = (...args) =>
+    args.join(':')
+
 function getSvgSizesByZoom(zoom: number, detailedZoom: number) {
     const coef = zoom > 9 ? zoom : zoom > 8 ? 9.5 : 9
     // const lineWidth = 2 ** (zoom / 4 - 1.75);
@@ -23,4 +26,4 @@ function getSvgSizesByZoom(zoom: number, detailedZoom: number) {
     }
 }
 
-export default memoize(getSvgSizesByZoom)
+export default memoize(getSvgSizesByZoom, memoizeFunc)

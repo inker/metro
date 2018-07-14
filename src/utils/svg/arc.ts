@@ -1,8 +1,9 @@
 import { Point } from 'leaflet'
 
-import { createSVGElement } from './index'
-import { getCircumcenter } from '../math'
-import { dot, det } from '../math/vector'
+import { getCircumcenter } from 'utils/math'
+import { dot, det } from 'utils/math/vector'
+
+import { createSVGElement } from '.'
 
 interface ArcArgs {
     radius: number,

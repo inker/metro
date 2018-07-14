@@ -1,6 +1,6 @@
 import { tryCall } from 'tryfunc'
 
-import { cachelessFetch } from './util/http'
+import { cachelessFetch } from 'utils/http'
 
 function makeStyleLink(url: string) {
     const link = document.createElement('link')

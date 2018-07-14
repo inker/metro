@@ -1,7 +1,7 @@
 import { Point } from 'leaflet'
 
-import { createSVGElement } from '../../svg'
-import { meanColor } from '../../color'
+import { createSVGElement } from 'utils/svg'
+import { meanColor } from 'utils/color'
 
 import styles from './styles.css'
 

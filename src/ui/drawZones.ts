@@ -4,8 +4,9 @@ import {
     circle,
 } from 'leaflet'
 
+import geometricMedian from 'utils/geo/geometricMedian'
+
 import { Platform } from '../network'
-import geometricMedian from '../util/geo/geometricMedian'
 
 const MAIN_STATION_NAME = 'Glavnyj voxal'
 

@@ -1,6 +1,6 @@
 import { Point } from 'leaflet'
 
-import { createSVGElement } from '../../util/svg'
+import { createSVGElement } from 'utils/svg'
 
 import styles from './styles.pcss'
 

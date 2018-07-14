@@ -1,6 +1,6 @@
 import { Point, point } from 'leaflet'
 
-import { createSVGElement } from './index'
+import { createSVGElement } from '.'
 
 export function getPathPoints(path: Element) {
     const points: Point[] = []
