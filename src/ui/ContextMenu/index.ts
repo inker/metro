@@ -73,8 +73,8 @@ export default class ContextMenu {
         event.preventDefault()
         removeAllChildren(this.container)
         for (const item of this.items) {
-            if (item.trigger && !item.trigger(target!)) {
-                console.log(item.trigger(target!))
+            if (item.trigger && !item.trigger(target)) {
+                console.log(item.trigger(target))
                 continue
             }
             const cell = document.createElement('div')
