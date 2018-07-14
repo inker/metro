@@ -20,9 +20,9 @@
   version "4.14.106"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.106.tgz#6093e9a02aa567ddecfe9afadca89e53e5dce4dd"
 
-"@types/lodash@^4.14.111":
-  version "4.14.111"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.111.tgz#d926250baa9526c0ffe85914dd10363068e7893a"
+"@types/lodash@^4.14.112":
+  version "4.14.112"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.112.tgz#4a8d8e5716b97a1ac01fe1931ad1e4cba719de5a"
 
 "@webassemblyjs/ast@1.5.13":
   version "1.5.13"
@@ -1377,9 +1377,9 @@ cssnano@^3.10.0:
     postcss-value-parser "^3.2.3"
     postcss-zindex "^2.0.1"
 
-cssnano@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/cssnano/-/cssnano-4.0.1.tgz#2c611d3375be46d8908d8e1fb28b8ed875376a10"
+cssnano@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/cssnano/-/cssnano-4.0.2.tgz#0e79a1829afb6583744ba705fd62516fbfd4fda7"
   dependencies:
     cosmiconfig "^5.0.0"
     cssnano-preset-default "^4.0.0"

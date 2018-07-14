@@ -1,4 +1,4 @@
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { createLodashTransformer } = require('typescript-plugin-lodash')
 
 const tsOptions = env => env === 'dev' ? {

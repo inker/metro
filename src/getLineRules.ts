@@ -5,7 +5,6 @@ import { cachelessFetch } from './util/http'
 function makeStyleLink(url: string) {
     const link = document.createElement('link')
     link.rel = 'stylesheet'
-    // @ts-ignore
     link.crossOrigin = ''
     link.href = url
     return link
