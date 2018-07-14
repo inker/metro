@@ -51,7 +51,6 @@
     "typescript": "^2.9.2",
     "typescript-plugin-lodash": "^0.1.0",
     "uglifyjs-webpack-plugin": "^1.2.7",
-    "url-loader": "^1.0.1",
     "webpack": "^4.16.0",
     "webpack-bundle-analyzer": "^2.13.1",
     "webpack-cli": "^3.0.8",
