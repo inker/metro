@@ -1,6 +1,6 @@
 import { Map as LeafletMap, Browser } from 'leaflet'
 
-import { transitionEnd, once } from '../../util/events'
+import { transitionEnd, once } from 'utils/events'
 
 import styles from './styles.pcss'
 

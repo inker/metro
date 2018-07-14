@@ -3,17 +3,12 @@ import ReactDom from 'react-dom'
 import L from 'leaflet'
 import unblur from 'unblur'
 
-import Config from './Config'
-import getLineRules from './getLineRules'
-
-import Network, { GraphJSON } from './network'
-
-import addLayerSwitcher from './ui/addLayerSwitcher'
-import DistanceMeasure from './ui/DistanceMeasure'
-import SvgOverlay from './ui/SvgOverlay'
-import ContextMenu from './ui/ContextMenu'
-import FAQ from './ui/FAQ'
-// import drawZones from './ui/drawZones'
+import addLayerSwitcher from 'ui/addLayerSwitcher'
+import DistanceMeasure from 'ui/DistanceMeasure'
+import SvgOverlay from 'ui/SvgOverlay'
+import ContextMenu from 'ui/ContextMenu'
+import FAQ from 'ui/FAQ'
+// import drawZones from 'ui/drawZones'
 
 import {
     mapbox,
@@ -23,19 +18,24 @@ import {
     openMapSurfer,
     cartoDBNoLabels,
     wikimapia,
-} from './ui/tilelayers'
+} from 'ui/tilelayers'
 
-import { getJSON } from './util/http'
-import getCenter from './util/geo/getCenter'
-// import geometricMedian from './util/geo/geometricMedian'
-import MetroMapEventMap from './util/MetroMapEventMap'
-import Mediator from './util/Mediator'
+import { getJSON } from 'utils/http'
+import getCenter from 'utils/geo/getCenter'
+// import geometricMedian from 'utils/geo/geometricMedian'
+import MetroMapEventMap from 'utils/MetroMapEventMap'
+import Mediator from 'utils/Mediator'
+
+import Config from './Config'
+import getLineRules from './getLineRules'
+
+import Network, { GraphJSON } from './network'
 
 import Metro from './Metro'
 
 import 'leaflet/dist/leaflet.css'
 
-const alertifyPromise = import(/* webpackChunkName: "alertify" */ './ui/alertify')
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ 'ui/alertify')
 
 const contextMenuArray = [
     {

@@ -3,7 +3,7 @@ import { Point } from 'leaflet'
 
 import Platform from 'network/Platform'
 
-import comparisonLevel from 'util/comparisonLevel'
+import comparisonLevel from 'utils/comparisonLevel'
 
 import Circle from './primitives/Circle'
 import Stadium from './primitives/Stadium'

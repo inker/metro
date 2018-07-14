@@ -1,6 +1,6 @@
 import { Point, point } from 'leaflet'
 
-import { orthogonal } from '../math/vector'
+import { orthogonal } from 'utils/math/vector'
 
 import { create as createArc } from './arc'
 

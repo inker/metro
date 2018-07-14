@@ -2,9 +2,10 @@ import { LeafletMouseEvent } from 'leaflet'
 import localForage from 'localforage'
 import { throttle } from 'lodash'
 
+import { byId } from 'utils/dom'
+import Widget from 'ui/base/Widget'
+
 import MetroMap from '../../MetroMap'
-import Widget from '../base/Widget'
-import { byId } from '../../util/dom'
 
 import styles from './styles.pcss'
 

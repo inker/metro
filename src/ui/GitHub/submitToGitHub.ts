@@ -1,14 +1,14 @@
 import GitHub from 'github-api'
 
-import { getCity } from '../../util'
-import { makeLink } from '../../util/dom'
+import { getCity } from 'utils/misc'
+import { makeLink } from 'utils/dom'
 
 import askChanges from './form/askChanges'
 import forkRepo from './forkRepo'
 import getPullRequest from './getPullRequest'
 import { AuthData } from './auth'
 
-const alertifyPromise = import(/* webpackChunkName: "alertify" */ '../alertify')
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ 'ui/alertify')
 
 const MY_NAME = 'metrofan'
 const REPO_NAME = 'metronetworks'

@@ -1,6 +1,6 @@
-import { makeLink } from '../../../util/dom'
+import { makeLink } from 'utils/dom'
 
-const alertifyPromise = import(/* webpackChunkName: "alertify" */ '../../alertify')
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ 'ui/alertify')
 
 const TITLE = 'GitHub password'
 const FILE_URL = 'https://github.com/inker/metro/blob/master/src/ui/GitHub/auth.ts'

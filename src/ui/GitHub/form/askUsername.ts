@@ -1,6 +1,6 @@
-import { makeLink } from '../../../util/dom'
+import { makeLink } from 'utils/dom'
 
-const alertifyPromise = import(/* webpackChunkName: "alertify" */ '../../alertify')
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ 'ui/alertify')
 
 const TITLE = 'GitHub username'
 const GITHUB_URL = 'https://github.com'

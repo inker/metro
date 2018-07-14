@@ -4,7 +4,7 @@ import { memoize } from 'lodash'
 import {
   orthogonal,
   normalize,
-} from 'util/math/vector'
+} from 'utils/math/vector'
 
 function getPositions(pos: Point, value: Point, minOffset: number, maxOffset: number) {
   const vec = value.subtract(pos)

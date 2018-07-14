@@ -1,5 +1,5 @@
-import { transitionEnd } from '../../util/events'
-import { prompt } from './index'
+import { transitionEnd } from 'utils/events'
+import { prompt } from '.'
 
 export default async (...args: any[]) => {
   const input = document.querySelector('.ajs-input') as HTMLInputElement

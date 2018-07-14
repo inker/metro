@@ -6,18 +6,18 @@ import {
   castArray,
 } from 'lodash'
 
-import Network, {
-  Span,
-} from '../../network'
-
 import {
   segmentsIntersect,
-} from 'util/math/vector'
+} from 'utils/math/vector'
 
 import {
   tryGetFromMap,
   iteratePairwise,
-} from 'util/collections'
+} from 'utils/collections'
+
+import Network, {
+  Span,
+} from '../../network'
 
 type SourceOrTarget = 'source' | 'target'
 

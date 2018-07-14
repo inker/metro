@@ -1,14 +1,14 @@
 import { marker, LatLng } from 'leaflet'
 
+import { resetStyle } from 'utils/misc'
+import shortestRoute from 'utils/algorithm/shortestRoute'
+import { visualizeRoute } from 'utils/sfx'
+import * as animation from 'utils/sfx/animation'
+
 import MetroMap from '../MetroMap'
 import cacheIcons from './cacheIcons'
 import makeMarker from './Icons/marker'
 import Widget from './base/Widget'
-
-import { resetStyle } from '../util'
-import shortestRoute from '../util/algorithm/shortestRoute'
-import { visualizeRoute } from '../util/sfx'
-import * as animation from '../util/sfx/animation'
 
 const alertifyPromise = import(/* webpackChunkName: "alertify" */ './alertify')
 

@@ -1,4 +1,4 @@
-import { getCity } from '../index'
+import { getCity } from 'utils/misc'
 
 interface CityLang {
     [city: string]: string | undefined,

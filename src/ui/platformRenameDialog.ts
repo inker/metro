@@ -1,5 +1,6 @@
+import getSecondLanguage from 'utils/lang/getSecondLanguage'
+
 import { Platform } from '../network'
-import getSecondLanguage from '../util/lang/getSecondLanguage'
 
 const alertifyPromise = import(/* webpackChunkName: "alertify" */ './alertify')
 

@@ -1,5 +1,5 @@
 import { Point, point } from 'leaflet'
-import { isArbitrarilySmall as isNumberSmall } from './index'
+import { isArbitrarilySmall as isNumberSmall } from '.'
 
 export type Ray = [Point, Point]
 type Segment = [Point, Point]

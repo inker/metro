@@ -11,11 +11,11 @@ import OpacityFilter from 'components/filters/Opacity'
 
 import getSvgSizesByZoom from 'ui/getSvgSizesByZoom'
 
-import { getPlatformNamesZipped } from 'util/index'
-import getCenter from 'util/geo/getCenter'
+import { getPlatformNamesZipped } from 'utils/misc'
+import getCenter from 'utils/geo/getCenter'
 import {
   tryGetFromMap,
-} from 'util/collections'
+} from 'utils/collections'
 
 import Network, {
   Platform,

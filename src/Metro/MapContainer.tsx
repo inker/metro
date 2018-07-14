@@ -5,19 +5,19 @@ import {
   xor,
 } from 'lodash'
 
-import { meanColor } from 'util/color'
-import findCycle from 'util/algorithm/findCycle'
-import { makeWings } from 'util/math'
+import { meanColor } from 'utils/color'
+import findCycle from 'utils/algorithm/findCycle'
+import { makeWings } from 'utils/math'
 import {
   mean as meanPoint,
   zero as zeroVec,
   normalize,
   orthogonal,
-} from 'util/math/vector'
+} from 'utils/math/vector'
 
 import {
   tryGetFromMap,
-} from 'util/collections'
+} from 'utils/collections'
 
 import Network, {
   Platform,

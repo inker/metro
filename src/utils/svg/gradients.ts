@@ -1,6 +1,6 @@
 import { Point } from 'leaflet'
 
-import { createSVGElement } from './index'
+import { createSVGElement } from '.'
 
 function makeUndirectedLinear(colors: string[]): SVGLinearGradientElement {
     // @ts-ignore

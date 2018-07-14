@@ -1,6 +1,6 @@
 import Network, { Route } from '../network'
 
-const alertifyPromise = import(/* webpackChunkName: "alertify" */ './alertify')
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ 'ui/alertify')
 
 export default async (network: Network, defSet: Set<Route>) => {
   const def = Array.from(defSet).map(r => r.line + r.branch).join('|')

@@ -1,12 +1,13 @@
-import pool from '../../ObjectPool'
-import { applyDrop } from '../svg/filters'
-import { ShortestRouteObject } from '../algorithm/shortestRoute'
-import formatTime from '../../util/lang/formatTime'
+import { applyDrop } from 'utils/svg/filters'
+import { ShortestRouteObject } from 'utils/algorithm/shortestRoute'
+import formatTime from 'utils/lang/formatTime'
+
 import { Platform, Edge, Span } from '../../network'
+import pool from '../../ObjectPool'
 
 import * as animation from './animation'
 
-const alertifyPromise = import(/* webpackChunkName: "alertify" */ '../../ui/alertify')
+const alertifyPromise = import(/* webpackChunkName: "alertify" */ 'ui/alertify')
 
 const ANIMATION_GREYING_SELECTOR = [
     'paths-inner',
