@@ -1,4 +1,4 @@
-import fastDelete from 'fast-delete'
+import { pull } from 'lodash'
 
 import Platform from './Platform'
 import Edge from './Edge'
@@ -20,7 +20,7 @@ export default class Span extends Edge<Platform> {
 
     set source(vertex: Platform) {
         if (this._source !== undefined) {
-            fastDelete(this._source.spans, this as Span)
+            pull(this._source.spans, this)
         }
         this._source = vertex
         vertex.spans.push(this)
@@ -32,7 +32,7 @@ export default class Span extends Edge<Platform> {
 
     set target(vertex: Platform) {
         if (this._target !== undefined) {
-            fastDelete(this._target.spans, this as Span)
+            pull(this._target.spans, this)
         }
         this._target = vertex
         vertex.spans.push(this)

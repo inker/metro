@@ -80,7 +80,7 @@ function restoreAttribute(el: Element, attr: string) {
     if (oldVal === undefined) {
         return
     }
-    o[attr] = undefined as any
+    o[attr] = undefined!
     el.setAttribute(attr, oldVal)
 }
 
