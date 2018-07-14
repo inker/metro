@@ -20,7 +20,7 @@
   dependencies:
     "@types/geojson" "*"
 
-"@types/lodash@4.14.x", "@types/lodash@^4.14.111":
+"@types/lodash@4.14.x", "@types/lodash@^4.14.112":
   version "4.14.112"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.112.tgz#4a8d8e5716b97a1ac01fe1931ad1e4cba719de5a"
 
@@ -1356,7 +1356,7 @@ cssnano@^3.10.0:
     postcss-value-parser "^3.2.3"
     postcss-zindex "^2.0.1"
 
-cssnano@^4.0.1:
+cssnano@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/cssnano/-/cssnano-4.0.2.tgz#0e79a1829afb6583744ba705fd62516fbfd4fda7"
   dependencies:
