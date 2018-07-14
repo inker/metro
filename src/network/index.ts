@@ -1,6 +1,8 @@
 import { latLng } from 'leaflet'
-import fastDelete from 'fast-delete'
-// import { orderBy } from 'lodash'
+import {
+    // orderBy,
+    pull,
+} from 'lodash'
 
 import Platform from './Platform'
 import Station from './Station'
@@ -122,14 +124,14 @@ export default class {
         console.log('removing platform', platform)
         const { transfers, spans, station } = platform
         for (const transfer of transfers) {
-            fastDelete(this.transfers, transfer)
+            pull(this.transfers, transfer)
         }
         transfers.length = 0
         if (spans.length === 1) {
             const span = spans[0]
             const neighbor = span.other(platform)
-            fastDelete(neighbor.spans, span)
-            fastDelete(this.spans, span)
+            pull(neighbor.spans, span)
+            pull(this.spans, span)
         } else if (spans.length === 2) {
             const [first, second] = spans
             const end = second.other(platform)
@@ -138,28 +140,28 @@ export default class {
             }
             if (platform.passingRoutes().size === 2) {
                 const otherPlatform = first.other(platform)
-                fastDelete(otherPlatform.spans, first)
-                fastDelete(this.spans, first)
+                pull(otherPlatform.spans, first)
+                pull(this.spans, first)
             } else if (first.source === platform) {
                 first.source = end
             } else {
                 first.target = end
             }
-            fastDelete(end.spans, second)
-            fastDelete(this.spans, second)
+            pull(end.spans, second)
+            pull(this.spans, second)
         } else {
             for (const span of spans) {
                 const neighbor = span.other(platform)
-                fastDelete(neighbor.spans, span)
-                fastDelete(this.spans, span)
+                pull(neighbor.spans, span)
+                pull(this.spans, span)
             }
         }
         if (station.platforms.length === 1) {
-            fastDelete(this.stations, station)
+            pull(this.stations, station)
         } else {
-            fastDelete(station.platforms, platform)
+            pull(station.platforms, platform)
         }
-        fastDelete(this.platforms, platform)
+        pull(this.platforms, platform)
     }
 
 }

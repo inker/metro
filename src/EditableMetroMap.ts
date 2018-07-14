@@ -1,6 +1,8 @@
-import fastDelete from 'fast-delete'
 import { downloadText } from 'download.js'
-// import { difference } from 'lodash'
+import {
+    // difference,
+    pull,
+} from 'lodash'
 
 import MetroMap from './MetroMap'
 
@@ -142,7 +144,7 @@ export default class extends MetroMap {
                 return
             }
             const span = relatedTargetToSpan(e.relatedTarget)
-            fastDelete(this.network.spans, span)
+            pull(this.network.spans, span)
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
         this.subscribe('transferend', e => {

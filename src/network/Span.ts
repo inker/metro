@@ -1,5 +1,7 @@
-import fastDelete from 'fast-delete'
-import { intersection } from 'lodash'
+import {
+    intersection,
+    pull,
+} from 'lodash'
 
 import Platform from './Platform'
 import Edge from './Edge'
@@ -34,7 +36,7 @@ export default class Span extends Edge<Platform> {
 
     set source(vertex: Platform) {
         if (this._source !== undefined) {
-            fastDelete(this._source.spans.outbound, this as Span)
+            pull(this._source.spans.outbound, this)
         }
         this._source = vertex
         vertex.spans.outbound.push(this)
@@ -46,7 +48,7 @@ export default class Span extends Edge<Platform> {
 
     set target(vertex: Platform) {
         if (this._target !== undefined) {
-            fastDelete(this._target.spans.inbound, this as Span)
+            pull(this._target.spans.inbound, this)
         }
         this._target = vertex
         vertex.spans.inbound.push(this)

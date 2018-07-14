@@ -1,4 +1,4 @@
-import fastDelete from 'fast-delete'
+import { pull } from 'lodash'
 
 import Platform from './Platform'
 import Edge from './Edge'
@@ -15,7 +15,7 @@ export default class Transfer extends Edge<Platform> {
     }
     set source(vertex: Platform) {
         if (this._source !== undefined) {
-            fastDelete(this._source.transfers, this as Edge<Platform>)
+            pull(this._source.transfers, this)
         }
         this._source = vertex
         vertex.transfers.push(this)
@@ -26,7 +26,7 @@ export default class Transfer extends Edge<Platform> {
     }
     set target(vertex: Platform) {
         if (this._target !== undefined) {
-            fastDelete(this._target.transfers, this as Edge<Platform>)
+            pull(this._target.transfers, this)
         }
         this._target = vertex
         vertex.transfers.push(this)
