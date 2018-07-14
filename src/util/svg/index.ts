@@ -98,13 +98,13 @@ export function makeTransferLine(start: Point, end: Point): SVGLineElement[] {
 
 function getCircleOffset(circle: SVGCircleElement): Point {
     const cx = circle.getAttribute('cx')
-    if (cx === null) {
-        throw new Error('cx does not exist on a circle')
+    const cy = circle.getAttribute('cy')
+    const r = circle.getAttribute('r')
+    if (cx === null || cy === null || r === null) {
+        throw new Error('cx, cy or r does not exist on a circle')
     }
-    // @ts-ignore
-    const c = point(+cx, +circle.getAttribute('cy'))
-    // @ts-ignore
-    const iR = ~~circle.getAttribute('r')
+    const c = point(+cx, +cy)
+    const iR = ~~r
     const offset = point(0 + iR, 4 + iR)
     return c.subtract(offset)
 }

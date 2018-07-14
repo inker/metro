@@ -73,7 +73,7 @@ module.exports = env => [
   }),
 
   env !== 'dev' && new MiniCssExtractPlugin({
-    chunkFilename: "[id].[contenthash].css"
+    chunkFilename: '[id].[contenthash].css',
   }),
 
   new CopyWebpackPlugin([
