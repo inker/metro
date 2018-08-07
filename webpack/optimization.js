@@ -13,6 +13,13 @@ module.exports = env => ({
         enforce: true,
         reuseExistingChunk: true,
       },
+      leaflet: {
+        test: /[\\/]leaflet[\\/]/,
+        chunks: 'initial',
+        name: 'leaflet',
+        enforce: true,
+        reuseExistingChunk: true,
+      },
       // vendor: {
       vendors: {
         test: /node_modules/,
