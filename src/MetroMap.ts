@@ -29,7 +29,7 @@ import {
 
 import {
     getPlatformNames,
-    getPlatformNamesZipped,
+    // getPlatformNamesZipped,
     // midPointsToEnds,
 } from 'utils/misc'
 
@@ -840,19 +840,21 @@ export default class {
             this.highlightStation(platform.station, getPlatformNames(platform), [platform.name])
         })
         dummyCircles.addEventListener('mouseout', onMouseOut)
-        const onTransferOver = (e: MouseEvent) => {
-            const el = e.target as SVGPathElement | SVGLineElement
-            const { source, target } = pool.outerEdgeBindings.getKey(el)
-                || tryGetKeyFromBiMap(pool.innerEdgeBindings, el)
-            const names = getPlatformNamesZipped([source, target])
-            this.highlightStation(source.station, names, [source.name, target.name])
-        }
-        const transfersOuter = byId('transfers-outer')
-        const transfersInner = byId('transfers-inner')
-        transfersOuter.addEventListener('mouseover', onTransferOver)
-        transfersInner.addEventListener('mouseover', onTransferOver)
-        transfersOuter.addEventListener('mouseout', onMouseOut)
-        transfersInner.addEventListener('mouseout', onMouseOut)
+
+        // TODO: replace with rect
+        // const onTransferOver = (e: MouseEvent) => {
+        //     const el = e.target as SVGPathElement | SVGLineElement
+        //     const { source, target } = pool.outerEdgeBindings.getKey(el)
+        //         || tryGetKeyFromBiMap(pool.innerEdgeBindings, el)
+        //     const names = getPlatformNamesZipped([source, target])
+        //     this.highlightStation(source.station, names, [source.name, target.name])
+        // }
+        // const transfersOuter = byId('transfers-outer')
+        // const transfersInner = byId('transfers-inner')
+        // transfersOuter.addEventListener('mouseover', onTransferOver)
+        // transfersInner.addEventListener('mouseover', onTransferOver)
+        // transfersOuter.addEventListener('mouseout', onMouseOut)
+        // transfersInner.addEventListener('mouseout', onMouseOut)
     }
 
     private highlightStation(station: Station, namesOnPlate: string[], filteredNames: string[]) {
