@@ -31,7 +31,7 @@ module.exports = env => [
   //   use: 'source-map-loader',
   // },
   {
-    test: /\.ts$/,
+    test: /\.tsx?$/,
     use: {
       loader: 'awesome-typescript-loader',
       options: tsOptions(env),
