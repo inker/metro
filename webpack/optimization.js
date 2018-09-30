@@ -30,27 +30,27 @@ module.exports = env => ({
       },
     },
   },
-  minimizer: env === 'dev' ? undefined : [
-    new UglifyJsPlugin({
-      uglifyOptions: {
-        compress: {
-          ecma: 6,
-          warnings: true,
-          dead_code: true,
-          properties: true,
-          unused: true,
-          join_vars: true,
-          drop_console: true,
-        },
-        mangle: {
-          safari10: true,
-        },
-        output: {
-          comments: false,
-        },
-      },
-      // sourceMap: true, // retains sourcemaps for typescript
-    }),
-    new OptimizeCSSAssetsPlugin({})
-  ],
+  // minimizer: env === 'dev' ? undefined : [
+  //   new UglifyJsPlugin({
+  //     uglifyOptions: {
+  //       compress: {
+  //         ecma: 6,
+  //         warnings: true,
+  //         dead_code: true,
+  //         properties: true,
+  //         unused: true,
+  //         join_vars: true,
+  //         drop_console: true,
+  //       },
+  //       mangle: {
+  //         safari10: true,
+  //       },
+  //       output: {
+  //         comments: false,
+  //       },
+  //     },
+  //     // sourceMap: true, // retains sourcemaps for typescript
+  //   }),
+  //   new OptimizeCSSAssetsPlugin({})
+  // ],
 })

@@ -1,3 +1,7 @@
+import {
+    isFunction,
+} from 'lodash'
+
 export function intersection<T>(a: Set<T>, b: Set<T>) {
     const isn = new Set<T>()
     for (const item of a) {
@@ -18,7 +22,7 @@ type NewVal<V> = V | NewValFunc<V>
 export function getOrMakeInMap<K, V>(map: IMap<K, V>, key: K, newVal: NewVal<V>): V {
     let val = map.get(key)
     if (val === undefined) {
-        val = typeof newVal === 'function' ? newVal() : newVal
+        val = isFunction(newVal) ? newVal() : newVal
         map.set(key, val)
     }
     return val

@@ -42,7 +42,7 @@ export default async (url: string) => {
     const colorsPromise = getColors()
 
     const link = makeStyleLink(url)
-    document.head.appendChild(link)
+    document.head!.appendChild(link)
 
     const lineRules = new Map<string, CSSStyleDeclaration>()
 

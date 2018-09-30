@@ -107,7 +107,7 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
         const nw = this.bounds.getNorthWest()
         const boxTopLeft = this.map.latLngToContainerPoint(nw).subtract(this.margin)
         if (!this.mousePos) {
-            const el = document.documentElement
+            const el = document.documentElement!
             this.mousePos = L.point(el.clientWidth / 2, el.clientHeight / 2)
         }
         const o = this.mousePos.subtract(boxTopLeft)

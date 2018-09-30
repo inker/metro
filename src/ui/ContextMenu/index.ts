@@ -97,7 +97,7 @@ export default class ContextMenu {
             }
         }
         const { width, height } = this.container.getBoundingClientRect()
-        const { clientWidth, clientHeight } = document.documentElement
+        const { clientWidth, clientHeight } = document.documentElement!
         const { clientX, clientY } = event
         const tx = clientX + width > clientWidth ? clientWidth - width : clientX
         const ty = clientY + height > clientHeight ? clientY - height : clientY
