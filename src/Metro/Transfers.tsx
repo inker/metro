@@ -11,7 +11,7 @@ import {
 import Modal from 'components/Modal'
 import TransferReact from 'components/Transfer'
 
-import { getCircumcenter } from 'util/math'
+import { getCircumcenter } from 'utils/math'
 
 import {
   Platform,

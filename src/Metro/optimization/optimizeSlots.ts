@@ -10,7 +10,7 @@ import {
 import {
   tryGetFromMap,
   swapArrayElements,
-} from 'util/collections'
+} from 'utils/collections'
 
 import Network, {
   Platform,

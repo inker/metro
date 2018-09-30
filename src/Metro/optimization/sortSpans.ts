@@ -4,7 +4,7 @@ import {
 
 import {
   tryGetFromMap,
-} from 'util/collections'
+} from 'utils/collections'
 
 import Span from '../../network/Span'
 

@@ -12,12 +12,12 @@ import Network, {
 
 import {
   segmentsIntersect,
-} from 'util/math/vector'
+} from 'utils/math/vector'
 
 import {
   tryGetFromMap,
   iteratePairwise,
-} from 'util/collections'
+} from 'utils/collections'
 
 type SourceOrTarget = 'source' | 'target'
 

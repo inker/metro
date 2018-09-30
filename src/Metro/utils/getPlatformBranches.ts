@@ -3,7 +3,7 @@ import Route from 'network/Route'
 
 import {
   getOrMakeInMap,
-} from 'util/collections'
+} from 'utils/collections'
 
 /**
  * route -> platforms
