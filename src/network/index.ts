@@ -1,5 +1,8 @@
 import { latLng } from 'leaflet'
-import { pull } from 'lodash'
+import {
+    // orderBy,
+    pull,
+} from 'lodash'
 
 import Platform from './Platform'
 import Station from './Station'
