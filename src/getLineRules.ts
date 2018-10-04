@@ -52,7 +52,7 @@ export default async (url: string) => {
         interval: 100,
         numAttempts: 100,
     })
-    for (const rule of (cssRules as any)) {
+    for (const rule of cssRules) {
         if (!(rule instanceof CSSStyleRule)) {
             continue
         }

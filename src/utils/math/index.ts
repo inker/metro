@@ -27,9 +27,9 @@ const getMidVertices = (points: Point[], part: number) =>
 
 const getVertices = (points: Point[], part: number): Point[] =>
     points.length < 2 ? points : [
-        head(points) as Point,
+        head(points)!,
         ...getMidVertices(points, part),
-        last(points) as Point,
+        last(points)!,
     ]
 
 export function splitInTwo(points: Point[], part: number): [Point[], Point[]] {
@@ -87,7 +87,7 @@ export function offsetPath(controlPoints: Point[], d: number): Point[] {
     })
 }
 
-export function wings(a: Point, b: Point, c: Point, length = 1): Point[] {
+export function makeWings(a: Point, b: Point, c: Point, length = 1): Point[] {
     const ba = a.subtract(b)
     const bc = c.subtract(b)
     const bis = bisect(ba, bc)

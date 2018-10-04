@@ -669,7 +669,7 @@ export default class {
             }
             const neighborPositions = spans.map(span => tryGetFromMap(this.platformsOnSVG, span.other(platform)))
             const [prevPos, nextPos] = neighborPositions
-            const wings = math.wings(prevPos, pos, nextPos, 1)
+            const wings = math.makeWings(prevPos, pos, nextPos, 1)
             const t = Math.min(pos.distanceTo(prevPos), pos.distanceTo(nextPos)) * PART
             for (let i = 0; i < 2; ++i) {
                 // const t = pos.distanceTo(neighborPositions[i]) * PART
@@ -691,7 +691,7 @@ export default class {
             distances.set(span, pos.distanceTo(neighborPos))
         }
         const [prevPos, nextPos] = normals.map(ns => mean(ns).add(pos))
-        const wings = math.wings(prevPos, pos, nextPos, 1)
+        const wings = math.makeWings(prevPos, pos, nextPos, 1)
         for (let i = 0; i < 2; ++i) {
             const wing = wings[i]
             for (const span of sortedSpans[i]) {
