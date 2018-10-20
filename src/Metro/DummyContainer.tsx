@@ -28,7 +28,7 @@ class DummyContainer extends PureComponent<Props> {
     return (
       <>
         <DummyTransfers
-          innerRef={props.mountDummyTransfers}
+          ref={props.mountDummyTransfers}
           style={{
             stroke: 'black',
             strokeWidth: `${props.dummyTransfersStrokeWidth}px`,
@@ -36,7 +36,7 @@ class DummyContainer extends PureComponent<Props> {
         />
 
         <DummyPlatforms
-          innerRef={props.mountDummyPlatforms}
+          ref={props.mountDummyPlatforms}
           style={{
             strokeWidth: `${props.dummyPlatformsStrokeWidth}px`,
           }}

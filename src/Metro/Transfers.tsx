@@ -199,7 +199,7 @@ class Transfers extends PureComponent<Props> {
           modalRoot={transfersInnerWrapper}
         >
           <TransfersInner
-            innerRef={this.mountInner}
+            ref={this.mountInner}
             style={{
               display: isDetailed ? '' : 'none',
               strokeWidth: `${innerStrokeWidth}px`,

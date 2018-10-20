@@ -227,7 +227,7 @@ class Spans extends PureComponent<Props> {
           modalRoot={pathsInnerWrapper}
         >
           <PathsInner
-            innerRef={this.mountInner}
+            ref={this.mountInner}
             style={{
               strokeWidth: `${innerStrokeWidth}px`,
             }}
