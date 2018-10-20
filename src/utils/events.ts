@@ -33,7 +33,7 @@ export function onceEscapePress(handler: (ev: KeyboardEvent) => any) {
 }
 
 export const transitionEnd = (el: Element) =>
-    once(el, 'transitionend' as any) as Promise<Event>
+    once(el, 'transitionend')
 
 export function triggerMouseEvent(target: Node, eventType: string) {
     const e = document.createEvent('MouseEvents')
