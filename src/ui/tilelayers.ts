@@ -45,5 +45,6 @@ export const cartoDBNoLabels = tileLayer('http://{s}.basemaps.cartocdn.com/light
 })
 
 export const wikimapia = tileLayer('http://i{hash}.wikimapia.org/?x={x}&y={y}&zoom={z}', {
+    // @ts-ignore
     hash: data => data.x % 4 + (data.y % 4) * 4,
 })
