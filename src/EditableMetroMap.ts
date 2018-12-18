@@ -155,6 +155,15 @@ export default class extends MetroMap {
             this.network.transfers.push(new Transfer(source, target))
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
+        this.subscribe('transfertype', e => {
+            if (e.relatedTarget === undefined) {
+                return
+            }
+            const path = e.relatedTarget as SVGPathElement | SVGLineElement
+            const transfer = (pool.outerEdgeBindings.getKey(path) || pool.innerEdgeBindings.getKey(path)) as Transfer
+            transfer.type = transfer.type === undefined ? 'osi' : undefined
+            this.resetNetwork(JSON.parse(this.network.toJSON()))
+        })
         this.subscribe('transferdelete', e => {
             if (e.relatedTarget === undefined) {
                 return
@@ -181,6 +190,15 @@ export default class extends MetroMap {
             }
             contextMenu.insertItem('platformaddclick', 'New station', target => !pathTrigger(target))
 
+            const transferTrigger = (target: EventTarget) => {
+                const targetsParent = (target as SVGElement).parentElement
+                if (!targetsParent) {
+                    return false
+                }
+                const parentId = targetsParent.id
+                return parentId === 'transfers-outer' || parentId === 'transfers-inner'
+            }
+
             const trigger = (target: EventTarget) => {
                 const targetsParent = (target as SVGElement).parentElement
                 if (!targetsParent) {
@@ -199,14 +217,8 @@ export default class extends MetroMap {
             contextMenu.insertItem('spaninvert', 'Invert span', pathTrigger)
             contextMenu.insertItem('platformaddtolineclick', 'Add station to line', pathTrigger)
             contextMenu.insertItem('spandelete', 'Delete span', pathTrigger)
-            contextMenu.insertItem('transferdelete', 'Delete transfer', target => {
-                const targetsParent = (target as SVGElement).parentElement
-                if (!targetsParent) {
-                    return false
-                }
-                const parentId = targetsParent.id
-                return parentId === 'transfers-outer' || parentId === 'transfers-inner'
-            })
+            contextMenu.insertItem('transfertype', 'Change transfer type', transferTrigger)
+            contextMenu.insertItem('transferdelete', 'Delete transfer', transferTrigger)
         })
         this.subscribe('editmapend', e => {
             contextMenu.removeItem('platformaddclick')
@@ -217,6 +229,7 @@ export default class extends MetroMap {
             contextMenu.removeItem('platformaddtolineclick')
             contextMenu.removeItem('spanroutechange')
             contextMenu.removeItem('spandelete')
+            contextMenu.removeItem('transfertype')
             contextMenu.removeItem('transferdelete')
 
             this.hideDummyPlatforms()

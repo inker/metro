@@ -5,9 +5,9 @@
     "zoom": 11,
     "detailedZoom": 12,
     "url": {
-        "graph": "https://metrofan.github.io/metronetworks/{city}/graph.json",
+        "graph": "https://raw.githubusercontent.com/metrofan/metronetworks/master/{city}/graph.json",
         "data": "res/faq.json",
-        "scheme": "https://metrofan.github.io/metronetworks/{city}/scheme.css"
+        "scheme": "https://cdn.jsdelivr.net/gh/metrofan/metronetworks@latest/{city}/scheme.css"
     },
     "favicons": {
         "spb": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Spb_metro_logo.svg/293px-Spb_metro_logo.svg.png",

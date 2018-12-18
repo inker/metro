@@ -3,11 +3,16 @@ import { pull } from 'lodash'
 import Platform from './Platform'
 import Edge from './Edge'
 
+type TransferType = 'osi' | undefined
+
 export default class Transfer extends Edge<Platform> {
-    constructor(source: Platform, target: Platform) {
+    type?: TransferType
+
+    constructor(source: Platform, target: Platform, type?: TransferType) {
         super(source, target)
         source.transfers.push(this)
         target.transfers.push(this)
+        this.type = type
     }
 
     get source() {

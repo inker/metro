@@ -2,7 +2,12 @@ import { applyDrop } from 'utils/svg/filters'
 import { ShortestRouteObject } from 'utils/algorithm/shortestRoute'
 import formatTime from 'utils/lang/formatTime'
 
-import { Platform, Edge, Span } from '../../network'
+import {
+    Platform,
+    Edge,
+    Span,
+    Transfer,
+} from '../../network'
 import pool from '../../ObjectPool'
 
 import * as animation from './animation'
@@ -53,6 +58,9 @@ export async function visualizeRoute(obj: ShortestRouteObject<Platform>, shouldA
 
 export function rehighlightEdges(edges: Edge<Platform>[]) {
     for (const edge of edges) {
+        if (edge instanceof Transfer && edge.type === 'osi') {
+            continue
+        }
         const outer = pool.outerEdgeBindings.get(edge)
         if (outer === undefined) {
             continue

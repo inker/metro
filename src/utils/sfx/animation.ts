@@ -53,7 +53,7 @@ async function animateCurrentRoute(platforms: Platform[], edges: Edge<Platform>[
         const edge = edges[i]
         const isTransfer = edge instanceof Transfer
         const outerOld = pool.outerEdgeBindings.get(edges[i])
-        if (!outerOld || isTransfer && outerOld.parentNode !== transfersOuter) {
+        if (!outerOld || isTransfer && ((edge as Transfer).type === 'osi' || outerOld.parentNode !== transfersOuter)) {
             continue
         }
         const innerOld = pool.innerEdgeBindings.get(edges[i])

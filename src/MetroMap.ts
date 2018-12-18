@@ -500,7 +500,15 @@ export default class {
                 )
             pool.outerEdgeBindings.set(transfer, paths[0])
             pool.innerEdgeBindings.set(transfer, paths[1])
-            paths[0].style.stroke = isDetailed ? this.makeGradient(transfer) : '#000'
+            if (transfer.type === 'osi') {
+                paths[1].style.display = 'none'
+                const outer = paths[0]
+                const h = transferWidth / 1.5
+                outer.style.strokeDasharray = `${transferWidth} ${h}`
+                outer.style.strokeWidth = `${transferWidth}px`
+            } else {
+                paths[0].style.stroke = isDetailed ? this.makeGradient(transfer) : '#000'
+            }
             transfersOuterFrag.appendChild(paths[0])
             transfersInnerFrag.appendChild(paths[1])
             // this.transferToModel(transfer, paths);

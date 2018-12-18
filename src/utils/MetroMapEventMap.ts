@@ -19,6 +19,7 @@ interface MetroMapEventMap {
     'spandelete': MouseEvent,
     'transferend': CustomEvent,
     'transferdelete': MouseEvent,
+    'transfertype': MouseEvent,
     'editmapstart': Event,
     'editmapend': Event,
     'mapsave': Event,

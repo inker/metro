@@ -18,6 +18,7 @@ export interface PlatformJSON {
 }
 
 export interface TransferJSON {
+    type?: 'osi',
     source: number,
     target: number,
 }

@@ -56,10 +56,14 @@ export function scaleTransfer(transfer: Transfer, scaleFactor: number) {
     const transferInnerStrokeWidth = parseFloat(byId('transfers-inner').style.strokeWidth || '')
     const outer = tryGetFromMap(pool.outerEdgeBindings, transfer)
     const inner = tryGetFromMap(pool.innerEdgeBindings, transfer)
-    initialTransfers.add(outer)
-    initialTransfers.add(inner)
-    outer.style.strokeWidth = transferOuterStrokeWidth * scaleFactor + 'px'
-    inner.style.strokeWidth = transferInnerStrokeWidth * scaleFactor + 'px'
+    if (!outer.style.strokeDasharray) {
+        initialTransfers.add(outer)
+        outer.style.strokeWidth = transferOuterStrokeWidth * scaleFactor + 'px'
+    }
+    if (!inner.style.strokeDasharray) {
+        initialTransfers.add(inner)
+        inner.style.strokeWidth = transferInnerStrokeWidth * scaleFactor + 'px'
+    }
 }
 
 export function unscaleAll() {

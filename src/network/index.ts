@@ -33,11 +33,13 @@ export default class {
     readonly routes: Route[]
     constructor(json: GraphJSON) {
         const objectifyLatLng = (obj: LatLngJSON) => latLng(obj.lat, obj.lng)
-        this.platforms = json.platforms.map(p => new Platform(p.name, objectifyLatLng(p.location), p.altNames, p.type as any))
+        this.platforms = json.platforms
+            .map(p => new Platform(p.name, objectifyLatLng(p.location), p.altNames, p.type as any))
         this.stations = []
         this.routes = json.routes
         this.lines = json.lines
-        this.transfers = json.transfers.map(s => new Transfer(this.platforms[s.source], this.platforms[s.target]))
+        this.transfers = json.transfers
+            .map(s => new Transfer(this.platforms[s.source], this.platforms[s.target], s.type))
         const spanRoutes = (s: SpanJSON) => s.routes.map(i => this.routes[i])
         this.spans = json.spans.map(s => new Span(this.platforms[s.source], this.platforms[s.target], spanRoutes(s)))
 
@@ -87,6 +89,7 @@ export default class {
                 type: p.type === 'normal' ? undefined : p.type,
             })),
             transfers: transfers.map(t => ({
+                type: t.type,
                 source: platforms.indexOf(t.source),
                 target: platforms.indexOf(t.target),
             })),
