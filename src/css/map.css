@@ -3,7 +3,7 @@ path {
 }
 
 circle {
-    // transform-origin: 0% 0%;
+    /* transform-origin: 0% 0%; */
 
     @-moz-document url-prefix() {
         transform-origin: 0% 0%;

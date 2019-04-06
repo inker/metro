@@ -29,7 +29,14 @@ export default class Tooltip {
     }
 
     set disabled(val: boolean) {
-        val ? this.hide() : getSelection().removeAllRanges()
+        if (val) {
+            this.hide()
+        } else {
+            const selection = getSelection()
+            if (selection) {
+                selection.removeAllRanges()
+            }
+        }
         this._disabled = val
     }
 
