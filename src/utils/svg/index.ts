@@ -110,13 +110,10 @@ function getCircleOffset(circle: SVGCircleElement): Point {
 }
 
 function getStadiumOffset(stadium: SVGRectElement): Point {
-    // @ts-ignore
-    const x = +stadium.getAttribute('x') + +stadium.getAttribute('width') / 2
-    // @ts-ignore
-    const y = +stadium.getAttribute('y') + +stadium.getAttribute('height') / 2
+    const x = +stadium.getAttribute('x')! + +stadium.getAttribute('width')! / 2
+    const y = +stadium.getAttribute('y')! + +stadium.getAttribute('height')! / 2
     const c = point(x, y)
-    // @ts-ignore
-    const r = ~~+stadium.getAttribute('rx')
+    const r = ~~+stadium.getAttribute('rx')!
     const offset = point(0 + r, 4 + r)
     return c.subtract(offset)
 }
