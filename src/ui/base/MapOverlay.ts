@@ -11,17 +11,15 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
 
     private readonly bounds: L.LatLngBounds
     private topLeft: L.Point
-    protected readonly margin: L.Point
 
     // private minZoom: number
     // private maxZoom: number
 
     private mousePos: L.Point | null
 
-    constructor(tagName: TagName, bounds: L.LatLngBounds, margin = L.point(100, 100)) {
+    constructor(tagName: TagName, bounds: L.LatLngBounds) {
         const ns = htmlTags.includes(tagName) && tagName !== 'svg' ? HTML_NAMESPACE : SVG_NAMESPACE
         this.overlayContainer = document.createElementNS(ns, tagName) as HTMLElement
-        this.margin = margin.round()
         this.bounds = bounds
     }
 
@@ -87,25 +85,25 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
     }
 
     private updateOverlayPositioning() {
-        const { map, bounds, margin } = this
+        const { map, bounds } = this
         const nw = bounds.getNorthWest()
         const se = bounds.getSouthEast()
         this.topLeft = map.project(nw, map.getZoom()).round()
 
         const pixelBounds = L.bounds(map.latLngToLayerPoint(nw), map.latLngToLayerPoint(se))
         const { style } = this.overlayContainer
-        const topLeft = (pixelBounds.min as L.Point).subtract(margin)
+        const topLeft = pixelBounds.min as L.Point
         style.left = topLeft.x + 'px'
         style.top = topLeft.y + 'px'
 
-        const overlaySize = pixelBounds.getSize().add(margin).add(margin)
+        const overlaySize = pixelBounds.getSize()
         style.width = overlaySize.x + 'px'
         style.height = overlaySize.y + 'px'
     }
 
     private scaleOverlay(scaleFactor: number) {
         const nw = this.bounds.getNorthWest()
-        const boxTopLeft = this.map.latLngToContainerPoint(nw).subtract(this.margin)
+        const boxTopLeft = this.map.latLngToContainerPoint(nw)
         if (!this.mousePos) {
             const el = document.documentElement!
             this.mousePos = L.point(el.clientWidth / 2, el.clientHeight / 2)

@@ -1,4 +1,4 @@
-import { LatLngBounds, point } from 'leaflet'
+import { LatLngBounds } from 'leaflet'
 
 import MapOverlay from 'ui/base/MapOverlay'
 import { createSVGElement } from 'utils/svg'
@@ -9,18 +9,15 @@ export default class extends MapOverlay<'svg'> {
     readonly defs: SVGDefsElement
     readonly origin: SVGGElement
 
-    constructor(bounds: LatLngBounds, margin = point(100, 100)) {
-        super('svg', bounds, margin)
+    constructor(bounds: LatLngBounds) {
+        super('svg', bounds)
 
         this.defs = createSVGElement('defs')
-
-        const origin = createSVGElement('g')
-        origin.setAttribute('transform', `translate(${this.margin.x}, ${this.margin.y})`)
-        this.origin = origin
+        this.origin = createSVGElement('g')
 
         const { overlayContainer } = this
         overlayContainer.classList.add(styles.overlay)
         overlayContainer.appendChild(this.defs)
-        overlayContainer.appendChild(origin)
+        overlayContainer.appendChild(this.origin)
     }
 }

@@ -190,7 +190,7 @@ export default class {
             const center = getCenter(platformLocations)
             config.center = [center.lat, center.lng]
             const bounds = L.latLngBounds(platformLocations)
-            this.overlay = new SvgOverlay(bounds, L.point(200, 200)).addTo(this.map)
+            this.overlay = new SvgOverlay(bounds).addTo(this.map)
             const { defs } = this.overlay
             appendAllFilters(defs)
 
