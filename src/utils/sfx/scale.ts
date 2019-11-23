@@ -74,7 +74,7 @@ export function unscaleAll() {
         restoreAttributes(stadium, 'x', 'y', 'width', 'height', 'rx', 'ry')
     }
     for (const transfer of initialTransfers) {
-        transfer.style.strokeWidth = null
+        transfer.style.strokeWidth = 'initial'
     }
     // initialCircles.forEach(circle => circle.removeAttribute('transform'));
     initialTransfers.clear()

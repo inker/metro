@@ -1,8 +1,18 @@
-export const once = <K extends keyof HTMLElementEventMap>(
-    el: EventTarget,
+type A<El> = El extends HTMLElement
+    ? HTMLElementEventMap
+    : El extends SVGElement
+        ? SVGElementEventMap
+        : El extends Window
+            ? GlobalEventHandlersEventMap
+            : ElementEventMap 
+
+export const once = <El extends Element | Window, EMap extends A<El>, K extends keyof EMap>(
+    el: El,
     eventType: K,
-) => new Promise<HTMLElementEventMap[K]>(resolve => {
+) => new Promise<EMap[K]>(resolve => {
+    // @ts-ignore
     el.addEventListener(eventType, function handler(e) {
+        // @ts-ignore
         el.removeEventListener(eventType, handler)
         resolve(e)
     })
@@ -32,7 +42,7 @@ export function onceEscapePress(handler: (ev: KeyboardEvent) => any) {
     // });
 }
 
-export const transitionEnd = (el: Element) =>
+export const transitionEnd = (el: HTMLElement | SVGElement) =>
     once(el, 'transitionend')
 
 export function triggerMouseEvent(target: Node, eventType: string) {

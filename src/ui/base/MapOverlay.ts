@@ -19,7 +19,7 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
 
     constructor(tagName: TagName, bounds: L.LatLngBounds) {
         const ns = htmlTags.includes(tagName) && tagName !== 'svg' ? HTML_NAMESPACE : SVG_NAMESPACE
-        this.overlayContainer = document.createElementNS(ns, tagName) as HTMLElement
+        this.overlayContainer = document.createElementNS(ns, tagName) as ElementTagNameMap[TagName]
         this.bounds = bounds
     }
 
@@ -77,8 +77,8 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
     private onZoomEnd = () => {
         const { style } = this.overlayContainer
 
-        style.transform = null
-        style.transformOrigin = null
+        style.transform = 'initial'
+        style.transformOrigin = 'initial'
 
         this.updateOverlayPositioning()
         this.map.fireEvent('overlayupdate', this)

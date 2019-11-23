@@ -33,7 +33,7 @@ export async function visualizeRoute(obj: ShortestRouteObject<Platform>, shouldA
     await animation.terminateAnimations()
     for (const { style } of document.querySelectorAll(ANIMATION_GREYING_SELECTOR) as any as HTMLElement[]) {
         //style['-webkit-filter'] = 'grayscale(1)';
-        style.filter = null
+        style.filter = 'initial'
         style.opacity = '0.25'
     }
     if (!shouldAnimate) {

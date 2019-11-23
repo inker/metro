@@ -23,6 +23,7 @@ export default class DistanceMeasure {
     onAdd(map: L.Map) {
         this.map = map
         map.fireEvent('distancemeasureinit')
+        // @ts-ignore
         map.on('measuredistance', (e: MouseEvent) => this.measureDistance(map.mouseEventToLatLng(e)))
         map.on('clearmeasurements', this.clearMeasurements)
         return this

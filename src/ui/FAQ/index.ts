@@ -61,7 +61,7 @@ export default class FAQ {
         style.transform = 'scale(0.1)'
         style.opacity = '0'
         card.getBoundingClientRect()
-        style.transform = null
+        style.transform = 'none'
         style.opacity = null
         button.disabled = true
         if (!Browser.mobile) {
@@ -85,7 +85,9 @@ export default class FAQ {
         if (!Browser.mobile) {
             map.getContainer().classList.remove('dimmed')
         }
-        transitionEnd(card).then(e => style.display = null)
+        transitionEnd(card).then(e => {
+            style.display = 'initial'
+        })
         button.disabled = false
     }
 }

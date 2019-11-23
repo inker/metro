@@ -69,7 +69,7 @@ export default class Tooltip {
 
         div.innerHTML = names.join('<br>')
         this.element.setAttribute('transform', `translate(${bottomRight.x}, ${bottomRight.y})`)
-        this.element.style.display = null
+        this.element.style.display = 'initial'
         const { width, height } = div.getBoundingClientRect()
 
         foreign.setAttribute('transform', `translate(${-width}, ${-height})`)

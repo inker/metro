@@ -111,5 +111,5 @@ export async function pulsateCircle(circle: SVGCircleElement | SVGRectElement, s
     style.transform = 'scale(1)'
     await transitionEnd(circle)
     style.transition = ''
-    style.transform = null
+    style.transform = 'none'
 }

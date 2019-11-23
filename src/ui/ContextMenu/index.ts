@@ -133,7 +133,7 @@ export default class ContextMenu {
     }
 
     private show = () => {
-        this.container.style.visibility = null
+        this.container.style.visibility = 'visible'
         if (Browser.mobile) {
             this.map.dragging.disable()
         }

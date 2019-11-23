@@ -59,13 +59,13 @@ export default class extends MetroMap {
         const { map, contextMenu } = this
 
         this.subscribe('platformchangetype', e => {
-            const platform = relatedTargetToPlatform(e.relatedTarget)
+            const platform = relatedTargetToPlatform(e.relatedTarget!)
             platform.type = platform.type === 'normal' ? 'dummy' : 'normal'
             this.redrawNetwork()
             this.displayDummyPlatforms()
         })
         this.subscribe('platformrename', e => {
-            const platform = relatedTargetToPlatform(e.relatedTarget)
+            const platform = relatedTargetToPlatform(e.relatedTarget!)
             const bottomRight = getElementOffset(e.relatedTarget as SVGCircleElement)
             const names = getPlatformNames(platform)
             this.tooltip.show(bottomRight, names)
@@ -75,11 +75,11 @@ export default class extends MetroMap {
             this.tooltip.disabled = true
         })
         this.subscribe('platformmove', e => {
-            const platform = relatedTargetToPlatform(e.relatedTarget)
+            const platform = relatedTargetToPlatform(e.relatedTarget!)
             platform.location = map.mouseEventToLatLng(e)
         })
         this.subscribe('platformmoveend', e => {
-            const platform = relatedTargetToPlatform(e.relatedTarget)
+            const platform = relatedTargetToPlatform(e.relatedTarget!)
             this.tooltip.disabled = false
             this.tooltip.show(getElementOffset(e.relatedTarget as SVGCircleElement), getPlatformNames(platform))
         })
@@ -98,7 +98,7 @@ export default class extends MetroMap {
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
         this.subscribe('platformdelete', e => {
-            const platform = relatedTargetToPlatform(e.relatedTarget)
+            const platform = relatedTargetToPlatform(e.relatedTarget!)
             this.network.deletePlatform(platform)
             this.redrawNetwork()
         })
@@ -106,7 +106,7 @@ export default class extends MetroMap {
             if (e.relatedTarget === undefined) {
                 return
             }
-            const span = relatedTargetToSpan(e.relatedTarget)
+            const span = relatedTargetToSpan(e.relatedTarget!)
             const routeSet = await askRoutes(this.network, new Set(span.routes))
             if (!routeSet) {
                 return
@@ -118,7 +118,7 @@ export default class extends MetroMap {
             if (e.relatedTarget === undefined) {
                 return
             }
-            const span = relatedTargetToSpan(e.relatedTarget)
+            const span = relatedTargetToSpan(e.relatedTarget!)
             span.invert()
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })
@@ -143,7 +143,7 @@ export default class extends MetroMap {
             if (e.relatedTarget === undefined) {
                 return
             }
-            const span = relatedTargetToSpan(e.relatedTarget)
+            const span = relatedTargetToSpan(e.relatedTarget!)
             pull(this.network.spans, span)
             this.resetNetwork(JSON.parse(this.network.toJSON()))
         })

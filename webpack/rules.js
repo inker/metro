@@ -12,9 +12,10 @@ const tsOptions = env => env === 'dev' ? {
 const getCssLoader = global => global ? 'css-loader' : {
   loader: 'css-loader',
   options: {
-    modules: true,
+    modules: {
+      localIdentName: '[path]___[name]__[local]___[hash:base64:5]',
+    },
     importLoaders: 1,
-    localIdentName: '[path]___[name]__[local]___[hash:base64:5]',
   },
 }
 
