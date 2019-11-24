@@ -27,7 +27,7 @@ module.exports = (env) => {
     mode: isDev ? 'development' : 'production',
     target: 'web',
     entry: {
-      app: './src/main.ts',
+      app: './src/index.ts',
     },
     output: {
       clean: true,
