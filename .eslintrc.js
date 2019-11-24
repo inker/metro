@@ -1,5 +1,6 @@
 module.exports = {
   extends: [
+    'eslint-config-airbnb',
     '@inker/eslint-config-typescript',
     // 'plugin:import/errors',
     // 'plugin:import/warnings',
@@ -48,6 +49,16 @@ module.exports = {
   rules: {
     'object-property-newline': [2, {
       allowAllPropertiesOnSameLine: false,
+    }],
+
+    'react/prop-types': 0,
+    'react/jsx-one-expression-per-line': 0,
+    'react/jsx-props-no-spreading': 0,
+    'react/jsx-filename-extension': [2, {
+      extensions: [
+        '.jsx',
+        '.tsx',
+      ],
     }],
 
     '@typescript-eslint/no-unused-vars': [2, {

@@ -16,6 +16,7 @@ const getCssLoader = global => global ? 'css-loader' : {
       localIdentName: '[path]___[name]__[local]___[hash:base64:5]',
     },
     importLoaders: 1,
+    localsConvention: 'asIs',
   },
 }
 
@@ -32,7 +33,7 @@ module.exports = env => [
   //   use: 'source-map-loader',
   // },
   {
-    test: /\.ts$/,
+    test: /\.tsx?$/,
     use: {
       loader: 'awesome-typescript-loader',
       options: tsOptions(env),

@@ -2,8 +2,8 @@ import { Point, point } from 'leaflet'
 
 import { isArbitrarilySmall as isNumberSmall } from '.'
 
-export type Ray = [Point, Point]
-type Segment = [Point, Point]
+export type Ray = Readonly<[Point, Point]>
+type Segment = Readonly<[Point, Point]>
 
 enum Orientation {
     COLLINEAR,

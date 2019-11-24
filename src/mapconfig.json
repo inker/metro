@@ -4,6 +4,7 @@
     "maxZoom": 18,
     "zoom": 11,
     "detailedZoom": 12,
+    "detailedE": true,
     "url": {
         "graph": "https://raw.githubusercontent.com/metrofan/metronetworks/master/{city}/graph.json",
         "data": "res/faq.json",

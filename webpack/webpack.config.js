@@ -11,7 +11,7 @@ module.exports = env => ({
   mode: env === 'dev' ? 'development' : 'production',
   target: 'web',
   entry: {
-    app: './src/main.ts',
+    app: './src/index.ts',
   },
   output: {
     path: distDir,

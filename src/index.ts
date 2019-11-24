@@ -17,7 +17,7 @@ if (Browser.ie) {
 
 const mapPromise = Browser.mobile
   ? import(/* webpackChunkName: "MetroMap" */ './MetroMap')
-  : import(/* webpackChunkName: "EditableMetroMap" */ './EditableMetroMap')
+  : import(/* webpackChunkName: "EditableMetroMap" */ './MetroMap')
 
 const tokens = location.search.match(/city=(\w+)/)
 const city = tokens ? tokens[1] : 'spb'
