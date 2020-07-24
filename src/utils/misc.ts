@@ -26,7 +26,7 @@ export function getCity() {
 export function resetStyle() {
     const els = document.querySelectorAll(RESET_SELECTOR) as any as HTMLElement[]
     for (const { style } of els) {
-        style.opacity = null
+        style.opacity = ''
         style.filter = 'none'
     }
 }

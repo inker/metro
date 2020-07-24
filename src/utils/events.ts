@@ -14,6 +14,7 @@ export const once = <El extends Element | Window, EMap extends A<El>, K extends 
     el.addEventListener(eventType, function handler(e) {
         // @ts-ignore
         el.removeEventListener(eventType, handler)
+        // @ts-ignore
         resolve(e)
     })
 })

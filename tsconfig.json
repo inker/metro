@@ -1,24 +1,27 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "module": "esnext",
-    "moduleResolution": "node",
+    "target": "ES2019",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./src",
     // "sourceMap": true, // not needed when assembled with webpack
     // "watch": true, // not needed when assembled with webpack
     "pretty": true,
+    "alwaysStrict": true,
+    "strictBindCallApply": true,
     "experimentalDecorators": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
     // "downlevelIteration": true,
+    "resolveJsonModule": true,
     "noEmitHelpers": true,
     "importHelpers": true,
     "lib": [
-      "es2017",
-      "dom",
-      "dom.iterable"
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
     ]
   },
   "awesomeTypescriptLoaderOptions": {

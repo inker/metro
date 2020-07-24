@@ -62,7 +62,7 @@ export default class FAQ {
         style.opacity = '0'
         card.getBoundingClientRect()
         style.transform = 'none'
-        style.opacity = null
+        style.opacity = ''
         button.disabled = true
         if (!Browser.mobile) {
             map.getContainer().classList.add('dimmed')

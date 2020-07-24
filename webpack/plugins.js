@@ -76,12 +76,14 @@ module.exports = env => [
     chunkFilename: '[id].[contenthash].css',
   }),
 
-  new CopyWebpackPlugin([
-    {
-      from: 'res',
-      to: 'res',
-    },
-  ]),
+  new CopyWebpackPlugin({
+    patterns: [
+      {
+        from: 'res',
+        to: 'res',
+      },
+    ],
+  }),
 
   env === 'analyze' && new BundleAnalyzerPlugin(),
 ].filter(item => item)

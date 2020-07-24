@@ -65,10 +65,10 @@ export function rehighlightEdges(edges: Edge<Platform>[]) {
         if (outer === undefined) {
             continue
         }
-        outer.style.opacity = null
+        outer.style.opacity = ''
         const inner = pool.innerEdgeBindings.get(edge)
         if (inner !== undefined) {
-            inner.style.opacity = null
+            inner.style.opacity = ''
         }
         if (edge instanceof Span) {
             applyDrop(outer)
@@ -80,7 +80,7 @@ export function rehighlightPlatforms(platforms: Platform[]) {
     for (const platform of platforms) {
         const circle = pool.platformBindings.get(platform)
         if (circle) {
-            circle.style.opacity = null
+            circle.style.opacity = ''
         }
     }
 }

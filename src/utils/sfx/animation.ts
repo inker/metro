@@ -45,7 +45,7 @@ async function animateCurrentRoute(platforms: Platform[], edges: Edge<Platform>[
         }
 
         const circle = tryGetFromMap(pool.platformBindings, platforms[i])
-        circle.style.opacity = null
+        circle.style.opacity = ''
         if (canPulsate) {
             pulsateCircle(circle, CIRCLE_SCALE, CIRCLE_SCALE_DURATION)
         }
@@ -75,18 +75,18 @@ async function animateCurrentRoute(platforms: Platform[], edges: Edge<Platform>[
         }
 
         await Promise.all(animations)
-        outerOld.style.opacity = null
+        outerOld.style.opacity = ''
         applyDrop(outerOld)
         pathsOuter.removeChild(outer)
         if (innerOld) {
-            innerOld.style.opacity = null
+            innerOld.style.opacity = ''
         }
         if (inner) {
             pathsInner.removeChild(inner)
         }
     }
     const lastCircle = tryGetFromMap(pool.platformBindings, last(platforms))
-    lastCircle.style.opacity = null
+    lastCircle.style.opacity = ''
     if (canPulsate) {
         pulsateCircle(lastCircle, LAST_CIRCLE_SCALE, CIRCLE_SCALE_DURATION)
     }
