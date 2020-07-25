@@ -22,6 +22,7 @@
     "unblur": "^0.6.0"
   },
   "devDependencies": {
+    "@inker/eslint-config-typescript": "^1.1.2",
     "@types/hammerjs": "^2.0.36",
     "@types/leaflet": "^1.5.17",
     "@types/lodash": "^4.14.158",
@@ -29,6 +30,7 @@
     "copy-webpack-plugin": "^6.0.3",
     "css-loader": "^3.6.0",
     "cssnano": "^4.1.10",
+    "eslint": "^7.5.0",
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.3.0",
     "mini-css-extract-plugin": "^0.9.0",
@@ -37,7 +39,6 @@
     "postcss-loader": "^3.0.0",
     "rimraf": "^3.0.2",
     "style-loader": "^1.2.1",
-    "tslint": "^6.1.2",
     "typescript": "^3.9.7",
     "typescript-plugin-lodash": "^0.1.0",
     "uglifyjs-webpack-plugin": "^2.2.0",
@@ -52,7 +53,8 @@
     "build:analyze": "npm run clean && webpack --colors --config webpack/webpack.config.js --env=analyze",
     "start": "npm run clean && webpack-dev-server --colors --watch --config webpack/webpack.config.js --env=dev",
     "test": "echo \"lol no test\"",
-    "lint": "tslint -p tsconfig.json"
+    "lint:js": "eslint --ext .ts,.tsx --max-warnings=0 src",
+    "lint:css": "stylelint './src/**/*.ts'"
   },
   "author": "Anton Veselyev",
   "license": "MIT"
