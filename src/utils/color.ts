@@ -1,7 +1,6 @@
 import {
   mean,
   round,
-  padStart,
   unzipWith,
 } from 'lodash'
 
@@ -27,6 +26,6 @@ function parseColor(color: string): number[] {
 export function meanColor(colors: string[]): string {
   const colorCoordinates = colors.map(parseColor)
   const means = unzipWith(colorCoordinates, (...arrays) => mean(arrays))
-  const strings = means.map(avg => padStart(round(avg).toString(16), 2, '0'))
+  const strings = means.map(avg => round(avg).toString(16).padStart(2, '0'))
   return `#${strings.join('')}`
 }

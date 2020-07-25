@@ -21,7 +21,7 @@ export const once = <El extends Element | Window, EMap extends A<El>, K extends 
 
 export function onceEscapePress(handler: (ev: KeyboardEvent) => any) {
   const keydownListener = (e: KeyboardEvent) => {
-    if (e.keyCode !== 27) {
+    if (e.key !== 'Escape') {
       return
     }
     removeListener()

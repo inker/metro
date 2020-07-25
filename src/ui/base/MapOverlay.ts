@@ -65,7 +65,7 @@ export default class MapOverlay<TagName extends keyof ElementTagNameMap> {
       const scale = map.getZoomScale(zoom, oldZoom)
       const oldCenter = map.getCenter()
       if (center.equals(oldCenter)) {
-        this.mousePos = L.point(innerWidth / 2, innerHeight / 2).round()
+        this.mousePos = L.point(window.innerWidth / 2, window.innerHeight / 2).round()
       } else if (!this.mousePos) {
         this.mousePos = get(target, 'scrollWheelZoom._lastMousePos')
       }

@@ -1,6 +1,9 @@
 import { LeafletMouseEvent } from 'leaflet'
 import localForage from 'localforage'
-import { throttle } from 'lodash'
+import {
+  stubFalse,
+  throttle,
+} from 'lodash'
 
 import { byId } from 'utils/dom'
 import Widget from 'ui/base/Widget'
@@ -30,8 +33,11 @@ export default class MapEditor implements Widget {
     if (val) {
       const dummyCircles = byId('dummy-circles')
       button.textContent = 'Save map'
-      button.onclick = e => this.saveMapClick()
-      dummyCircles.onmousedown = dummyCircles.onclick = () => false
+      button.onclick = () => {
+        this.saveMapClick()
+      }
+      dummyCircles.onmousedown = stubFalse
+      dummyCircles.onclick = stubFalse
       mediator.publish(new Event('editmapstart'))
     } else {
       button.textContent = 'Edit map'
@@ -122,7 +128,7 @@ export default class MapEditor implements Widget {
         clientX,
         clientY,
       }))
-    }).on('mouseup', (e: LeafletMouseEvent) => {
+    }).on('mouseup', () => {
       if (!movingCircle) {
         return
       }

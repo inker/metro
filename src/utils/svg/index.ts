@@ -4,8 +4,10 @@ import { orthogonal } from 'utils/math/vector'
 
 import { create as createArc } from './arc'
 
-export const createSVGElement = <K extends keyof SVGElementTagNameMap>(tagName: K): SVGElementTagNameMap[K] =>
-  document.createElementNS('http://www.w3.org/2000/svg', tagName)
+export const createSVGElement = <K extends keyof SVGElementTagNameMap>(
+  tagName: K,
+): SVGElementTagNameMap[K] =>
+    document.createElementNS('http://www.w3.org/2000/svg', tagName)
 
 export function makePolygon(points: Point[]): SVGPolygonElement {
   const polygon = createSVGElement('polygon')

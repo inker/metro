@@ -6,7 +6,7 @@ export const mapbox = tileLayer(`https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y
   id: 'inker.mlo91c41',
   // reuseTiles: true,
   detectRetina: retina,
-  attribution: 'Map data &copy; <a href=\"https://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://mapbox.com\">Mapbox</a>',
+  attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://mapbox.com">Mapbox</a>',
 })
 
 export const mapbox2 = tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -14,7 +14,7 @@ export const mapbox2 = tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z
   accessToken: 'pk.eyJ1IjoiaW5rZXIiLCJhIjoiajlpYVl1YyJ9.UpoLm3kdL8SCR6GeCRzyIQ',
   tileSize: 512,
   detectRetina: retina,
-  attribution: 'Map data &copy; <a href=\"https://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://mapbox.com\">Mapbox</a>',
+  attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://mapbox.com">Mapbox</a>',
 })
 
 export const mapnik = tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

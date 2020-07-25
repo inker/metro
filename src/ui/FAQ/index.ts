@@ -66,9 +66,11 @@ export default class FAQ {
     button.disabled = true
     if (!Browser.mobile) {
       map.getContainer().classList.add('dimmed')
-      map.once('mousedown', e => this.hideFAQ())
+      map.once('mousedown', () => {
+        this.hideFAQ()
+      })
       once(window, 'keydown').then(e => {
-        if (e.keyCode !== 27) {
+        if (e.key !== 'Escape') {
           return
         }
         map.fireEvent('mousedown')
@@ -85,7 +87,7 @@ export default class FAQ {
     if (!Browser.mobile) {
       map.getContainer().classList.remove('dimmed')
     }
-    transitionEnd(card).then(e => {
+    transitionEnd(card).then(() => {
       style.display = 'initial'
     })
     button.disabled = false

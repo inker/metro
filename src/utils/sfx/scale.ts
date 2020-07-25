@@ -12,18 +12,6 @@ const initialCircles = new Set<SVGCircleElement>()
 const initialStadiums = new Set<SVGRectElement>()
 const initialTransfers = new Set<SVGPathElement | SVGLineElement>()
 
-export function scaleElement(el: SVGElement, scaleFactor: number, asAttribute = false) {
-  if (!asAttribute) {
-    el.style.transform = `scale(${scaleFactor})`
-    return
-  }
-  if (el instanceof SVGCircleElement) {
-    scaleCircleAsAttribute(el, scaleFactor)
-  } else if (el instanceof SVGRectElement) {
-    scaleStadiumAsAttribute(el, scaleFactor)
-  }
-}
-
 export function scaleCircleAsAttribute(circle: SVGCircleElement, scaleFactor: number) {
   initialCircles.add(circle)
   // const t = scaleFactor - 1,
@@ -51,6 +39,18 @@ export function scaleStadiumAsAttribute(stadium: SVGRectElement, scaleFactor: nu
       ry: (+ry * scaleFactor).toString(),
     }
   })
+}
+
+export function scaleElement(el: SVGElement, scaleFactor: number, asAttribute = false) {
+  if (!asAttribute) {
+    el.style.transform = `scale(${scaleFactor})`
+    return
+  }
+  if (el instanceof SVGCircleElement) {
+    scaleCircleAsAttribute(el, scaleFactor)
+  } else if (el instanceof SVGRectElement) {
+    scaleStadiumAsAttribute(el, scaleFactor)
+  }
 }
 
 export function scaleTransfer(transfer: Transfer, scaleFactor: number) {

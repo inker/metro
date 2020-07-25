@@ -198,8 +198,8 @@ export default class {
         default: alertify,
         confirm,
       } = await alertifyPromise
-      addEventListener('keydown', async e => {
-        if (!e.shiftKey || !e.ctrlKey || e.keyCode !== 82 || !(await confirm('Reset network?'))) {
+      window.addEventListener('keydown', async e => {
+        if (!e.shiftKey || !e.ctrlKey || e.key !== 'r' || !(await confirm('Reset network?'))) {
           return
         }
         const graph = await this.getGraph()
@@ -209,16 +209,16 @@ export default class {
       const { textContent } = defs
       if (!textContent) {
         alertify.alert(`
-                  Your browser doesn't seem to have capabilities to display some features of the map.
-                  Consider using Chrome or Firefox for the best experience.
-              `)
+          Your browser doesn't seem to have capabilities to display some features of the map.
+          Consider using Chrome or Firefox for the best experience.
+        `)
       }
 
       this.lineRules = await lineRulesPromise
       // wait.textContent = 'adding content...';
       this.resetMapView()
       this.map.addLayer(mapbox)
-      this.map.on('overlayupdate', e => {
+      this.map.on('overlayupdate', () => {
         this.moving = true
         this.redrawNetwork()
         this.moving = false
@@ -255,8 +255,12 @@ export default class {
 
   runUnblur() {
     this.map
-      .on('movestart', e => this.moving = true)
-      .on('moveend', e => this.moving = false)
+      .on('movestart', () => {
+        this.moving = true
+      })
+      .on('moveend', () => {
+        this.moving = false
+      })
     unblur({
       skipIf: () => this.moving,
       interval: 250,
@@ -279,11 +283,11 @@ export default class {
   protected addMapListeners() {
     const { map, contextMenu } = this
 
-    map.on('zoomstart', e => {
+    map.on('zoomstart', () => {
       this.tooltip.hide()
     })
 
-    map.on('distancemeasureinit', e => {
+    map.on('distancemeasureinit', () => {
       contextMenu.insertItem('measuredistance', 'Measure distance')
 
       map.on('clearmeasurements', () => {

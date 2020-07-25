@@ -11,7 +11,8 @@ import {
   Transfer,
 } from '../../network'
 
-const distanceBetween = (a: LatLng, b: LatLng) => LatLng.prototype.distanceTo.call(a, b) as number
+const distanceBetween = (a: LatLng, b: LatLng) =>
+  LatLng.prototype.distanceTo.call(a, b) as number
 
 // const WALKING_SPEED = 1.4
 const WALKING_WITH_OBSTACLES = 1
@@ -24,14 +25,74 @@ const METRO_WAITING_TIME = 240
 const E_LINE_WAITING_TIME = 360
 
 export interface ShortestRouteObject<V> {
-    platforms?: V[],
-    edges?: Edge<V>[],
-    time: {
-        walkTo: number,
-        metro?: number,
-        walkFrom?: number,
-        total?: number,
-    },
+  platforms?: V[],
+  edges?: Edge<V>[],
+  time: {
+    walkTo: number,
+    metro?: number,
+    walkFrom?: number,
+    total?: number,
+  },
+}
+
+function shortestTransfer(p1: Platform, p2: Platform) {
+  if (p1.station !== p2.station) {
+    throw new Error(`platforms (${p1.name} & ${p2.name} must be on the same station`)
+  }
+  const { platforms } = p1.station
+  const platformSet = new Set(platforms)
+  const dist = new Map<Platform, number>()
+  const prev = new Map<Platform, Platform>()
+  for (const p of platforms) {
+    dist.set(p, Infinity)
+  }
+  dist.set(p1, 0)
+  let currentNode = p1
+  while (platformSet.size > 0) {
+    let minDist = Infinity
+    for (const platform of platformSet) {
+      const time = tryGetFromMap(dist, platform)
+      if (time < minDist) {
+        currentNode = platform
+        minDist = time
+      }
+    }
+    platformSet.delete(currentNode)
+    const neighborNodes = currentNode.transfers.map(t => t.other(currentNode))
+    for (const neighborNode of neighborNodes) {
+      if (!neighborNode || !platformSet.has(neighborNode)) {
+        continue
+      }
+      const distance = distanceBetween(currentNode.location, neighborNode.location)
+      const alt = tryGetFromMap(dist, currentNode) + distance
+      if (alt < tryGetFromMap(dist, neighborNode)) {
+        dist.set(neighborNode, alt)
+        prev.set(neighborNode, currentNode)
+      }
+    }
+  }
+  const transfers: Transfer[] = []
+  const midPlatforms: Platform[] = []
+  currentNode = p2
+  for (; ;) {
+    const prevNode = prev.get(currentNode)
+    if (!prevNode) {
+      break
+    }
+    const transferNode = currentNode.transfers.find(t => t.has(prevNode))
+    if (!transferNode) {
+      console.error('cannot find transfer node')
+      continue
+    }
+    transfers.push(transferNode)
+    currentNode = prevNode
+    midPlatforms.push(currentNode)
+  }
+  midPlatforms.pop()
+  return {
+    transfers: transfers.reverse(),
+    midPlatforms: midPlatforms.reverse(),
+  }
 }
 
 export default (objects: Platform[], p1: LatLng, p2: LatLng): ShortestRouteObject<Platform> => {
@@ -99,7 +160,8 @@ export default (objects: Platform[], p1: LatLng, p2: LatLng): ShortestRouteObjec
       neighborNodes.push(neighborNode)
       const hasE = neighborNode.spans.some(s => s.routes[0].line.startsWith('E'))
       const distance = distanceBetween(currentNode.location, neighborNode.location) / 2
-      timeToNeighbors.push(distance / WALKING_WITH_OBSTACLES + (hasE ? E_LINE_WAITING_TIME : METRO_WAITING_TIME))
+      const waitingTime = hasE ? E_LINE_WAITING_TIME : METRO_WAITING_TIME
+      timeToNeighbors.push(distance / WALKING_WITH_OBSTACLES + waitingTime)
     }
 
     for (let i = 0, nNeighbors = neighborNodes.length; i < nNeighbors; ++i) {
@@ -177,65 +239,5 @@ export default (objects: Platform[], p1: LatLng, p2: LatLng): ShortestRouteObjec
       walkFrom,
       total: shortestTime,
     },
-  }
-}
-
-function shortestTransfer(p1: Platform, p2: Platform) {
-  if (p1.station !== p2.station) {
-    throw new Error(`platforms (${p1.name} & ${p2.name} must be on the same station`)
-  }
-  const { platforms } = p1.station
-  const platformSet = new Set(platforms)
-  const dist = new Map<Platform, number>()
-  const prev = new Map<Platform, Platform>()
-  for (const p of platforms) {
-    dist.set(p, Infinity)
-  }
-  dist.set(p1, 0)
-  let currentNode = p1
-  while (platformSet.size > 0) {
-    let minDist = Infinity
-    for (const platform of platformSet) {
-      const time = tryGetFromMap(dist, platform)
-      if (time < minDist) {
-        currentNode = platform
-        minDist = time
-      }
-    }
-    platformSet.delete(currentNode)
-    const neighborNodes = currentNode.transfers.map(t => t.other(currentNode))
-    for (const neighborNode of neighborNodes) {
-      if (!neighborNode || !platformSet.has(neighborNode)) {
-        continue
-      }
-      const distance = distanceBetween(currentNode.location, neighborNode.location)
-      const alt = tryGetFromMap(dist, currentNode) + distance
-      if (alt < tryGetFromMap(dist, neighborNode)) {
-        dist.set(neighborNode, alt)
-        prev.set(neighborNode, currentNode)
-      }
-    }
-  }
-  const transfers: Transfer[] = []
-  const midPlatforms: Platform[] = []
-  currentNode = p2
-  for (; ;) {
-    const prevNode = prev.get(currentNode)
-    if (!prevNode) {
-      break
-    }
-    const transferNode = currentNode.transfers.find(t => t.has(prevNode))
-    if (!transferNode) {
-      console.error('cannot find transfer node')
-      continue
-    }
-    transfers.push(transferNode)
-    currentNode = prevNode
-    midPlatforms.push(currentNode)
-  }
-  midPlatforms.pop()
-  return {
-    transfers: transfers.reverse(),
-    midPlatforms: midPlatforms.reverse(),
   }
 }

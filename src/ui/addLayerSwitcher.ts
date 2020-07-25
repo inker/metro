@@ -2,8 +2,8 @@ import { Map as LeafletMap, TileLayer } from 'leaflet'
 
 export default (map: LeafletMap, layers: TileLayer[]) => {
   let currentLayerIndex = 0
-  addEventListener('keydown', e => {
-    if (!e.shiftKey || !e.ctrlKey || e.keyCode !== 76) {
+  window.addEventListener('keydown', e => {
+    if (!e.shiftKey || !e.ctrlKey || e.key !== 'l') {
       return
     }
     e.preventDefault()

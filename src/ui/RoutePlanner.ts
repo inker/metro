@@ -28,8 +28,12 @@ export default class implements Widget {
   constructor() {
     for (const m of [this.fromMarker, this.toMarker]) {
       m
-        .on('drag', e => this.visualizeShortestRoute(false))
-        .on('dragend', e => this.visualizeShortestRoute(true))
+        .on('drag', () => {
+          this.visualizeShortestRoute(false)
+        })
+        .on('dragend', () => {
+          this.visualizeShortestRoute(true)
+        })
     }
   }
 
@@ -45,8 +49,8 @@ export default class implements Widget {
     mediator.subscribe('routeto', this.onFromTo)
     mediator.subscribe('clearroute', this.clearRoute)
     map.on('zoomstart', animation.terminateAnimations)
-    addEventListener('keydown', e => {
-      if (e.keyCode !== 27) {
+    window.addEventListener('keydown', e => {
+      if (e.key !== 'Escape') {
         return
       }
       mediator.publish(new Event('clearroute'))
