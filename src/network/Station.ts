@@ -8,33 +8,33 @@ import { LatLng } from './types'
 import Platform from './Platform'
 
 export default class Station {
-    readonly id = uniqueId('station-')
-    platforms: Platform[]
+  readonly id = uniqueId('station-')
+  platforms: Platform[]
 
-    constructor(platforms: Platform[]) {
-      this.platforms = platforms
-      for (const platform of platforms) {
-        (platform as any)._station = this
-      }
+  constructor(platforms: Platform[]) {
+    this.platforms = platforms
+    for (const platform of platforms) {
+      (platform as any)._station = this
     }
+  }
 
-    getNames(): string[] {
-      return getPlatformNamesZipped(this.platforms)
-    }
+  getNames(): string[] {
+    return getPlatformNamesZipped(this.platforms)
+  }
 
-    getCenter(): LatLng {
-      return getCenter(this.platforms.map(p => p.location))
-    }
+  getCenter(): LatLng {
+    return getCenter(this.platforms.map(p => p.location))
+  }
 
-    passingLines(): Set<string> {
-      const lines = new Set<string>()
-      for (const platform of this.platforms) {
-        for (const span of platform.spans) {
-          for (const route of span.routes) {
-            lines.add(route.line)
-          }
+  passingLines(): Set<string> {
+    const lines = new Set<string>()
+    for (const platform of this.platforms) {
+      for (const span of platform.spans) {
+        for (const route of span.routes) {
+          lines.add(route.line)
         }
       }
-      return lines
     }
+    return lines
+  }
 }
