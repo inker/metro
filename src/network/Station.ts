@@ -12,30 +12,29 @@ export default class Station {
     platforms: Platform[]
 
     constructor(platforms: Platform[]) {
-        this.platforms = platforms
-        for (const platform of platforms) {
-            (platform as any)._station = this
-        }
+      this.platforms = platforms
+      for (const platform of platforms) {
+        (platform as any)._station = this
+      }
     }
 
     getNames(): string[] {
-        return getPlatformNamesZipped(this.platforms)
+      return getPlatformNamesZipped(this.platforms)
     }
 
     getCenter(): LatLng {
-        return getCenter(this.platforms.map(p => p.location))
+      return getCenter(this.platforms.map(p => p.location))
     }
 
     passingLines(): Set<string> {
-        const lines = new Set<string>()
-        for (const platform of this.platforms) {
-            for (const span of platform.spans) {
-                for (const route of span.routes) {
-                    lines.add(route.line)
-                }
-            }
+      const lines = new Set<string>()
+      for (const platform of this.platforms) {
+        for (const span of platform.spans) {
+          for (const route of span.routes) {
+            lines.add(route.line)
+          }
         }
-        return lines
+      }
+      return lines
     }
-
 }

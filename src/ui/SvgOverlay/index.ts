@@ -10,14 +10,14 @@ export default class extends MapOverlay<'svg'> {
     readonly origin: SVGGElement
 
     constructor(bounds: LatLngBounds) {
-        super('svg', bounds)
+      super('svg', bounds)
 
-        this.defs = createSVGElement('defs')
-        this.origin = createSVGElement('g')
+      this.defs = createSVGElement('defs')
+      this.origin = createSVGElement('g')
 
-        const { overlayContainer } = this
-        overlayContainer.classList.add(styles.overlay)
-        overlayContainer.appendChild(this.defs)
-        overlayContainer.appendChild(this.origin)
+      const { overlayContainer } = this
+      overlayContainer.classList.add(styles.overlay)
+      overlayContainer.appendChild(this.defs)
+      overlayContainer.appendChild(this.origin)
     }
 }

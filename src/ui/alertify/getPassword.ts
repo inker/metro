@@ -1,4 +1,5 @@
 import { transitionEnd } from 'utils/events'
+
 import { prompt } from '.'
 
 export default async (...args: any[]) => {
@@ -7,7 +8,7 @@ export default async (...args: any[]) => {
   const val = await prompt(...args)
   const dimmer = document.querySelector('.ajs-dimmer') as HTMLElement
   if (dimmer) {
-      transitionEnd(dimmer).then(() => input.type = 'text')
+    transitionEnd(dimmer).then(() => input.type = 'text')
   }
   return val
 }

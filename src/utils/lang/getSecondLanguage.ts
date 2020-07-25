@@ -5,12 +5,12 @@ interface CityLang {
 }
 
 const secondLanguageObj: CityLang = {
-    spb: 'fi',
-    qazan: 'tt',
-    helsinki: 'se',
+  spb: 'fi',
+  qazan: 'tt',
+  helsinki: 'se',
 }
 
 export default () => {
-    const city = getCity()
-    return secondLanguageObj[city]
+  const city = getCity()
+  return secondLanguageObj[city]
 }

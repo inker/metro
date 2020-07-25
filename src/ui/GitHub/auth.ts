@@ -9,17 +9,17 @@ export interface AuthData {
 }
 
 export default async (): Promise<AuthData | null> => {
-    const username = await askUsername()
-    if (!username) {
-        return null
-    }
-    await delay(0)
-    const password = await askPassword()
-    if (!password) {
-        return null
-    }
-    return {
-        username,
-        password,
-    }
+  const username = await askUsername()
+  if (!username) {
+    return null
+  }
+  await delay(0)
+  const password = await askPassword()
+  if (!password) {
+    return null
+  }
+  return {
+    username,
+    password,
+  }
 }

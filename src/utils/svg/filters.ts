@@ -3,11 +3,11 @@ import { createSVGElement } from '.'
 const GLOW_FILTER_ID = 'black-glow'
 
 export function makeDrop(): SVGFilterElement {
-    const filter = createSVGElement('filter')
-    filter.id = 'shadow'
-    filter.setAttribute('width', '200%')
-    filter.setAttribute('height', '200%')
-    filter.innerHTML = `
+  const filter = createSVGElement('filter')
+  filter.id = 'shadow'
+  filter.setAttribute('width', '200%')
+  filter.setAttribute('height', '200%')
+  filter.innerHTML = `
         <feOffset
             result="offOut"
             in="SourceAlpha"
@@ -36,13 +36,13 @@ export function makeDrop(): SVGFilterElement {
             mode="normal"
         />
     `
-    return filter
+  return filter
 }
 
 export function makeGlow(): SVGFilterElement {
-    const filter = createSVGElement('filter')
-    filter.id = GLOW_FILTER_ID
-    filter.innerHTML = `
+  const filter = createSVGElement('filter')
+  filter.id = GLOW_FILTER_ID
+  filter.innerHTML = `
         <feColorMatrix
             type="matrix"
             values="
@@ -61,24 +61,24 @@ export function makeGlow(): SVGFilterElement {
             <feMergeNode in="SourceGraphic"/>
         </feMerge>
     `
-    return filter
+  return filter
 }
 
 export function makeOpacity(): SVGFilterElement {
-    const filter = createSVGElement('filter')
-    filter.id = 'opacity'
-    filter.innerHTML = `
+  const filter = createSVGElement('filter')
+  filter.id = 'opacity'
+  filter.innerHTML = `
         <feComponentTransfer>
             <feFuncA type="table" tableValues="0 0.5">
         </feComponentTransfer>
     `
-    return filter
+  return filter
 }
 
 export function makeGray(): SVGFilterElement {
-    const filter = createSVGElement('filter')
-    filter.id = 'gray'
-    filter.innerHTML = `
+  const filter = createSVGElement('filter')
+  filter.id = 'gray'
+  filter.innerHTML = `
         <feColorMatrix
             type="matrix"
             values="
@@ -89,22 +89,22 @@ export function makeGray(): SVGFilterElement {
             "
         />
     `
-    return filter
+  return filter
 }
 
 export function appendAll(defs: SVGDefsElement) {
-    defs.appendChild(makeDrop())
-    defs.appendChild(makeGlow())
-    defs.appendChild(makeOpacity())
-    defs.appendChild(makeGray())
+  defs.appendChild(makeDrop())
+  defs.appendChild(makeGlow())
+  defs.appendChild(makeOpacity())
+  defs.appendChild(makeGray())
 }
 
 export function applyDrop(path: SVGPathElement | SVGLineElement) {
-    // fixing disappearing lines
-    const box = path.getBoundingClientRect()
-    const style = getComputedStyle(path)
-    const strokeWidth = parseFloat(style.strokeWidth || path.style.strokeWidth || '0') * 2
-    if (box.height >= strokeWidth && box.width >= strokeWidth) {
-        path.style.filter = `url(#${GLOW_FILTER_ID})`
-    }
+  // fixing disappearing lines
+  const box = path.getBoundingClientRect()
+  const style = getComputedStyle(path)
+  const strokeWidth = Number.parseFloat(style.strokeWidth || path.style.strokeWidth || '0') * 2
+  if (box.height >= strokeWidth && box.width >= strokeWidth) {
+    path.style.filter = `url(#${GLOW_FILTER_ID})`
+  }
 }

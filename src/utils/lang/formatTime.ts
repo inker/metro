@@ -3,14 +3,14 @@ const inflect = (value: number, str: string) =>
 
 export default (time?: number) => {
   if (time === undefined) {
-      return ''
+    return ''
   }
   if (time < 60) {
-      return `${Math.round(time)} seconds`
+    return `${Math.round(time)} seconds`
   }
   if (time < 3570) {
-      const mins = Math.round(time / 60)
-      return inflect(mins, 'min')
+    const mins = Math.round(time / 60)
+    return inflect(mins, 'min')
   }
   const hours = Math.floor(time / 3600)
   const mins = Math.floor((time - hours * 3600) / 60)

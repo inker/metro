@@ -1,4 +1,5 @@
 import { LatLng } from 'leaflet'
+
 export { LatLng }
 
 export interface LatLngJSON {

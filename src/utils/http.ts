@@ -1,7 +1,7 @@
 const now = Date.now()
 
 export const cachelessFetch = (url: string) =>
-    fetch(`${url}?${now}`)
+  fetch(`${url}?${now}`)
 
 export const getJSON = (url: string) =>
-    cachelessFetch(url).then(data => data.json())
+  cachelessFetch(url).then(data => data.json())
