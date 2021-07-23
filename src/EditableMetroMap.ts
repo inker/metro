@@ -286,8 +286,10 @@ export default class extends MetroMap {
   private platformToModel(platform: Platform, circles: Element[]) {
     const cached = platform.location
     Object.defineProperty(platform, 'location', {
+      // @ts-ignore
       get: () => platform._location,
       set: (location: L.LatLng) => {
+        // @ts-ignore
         platform._location = location
         const locForPos = this.map.getZoom() < this.config.detailedZoom
           ? platform.station.getCenter()
@@ -328,6 +330,7 @@ export default class extends MetroMap {
         }
       },
     })
+    // @ts-ignore
     platform._location = cached
   }
 
