@@ -132,8 +132,14 @@ export default class extends MetroMap {
       const sn = sourceRoutes.size
       const tn = targetRoutes.size
 
-      const routeSet = sn > 0 && tn === 0 ? (sn === 1 ? sourceRoutes : askRoutes(this.network, sourceRoutes))
-        : tn > 0 && sn === 0 ? (tn === 1 ? targetRoutes : askRoutes(this.network, targetRoutes))
+      const routeSet = sn > 0 && tn === 0
+        ? sn === 1
+          ? sourceRoutes
+          : askRoutes(this.network, sourceRoutes)
+        : tn > 0 && sn === 0
+          ? tn === 1
+            ? targetRoutes
+            : askRoutes(this.network, targetRoutes)
           : askRoutes(this.network, intersection(sourceRoutes, targetRoutes))
 
       this.network.spans.push(new Span(source, target, Array.from(await routeSet)))

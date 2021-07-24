@@ -199,7 +199,7 @@ export default class {
         confirm,
       } = await alertifyPromise
       window.addEventListener('keydown', async e => {
-        if (!e.shiftKey || !e.ctrlKey || e.key !== 'r' || !(await confirm('Reset network?'))) {
+        if (!e.shiftKey || !e.ctrlKey || e.key !== 'r' || !await confirm('Reset network?')) {
           return
         }
         const graph = await this.getGraph()

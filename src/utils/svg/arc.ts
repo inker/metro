@@ -15,7 +15,7 @@ function getArgs(start: Point, end: Point, third: Point): ArcArgs {
   const center = getCircumcenter([start, end, third])
   if (center === null) {
     return {
-      radius: Infinity,
+      radius: Number.POSITIVE_INFINITY,
     }
   }
   const a = start.subtract(third)
@@ -50,7 +50,7 @@ export function setPath(el: Element, start: Point, end: Point, third: Point) {
   const { radius, large, clockwise } = getArgs(start, end, third)
   const d = [
     'M', start.x, start.y,
-    ...(radius === Infinity ? ['L'] : ['A', radius, radius, 0, large, clockwise]),
+    ...radius === Number.POSITIVE_INFINITY ? ['L'] : ['A', radius, radius, 0, large, clockwise],
     end.x, end.y,
   ].join(' ')
   el.setAttribute('d', d)

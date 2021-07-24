@@ -44,12 +44,12 @@ function shortestTransfer(p1: Platform, p2: Platform) {
   const dist = new Map<Platform, number>()
   const prev = new Map<Platform, Platform>()
   for (const p of platforms) {
-    dist.set(p, Infinity)
+    dist.set(p, Number.POSITIVE_INFINITY)
   }
   dist.set(p1, 0)
   let currentNode = p1
   while (platformSet.size > 0) {
-    let minDist = Infinity
+    let minDist = Number.POSITIVE_INFINITY
     for (const platform of platformSet) {
       const time = tryGetFromMap(dist, platform)
       if (time < minDist) {
@@ -118,7 +118,7 @@ export default (objects: Platform[], p1: LatLng, p2: LatLng): ShortestRouteObjec
   // time on foot between locations
 
   while (objectSet.size > 0) {
-    let minDist = Infinity
+    let minDist = Number.POSITIVE_INFINITY
     for (const o of objectSet) {
       const time = tryGetFromMap(currentTime, o)
       if (time < minDist) {
@@ -175,7 +175,7 @@ export default (objects: Platform[], p1: LatLng, p2: LatLng): ShortestRouteObjec
     // const alt = currentTime.get(currentNode) + fromPlatformToDest.get(currentNode)
   }
   // find the shortest time & the exit station
-  let shortestTime = Infinity
+  let shortestTime = Number.POSITIVE_INFINITY
   for (const [p] of currentTime) {
     if (p.type === 'dummy') {
       continue

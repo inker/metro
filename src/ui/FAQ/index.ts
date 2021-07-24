@@ -35,9 +35,9 @@ export default class FAQ {
     this.card.classList.add(styles['faq-card'])
 
     if (Browser.mobile) {
-          import(/* webpackChunkName: "hammer" */ 'hammerjs').then(Hammer => {
-            new Hammer.default(this.card).on('swipeleft swiperight', this.hideFAQ)
-          })
+      import(/* webpackChunkName: "hammer" */ 'hammerjs').then(Hammer => {
+        new Hammer.default(this.card).on('swipeleft swiperight', this.hideFAQ)
+      })
     }
 
     this.card.innerHTML += faqData.map(qa2html).join('').replace(URL_RE, REPLACEMENT)

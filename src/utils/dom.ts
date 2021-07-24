@@ -8,7 +8,9 @@ export const makeLink = (url: string, text: string, newTab = false) =>
 
 export async function tryGetElement(query: string, interval = 100, numAttempts = 100) {
   const rest = query.slice(1)
-  const func = query[0] === '#' ? (() => document.getElementById(rest)) : () => document.querySelector(query)
+  const func = query[0] === '#'
+    ? () => document.getElementById(rest)
+    : () => document.querySelector(query)
   const el = await tryUntil(func, identity, {
     interval,
     numAttempts,
