@@ -1,57 +1,42 @@
-const path = require('path')
+// const path = require('path')
 
-const {
-  DefinePlugin,
-  HotModuleReplacementPlugin,
-  optimize: {
-    OccurrenceOrderPlugin,
-  },
-  NamedChunksPlugin,
-  NamedModulesPlugin,
-  HashedModuleIdsPlugin,
-} = require('webpack')
+const webpack = require('webpack')
 
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-
-// const { CheckerPlugin } = require('awesome-typescript-loader')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
-const SEP_RE = new RegExp(`\\${path.sep}`, 'g')
-const IS_REACT = /node_modules.+?(react|styled)/
-const PAGES_RE = /pages[\/\\](.+?)(index)?\.[jt]sx?/
+const { compact } = require('lodash')
 
-const moduleToFileNames = (module) => {
-  if (!module.request || !module.optional) {
-    return null
-  }
-  const relativePath = path.relative(module.context, module.request)
-  const tokens = relativePath.match(PAGES_RE)
-  return tokens && tokens[1].replace(SEP_RE, '.').slice(0, -1)
-}
+// const SEP_RE = new RegExp(`\\${path.sep}`, 'g')
+// const PAGES_RE = /pages[\/\\](.+?)(index)?\.[jt]sx?/
 
-const chunkToName = (chunk) =>
-  chunk.name
-  || Array.from(chunk.modulesIterable, moduleToFileNames).find((name) => name)
-  || null
+// const moduleToFileNames = (module) => {
+//   if (!module.request || !module.optional) {
+//     return null
+//   }
+//   const relativePath = path.relative(module.context, module.request)
+//   const tokens = relativePath.match(PAGES_RE)
+//   return tokens && tokens[1].replace(SEP_RE, '.').slice(0, -1)
+// }
 
-module.exports = env => [
-  // new CheckerPlugin(),
+// const chunkToName = (chunk) =>
+//   chunk.name
+//   || Array.from(chunk.modulesIterable, moduleToFileNames).find((name) => name)
+//   || null
 
-  // new OccurrenceOrderPlugin(),
-
-  new DefinePlugin({
+module.exports = (isDev) => compact([
+  new webpack.DefinePlugin({
     'process.env': {
-      NODE_ENV: JSON.stringify(env === 'dev' ? 'development' : 'production'),
+      NODE_ENV: JSON.stringify(isDev ? 'development' : 'production'),
     },
     __VERSION__: JSON.stringify(new Date().toUTCString()),
   }),
 
-  env === 'dev' && new HotModuleReplacementPlugin(),
+  isDev && new webpack.HotModuleReplacementPlugin(),
 
-  new NamedChunksPlugin(chunkToName),
+  // new webpack.NamedChunksPlugin(chunkToName),
 
   // new (env === 'dev' ? NamedModulesPlugin : HashedModuleIdsPlugin)(),
 
@@ -72,7 +57,7 @@ module.exports = env => [
     },
   }),
 
-  env !== 'dev' && new MiniCssExtractPlugin({
+  !isDev && new MiniCssExtractPlugin({
     chunkFilename: '[id].[contenthash].css',
   }),
 
@@ -85,5 +70,5 @@ module.exports = env => [
     ],
   }),
 
-  env === 'analyze' && new BundleAnalyzerPlugin(),
-].filter(item => item)
+  process.env.npm_config_report && new BundleAnalyzerPlugin(),
+])

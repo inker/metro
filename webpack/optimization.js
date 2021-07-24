@@ -1,27 +1,30 @@
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 
-module.exports = env => ({
-  runtimeChunk: true,
+module.exports = (isDev) => ({
+  minimize: true,
+  minimizer: isDev ? undefined : [
+    new TerserPlugin(),
+  ],
+
+  runtimeChunk: 'single',
   splitChunks: {
     chunks: 'all',
     cacheGroups: {
       lodash: {
-        test: /[\\/]lodash[\\/]/,
+        test: /[/\\]lodash[/\\]/,
         chunks: 'initial',
         name: 'lodash',
         enforce: true,
         reuseExistingChunk: true,
       },
       leaflet: {
-        test: /[\\/]leaflet[\\/]/,
+        test: /[/\\]leaflet[/\\]/,
         chunks: 'initial',
         name: 'leaflet',
         enforce: true,
         reuseExistingChunk: true,
       },
-      // vendor: {
-      vendors: {
+      defaultVendors: {
         test: /node_modules/,
         chunks: 'initial',
         name: 'vendor',
@@ -30,27 +33,4 @@ module.exports = env => ({
       },
     },
   },
-  // minimizer: env === 'dev' ? undefined : [
-  //   new UglifyJsPlugin({
-  //     uglifyOptions: {
-  //       compress: {
-  //         ecma: 6,
-  //         warnings: true,
-  //         dead_code: true,
-  //         properties: true,
-  //         unused: true,
-  //         join_vars: true,
-  //         drop_console: true,
-  //       },
-  //       mangle: {
-  //         safari10: true,
-  //       },
-  //       output: {
-  //         comments: false,
-  //       },
-  //     },
-  //     // sourceMap: true, // retains sourcemaps for typescript
-  //   }),
-  //   new OptimizeCSSAssetsPlugin({})
-  // ],
 })

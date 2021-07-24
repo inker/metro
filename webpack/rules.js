@@ -1,12 +1,16 @@
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { createLodashTransformer } = require('typescript-plugin-lodash')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const { compact } = require('lodash')
 
-const tsOptions = env => env === 'dev' ? {
-  // getCustomTransformers: () => ({ before: [styledComponentsTransformer] }),
-  useCache: true,
-} : {
+const lodashTransformer = createLodashTransformer()
+
+const tsOptions = (isDev) => isDev ? {} : {
+  getCustomTransformers: () => ({
+    before: [
+      lodashTransformer,
+    ],
+  }),
   ignoreDiagnostics: [],
-  getCustomTransformers: () => ({ before: [createLodashTransformer()] }),
 }
 
 const getCssLoader = global => global ? 'css-loader' : {
@@ -19,13 +23,13 @@ const getCssLoader = global => global ? 'css-loader' : {
   },
 }
 
-const getCssRule = (env, global) => [
-  env === 'dev' ? 'style-loader' : MiniCssExtractPlugin.loader,
+const getCssRule = (isDev, global) => [
+  isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
   getCssLoader(global),
   'postcss-loader',
 ]
 
-module.exports = env => [
+module.exports = (isDev) => compact([
   // { // adds source maps for external modules (like bim)
   //   enforce: 'pre',
   //   test: /\.js$/,
@@ -34,27 +38,25 @@ module.exports = env => [
   {
     test: /\.ts$/,
     use: {
-      loader: 'awesome-typescript-loader',
-      options: tsOptions(env),
+      loader: 'ts-loader',
+      options: tsOptions(isDev),
     },
     exclude: /node_modules/,
   },
   { // non-global
     test: /\.pcss$/,
-    use: getCssRule(env, false),
+    use: getCssRule(isDev, false),
     exclude: /node_modules/,
   },
   { // global
     test: /\.css$/,
-    use: getCssRule(env, true),
+    use: getCssRule(isDev, true),
   },
   {
-    test: /\.(png|jpg|jpeg|gif|svg)$/,
-    use: {
-      loader: 'file-loader',
-      options: {
-        name: '[name].[hash].[ext]',
-      },
+    test: /\.(png|jpe?g|gif|svg)$/,
+    type: 'asset/resource',
+    generator: {
+      filename: 'images/[name].[contenthash][ext]',
     },
   },
-].filter(i => i)
+])
