@@ -24,9 +24,6 @@
       "DOM.Iterable"
     ]
   },
-  "awesomeTypescriptLoaderOptions": {
-    /* ... */
-  },
   "exclude": [
     "node_modules"
   ]
