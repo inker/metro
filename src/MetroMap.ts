@@ -18,8 +18,8 @@ import FAQ from 'ui/FAQ'
 // import drawZones from 'ui/drawZones'
 
 import {
-  mapbox,
-  mapbox2,
+  // mapbox,
+  // mapbox2,
   mapnik,
   osmFrance,
   openMapSurfer,
@@ -156,7 +156,7 @@ export default class {
       const dataPromise = getJSON(config.url.data)
 
       const tileLoadPromise = new Promise(resolve => {
-        mapbox.once('load', resolve)
+        cartoDBNoLabels.once('load', resolve)
         setTimeout(resolve, 5000)
       })
 
@@ -172,12 +172,12 @@ export default class {
       mapPaneStyle.visibility = 'hidden'
 
       addLayerSwitcher(this.map, [
-        mapbox,
+        cartoDBNoLabels,
+        // mapbox,
         mapnik,
         osmFrance,
-        mapbox2,
+        // mapbox2,
         openMapSurfer,
-        cartoDBNoLabels,
         wikimapia,
       ])
 
@@ -217,7 +217,7 @@ export default class {
       this.lineRules = await lineRulesPromise
       // wait.textContent = 'adding content...';
       this.resetMapView()
-      this.map.addLayer(mapbox)
+      this.map.addLayer(cartoDBNoLabels)
       this.map.on('overlayupdate', () => {
         this.moving = true
         this.redrawNetwork()
