@@ -1,0 +1,321 @@
+.src-ui-DistanceMeasure-___styles__dashed-line___WpsZg {
+  pointer-events: none;
+  cursor: auto;
+  cursor: initial;
+}
+
+.src-ui-SvgOverlay-___styles__overlay___QkkD6 {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: visible;
+    z-index: 5;
+    /*will-change: transform;*/ /*blurs fonts */
+}
+
+.src-ui-ContextMenu-___styles__contextmenu___xF7Vs {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 10000;
+    background-color: white;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    font-family: "Segoe UI", Tahoma, Ubuntu, Cambay, Roboto, sans-serif;
+    font-size: 0.7em;
+    margin-left: 1px; /* so that the first element is not automatically selected */
+    border-collapse: collapse;
+    transform-origin: 0 0;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}
+
+    @media only screen and (max-device-width: 400px) and (-webkit-min-device-pixel-ratio: 2) {.src-ui-ContextMenu-___styles__contextmenu___xF7Vs {
+        font-size: 1.2em
+}
+    }
+
+    .src-ui-ContextMenu-___styles__contextmenu___xF7Vs div {
+        padding: 5px;
+        cursor: default;
+    }
+
+    .src-ui-ContextMenu-___styles__contextmenu___xF7Vs div[disabled] {
+            color: grey;
+            /*cursor: not-allowed*/            
+        }
+
+    .src-ui-ContextMenu-___styles__contextmenu___xF7Vs div:not([disabled]):hover {
+            background-color: #82B1FF;
+            /*color: #ffffff;*/            
+        }
+
+/* latin-ext */
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Ubuntu Regular'), local('Ubuntu-Regular'), url(https://fonts.gstatic.com/s/ubuntu/v12/4iCs6KVjbNBYlgoKcQ72nU6AF7xm.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Ubuntu Regular'), local('Ubuntu-Regular'), url(https://fonts.gstatic.com/s/ubuntu/v12/4iCs6KVjbNBYlgoKfw72nU6AFw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* latin-ext */
+@font-face {
+  font-family: 'Ubuntu-Medium';
+  font-style: normal;
+  /* font-weight: 500; */
+  font-weight: 700;
+  src: local('Ubuntu Medium'), local('Ubuntu-Medium'), url(https://fonts.gstatic.com/s/ubuntu/v12/4iCv6KVjbNBYlgoCjC3jvmyNPYZvg7UI.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Ubuntu-Medium';
+  font-style: normal;
+  /* font-weight: 500; */
+  font-weight: 700;
+  src: local('Ubuntu Medium'), local('Ubuntu-Medium'), url(https://fonts.gstatic.com/s/ubuntu/v12/4iCv6KVjbNBYlgoCjC3jsGyNPYZvgw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* latin-ext */
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Ubuntu Bold'), local('Ubuntu-Bold'), url(https://fonts.gstatic.com/s/ubuntu/v12/4iCv6KVjbNBYlgoCxCvjvmyNPYZvg7UI.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Ubuntu Bold'), local('Ubuntu-Bold'), url(https://fonts.gstatic.com/s/ubuntu/v12/4iCv6KVjbNBYlgoCxCvjsGyNPYZvgw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+.src-ui-Tooltip-___styles__plate-box___cWV0h {
+    color: #000000;
+    text-align: center;
+    font-family: Corbel, 'Ubuntu-Medium', Candara, Calibri, 'Trebuchet MS', sans-serif;
+    font-weight: bold;
+    opacity: 1;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+    transform: translate(50%, 0);
+
+    /* -webkit-font-smoothing: antialiased; */
+    
+    white-space: nowrap;
+    /*border-radius: 2px;*/
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    /*filter: url(#shadow);*/
+    background-color: white; /* for div */
+    padding: 1px 3px 1px 3px;
+    line-height: 1.3em;
+    display: inline-block;
+    /*float: left;*/
+}
+
+.src-ui-FAQ-___styles__faq-card___cuqeC {
+    position: absolute;
+    top: 5%;
+    bottom: 5%;
+    right: 5%;
+    left: 5%;
+    width: 50%;
+    margin: 0 auto;
+    padding: 1%;
+    z-index: 1000;
+    display: none;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+    font-family: Roboto, Calibri, Helvetica, sans-serif;
+    overflow-y: scroll;
+    transition-property: transform opacity;
+    transition-duration: 200ms;
+}
+
+    @media only screen and (max-width: 1000px) {.src-ui-FAQ-___styles__faq-card___cuqeC {
+        max-width: 500px;
+        width: 90%
+}
+    }
+
+.src-ui-FAQ-___styles__cross-ball___LWkHt {
+    float: right;
+    height: 12mm;
+    width: 12mm;
+    line-height: 12mm;
+    border-radius: 50%;
+    background: #E91E63;
+    color: white;
+    /*font-size: 12mm;*/
+    font-weight: bold;
+    text-align: center;
+    /* not selectabled */
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+    cursor: pointer;
+}
+
+.src-ui-FAQ-___styles__cross-ball___LWkHt:hover {
+        filter: grayscale(0.1) opacity(0.8);
+    }
+
+.src-ui-FAQ-___styles__question___xOBdC {
+    font-weight: bold;
+    display: block;
+    margin-top: 1%;
+}
+
+.src-ui-FAQ-___styles__answer___aFsDV {
+    display: block;
+    padding-bottom: 1%;
+    border-bottom: #cccccc 1px solid;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    margin: 0px;
+    padding: 0px; /* redundant */
+    height: 100%;
+}
+
+a {
+    color: #2196F3;
+}
+
+a:hover {
+        color: #E91E63;
+    }
+
+#map-container {
+    height: 100%; /* the map should have a defined height */
+    font-size: 12px;
+    cursor: default;
+}
+
+#map-container.dimmed {
+        filter: brightness(0.75);
+        transition-property: filter;
+        transition-duration: 200ms;
+    }
+
+#wait {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.2em;
+    z-index: 10000;
+    color: #606060;
+    opacity: 0;
+    transition: opacity 2s linear;
+}
+
+button {
+    background-color: white;
+    border: none;
+    height: 25px;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    cursor: pointer;
+    transition: box-shadow 100ms;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+    outline-width: 0;
+}
+
+button:hover {
+        background-color: #f0f0f0;
+    }
+
+button:active {
+        box-shadow: none;
+    }
+
+button:disabled {
+        background: #eaeaea;
+        color: #a8a8a8;
+        cursor: auto;
+    }
+
+.leaflet-dragging #map-container {
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+
+.leaflet-control-scale-line {
+  opacity: 1;
+}
+
+.leaflet-fade-anim .leaflet-tile {
+  will-change: initial;
+}
+
+@media only screen and (max-device-width: 1000px) and (-webkit-min-device-pixel-ratio: 2) {
+  .leaflet-control-attribution {
+      display: none;
+  }
+}
+
+path {
+    fill-opacity: 0; /* so that no white stuff be visible */
+}
+
+circle {
+    /* transform-origin: 0% 0%; */
+
+    @-moz-document url-prefix() {
+        transform-origin: 0% 0%;
+    }
+}
+
+#station-circles {
+    fill: white;
+    stroke: black;
+}
+
+#dummy-circles {
+    opacity: 0;
+    stroke: blue;
+    stroke-width: 0.5px;
+}
+
+#paths-outer, #paths-inner, #transfers-outer, #transfers-inner {
+    fill: none;
+}
+
+#paths-outer > path, #transfers-outer > path {
+        pointer-events: stroke;
+    }
+
+#transfers-outer {
+    stroke: #404040;
+}
+
+#transfers-inner {
+    stroke: #FFFFFF;
+}
+
