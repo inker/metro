@@ -5,6 +5,7 @@ export default interface Config {
   minZoom: number,
   maxZoom: number,
   detailedZoom: number,
+  detailedE: boolean,
   url: {
       [resource: string]: string,
   },

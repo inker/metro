@@ -7,6 +7,11 @@ import Transfer from './Transfer'
 import Station from './Station'
 import Route from './Route'
 
+interface Spans {
+  inbound: Span[],
+  outbound: Span[],
+}
+
 type PlatformType = 'normal' | 'dummy'
 
 export default class Platform {
@@ -15,7 +20,11 @@ export default class Platform {
   name: string
   altNames: AltNames
   location: LatLng
-  readonly spans: Span[] = []
+  readonly spans: Spans = {
+    inbound: [],
+    outbound: [],
+  }
+
   readonly transfers: Transfer[] = []
   private _station: Station
   elevation?: number
@@ -32,9 +41,24 @@ export default class Platform {
     this.elevation = elevation
   }
 
+  hasSpan(span: Span) {
+    const { spans } = this
+    return spans.inbound.includes(span) || spans.outbound.includes(span)
+  }
+
+  getAllSpans() {
+    const { spans } = this
+    return [...spans.inbound, ...spans.outbound]
+  }
+
+  getNumSpans() {
+    const { spans } = this
+    return spans.inbound.length + spans.outbound.length
+  }
+
   passingRoutes(): Set<Route> {
     const routes = new Set<Route>()
-    for (const span of this.spans) {
+    for (const span of this.getAllSpans()) {
       for (const route of span.routes) {
         routes.add(route)
       }
@@ -44,11 +68,27 @@ export default class Platform {
 
   passingLines(): Set<string> {
     const lines = new Set<string>()
-    for (const span of this.spans) {
+    for (const span of this.getAllSpans()) {
       for (const route of span.routes) {
         lines.add(route.line)
       }
     }
     return lines
+  }
+
+  adjacentPlatformsBySpans() {
+    return this.getAllSpans().map(s => s.other(this))
+  }
+
+  adjacentPlatformsByTransfers() {
+    return this.transfers.map(t => t.other(this))
+  }
+
+  isAdjacentBySpan(platform: Platform) {
+    return this.getAllSpans().some(s => s.has(platform))
+  }
+
+  isAdjacentByTransfer(platform: Platform) {
+    return this.transfers.some(t => t.has(platform))
   }
 }

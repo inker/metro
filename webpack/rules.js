@@ -16,6 +16,7 @@ const tsOptions = (isDev) => isDev ? {} : {
 const getCssLoader = global => global ? 'css-loader' : {
   loader: 'css-loader',
   options: {
+    esModule: false,
     modules: {
       localIdentName: '[path]___[name]__[local]___[hash:base64:5]',
     },
@@ -36,7 +37,7 @@ module.exports = (isDev) => compact([
   //   use: 'source-map-loader',
   // },
   {
-    test: /\.ts$/,
+    test: /\.tsx?$/,
     use: {
       loader: 'ts-loader',
       options: tsOptions(isDev),
